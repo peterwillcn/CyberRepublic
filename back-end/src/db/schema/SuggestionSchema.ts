@@ -100,5 +100,8 @@ export const Suggestion = {
       timestamp: String
     }
   ],
+  proposalNum: Number,
+  newOwner: String,
+  newSecretary: String,
   old: Boolean // mark an old suggestion
 }
