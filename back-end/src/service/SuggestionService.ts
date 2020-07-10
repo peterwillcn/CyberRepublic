@@ -13,6 +13,7 @@ import {
   getDidPublicKey,
   utilCrypto
 } from '../utility'
+import { SUGGESTION_TYPE } from 'src/constant/constant'
 const Big = require('big.js')
 
 const ObjectId = Types.ObjectId
@@ -60,6 +61,9 @@ export default class extends Base {
     }
     // save the document
     const result = await this.model.save(doc)
+    if (result && result.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+      // this.notifyPeopleToSign(result)
+    }
     await this.getDBModel('Suggestion_Edit_History').save({
       ...param,
       version: 10,
@@ -67,6 +71,27 @@ export default class extends Base {
     })
 
     return result
+  }
+
+  public async notifyPeopleToSign(suggestion, owner) {
+    const subject = `【Signature required】Suggestion <${suggestion.displayId}> is ready for you to sign`
+    const body = `
+      <p>Suggestion <${suggestion.displayId}> <${suggestion.title}> is ready for you to sign</p>
+      <br />
+      <p>Click here to sign now:</p>
+      <br />
+      <p><a href="${process.env.SERVER_URL}/suggestion/${suggestion._id}">${process.env.SERVER_URL}/suggestion/${suggestion._id}</a></p>
+      <br />
+      <br />
+      <p>Thanks</p>
+      <p>Cyber Republic</p>
+    `
+    mail.send({
+      to: owner.email,
+      toName: userUtil.formatUsername(owner),
+      subject,
+      body
+    })
   }
 
   // obsolete method
