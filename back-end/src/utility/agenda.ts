@@ -154,7 +154,7 @@ agenda.define(JOB_NAME.PROCESSOLDDATAONCE, async (job: any) => {
   console.log('------cron job starting------')
   await agenda.start()
   await agenda.every('2 minutes', JOB_NAME.INTOPROPOSAL)
-  await agenda.every('2 minutes', JOB_NAME.CVOTEJOB)
+  // await agenda.every('2 minutes', JOB_NAME.CVOTEJOB)
   await agenda.every('5 minutes', JOB_NAME.COUNCILJOB)
   await agenda.every('30 minutes', JOB_NAME.USERJOB)
   await agenda.every('2 minutes', JOB_NAME.UPDATEMILESTONE)
