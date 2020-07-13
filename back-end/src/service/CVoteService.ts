@@ -85,8 +85,7 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
 }
 
 const DID_PREFIX = 'did:elastos:'
-const STAGE_BLOCAKS = 7 * 720
-const STAGE_BLOCAKS_DEV = 40
+const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720 
 
 export default class extends Base {
   // create a DRAFT propoal with minimal info
@@ -140,15 +139,12 @@ export default class extends Base {
     ])
     const result = await getProposalData(proposalHash)
     const registerHeight = result && result.data.registerheight
+    const txHash = result && result.data.txhash
     const { proposedEnds, notificationEnds } = await ela.calHeightTime(
       registerHeight
     )
-    let proposedEndsHeight = registerHeight + STAGE_BLOCAKS
-    let notificationEndsHeight = registerHeight + STAGE_BLOCAKS * 2
-    if (process.env.NODE_ENV === 'staging') {
-      proposedEndsHeight = registerHeight + STAGE_BLOCAKS_DEV
-      notificationEndsHeight = registerHeight + STAGE_BLOCAKS_DEV * 2
-    }
+    let proposedEndsHeight = registerHeight + STAGE_BLOCKS
+    let notificationEndsHeight = registerHeight + STAGE_BLOCKS * 2
     const doc: any = {
       vid,
       type: suggestion.type,
@@ -168,7 +164,8 @@ export default class extends Base {
       proposedEndsHeight,
       notificationEndsHeight,
       proposedEnds: new Date(proposedEnds),
-      notificationEnds: new Date(notificationEnds)
+      notificationEnds: new Date(notificationEnds),
+      txHash
     }
 
     Object.assign(doc, _.pick(suggestion, BASE_FIELDS))
@@ -554,6 +551,7 @@ export default class extends Base {
    */
   public async list(param): Promise<Object> {
     const db_cvote = this.getDBModel('CVote')
+    const db_config = this.getDBModel('Config')
     const currentUserId = _.get(this.currentUser, '_id')
     const userRole = _.get(this.currentUser, 'role')
     const query: any = {}
@@ -715,7 +713,7 @@ export default class extends Base {
       cursor.skip(results * (page - 1)).limit(results)
     }
 
-    const currentHeight = await ela.height()
+    const { currentHeight } = await db_config.getDBInstance().findOne()
     const rs = await Promise.all([
       cursor,
       db_cvote.getDBInstance().find(query).count()
@@ -1265,7 +1263,8 @@ export default class extends Base {
   // update proposal information on the chain
   public async pollProposal() {
     const db_cvote = this.getDBModel('CVote')
-
+    const db_config = this.getDBModel('Config')
+    let currentHeight = await ela.height()
     const list = await db_cvote.getDBInstance().find({
       proposalHash: { $exists: true },
       status: {
@@ -1276,6 +1275,10 @@ export default class extends Base {
       }
     })
 
+    let tempCurrentHeight = 0
+    let compareHeight = 0
+    let heightProposed = 0
+    let heightNotification = 0
     const asyncForEach = async (array, callback) => {
       for (let index = 0; index < array.length; index++) {
         await callback(array[index], index, array)
@@ -1291,21 +1294,37 @@ export default class extends Base {
       }
       switch (status) {
         case constant.CVOTE_STATUS.PROPOSED:
-          await this.updateProposalOnProposed({
+          heightProposed = await this.updateProposalOnProposed({
             rs,
             _id: o._id,
             status
           })
           break
         case constant.CVOTE_STATUS.NOTIFICATION:
-          await this.updateProposalOnNotification({
+          heightNotification = await this.updateProposalOnNotification({
             rs,
             _id: o._id,
             rejectThroughAmount
           })
           break
       }
+      compareHeight =
+        heightProposed > heightNotification
+          ? heightProposed
+          : heightNotification
+      tempCurrentHeight =
+        compareHeight > tempCurrentHeight ? compareHeight : tempCurrentHeight
     })
+    const currentConfig = await db_config.getDBInstance().findOne()
+    if (
+      tempCurrentHeight !== 0 &&
+      tempCurrentHeight > currentConfig.currentHeight
+    ) {
+      currentHeight = tempCurrentHeight
+    }
+    await db_config
+      .getDBInstance()
+      .update({ _id: currentConfig._id }, { $set: { currentHeight } })
   }
 
   public async updateProposalOnProposed(data: any) {
@@ -1324,6 +1343,7 @@ export default class extends Base {
         }
       )
       this.notifyProposer(proposal, currentStatus, 'council')
+      return rs.data.registerheight + STAGE_BLOCKS
     }
   }
 
@@ -1342,6 +1362,9 @@ export default class extends Base {
 
     const proposalStatus = CHAIN_STATUS_TO_PROPOSAL_STATUS[chainStatus]
     const proposal = await db_cvote.findById(_id)
+    if (proposalStatus === proposal.status) {
+      return false
+    }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
       const budget = proposal.budget.map((item: any) => {
         if (item.type === 'ADVANCE') {
@@ -1350,7 +1373,7 @@ export default class extends Base {
           return { ...item, status: WAITING_FOR_REQUEST }
         }
       })
-      await db_cvote.update(
+      const updateStatus = await db_cvote.update(
         {
           _id
         },
@@ -1363,8 +1386,10 @@ export default class extends Base {
           }
         }
       )
-      this.notifyProposer(proposal, proposalStatus, 'community')
-      return
+      if (updateStatus && updateStatus.nModified == 1) {
+        this.notifyProposer(proposal, proposalStatus, 'community')
+        return rs.data.registerheight + STAGE_BLOCKS * 2
+      }
     }
     switch (proposalStatus) {
       case constant.CVOTE_STATUS.VETOED:
@@ -1375,7 +1400,7 @@ export default class extends Base {
         break
     }
 
-    await db_cvote.update(
+    const updateStatus = await db_cvote.update(
       {
         _id
       },
@@ -1385,7 +1410,10 @@ export default class extends Base {
         rejectThroughAmount
       }
     )
-    this.notifyProposer(proposal, proposalStatus, 'community')
+    if (updateStatus && updateStatus.nModified == 1) {
+      this.notifyProposer(proposal, proposalStatus, 'community')
+      return rs.data.registerheight + STAGE_BLOCKS * 2
+    }
   }
 
   // member vote against
@@ -1530,7 +1558,9 @@ export default class extends Base {
       'createdAt',
       'proposalHash',
       'rejectAmount',
-      'rejectThroughAmount'
+      'rejectThroughAmount',
+      'proposedEndsHeight',
+      'notificationEndsHeight'
     ]
     const proposal = await db_cvote
       .getDBInstance()
@@ -1594,17 +1624,16 @@ export default class extends Base {
     const notificationResult = {}
 
     // duration
-    const endTime = Math.round(proposal.createdAt.getTime() / 1000)
-    const nowTime = Math.round(new Date().getTime() / 1000)
-
+    const currentHeight = await ela.height()
     if (proposal.status === constant.CVOTE_STATUS.PROPOSED) {
-      notificationResult['duration'] =
-        endTime - nowTime + 604800 > 0 ? endTime - nowTime + 604800 : 0
+      const duration = (proposal.proposedEndsHeight - currentHeight) * 2 * 60
+      notificationResult['duration'] = duration >= 0 ? duration : 0
     }
 
     if (proposal.status === constant.CVOTE_STATUS.NOTIFICATION) {
-      notificationResult['duration'] =
-        endTime - nowTime + 604800 * 2 > 0 ? endTime - nowTime + 604800 * 2 : 0
+      const duration =
+        (proposal.notificationEndsHeight - currentHeight) * 2 * 60
+      notificationResult['duration'] = duration >= 0 ? duration : 0
     }
 
     if (
@@ -1639,7 +1668,9 @@ export default class extends Base {
           'rejectAmount',
           'rejectThroughAmount',
           'status',
-          'voteHistory'
+          'voteHistory',
+          'notificationEndsHeight',
+          'proposedEndsHeight'
         ]),
         ...notificationResult,
         createdAt: timestamp.second(proposal.createdAt),
@@ -2016,12 +2047,8 @@ export default class extends Base {
       const result = await getProposalData(o.proposalHash)
       if (result == undefined) return
       const registerHeight = result !== undefined && result.data.registerheight
-      let proposedEndsHeight = registerHeight + STAGE_BLOCAKS
-      let notificationEndsHeight = registerHeight + STAGE_BLOCAKS * 2
-      if (process.env.NODE_ENV === 'staging') {
-        proposedEndsHeight = registerHeight + STAGE_BLOCAKS_DEV
-        notificationEndsHeight = registerHeight + STAGE_BLOCAKS_DEV * 2
-      }
+      let proposedEndsHeight = registerHeight + STAGE_BLOCKS
+      let notificationEndsHeight = registerHeight + STAGE_BLOCKS * 2
       await db_cvote.update(
         { _id: o._id },
         {
@@ -2035,8 +2062,11 @@ export default class extends Base {
     })
   }
 
-  public async getRegisterHeight() {
-    const registerHeight = await ela.height()
+  public async getCurrentHeight() {
+    const db_config = this.getDBModel('Config')
+    const {
+      currentHeight: registerHeight
+    } = await db_config.getDBInstance().findOne()
     return registerHeight
   }
 
