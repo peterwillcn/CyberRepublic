@@ -78,16 +78,16 @@ agenda.define(JOB_NAME.INTOPROPOSAL, async (job: any) => {
     console.log('make into proposal cron job err...', err)
   }
 })
-agenda.define(JOB_NAME.CVOTEJOB, async (job: any) => {
-  try {
-    const DB = await db.create()
-    const cvoteService = new CVoteServive(DB, { user: undefined })
-    await cvoteService.pollProposal()
-    console.log(JOB_NAME.CVOTEJOB, 'at working')
-  } catch (err) {
-    console.log('', err)
-  }
-})
+// agenda.define(JOB_NAME.CVOTEJOB, async (job: any) => {
+//   try {
+//     const DB = await db.create()
+//     const cvoteService = new CVoteServive(DB, { user: undefined })
+//     await cvoteService.pollProposal()
+//     console.log(JOB_NAME.CVOTEJOB, 'at working')
+//   } catch (err) {
+//     console.log('', err)
+//   }
+// })
 agenda.define(JOB_NAME.COUNCILJOB, async (job: any) => {
   try {
     const DB = await db.create()
