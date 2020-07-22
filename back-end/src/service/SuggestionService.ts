@@ -58,11 +58,27 @@ export default class extends Base {
       // in the sort query
       descUpdatedAt: new Date()
     }
+
+    if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+      const newOwner = this.getDBModel('User').findOne({
+        'did.id': param.newOwnerDid
+      })
+      doc.newOwner = newOwner._id
+      const sugg = await this.model.save(doc)
+      this.notifyPeopleToSign(sugg, newOwner)
+    }
+
+    if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      const newSecretary = this.getDBModel('User').findOne({
+        'did.id': param.newSecretaryDid
+      })
+      doc.newSecretary = newSecretary._id
+      const sugg = await this.model.save(doc)
+      this.notifyPeopleToSign(sugg, newSecretary)
+    }
+
     // save the document
     const result = await this.model.save(doc)
-    if (result && result.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
-      // this.notifyPeopleToSign(result)
-    }
     await this.getDBModel('Suggestion_Edit_History').save({
       ...param,
       version: 10,

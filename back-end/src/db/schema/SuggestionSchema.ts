@@ -101,6 +101,8 @@ export const Suggestion = {
     }
   ],
   proposalNum: Number,
+  newOwnerDID: String,
+  newSecretaryDID: String,
   newOwner: {
     type: Schema.Types.ObjectId,
     ref: 'users',
