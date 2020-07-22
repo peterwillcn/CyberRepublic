@@ -3,6 +3,14 @@ import { Radio } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
+const {
+  NEW_MOTION,
+  MOTION_AGAINST,
+  ANYTHING_ELSE,
+  CHANGE_PROPOSAL_OWNER,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 
 class SelectSuggType extends Component {
   constructor(props) {
@@ -20,29 +28,39 @@ class SelectSuggType extends Component {
     callback('type')
   }
 
+  handleChange = (e) => {
+    this.setState({
+      type: e.target.value
+    })
+  }
+
   render() {
+    const { type } = this.state
     return (
       <Wrap>
-        <Radio.Group>
-          <Radio value={SUGGESTION_TYPE.NEW_MOTION}>
+        <Radio.Group onChange={this.handleChange} value={this.state.type}>
+          <Radio value={NEW_MOTION}>
             {I18N.get('suggestion.form.type.newMotion')}
           </Radio>
-          <Radio value={SUGGESTION_TYPE.MOTION_AGAINST}>
+          <Radio value={MOTION_AGAINST}>
             {I18N.get('suggestion.form.type.motionAgainst')}
           </Radio>
-          <Radio value={SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER}>
+          <Radio value={CHANGE_PROPOSAL_OWNER}>
             {I18N.get('suggestion.form.type.changeProposalOwner')}
           </Radio>
-          <Radio value={SUGGESTION_TYPE.CHANGE_SECRETARY}>
+          <Radio value={CHANGE_SECRETARY}>
             {I18N.get('suggestion.form.type.changeSecretary')}
           </Radio>
-          <Radio value={SUGGESTION_TYPE.TERMINATE_PROPOSAL}>
+          <Radio value={TERMINATE_PROPOSAL}>
             {I18N.get('suggestion.form.type.terminateProposal')}
           </Radio>
-          <Radio value={SUGGESTION_TYPE.ANYTHING_ELSE}>
+          <Radio value={ANYTHING_ELSE}>
             {I18N.get('suggestion.form.type.anythingElse')}
           </Radio>
         </Radio.Group>
+        {type === CHANGE_PROPOSAL_OWNER && <div>change owner</div>}
+        {type === CHANGE_SECRETARY && <div>change secretary</div>}
+        {type === TERMINATE_PROPOSAL && <div>terminate proposal</div>}
       </Wrap>
     )
   }
