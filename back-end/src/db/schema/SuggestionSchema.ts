@@ -101,7 +101,15 @@ export const Suggestion = {
     }
   ],
   proposalNum: Number,
-  newOwner: String,
-  newSecretary: String,
+  newOwner: {
+    type: Schema.Types.ObjectId,
+    ref: 'users',
+    required: true
+  },
+  newSecretary: {
+    type: Schema.Types.ObjectId,
+    ref: 'users',
+    required: true
+  },
   old: Boolean // mark an old suggestion
 }
