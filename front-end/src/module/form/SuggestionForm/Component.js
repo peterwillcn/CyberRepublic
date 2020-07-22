@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, Button, Row, Tabs, Radio, message } from 'antd'
+import { Form, Input, Button, Row, Tabs, message } from 'antd'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
@@ -11,6 +11,7 @@ import ImplementationPlan from './ImplementationPlan'
 import { wordCounter } from '@/util'
 import { SUGGESTION_BUDGET_TYPE } from '@/constant'
 import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
+import SelectSuggType from './SelectSuggType'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -240,17 +241,7 @@ class C extends BaseComponent {
       return getFieldDecorator(id, {
         rules,
         initialValue: initialValues[id]
-      })(
-        <Radio.Group>
-          <Radio value="1">{I18N.get('suggestion.form.type.newMotion')}</Radio>
-          <Radio value="2">
-            {I18N.get('suggestion.form.type.motionAgainst')}
-          </Radio>
-          <Radio value="3">
-            {I18N.get('suggestion.form.type.anythingElse')}
-          </Radio>
-        </Radio.Group>
-      )
+      })(<SelectSuggType />)
     }
 
     if (id === 'abstract') {

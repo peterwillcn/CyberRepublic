@@ -76,7 +76,10 @@ export default {
     type: {
       newMotion: 'New Motion',
       motionAgainst: 'Motion Against',
-      anythingElse: 'Anything Else'
+      anythingElse: 'Anything Else',
+      changeProposalOwner: 'Change Proposal Owner',
+      changeSecretary: 'Change Secretary',
+      terminateProposal: 'Terminate Proposal'
     },
     note: {
       type: 'Select a suggestion type.',
