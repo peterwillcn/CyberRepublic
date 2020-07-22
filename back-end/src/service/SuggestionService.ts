@@ -13,9 +13,8 @@ import {
   getDidPublicKey,
   utilCrypto
 } from '../utility'
-import { SUGGESTION_TYPE } from 'src/constant/constant'
 const Big = require('big.js')
-
+const { SUGGESTION_TYPE } = constant
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -206,10 +205,10 @@ export default class extends Base {
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
       if (_.isEmpty(doc.budgetIntro)) {
-        doc.budgetIntro = _.get(currDoc,'budgetIntro')
+        doc.budgetIntro = _.get(currDoc, 'budgetIntro')
       }
       if (_.isEmpty(doc.planIntro)) {
-        doc.planIntro = _.get(currDoc,'planIntro')
+        doc.planIntro = _.get(currDoc, 'planIntro')
       }
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
@@ -252,8 +251,8 @@ export default class extends Base {
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      doc.budgetIntro =  _.get(currDraft,'budgetIntro')
-      doc.planIntro = _.get(currDraft,'planIntro')
+      doc.budgetIntro = _.get(currDraft, 'budgetIntro')
+      doc.planIntro = _.get(currDraft, 'planIntro')
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
@@ -741,8 +740,11 @@ export default class extends Base {
       .getDBInstance()
       .findOne(query)
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
-      .populate('reference', constant.DB_SELECTED_FIELDS.CVOTE.ID_STATUS_HASH_TXID)
-      
+      .populate(
+        'reference',
+        constant.DB_SELECTED_FIELDS.CVOTE.ID_STATUS_HASH_TXID
+      )
+
     if (!doc) {
       return { success: true, empty: true }
     }
