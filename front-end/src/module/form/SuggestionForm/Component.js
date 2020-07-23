@@ -29,9 +29,6 @@ const TAB_KEYS = [
 ]
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
 const {
-  NEW_MOTION,
-  MOTION_AGAINST,
-  ANYTHING_ELSE,
   CHANGE_PROPOSAL_OWNER,
   CHANGE_SECRETARY,
   TERMINATE_PROPOSAL
@@ -90,7 +87,6 @@ class C extends BaseComponent {
         })
         return
       }
-
       const milestone = _.get(values, 'plan.milestone')
       const pItems = _.get(values, 'budget.paymentItems')
 
@@ -120,7 +116,24 @@ class C extends BaseComponent {
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-
+      const type = _.get(values, 'type')
+      if (type && typeof type !== 'string') {
+        values.type = type.type
+        switch (type.type) {
+          case CHANGE_PROPOSAL_OWNER:
+            values.newOwnerDID = type.newOwnerDID
+            values.proposalNum = type.proposalNum
+            break
+          case CHANGE_SECRETARY:
+            values.newSecretaryDID = type.newSecretaryDID
+            break
+          case TERMINATE_PROPOSAL:
+            values.proposalNum = type.proposalNum
+            break
+          default:
+            break
+        }
+      }
       await callback(values)
       this.setState({ loading: false })
     })
