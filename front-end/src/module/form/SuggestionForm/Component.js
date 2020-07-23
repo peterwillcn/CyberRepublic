@@ -9,7 +9,7 @@ import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
 import PaymentSchedule from './PaymentSchedule'
 import ImplementationPlan from './ImplementationPlan'
 import { wordCounter } from '@/util'
-import { SUGGESTION_BUDGET_TYPE } from '@/constant'
+import { SUGGESTION_BUDGET_TYPE, SUGGESTION_TYPE } from '@/constant'
 import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
 import SelectSuggType from './SelectSuggType'
 
@@ -28,6 +28,14 @@ const TAB_KEYS = [
   'budget'
 ]
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
+const {
+  NEW_MOTION,
+  MOTION_AGAINST,
+  ANYTHING_ELSE,
+  CHANGE_PROPOSAL_OWNER,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 
 class C extends BaseComponent {
   constructor(props) {
@@ -238,10 +246,37 @@ class C extends BaseComponent {
       }
     ]
     if (id === 'type') {
+      let data
+      switch (initialValues.type) {
+        case CHANGE_PROPOSAL_OWNER:
+          data = {
+            type: initialValues.type,
+            proposalNum: initialValues.proposalNum,
+            newOwner: initialValues.newOwner
+          }
+          break
+        case CHANGE_SECRETARY:
+          data = {
+            type: initialValues.type,
+            newSecretary: initialValues.newSecretary
+          }
+          break
+        case TERMINATE_PROPOSAL:
+          data = {
+            type: initialValues.type,
+            proposalNum: initialValues.proposalNum
+          }
+          break
+        default:
+          data = { type: initialValues.type }
+          break
+      }
       return getFieldDecorator(id, {
         rules,
-        initialValue: initialValues[id]
-      })(<SelectSuggType />)
+        initialValue: data
+      })(
+        <SelectSuggType initialValue={data} callback={this.onTextareaChange} />
+      )
     }
 
     if (id === 'abstract') {
