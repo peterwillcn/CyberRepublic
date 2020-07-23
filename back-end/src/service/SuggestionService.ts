@@ -61,7 +61,7 @@ export default class extends Base {
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
       const newOwner = this.getDBModel('User').findOne({
-        'did.id': param.newOwnerDid
+        'did.id': param.newOwnerDID
       })
       doc.newOwner = newOwner._id
       const sugg = await this.model.save(doc)
@@ -70,7 +70,7 @@ export default class extends Base {
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
       const newSecretary = this.getDBModel('User').findOne({
-        'did.id': param.newSecretaryDid
+        'did.id': param.newSecretaryDID
       })
       doc.newSecretary = newSecretary._id
       const sugg = await this.model.save(doc)

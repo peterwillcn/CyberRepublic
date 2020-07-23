@@ -105,13 +105,11 @@ export const Suggestion = {
   newSecretaryDID: String,
   newOwner: {
     type: Schema.Types.ObjectId,
-    ref: 'users',
-    required: true
+    ref: 'users'
   },
   newSecretary: {
     type: Schema.Types.ObjectId,
-    ref: 'users',
-    required: true
+    ref: 'users'
   },
   old: Boolean // mark an old suggestion
 }

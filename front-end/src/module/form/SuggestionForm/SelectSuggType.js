@@ -18,22 +18,22 @@ class SelectSuggType extends Component {
     const value = props.initialValue
     this.state = {
       type: (value && value.type) || '1',
-      newSecretary: (value && value.newSecretary) || null,
+      newSecretaryDID: (value && value.newSecretaryDID) || null,
       proposalNum: (value && value.proposalNum) || null,
-      newOwner: (value && value.newOwner) || null
+      newOwnerDID: (value && value.newOwnerDID) || null
     }
   }
 
   changeValue() {
     const { onChange } = this.props
-    const { type, newOwner, newSecretary, proposalNum } = this.state
+    const { type, newOwnerDID, newSecretaryDID, proposalNum } = this.state
     let data
     switch (type) {
       case CHANGE_PROPOSAL_OWNER:
-        data = { type, newOwner, proposalNum }
+        data = { type, newOwnerDID, proposalNum }
         break
       case CHANGE_SECRETARY:
-        data = { type, newSecretary }
+        data = { type, newSecretaryDID }
         break
       case TERMINATE_PROPOSAL:
         data = { type, proposalNum }
@@ -58,7 +58,7 @@ class SelectSuggType extends Component {
   }
 
   render() {
-    const { type, newOwner, newSecretary, proposalNum } = this.state
+    const { type, newOwnerDID, newSecretaryDID, proposalNum } = this.state
     return (
       <div>
         <Radio.Group
@@ -97,8 +97,8 @@ class SelectSuggType extends Component {
             <div>
               <Label>{I18N.get('suggestion.form.type.proposalNewOwner')}</Label>
               <Input
-                onChange={(e) => this.handleChange(e, 'newOwner')}
-                value={newOwner}
+                onChange={(e) => this.handleChange(e, 'newOwnerDID')}
+                value={newOwnerDID}
                 placeholder={I18N.get('suggestion.form.type.ownerInfo')}
               />
             </div>
@@ -108,8 +108,8 @@ class SelectSuggType extends Component {
           <Section>
             <Label>{I18N.get('suggestion.form.type.newSecretary')}</Label>
             <Input
-              onChange={(e) => this.handleChange(e, 'newSecretary')}
-              value={newSecretary}
+              onChange={(e) => this.handleChange(e, 'newSecretaryDID')}
+              value={newSecretaryDID}
               placeholder={I18N.get('suggestion.form.type.secretaryInfo')}
             />
           </Section>

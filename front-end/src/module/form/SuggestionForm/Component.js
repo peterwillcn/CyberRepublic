@@ -252,13 +252,13 @@ class C extends BaseComponent {
           data = {
             type: initialValues.type,
             proposalNum: initialValues.proposalNum,
-            newOwner: initialValues.newOwner
+            newOwnerDID: initialValues.newOwnerDID
           }
           break
         case CHANGE_SECRETARY:
           data = {
             type: initialValues.type,
-            newSecretary: initialValues.newSecretary
+            newSecretaryDID: initialValues.newSecretaryDID
           }
           break
         case TERMINATE_PROPOSAL:
