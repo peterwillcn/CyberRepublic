@@ -64,6 +64,12 @@ class SelectSuggType extends Component {
     })
   }
 
+  handleTerminationChange = (value) => {
+    this.setState({ termination: value }, () => {
+      this.changeValue()
+    })
+  }
+
   render() {
     const {
       type,
@@ -131,7 +137,7 @@ class SelectSuggType extends Component {
           <Section>
             <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
             <InputNumber
-              onChange={this.handleNumChange}
+              onChange={this.handleTerminationChange}
               value={termination}
               min={0}
             />
