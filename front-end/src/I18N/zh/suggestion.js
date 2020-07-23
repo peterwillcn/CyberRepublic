@@ -76,7 +76,15 @@ export default {
     type: {
       newMotion: '新动议',
       motionAgainst: '反对动议',
-      anythingElse: '其它事宜'
+      anythingElse: '其它事宜',
+      changeProposalOwner: '更换提案负责人',
+      changeSecretary: '更换秘书长',
+      terminateProposal: '终止提案',
+      proposalNum: '提案编号',
+      proposalNewOwner: '提案新负责人',
+      newSecretary: '新秘书长',
+      ownerInfo: `请输入提案新负责人的 DID`,
+      secretaryInfo: `请输入新秘书长的 DID`
     },
     note: {
       type: '选择一个建议类型。',

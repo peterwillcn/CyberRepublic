@@ -87,7 +87,7 @@ class SelectSuggType extends Component {
         {type === CHANGE_PROPOSAL_OWNER && (
           <Section>
             <div className="number">
-              <Label>Proposal Number</Label>
+              <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
               <InputNumber
                 onChange={this.handleNumChange}
                 value={proposalNum}
@@ -95,28 +95,28 @@ class SelectSuggType extends Component {
               />
             </div>
             <div>
-              <Label>Proposal New Owner</Label>
+              <Label>{I18N.get('suggestion.form.type.proposalNewOwner')}</Label>
               <Input
                 onChange={(e) => this.handleChange(e, 'newOwner')}
                 value={newOwner}
-                placeholder="please input the new owner's DID"
+                placeholder={I18N.get('suggestion.form.type.ownerInfo')}
               />
             </div>
           </Section>
         )}
         {type === CHANGE_SECRETARY && (
           <Section>
-            <Label>New Secretary</Label>
+            <Label>{I18N.get('suggestion.form.type.newSecretary')}</Label>
             <Input
               onChange={(e) => this.handleChange(e, 'newSecretary')}
               value={newSecretary}
-              placeholder="please input the new secretary's DID"
+              placeholder={I18N.get('suggestion.form.type.secretaryInfo')}
             />
           </Section>
         )}
         {type === TERMINATE_PROPOSAL && (
           <Section>
-            <Label>Proposal Number</Label>
+            <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
             <InputNumber
               onChange={this.handleNumChange}
               value={proposalNum}

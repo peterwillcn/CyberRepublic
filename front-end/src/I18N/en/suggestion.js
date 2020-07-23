@@ -79,7 +79,12 @@ export default {
       anythingElse: 'Anything Else',
       changeProposalOwner: 'Change Proposal Owner',
       changeSecretary: 'Change Secretary',
-      terminateProposal: 'Terminate Proposal'
+      terminateProposal: 'Terminate Proposal',
+      proposalNum: 'Proposal Number',
+      proposalNewOwner: 'Proposal New Owner',
+      newSecretary: 'New Secretary',
+      ownerInfo: `Please input the new owner's DID`,
+      secretaryInfo: `Please input the new secretary's DID`
     },
     note: {
       type: 'Select a suggestion type.',
