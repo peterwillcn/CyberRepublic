@@ -20,13 +20,20 @@ class SelectSuggType extends Component {
       type: (value && value.type) || '1',
       newSecretaryDID: (value && value.newSecretaryDID) || null,
       proposalNum: (value && value.proposalNum) || null,
-      newOwnerDID: (value && value.newOwnerDID) || null
+      newOwnerDID: (value && value.newOwnerDID) || null,
+      termination: (value && value.termination) || null
     }
   }
 
   changeValue() {
     const { onChange } = this.props
-    const { type, newOwnerDID, newSecretaryDID, proposalNum } = this.state
+    const {
+      type,
+      newOwnerDID,
+      newSecretaryDID,
+      proposalNum,
+      termination
+    } = this.state
     let data
     switch (type) {
       case CHANGE_PROPOSAL_OWNER:
@@ -36,7 +43,7 @@ class SelectSuggType extends Component {
         data = { type, newSecretaryDID }
         break
       case TERMINATE_PROPOSAL:
-        data = { type, proposalNum }
+        data = { type, termination }
         break
       default:
         data = { type }
@@ -58,7 +65,13 @@ class SelectSuggType extends Component {
   }
 
   render() {
-    const { type, newOwnerDID, newSecretaryDID, proposalNum } = this.state
+    const {
+      type,
+      newOwnerDID,
+      newSecretaryDID,
+      proposalNum,
+      termination
+    } = this.state
     return (
       <div>
         <Radio.Group
@@ -119,7 +132,7 @@ class SelectSuggType extends Component {
             <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
             <InputNumber
               onChange={this.handleNumChange}
-              value={proposalNum}
+              value={termination}
               min={0}
             />
           </Section>

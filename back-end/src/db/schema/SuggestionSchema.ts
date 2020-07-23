@@ -100,6 +100,7 @@ export const Suggestion = {
       timestamp: String
     }
   ],
+  termination: Number,
   proposalNum: Number,
   newOwnerDID: String,
   newSecretaryDID: String,

@@ -128,7 +128,7 @@ class C extends BaseComponent {
             values.newSecretaryDID = type.newSecretaryDID
             break
           case TERMINATE_PROPOSAL:
-            values.proposalNum = type.proposalNum
+            values.termination = type.termination
             break
           default:
             break
@@ -277,7 +277,7 @@ class C extends BaseComponent {
         case TERMINATE_PROPOSAL:
           data = {
             type: initialValues.type,
-            proposalNum: initialValues.proposalNum
+            termination: initialValues.termination
           }
           break
         default:
