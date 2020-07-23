@@ -60,7 +60,7 @@ class SelectSuggType extends Component {
   render() {
     const { type, newOwner, newSecretary, proposalNum } = this.state
     return (
-      <Wrap>
+      <div>
         <Radio.Group
           onChange={(e) => this.handleChange(e, 'type')}
           value={type}
@@ -85,48 +85,61 @@ class SelectSuggType extends Component {
           </Radio>
         </Radio.Group>
         {type === CHANGE_PROPOSAL_OWNER && (
-          <div>
-            <div>
-              proposal new owner DID:{' '}
-              <Input
-                onChange={(e) => this.handleChange(e, 'newOwner')}
-                value={newOwner}
-              />
-            </div>
-            <div>
-              Proposal Number{' '}
+          <Section>
+            <div className="number">
+              <Label>Proposal Number</Label>
               <InputNumber
                 onChange={this.handleNumChange}
                 value={proposalNum}
                 min={0}
               />
             </div>
-          </div>
+            <div>
+              <Label>Proposal New Owner</Label>
+              <Input
+                onChange={(e) => this.handleChange(e, 'newOwner')}
+                value={newOwner}
+                placeholder="please input the new owner's DID"
+              />
+            </div>
+          </Section>
         )}
         {type === CHANGE_SECRETARY && (
-          <div>
-            new secretary DID:{' '}
+          <Section>
+            <Label>New Secretary</Label>
             <Input
               onChange={(e) => this.handleChange(e, 'newSecretary')}
               value={newSecretary}
+              placeholder="please input the new secretary's DID"
             />
-          </div>
+          </Section>
         )}
         {type === TERMINATE_PROPOSAL && (
-          <div>
-            Proposal Number{' '}
+          <Section>
+            <Label>Proposal Number</Label>
             <InputNumber
               onChange={this.handleNumChange}
               value={proposalNum}
               min={0}
             />
-          </div>
+          </Section>
         )}
-      </Wrap>
+      </div>
     )
   }
 }
 
 export default SelectSuggType
 
-const Wrap = styled.div``
+const Label = styled.div`
+  font-size: 14px;
+  line-height: 24px;
+  margin-bottom: 6px;
+`
+const Section = styled.div`
+  margin-top: 24px;
+  max-width: 390px;
+  .number {
+    margin-bottom: 16px;
+  }
+`
