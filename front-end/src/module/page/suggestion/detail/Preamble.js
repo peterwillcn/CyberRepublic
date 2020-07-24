@@ -4,6 +4,7 @@ import _ from 'lodash'
 import PopoverProfile from '@/module/common/PopoverProfile'
 import moment from 'moment/moment'
 import { Col, message } from 'antd'
+import TagsContainer from '../common/tags/Container'
 import { Item, ItemTitle, ItemText, CopyButton } from './style'
 
 class Preamble extends Component {
@@ -54,6 +55,16 @@ class Preamble extends Component {
 
   render() {
     const { detail } = this.props
+    let status = I18N.get('suggestion.status.posted')
+    if (_.get(detail, 'reference.0.vid')) {
+      status = <TagsContainer data={detail} />
+    } else if (_.some(detail.tags, (tag) => tag.type === 'INFO_NEEDED')) {
+      status = I18N.get('suggestion.status.moreInfoRequired')
+    } else if (
+      _.some(detail.tags, (tag) => tag.type === 'UNDER_CONSIDERATION')
+    ) {
+      status = I18N.get('suggestion.status.underConsideration')
+    }
     return (
       <div>
         {detail.displayId &&

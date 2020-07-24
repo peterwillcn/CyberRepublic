@@ -37,7 +37,6 @@ import MetaContainer from '../common/meta/Container'
 import Meta from '@/module/common/Meta'
 import SocialShareButtons from '@/module/common/SocialShareButtons'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
-import TagsContainer from '../common/tags/Container'
 import PaymentList from '@/module/form/SuggestionForm/PaymentList'
 import TeamInfoList from '@/module/form/SuggestionForm/TeamInfoList'
 import Milestones from '@/module/form/SuggestionForm/Milestones'
@@ -217,17 +216,6 @@ export default class extends StandardPage {
     const titleNode = this.renderTitleNode()
     const labelNode = this.renderLabelNode()
     const tagsNode = this.renderTagsNode()
-
-    let status = I18N.get('suggestion.status.posted')
-    if (_.get(detail, 'reference.0.vid')) {
-      status = <TagsContainer data={detail} />
-    } else if (_.some(detail.tags, (tag) => tag.type === 'INFO_NEEDED')) {
-      status = I18N.get('suggestion.status.moreInfoRequired')
-    } else if (
-      _.some(detail.tags, (tag) => tag.type === 'UNDER_CONSIDERATION')
-    ) {
-      status = I18N.get('suggestion.status.underConsideration')
-    }
 
     return (
       <div>
