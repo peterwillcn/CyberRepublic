@@ -13,7 +13,6 @@ import {
 } from 'antd'
 import { Link } from 'react-router-dom'
 import MediaQuery from 'react-responsive'
-import moment from 'moment/moment'
 import Comments from '@/module/common/comments/Container'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
@@ -39,7 +38,6 @@ import Meta from '@/module/common/Meta'
 import SocialShareButtons from '@/module/common/SocialShareButtons'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
 import TagsContainer from '../common/tags/Container'
-import PopoverProfile from '@/module/common/PopoverProfile'
 import PaymentList from '@/module/form/SuggestionForm/PaymentList'
 import TeamInfoList from '@/module/form/SuggestionForm/TeamInfoList'
 import Milestones from '@/module/form/SuggestionForm/Milestones'
@@ -56,18 +54,15 @@ import {
   StyledButton,
   CouncilComments,
   IconWrap,
-  Item,
-  ItemTitle,
-  ItemText,
   StyledAnchor,
   Subtitle,
   CreateProposalText,
-  Paragraph,
-  CopyButton
+  Paragraph
 } from './style'
 
 import './style.scss'
 import SignSuggestionModal from './SignSuggestionModal'
+import Preamble from './Preamble'
 
 const { TextArea } = Input
 
@@ -207,51 +202,6 @@ export default class extends StandardPage {
     )
   }
 
-  renderPreambleItem(header, value, item) {
-    let text = <ItemText>{value}</ItemText>
-    let btn = null
-    const {
-      detail: { createdBy },
-      user
-    } = this.props
-    if (item === 'username') {
-      text = <PopoverProfile owner={createdBy} curUser={user} />
-    }
-    if (item === 'txHash') {
-      text = <a href={`https://blockchain.elastos.org/tx/${value}`}>{value}</a>
-    }
-    if (item === 'proposalHash') {
-      btn = (
-        <CopyButton onClick={() => this.copyToClip(value)}>
-          {I18N.get('suggestion.btn.copyHash')}
-        </CopyButton>
-      )
-    }
-    return (
-      <Item>
-        <Col span={6}>
-          <ItemTitle>{header}</ItemTitle>
-        </Col>
-        <Col span={18} style={{ wordBreak: 'break-all' }}>
-          {text}
-          {btn}
-        </Col>
-      </Item>
-    )
-  }
-
-  copyToClip(content) {
-    var aux = document.createElement('input')
-    aux.setAttribute('value', content)
-    document.body.appendChild(aux)
-    aux.select()
-    const err = document.execCommand('copy')
-    document.body.removeChild(aux)
-    if (err) {
-      message.success(I18N.get('btn.CopyHash'))
-    }
-  }
-
   renderDetail(detail) {
     if (!detail) return
     const sections = [
@@ -285,52 +235,10 @@ export default class extends StandardPage {
         {titleNode}
         <div style={{ margin: '14px 0' }}>{labelNode}</div>
         <div>{tagsNode}</div>
-
         <DescLabel id="preamble">
           {I18N.get('suggestion.fields.preamble')}
         </DescLabel>
-        {detail.displayId &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.suggestion'),
-            `#${detail.displayId}`
-          )}
-        {this.renderPreambleItem(
-          I18N.get('suggestion.fields.preambleSub.title'),
-          detail.title
-        )}
-        {detail.createdBy &&
-          detail.createdBy.username &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.creator'),
-            detail.createdBy.username,
-            'username'
-          )}
-        {this.renderPreambleItem(
-          I18N.get('suggestion.fields.preambleSub.status'),
-          status
-        )}
-        {this.renderPreambleItem(
-          I18N.get('suggestion.fields.preambleSub.created'),
-          moment(detail.createdAt).format('MMM D, YYYY')
-        )}
-        {_.get(detail, 'signature.data') &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.signature'),
-            detail.signature.data,
-            'signature'
-          )}
-        {_.get(detail, 'reference.0.txHash') &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.txHash'),
-            _.get(detail, 'reference.0.txHash'),
-            'txHash'
-          )}
-        {_.get(detail, 'reference.0.proposalHash') &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.proposalHash'),
-            _.get(detail, 'reference.0.proposalHash'),
-            'proposalHash'
-          )}
+        <Preamble detail={detail} user={this.props.user} />
         {sections.map((section) => {
           if (
             section === 'plan' &&
