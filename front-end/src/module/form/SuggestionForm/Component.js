@@ -116,25 +116,8 @@ class C extends BaseComponent {
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-      const type = _.get(values, 'type')
-      if (type && typeof type !== 'string') {
-        values.type = type.type
-        switch (type.type) {
-          case CHANGE_PROPOSAL_OWNER:
-            values.newOwnerDID = type.newOwnerDID
-            values.proposalNum = type.proposalNum
-            break
-          case CHANGE_SECRETARY:
-            values.newSecretaryDID = type.newSecretaryDID
-            break
-          case TERMINATE_PROPOSAL:
-            values.termination = type.termination
-            break
-          default:
-            break
-        }
-      }
-      await callback(values)
+      const rs = this.formatType(values)
+      await callback(rs)
       this.setState({ loading: false })
     })
   }
@@ -149,6 +132,28 @@ class C extends BaseComponent {
     this.handleSave(e, onSaveDraft)
   }
 
+  formatType = (values) => {
+    const type = _.get(values, 'type')
+    if (type && typeof type !== 'string') {
+      values.type = type.type
+      switch (type.type) {
+        case CHANGE_PROPOSAL_OWNER:
+          values.newOwnerDID = type.newOwnerDID
+          values.proposalNum = type.proposalNum
+          break
+        case CHANGE_SECRETARY:
+          values.newSecretaryDID = type.newSecretaryDID
+          break
+        case TERMINATE_PROPOSAL:
+          values.termination = type.termination
+          break
+        default:
+          break
+      }
+    }
+    return values
+  }
+
   handleSaveDraft = () => {
     const { isEditMode, form } = this.props
     if (!isEditMode && this.props.onSaveDraft) {
@@ -159,7 +164,8 @@ class C extends BaseComponent {
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-      this.props.onSaveDraft(values)
+      const rs = this.formatType(values)
+      this.props.onSaveDraft(rs)
     }
   }
 

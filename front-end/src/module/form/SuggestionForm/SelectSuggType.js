@@ -110,7 +110,7 @@ class SelectSuggType extends Component {
               <InputNumber
                 onChange={this.handleNumChange}
                 value={proposalNum}
-                min={0}
+                min={1}
               />
             </div>
             <div>
