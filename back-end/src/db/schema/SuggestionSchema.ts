@@ -100,17 +100,9 @@ export const Suggestion = {
       timestamp: String
     }
   ],
-  termination: Number,
+  termination: Number, // terminate a proposal
   proposalNum: Number,
   newOwnerDID: String,
   newSecretaryDID: String,
-  newOwner: {
-    type: Schema.Types.ObjectId,
-    ref: 'users'
-  },
-  newSecretary: {
-    type: Schema.Types.ObjectId,
-    ref: 'users'
-  },
   old: Boolean // mark an old suggestion
 }

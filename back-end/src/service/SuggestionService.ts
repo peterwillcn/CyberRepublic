@@ -60,21 +60,51 @@ export default class extends Base {
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
-      const newOwner = this.getDBModel('User').findOne({
-        'did.id': param.newOwnerDID
-      })
-      doc.newOwner = newOwner._id
+      const [newOwner, proposal] = await Promise.all([
+        this.getDBModel('User').findOne({
+          'did.id': param.newOwnerDID
+        }),
+        this.getDBModel('Cvote').findOne({
+          vid: param.termination
+        })
+      ])
+      if (!newOwner || !proposal) {
+        return
+      }
       const sugg = await this.model.save(doc)
       this.notifyPeopleToSign(sugg, newOwner)
+      await this.getDBModel('Suggestion_Edit_History').save({
+        ...param,
+        version: 10,
+        suggestion: sugg._id
+      })
+      return sugg
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
-      const newSecretary = this.getDBModel('User').findOne({
+      const newSecretary = await this.getDBModel('User').findOne({
         'did.id': param.newSecretaryDID
       })
-      doc.newSecretary = newSecretary._id
+      if (!newSecretary) {
+        return
+      }
       const sugg = await this.model.save(doc)
       this.notifyPeopleToSign(sugg, newSecretary)
+      await this.getDBModel('Suggestion_Edit_History').save({
+        ...param,
+        version: 10,
+        suggestion: sugg._id
+      })
+      return sugg
+    }
+
+    if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
+      const proposal = await this.getDBModel('Cvote').findOne({
+        vid: param.termination
+      })
+      if (!proposal) {
+        return
+      }
     }
 
     // save the document
