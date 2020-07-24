@@ -48,7 +48,7 @@ export default class extends Base {
     this.draftModel = this.getDBModel('SuggestionDraft')
   }
 
-  public async create(param: any): Promise<Document> {
+  public async create(param: any) {
     const doc = {
       ...param,
       version: 10,
@@ -58,18 +58,22 @@ export default class extends Base {
       // in the sort query
       descUpdatedAt: new Date()
     }
-
+    console.log('param...', param)
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
       const [newOwner, proposal] = await Promise.all([
         this.getDBModel('User').findOne({
           'did.id': param.newOwnerDID
         }),
-        this.getDBModel('Cvote').findOne({
+        this.getDBModel('CVote').findOne({
           vid: param.termination
         })
       ])
-      if (!newOwner || !proposal) {
-        return
+      console.log('newOwner', newOwner)
+      if (!newOwner) {
+        return { success: false, message: 'No this new owner', owner: false }
+      }
+      if (!proposal) {
+        return { success: false, message: 'No this proposal', proposal: false }
       }
       const sugg = await this.model.save(doc)
       this.notifyPeopleToSign(sugg, newOwner)
@@ -86,7 +90,11 @@ export default class extends Base {
         'did.id': param.newSecretaryDID
       })
       if (!newSecretary) {
-        return
+        return {
+          success: false,
+          message: 'No this new secretary',
+          secretary: false
+        }
       }
       const sugg = await this.model.save(doc)
       this.notifyPeopleToSign(sugg, newSecretary)
@@ -99,11 +107,11 @@ export default class extends Base {
     }
 
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
-      const proposal = await this.getDBModel('Cvote').findOne({
+      const proposal = await this.getDBModel('CVote').findOne({
         vid: param.termination
       })
       if (!proposal) {
-        return
+        return { success: false, message: 'No this proposal', proposal: false }
       }
     }
 
