@@ -45,13 +45,13 @@ export default class extends StandardPage {
     const rs = await this.props.createSuggestion(model)
     if (rs && rs.success === false) {
       if (rs.owner === false) {
-        return message.error(rs.message)
+        return message.error(I18N.get('suggestion.error.noOwner'))
       }
       if (rs.secretary === false) {
-        return message.error(rs.message)
+        return message.error(I18N.get('suggestion.error.noSecretary'))
       }
       if (rs.proposal === false) {
-        return message.error(rs.message)
+        return message.error(I18N.get('suggestion.error.noProposal'))
       }
     }
     this.historyBack(rs && rs._id)

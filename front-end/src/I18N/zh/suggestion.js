@@ -118,7 +118,10 @@ export default {
       isUsed: '该项目阶段已被其它支付项使用了',
       exception: '出错了',
       notEqual: '支付项款之和与项目总金额不一致',
-      introduction: '里程碑简介不能为空'
+      introduction: '里程碑简介不能为空',
+      noOwner: `提案新负责人账号不存在`,
+      noSecretary: `新的秘书长账号不存在`,
+      noProposal: `提案编号不存在`
     }
   },
   modal: {

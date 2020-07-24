@@ -117,7 +117,10 @@ export default {
       conditioned: 'Project milestone payment can not apply to this milestone.',
       isUsed: 'This milestone has been used.',
       exception: 'Something went wrong',
-      notEqual: `The toal budget is not equal to the sum of each payment amount.`
+      notEqual: `The toal budget is not equal to the sum of each payment amount.`,
+      noOwner: `The new owner does not exist.`,
+      noSecretary: `The new secretary does not exist.`,
+      noProposal: `The proposal number does not exist.`
     }
   },
   modal: {
