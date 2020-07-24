@@ -4,6 +4,13 @@ import _ from 'lodash'
 import PopoverProfile from '@/module/common/PopoverProfile'
 import moment from 'moment/moment'
 import { Col, message } from 'antd'
+import { SUGGESTION_TYPE } from '@/constant'
+const {
+  CHANGE_PROPOSAL_OWNER,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
+
 import TagsContainer from '../common/tags/Container'
 import { Item, ItemTitle, ItemText, CopyButton } from './style'
 
@@ -71,6 +78,35 @@ class Preamble extends Component {
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.suggestion'),
             `#${detail.displayId}`
+          )}
+        {detail.type &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.type'),
+            `${I18N.get(`suggestion.form.type.${detail.type}`)}`
+          )}
+        {detail.type &&
+          detail.type === CHANGE_SECRETARY &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.secretary'),
+            `${detail.newSecretaryDID}`
+          )}
+        {detail.type &&
+          detail.type === CHANGE_PROPOSAL_OWNER &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.owner'),
+            `${detail.newOwnerDID}`
+          )}
+        {detail.type &&
+          detail.type === CHANGE_PROPOSAL_OWNER &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.proposalNum'),
+            `#${detail.proposalNum}`
+          )}
+        {detail.type &&
+          detail.type === TERMINATE_PROPOSAL &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.termination'),
+            `#${detail.termination}`
           )}
         {this.renderPreambleItem(
           I18N.get('suggestion.fields.preambleSub.title'),

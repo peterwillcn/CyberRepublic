@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -21,7 +22,12 @@ export default {
       updated: '更新日期',
       signature: '签名',
       txHash: 'TxID',
-      proposalHash: 'Hash'
+      proposalHash: 'Hash',
+      type: '类型',
+      owner: '提案新负责人',
+      secretary: '新秘书长',
+      proposalNum: '提案编号',
+      termination: ' 终止提案'
     },
     abstract: '摘要',
     goal: '目标',
@@ -74,6 +80,12 @@ export default {
       title: '标题'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: '新动议',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: '反对动议',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: '其它事宜',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER]: '更换提案负责人',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: '更换秘书长',
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: '终止提案',
       newMotion: '新动议',
       motionAgainst: '反对动议',
       anythingElse: '其它事宜',

@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -21,7 +22,12 @@ export default {
       updated: 'Updated',
       signature: 'Signature',
       txHash: 'TxID',
-      proposalHash: 'Hash'
+      proposalHash: 'Hash',
+      type: 'Type',
+      owner: 'New Proposal Owner',
+      secretary: 'New Secretary',
+      proposalNum: 'Proposal Number',
+      termination: ' Terminate Proposal'
     },
     abstract: 'Abstract',
     goal: 'Goal',
@@ -74,6 +80,12 @@ export default {
       title: 'Title'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: 'New Motion',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: 'Motion Against',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: 'Anything Else',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER]: 'Change Proposal Owner',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: 'Change Secretary',
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: 'Terminate Proposal',
       newMotion: 'New Motion',
       motionAgainst: 'Motion Against',
       anythingElse: 'Anything Else',
