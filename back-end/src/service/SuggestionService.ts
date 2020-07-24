@@ -14,7 +14,7 @@ import {
   utilCrypto
 } from '../utility'
 const Big = require('big.js')
-const { SUGGESTION_TYPE } = constant
+const { SUGGESTION_TYPE, CVOTE_STATUS } = constant
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -69,7 +69,8 @@ export default class extends Base {
         }),
         this.getDBModel('CVote').findOne({
           vid: param.termination,
-          old: { $exists: false }
+          old: { $exists: false },
+          status: CVOTE_STATUS.ACTIVE
         })
       ])
       if (!newOwner) {
@@ -112,7 +113,8 @@ export default class extends Base {
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
       const proposal = await this.getDBModel('CVote').findOne({
         vid: param.termination,
-        old: { $exists: false }
+        old: { $exists: false },
+        status: CVOTE_STATUS.ACTIVE
       })
       if (!proposal) {
         return { success: false, message: 'No this proposal', proposal: false }
