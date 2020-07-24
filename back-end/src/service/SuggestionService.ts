@@ -58,17 +58,16 @@ export default class extends Base {
       // in the sort query
       descUpdatedAt: new Date()
     }
-    console.log('param...', param)
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
       const [newOwner, proposal] = await Promise.all([
         this.getDBModel('User').findOne({
           'did.id': param.newOwnerDID
         }),
         this.getDBModel('CVote').findOne({
-          vid: param.termination
+          vid: param.termination,
+          old: { $exists: false }
         })
       ])
-      console.log('newOwner', newOwner)
       if (!newOwner) {
         return { success: false, message: 'No this new owner', owner: false }
       }
@@ -108,7 +107,8 @@ export default class extends Base {
 
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
       const proposal = await this.getDBModel('CVote').findOne({
-        vid: param.termination
+        vid: param.termination,
+        old: { $exists: false }
       })
       if (!proposal) {
         return { success: false, message: 'No this proposal', proposal: false }
