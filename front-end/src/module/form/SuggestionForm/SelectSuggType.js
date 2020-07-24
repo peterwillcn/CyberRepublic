@@ -18,9 +18,9 @@ class SelectSuggType extends Component {
     const value = props.initialValue
     this.state = {
       type: (value && value.type) || '1',
-      newSecretaryDID: (value && value.newSecretaryDID) || null,
+      newSecretaryDID: (value && value.newSecretaryDID) || '',
       proposalNum: (value && value.proposalNum) || null,
-      newOwnerDID: (value && value.newOwnerDID) || null,
+      newOwnerDID: (value && value.newOwnerDID) || '',
       termination: (value && value.termination) || null
     }
   }
@@ -139,7 +139,7 @@ class SelectSuggType extends Component {
             <InputNumber
               onChange={this.handleTerminationChange}
               value={termination}
-              min={0}
+              min={1}
             />
           </Section>
         )}
