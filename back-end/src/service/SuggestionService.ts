@@ -116,7 +116,7 @@ export default class extends Base {
     return result
   }
 
-  public async notifyPeopleToSign(suggestion, owner) {
+  public async notifyPeopleToSign(suggestion, receiverDID) {
     const subject = `【Signature required】Suggestion <${suggestion.displayId}> is ready for you to sign`
     const body = `
       <p>Suggestion <${suggestion.displayId}> <${suggestion.title}> is ready for you to sign</p>
@@ -129,9 +129,12 @@ export default class extends Base {
       <p>Thanks</p>
       <p>Cyber Republic</p>
     `
+    const receiver = await this.getDBModel('User').findOne({
+      'did.id': receiverDID
+    })
     mail.send({
-      to: owner.email,
-      toName: userUtil.formatUsername(owner),
+      to: receiver.email,
+      toName: userUtil.formatUsername(receiver),
       subject,
       body
     })
@@ -1485,6 +1488,14 @@ export default class extends Base {
                 { _id: payload.sid },
                 { $set: { signature: { data: decoded.data } } }
               )
+              // notify new owner to sign
+              if (suggestion.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+                this.notifyPeopleToSign(suggestion, suggestion.newOwnerDID)
+              }
+              // notify new secretary general to sign
+              if (suggestion.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+                this.notifyPeopleToSign(suggestion, suggestion.newSecretaryDID)
+              }
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
               logger.error(err)
