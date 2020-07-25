@@ -1381,7 +1381,7 @@ export default class extends Base {
       )
 
       const now = Math.floor(Date.now() / 1000)
-      const jwtClaims = {
+      const jwtClaims: any = {
         iat: now,
         exp: now + 60 * 60 * 24,
         command: 'createsuggestion',
@@ -1389,13 +1389,44 @@ export default class extends Base {
         sid: suggestion._id,
         callbackurl: `${process.env.API_URL}/api/suggestion/signature-callback`,
         data: {
-          proposaltype: 'normal',
           categorydata: '',
           ownerpublickey: ownerPublicKey,
-          drafthash: draftHash,
-          budgets: this.convertBudget(suggestion.budget),
-          recipient: suggestion.elaAddress
+          drafthash: draftHash
         }
+      }
+      switch (suggestion.type) {
+        case SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'changeproposalowner',
+            targetproposalhash: '',
+            newrecipient: suggestion.elaAddress,
+            newownerpublickey: ''
+          }
+          break
+        case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'secretarygeneral',
+            secretarygeneralpublickey: '',
+            secretarygeneraldid: suggestion.newSecretaryDID
+          }
+          break
+        case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'closeproposal',
+            targetproposalhash: ''
+          }
+          break
+        default:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'normal',
+            budgets: this.convertBudget(suggestion.budget),
+            recipient: suggestion.elaAddress
+          }
+          break
       }
 
       const jwtToken = jwt.sign(
