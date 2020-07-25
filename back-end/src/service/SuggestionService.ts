@@ -79,14 +79,6 @@ export default class extends Base {
       if (!proposal) {
         return { success: false, message: 'No this proposal', proposal: false }
       }
-      const sugg = await this.model.save(doc)
-      this.notifyPeopleToSign(sugg, newOwner)
-      await this.getDBModel('Suggestion_Edit_History').save({
-        ...param,
-        version: 10,
-        suggestion: sugg._id
-      })
-      return sugg
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
@@ -100,14 +92,6 @@ export default class extends Base {
           secretary: false
         }
       }
-      const sugg = await this.model.save(doc)
-      this.notifyPeopleToSign(sugg, newSecretary)
-      await this.getDBModel('Suggestion_Edit_History').save({
-        ...param,
-        version: 10,
-        suggestion: sugg._id
-      })
-      return sugg
     }
 
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
