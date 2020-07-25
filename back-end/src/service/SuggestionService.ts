@@ -29,10 +29,10 @@ const BASE_FIELDS = [
   'plan',
   'planIntro',
   'budgetIntro',
-  'proposalNum',
+  'targetProposalNum',
   'newOwnerDID',
   'newSecretaryDID',
-  'termination'
+  'closeProposalNum'
 ]
 
 interface BudgetItem {
@@ -68,7 +68,7 @@ export default class extends Base {
           'did.id': param.newOwnerDID
         }),
         this.getDBModel('CVote').findOne({
-          vid: param.termination,
+          vid: param.targetProposalNum,
           old: { $exists: false },
           status: CVOTE_STATUS.ACTIVE
         })
@@ -79,6 +79,8 @@ export default class extends Base {
       if (!proposal) {
         return { success: false, message: 'No this proposal', proposal: false }
       }
+      doc.newOwnerPublicKey = newOwner.did.compressedPublicKey
+      doc.targetProposalHash = proposal.proposalHash
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
@@ -92,17 +94,19 @@ export default class extends Base {
           secretary: false
         }
       }
+      doc.newSecretaryPublicKey = newSecretary.did.compressedPublicKey
     }
 
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
       const proposal = await this.getDBModel('CVote').findOne({
-        vid: param.termination,
+        vid: param.closeProposalNum,
         old: { $exists: false },
         status: CVOTE_STATUS.ACTIVE
       })
       if (!proposal) {
         return { success: false, message: 'No this proposal', proposal: false }
       }
+      doc.targetProposalHash = proposal.proposalHash
     }
 
     // save the document
@@ -1399,16 +1403,16 @@ export default class extends Base {
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'changeproposalowner',
-            targetproposalhash: '',
+            targetproposalhash: suggestion.targetProposalHash,
             newrecipient: suggestion.elaAddress,
-            newownerpublickey: ''
+            newownerpublickey: suggestion.newOwnerPublicKey
           }
           break
         case SUGGESTION_TYPE.CHANGE_SECRETARY:
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'secretarygeneral',
-            secretarygeneralpublickey: '',
+            secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
             secretarygeneraldid: suggestion.newSecretaryDID
           }
           break
@@ -1416,7 +1420,7 @@ export default class extends Base {
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'closeproposal',
-            targetproposalhash: ''
+            targetproposalhash: suggestion.targetProposalHash
           }
           break
         default:

@@ -139,13 +139,13 @@ class C extends BaseComponent {
       switch (type.type) {
         case CHANGE_PROPOSAL_OWNER:
           values.newOwnerDID = type.newOwnerDID
-          values.proposalNum = type.proposalNum
+          values.targetProposalNum = type.proposalNum
           break
         case CHANGE_SECRETARY:
           values.newSecretaryDID = type.newSecretaryDID
           break
         case TERMINATE_PROPOSAL:
-          values.termination = type.termination
+          values.closeProposalNum = type.termination
           break
         default:
           break
@@ -270,7 +270,7 @@ class C extends BaseComponent {
         case CHANGE_PROPOSAL_OWNER:
           data = {
             type: initialValues.type,
-            proposalNum: initialValues.proposalNum,
+            proposalNum: initialValues.targetProposalNum,
             newOwnerDID: initialValues.newOwnerDID
           }
           break
@@ -283,7 +283,7 @@ class C extends BaseComponent {
         case TERMINATE_PROPOSAL:
           data = {
             type: initialValues.type,
-            termination: initialValues.termination
+            termination: initialValues.closeProposalNum
           }
           break
         default:

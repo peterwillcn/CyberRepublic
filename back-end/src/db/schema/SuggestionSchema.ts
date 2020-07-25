@@ -100,9 +100,12 @@ export const Suggestion = {
       timestamp: String
     }
   ],
-  termination: Number, // terminate a proposal
-  proposalNum: Number,
+  closeProposalNum: Number, // terminate a proposal
+  targetProposalNum: Number, // change the proposal owner
   newOwnerDID: String,
+  newOwnerPublicKey: String,
   newSecretaryDID: String,
+  newSecretaryPublicKey: String,
+  targetProposalHash: String,
   old: Boolean // mark an old suggestion
 }
