@@ -1343,24 +1343,17 @@ export default class extends Base {
   public async getSignatureUrl(param: { id: string }) {
     try {
       const { id } = param
-      const suggestion = await this.model
-        .getDBInstance()
-        .findById(id)
-        .populate('createdBy')
-
+      const suggestion = await this.model.getDBInstance().findById(id)
       if (!suggestion) {
         return { success: false, message: 'No this suggestion' }
       }
-
       // check if current user is the owner of this suggestion
-      if (!suggestion.createdBy._id.equals(this.currentUser._id)) {
+      if (!suggestion.createdBy.equals(this.currentUser._id)) {
         return { success: false, message: 'You are not the owner' }
       }
-
       if (_.get(suggestion, 'signature.data')) {
         return { success: false, message: 'You had signed.' }
       }
-
       const did = _.get(this.currentUser, 'did.id')
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
