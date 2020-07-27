@@ -65,7 +65,7 @@ export default class extends Base {
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
       const [newOwner, proposal] = await Promise.all([
         this.getDBModel('User').findOne({
-          'did.id': param.newOwnerDID
+          'did.id': 'did:elastos:' + param.newOwnerDID
         }),
         this.getDBModel('CVote').findOne({
           vid: param.targetProposalNum,
@@ -85,7 +85,7 @@ export default class extends Base {
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
       const newSecretary = await this.getDBModel('User').findOne({
-        'did.id': param.newSecretaryDID
+        'did.id': 'did:elastos:' + param.newSecretaryDID
       })
       if (!newSecretary) {
         return {

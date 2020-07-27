@@ -88,13 +88,13 @@ class Preamble extends Component {
           detail.type === CHANGE_SECRETARY &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.secretary'),
-            `${detail.newSecretaryDID}`
+            `did:elastos:${detail.newSecretaryDID}`
           )}
         {detail.type &&
           detail.type === CHANGE_PROPOSAL_OWNER &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.owner'),
-            `${detail.newOwnerDID}`
+            `did:elastos:${detail.newOwnerDID}`
           )}
         {detail.type &&
           detail.type === CHANGE_PROPOSAL_OWNER &&
