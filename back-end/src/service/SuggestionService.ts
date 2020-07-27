@@ -1359,23 +1359,29 @@ export default class extends Base {
         return { success: false, message: 'Your DID not bound.' }
       }
 
-      const rs: {
-        compressedPublicKey: string
-        publicKey: string
-      } = await getDidPublicKey(did)
-      if (!rs) {
-        return {
-          success: false,
-          message: `Can not get your did's public key.`
+      let ownerPublicKey: string
+      let fields: { ownerPublicKey?: string; draftHash: string }
+      if (!suggestion.ownerPublicKey) {
+        const rs: {
+          compressedPublicKey: string
+          publicKey: string
+        } = await getDidPublicKey(did)
+        if (!rs) {
+          return {
+            success: false,
+            message: `Can not get your did's public key.`
+          }
         }
+        ownerPublicKey = rs.compressedPublicKey
+        fields.ownerPublicKey = ownerPublicKey
+      }
+      if (suggestion.ownerPublicKey) {
+        ownerPublicKey = suggestion.ownerPublicKey
       }
 
-      let ownerPublicKey = rs.compressedPublicKey
       const draftHash = this.getDraftHash(suggestion)
-      await this.model.update(
-        { _id: suggestion._id },
-        { $set: { draftHash, ownerPublicKey } }
-      )
+      fields.draftHash = draftHash
+      await this.model.update({ _id: suggestion._id }, { $set: fields })
 
       const now = Math.floor(Date.now() / 1000)
       const jwtClaims: any = {
