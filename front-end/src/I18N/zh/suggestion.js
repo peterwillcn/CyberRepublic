@@ -26,8 +26,8 @@ export default {
       type: '类型',
       owner: '提案新负责人',
       secretary: '新秘书长',
-      proposalNum: '提案编号',
-      termination: ' 终止提案'
+      targetProposalNum: '提案编号',
+      closeProposalNum: '终止提案'
     },
     abstract: '摘要',
     goal: '目标',

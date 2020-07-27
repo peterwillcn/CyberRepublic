@@ -99,14 +99,14 @@ class Preamble extends Component {
         {detail.type &&
           detail.type === CHANGE_PROPOSAL_OWNER &&
           this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.proposalNum'),
-            `#${detail.proposalNum}`
+            I18N.get('suggestion.fields.preambleSub.targetProposalNum'),
+            `#${detail.targetProposalNum}`
           )}
         {detail.type &&
           detail.type === TERMINATE_PROPOSAL &&
           this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.termination'),
-            `#${detail.termination}`
+            I18N.get('suggestion.fields.preambleSub.closeProposalNum'),
+            `#${detail.closeProposalNum}`
           )}
         {this.renderPreambleItem(
           I18N.get('suggestion.fields.preambleSub.title'),

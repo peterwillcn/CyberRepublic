@@ -26,8 +26,8 @@ export default {
       type: 'Type',
       owner: 'New Proposal Owner',
       secretary: 'New Secretary',
-      proposalNum: 'Proposal Number',
-      termination: ' Terminate Proposal'
+      targetProposalNum: 'Proposal Number',
+      closeProposalNum: 'Terminate Proposal'
     },
     abstract: 'Abstract',
     goal: 'Goal',
