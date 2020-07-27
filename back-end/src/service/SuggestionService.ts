@@ -52,16 +52,7 @@ export default class extends Base {
     this.draftModel = this.getDBModel('SuggestionDraft')
   }
 
-  public async create(param: any) {
-    const doc = {
-      ...param,
-      version: 10,
-      createdBy: _.get(this.currentUser, '_id'),
-      contentType: constant.CONTENT_TYPE.MARKDOWN,
-      // this is a hack for now, we should really be using aggregate pipeline + projection
-      // in the sort query
-      descUpdatedAt: new Date()
-    }
+  private async getTypeDoc(param: any, doc: any) {
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
       const [newOwner, proposal] = await Promise.all([
         this.getDBModel('User').findOne({
@@ -108,7 +99,23 @@ export default class extends Base {
       }
       doc.targetProposalHash = proposal.proposalHash
     }
+    return doc
+  }
 
+  public async create(param: any) {
+    let doc = {
+      ...param,
+      version: 10,
+      createdBy: _.get(this.currentUser, '_id'),
+      contentType: constant.CONTENT_TYPE.MARKDOWN,
+      // this is a hack for now, we should really be using aggregate pipeline + projection
+      // in the sort query
+      descUpdatedAt: new Date()
+    }
+    doc = await this.getTypeDoc(param, doc)
+    if (doc && doc.success === false) {
+      return doc
+    }
     // save the document
     const result = await this.model.save(doc)
     await this.getDBModel('Suggestion_Edit_History').save({
