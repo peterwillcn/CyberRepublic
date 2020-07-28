@@ -1528,10 +1528,23 @@ export default class extends Base {
           }
           break
         case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          let secretaryPublicKey: string
+          if (suggestion.newSecretaryPublicKey) {
+            secretaryPublicKey = suggestion.newSecretaryPublicKey
+          } else {
+            const rs: any = await getDidPublicKey(suggestion.newSecretaryDID)
+            if (!rs) {
+              return {
+                success: false,
+                message: `Can not get the new owner DID's public key.`
+              }
+            }
+            secretaryPublicKey = rs.compressedPublicKey
+          }
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'secretarygeneral',
-            secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
+            secretarygeneralpublickey: secretaryPublicKey,
             secretarygeneraldid: suggestion.newSecretaryDID
           }
           break
