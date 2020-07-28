@@ -1386,6 +1386,63 @@ export default class extends Base {
     return utilCrypto.sha256D(JSON.stringify(content))
   }
 
+  public async getNewOwnerSignatureUrl(param: { id: string }) {
+    try {
+      const { id } = param
+      const suggestion = await this.model.getDBInstance().findById(id)
+      if (!suggestion) {
+        return { success: false, message: 'No this suggestion' }
+      }
+      if (suggestion.type !== SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+        return {
+          success: false,
+          message: 'The type of this suggestion is not valid'
+        }
+      }
+      if (!_.get(suggestion, 'signature.data')) {
+        return {
+          success: false,
+          message: 'The owner of this suggetion does not sign'
+        }
+      }
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
+      if (did !== `did:elastos:${suggestion.newOwnerDID}`) {
+        return { success: false, message: 'You are not the new owner' }
+      }
+      const now = Math.floor(Date.now() / 1000)
+      const jwtClaims: any = {
+        iat: now,
+        exp: now + 60 * 60 * 24,
+        command: 'createsuggestion',
+        iss: process.env.APP_DID,
+        sid: suggestion._id,
+        callbackurl: `${process.env.API_URL}/api/suggestion/owner-signature-cb`,
+        data: {
+          categorydata: '',
+          ownerpublickey: suggestion.ownerPublicKey,
+          drafthash: suggestion.draftHash,
+          proposaltype: 'changeproposalowner',
+          targetproposalhash: suggestion.targetProposalHash,
+          newrecipient: suggestion.elaAddress,
+          newownerpublickey: suggestion.newOwnerPublicKey
+        }
+      }
+      const jwtToken = jwt.sign(
+        JSON.stringify(jwtClaims),
+        process.env.APP_PRIVATE_KEY,
+        { algorithm: 'ES256' }
+      )
+      const url = `elastos://crproposal/${jwtToken}`
+      return { success: true, url }
+    } catch (err) {
+      logger.error(err)
+      return { success: false }
+    }
+  }
+
   /* author signs a suggestion */
   public async getSignatureUrl(param: { id: string }) {
     try {
@@ -1485,9 +1542,7 @@ export default class extends Base {
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
         process.env.APP_PRIVATE_KEY,
-        {
-          algorithm: 'ES256'
-        }
+        { algorithm: 'ES256' }
       )
       const url = `elastos://crproposal/${jwtToken}`
       return { success: true, url }
