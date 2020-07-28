@@ -1463,9 +1463,13 @@ export default class extends Base {
         return { success: false, message: 'Your DID not bound.' }
       }
 
+      let fields: any = {}
       const draftHash = this.getDraftHash(suggestion)
+      fields.draftHash = draftHash
       let ownerPublicKey: string
-      if (!suggestion.ownerPublicKey) {
+      if (suggestion.ownerPublicKey) {
+        ownerPublicKey = suggestion.ownerPublicKey
+      } else {
         const rs: {
           compressedPublicKey: string
           publicKey: string
@@ -1477,17 +1481,7 @@ export default class extends Base {
           }
         }
         ownerPublicKey = rs.compressedPublicKey
-        await this.model.update(
-          { _id: suggestion._id },
-          { $set: { draftHash, ownerPublicKey } }
-        )
-      }
-      if (suggestion.ownerPublicKey) {
-        ownerPublicKey = suggestion.ownerPublicKey
-        await this.model.update(
-          { _id: suggestion._id },
-          { $set: { draftHash } }
-        )
+        fields.ownerPublicKey = ownerPublicKey
       }
 
       const now = Math.floor(Date.now() / 1000)
@@ -1518,6 +1512,7 @@ export default class extends Base {
               }
             }
             newOwnerPublicKey = rs.compressedPublicKey
+            fields.newOwnerPublicKey = newOwnerPublicKey
           }
           jwtClaims.data = {
             ...jwtClaims.data,
@@ -1536,10 +1531,11 @@ export default class extends Base {
             if (!rs) {
               return {
                 success: false,
-                message: `Can not get the new owner DID's public key.`
+                message: `Can not get the new secretary DID's public key.`
               }
             }
             secretaryPublicKey = rs.compressedPublicKey
+            fields.newSecretaryPublicKey = secretaryPublicKey
           }
           jwtClaims.data = {
             ...jwtClaims.data,
@@ -1564,6 +1560,8 @@ export default class extends Base {
           }
           break
       }
+
+      await this.model.update({ _id: suggestion._id }, { $set: fields })
 
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
