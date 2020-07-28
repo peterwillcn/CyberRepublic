@@ -342,6 +342,10 @@ class C extends StandardPage {
             <p>${data.elaAddress}</p>
             <p>${I18N.get('suggestion.budget.schedule')}</p>
             <p>${getBudgetHtml(data.budget)}</p>
+            <h2>${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(data.budgetIntro)
+            )}</p>
           `
           }
           if (
@@ -353,6 +357,10 @@ class C extends StandardPage {
             <h2>${I18N.get('proposal.fields.plan')}</h2>
             <h2>${I18N.get('suggestion.plan.teamInfo')}</h2>
             <p>${getPlanHtml(data.plan.teamInfo)}</p>
+            <h2>${I18N.get(`suggestion.plan.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(data.planIntro)
+            )}</p>
           `
           }
           return `
