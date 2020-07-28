@@ -76,7 +76,11 @@ export default class extends Base {
         return { success: false, message: 'No this new owner', owner: false }
       }
       if (!proposal) {
-        return { success: false, message: 'No this proposal', proposal: false }
+        return {
+          success: false,
+          message: 'The proposal number is invalid',
+          proposal: false
+        }
       }
       doc.newOwnerPublicKey = newOwner.did.compressedPublicKey
       doc.targetProposalHash = proposal.proposalHash
@@ -117,7 +121,11 @@ export default class extends Base {
         status: CVOTE_STATUS.ACTIVE
       })
       if (!proposal) {
-        return { success: false, message: 'No this proposal', proposal: false }
+        return {
+          success: false,
+          message: 'The proposal number is invalid',
+          proposal: false
+        }
       }
       doc.targetProposalHash = proposal.proposalHash
     }
