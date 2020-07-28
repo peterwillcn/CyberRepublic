@@ -1370,8 +1370,8 @@ export default class extends Base {
         return { success: false, message: 'Your DID not bound.' }
       }
 
+      const draftHash = this.getDraftHash(suggestion)
       let ownerPublicKey: string
-      let fields: { ownerPublicKey?: string; draftHash: string }
       if (!suggestion.ownerPublicKey) {
         const rs: {
           compressedPublicKey: string
@@ -1384,15 +1384,18 @@ export default class extends Base {
           }
         }
         ownerPublicKey = rs.compressedPublicKey
-        fields.ownerPublicKey = ownerPublicKey
+        await this.model.update(
+          { _id: suggestion._id },
+          { $set: { draftHash, ownerPublicKey } }
+        )
       }
       if (suggestion.ownerPublicKey) {
         ownerPublicKey = suggestion.ownerPublicKey
+        await this.model.update(
+          { _id: suggestion._id },
+          { $set: { draftHash } }
+        )
       }
-
-      const draftHash = this.getDraftHash(suggestion)
-      fields.draftHash = draftHash
-      await this.model.update({ _id: suggestion._id }, { $set: fields })
 
       const now = Math.floor(Date.now() / 1000)
       const jwtClaims: any = {
