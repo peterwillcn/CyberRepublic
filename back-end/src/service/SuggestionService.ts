@@ -52,8 +52,16 @@ export default class extends Base {
     this.draftModel = this.getDBModel('SuggestionDraft')
   }
 
-  private async getTypeDoc(param: any, doc: any) {
+  private async getTypeDoc(param: any, doc: any, currDoc?: any) {
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+      if (
+        currDoc &&
+        currDoc.type === param.type &&
+        currDoc.newOwnerDID === param.newOwnerDID &&
+        currDoc.targetProposalNum === param.targetProposalNum
+      ) {
+        return doc
+      }
       const [newOwner, proposal] = await Promise.all([
         this.getDBModel('User').findOne({
           'did.id': 'did:elastos:' + param.newOwnerDID
@@ -75,6 +83,13 @@ export default class extends Base {
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      if (
+        currDoc &&
+        currDoc.type === param.type &&
+        currDoc.newSecretaryDID === param.newSecretaryDID
+      ) {
+        return doc
+      }
       const newSecretary = await this.getDBModel('User').findOne({
         'did.id': 'did:elastos:' + param.newSecretaryDID
       })
@@ -89,6 +104,13 @@ export default class extends Base {
     }
 
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
+      if (
+        currDoc &&
+        currDoc.type === param.type &&
+        currDoc.closeProposalNum === param.closeProposalNum
+      ) {
+        return doc
+      }
       const proposal = await this.getDBModel('CVote').findOne({
         vid: param.closeProposalNum,
         old: { $exists: false },
@@ -261,7 +283,7 @@ export default class extends Base {
     doc._id = ObjectId(id)
     doc.createdBy = ObjectId(userId)
 
-    doc = await this.getTypeDoc(param, doc)
+    doc = await this.getTypeDoc(param, doc, currDoc)
     if (doc && doc.success === false) {
       return doc
     }
@@ -312,7 +334,7 @@ export default class extends Base {
 
     let doc = _.pick(param, BASE_FIELDS)
     doc.descUpdatedAt = new Date()
-    doc = await this.getTypeDoc(param, doc)
+    doc = await this.getTypeDoc(param, doc, currDoc)
     if (doc && doc.success === false) {
       return doc
     }
