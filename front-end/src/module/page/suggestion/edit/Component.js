@@ -45,19 +45,24 @@ export default class extends StandardPage {
     this.props.history.push(`/suggestion/${id}`)
   }
 
+  handleTypeErrors = (rs) => {
+    if (rs.owner === false) {
+      return message.error(I18N.get('suggestion.form.error.noOwner'))
+    }
+    if (rs.secretary === false) {
+      return message.error(I18N.get('suggestion.form.error.noSecretary'))
+    }
+    if (rs.proposal === false) {
+      return message.error(I18N.get('suggestion.form.error.noProposal'))
+    }
+  }
+
   onSubmit = async (model) => {
     const id = this.state.data._id
     const rs = await this.props.updateSuggestion({ id, ...model, update: true })
     if (rs && rs.success === false) {
-      if (rs.owner === false) {
-        return message.error(I18N.get('suggestion.form.error.noOwner'))
-      }
-      if (rs.secretary === false) {
-        return message.error(I18N.get('suggestion.form.error.noSecretary'))
-      }
-      if (rs.proposal === false) {
-        return message.error(I18N.get('suggestion.form.error.noProposal'))
-      }
+      this.handleTypeErrors(rs)
+      return
     }
     this.historyBack()
   }
@@ -65,6 +70,10 @@ export default class extends StandardPage {
   onSaveDraft = async (model) => {
     const id = this.state.data._id
     const rs = await this.props.saveDraft({ id, ...model })
+    if (rs && rs.success === false) {
+      this.handleTypeErrors(rs)
+      return
+    }
     if (rs) {
       this.historyBack()
     }
