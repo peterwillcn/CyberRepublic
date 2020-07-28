@@ -1473,7 +1473,7 @@ export default class extends Base {
         if (!rs) {
           return {
             success: false,
-            message: `Can not get your did's public key.`
+            message: `Can not get your DID's public key.`
           }
         }
         ownerPublicKey = rs.compressedPublicKey
@@ -1506,12 +1506,25 @@ export default class extends Base {
       }
       switch (suggestion.type) {
         case SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER:
+          let newOwnerPublicKey: string
+          if (suggestion.newOwnerPublicKey) {
+            newOwnerPublicKey = suggestion.newOwnerPublicKey
+          } else {
+            const rs: any = await getDidPublicKey(suggestion.newOwnerDID)
+            if (!rs) {
+              return {
+                success: false,
+                message: `Can not get the new owner DID's public key.`
+              }
+            }
+            newOwnerPublicKey = rs.compressedPublicKey
+          }
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'changeproposalowner',
             targetproposalhash: suggestion.targetProposalHash,
             newrecipient: suggestion.elaAddress,
-            newownerpublickey: suggestion.newOwnerPublicKey
+            newownerpublickey: newOwnerPublicKey
           }
           break
         case SUGGESTION_TYPE.CHANGE_SECRETARY:
