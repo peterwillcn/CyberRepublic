@@ -43,6 +43,7 @@ import Milestones from '@/module/form/SuggestionForm/Milestones'
 import MilestonesReadonly from '@/module/form/SuggestionForm/MilestonesReadonly'
 import SignSuggestionButton from './SignSuggetionButton'
 import CMSignSuggestionButton from './CMSignSuggestionButton'
+import NewOwnerSignSuggBtn from './NewOwnerSignSuggBtn'
 import {
   Container,
   Title,
@@ -62,6 +63,7 @@ import {
 import './style.scss'
 import SignSuggestionModal from './SignSuggestionModal'
 import Preamble from './Preamble'
+import { SUGGESTION_TYPE } from '@/constant'
 
 const { TextArea } = Input
 
@@ -134,6 +136,7 @@ export default class extends StandardPage {
     const translationBtn = this.renderTranslationBtn()
     const actionsNode = this.renderActionsNode()
     const ownerActionsNode = this.renderOwnerActionsNode()
+    const newOwnerActionNode = this.renderNewOwnerActionNode()
     const councilActionsNode = this.renderCouncilActionsNode()
     const editForm = this.renderEditForm()
     const commentNode = this.renderCommentNode()
@@ -164,6 +167,7 @@ export default class extends StandardPage {
               {socialShareButtonsNode}
               {actionsNode}
               {ownerActionsNode}
+              {newOwnerActionNode}
               {councilActionsNode}
             </div>
             <div style={{ marginTop: 60 }}>{commentNode}</div>
@@ -181,6 +185,7 @@ export default class extends StandardPage {
                 {socialShareButtonsNode}
                 {actionsNode}
                 {ownerActionsNode}
+                {newOwnerActionNode}
                 {councilActionsNode}
                 <div style={{ marginTop: 60 }}>{commentNode}</div>
               </Col>
@@ -536,6 +541,32 @@ export default class extends StandardPage {
             />
           )}
         </div>
+      )
+    )
+  }
+
+  renderNewOwnerActionNode() {
+    const { detail, user } = this.props
+    const currDID = _.get(user, 'did.id')
+    if (!currDID) {
+      return
+    }
+    const type = _.get(detail, 'type')
+    if (type !== SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+      return
+    }
+    const signature = _.get(detail, 'signature.data')
+    const newOwnerDID = _.get(detail, 'newOwnerDID')
+    const isNewOwner = newOwnerDID && currDID === 'did:elastos:' + newOwnerDID
+    const isSignable = signature && isNewOwner
+
+    return (
+      isSignable && (
+        <NewOwnerSignSuggBtn
+          getSignatureUrl={() => {}}
+          getSignature={() => {}}
+          id={detail._id}
+        />
       )
     )
   }
