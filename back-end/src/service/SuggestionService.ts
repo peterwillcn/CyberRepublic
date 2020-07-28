@@ -284,7 +284,7 @@ export default class extends Base {
     return result
   }
 
-  public async update(param: any): Promise<Document> {
+  public async update(param: any) {
     const { id, update } = param
     const userId = _.get(this.currentUser, '_id')
     const currDoc = await this.model.getDBInstance().findById(id)
@@ -304,8 +304,12 @@ export default class extends Base {
       throw 'Only owner can edit suggestion'
     }
 
-    const doc = _.pick(param, BASE_FIELDS)
+    let doc = _.pick(param, BASE_FIELDS)
     doc.descUpdatedAt = new Date()
+    doc = await this.getTypeDoc(param, doc)
+    if (doc && doc.success === false) {
+      return doc
+    }
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
