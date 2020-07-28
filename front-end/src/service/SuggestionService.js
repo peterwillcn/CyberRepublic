@@ -145,12 +145,12 @@ export default class extends BaseService {
         method: 'put',
         data: doc
       })
+      return res
     } catch (error) {
       this.dispatch(this.selfRedux.actions.loading_update(false))
       message.error('Error happened, please try again later or contact admin.')
       logger.error(error)
     }
-    return res
   }
 
   async addTag(doc) {
