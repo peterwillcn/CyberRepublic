@@ -132,7 +132,7 @@ export default {
       notEqual: `The toal budget is not equal to the sum of each payment amount.`,
       noOwner: `The new owner does not exist.`,
       noSecretary: `The new secretary does not exist.`,
-      noProposal: `The proposal number does not exist.`
+      noProposal: `The proposal number is invalid.`
     }
   },
   modal: {

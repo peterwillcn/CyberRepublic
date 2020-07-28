@@ -133,7 +133,7 @@ export default {
       introduction: '里程碑简介不能为空',
       noOwner: `提案新负责人账号不存在`,
       noSecretary: `新的秘书长账号不存在`,
-      noProposal: `提案编号不存在`
+      noProposal: `无效的提案编号`
     }
   },
   modal: {
