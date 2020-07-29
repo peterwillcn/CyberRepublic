@@ -546,7 +546,7 @@ export default class extends StandardPage {
   }
 
   renderNewOwnerActionNode() {
-    const { detail, user } = this.props
+    const { detail, user, getOwnerSignatureUrl, getSignature } = this.props
     const currDID = _.get(user, 'did.id')
     if (!currDID) {
       return
@@ -563,8 +563,8 @@ export default class extends StandardPage {
     return (
       isSignable && (
         <NewOwnerSignSuggBtn
-          getSignatureUrl={() => {}}
-          getSignature={() => {}}
+          getSignatureUrl={getOwnerSignatureUrl}
+          getSignature={getSignature}
           id={detail._id}
         />
       )
