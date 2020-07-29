@@ -24,11 +24,11 @@ export default {
       txHash: 'TxID',
       proposalHash: 'Hash',
       type: '类型',
-      owner: '提案新负责人',
+      owner: '变更提案新负责人',
       secretary: '新秘书长',
-      targetProposalNum: '提案编号',
+      targetProposalNum: '变更提案编号',
       closeProposalNum: '终止提案',
-      newOwnerSignature: '提案新负责人签名'
+      newOwnerSignature: '变更提案新负责人签名'
     },
     abstract: '摘要',
     goal: '目标',
