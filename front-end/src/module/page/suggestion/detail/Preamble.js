@@ -133,6 +133,13 @@ class Preamble extends Component {
             detail.signature.data,
             'signature'
           )}
+        {detail.type &&
+          detail.type === CHANGE_PROPOSAL_OWNER &&
+          detail.newOwnerSignature &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.newOwnerSignature'),
+            `#${detail.newOwnerSignature}`
+          )}
         {_.get(detail, 'reference.0.txHash') &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.txHash'),

@@ -27,7 +27,8 @@ export default {
       owner: 'New Proposal Owner',
       secretary: 'New Secretary',
       targetProposalNum: 'Proposal Number',
-      closeProposalNum: 'Terminate Proposal'
+      closeProposalNum: 'Terminate Proposal',
+      newOwnerSignature: 'New Owner Signature'
     },
     abstract: 'Abstract',
     goal: 'Goal',
