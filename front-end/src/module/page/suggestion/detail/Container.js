@@ -70,8 +70,8 @@ export default createContainer(
       async getSignatureUrl(id) {
         return service.getSignatureUrl(id)
       },
-      async getSignature(id) {
-        return service.getSignature(id)
+      async getSignature(id, type) {
+        return service.getSignature(id, type)
       },
       async getCMSignatureUrl(id) {
         return service.getCMSignatureUrl(id)

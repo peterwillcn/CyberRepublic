@@ -397,12 +397,12 @@ export default class extends BaseService {
     return res
   }
 
-  async getSignature(id) {
+  async getSignature(id, type) {
     const path = `${this.prefixPath}/signature`
     const rs = await api_request({
       path,
       method: 'post',
-      data: { id }
+      data: { id, type }
     })
     if (rs && rs.success && rs.data) {
       this.dispatch(this.selfRedux.actions.detail_update(rs.data))

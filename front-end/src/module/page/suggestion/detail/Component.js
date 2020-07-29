@@ -566,6 +566,7 @@ export default class extends StandardPage {
           getSignatureUrl={getOwnerSignatureUrl}
           getSignature={getSignature}
           id={detail._id}
+          type={SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER}
         />
       )
     )

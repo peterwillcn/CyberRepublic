@@ -33,22 +33,11 @@ class NewOwnerSignSuggBtn extends Component {
     if (!this._isMounted) {
       return
     }
-    const { id, getSignature } = this.props
-    const rs = await getSignature(id)
-    if (rs && rs.success) {
+    const { id, getSignature, type } = this.props
+    const rs = await getSignature(id, type)
+    if (rs) {
       clearTimeout(this.timer)
       this.timer = null
-      this.setState({ visible: false })
-      return
-    }
-    if (rs && rs.success === false) {
-      clearTimeout(this.timer)
-      this.timer = null
-      if (rs.message) {
-        message.error(rs.message)
-      } else {
-        message.error(I18N.get('suggestion.msg.exception'))
-      }
       this.setState({ visible: false })
       return
     }
