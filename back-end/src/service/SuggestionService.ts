@@ -1409,7 +1409,7 @@ export default class extends Base {
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
-      if (did !== `did:elastos:${suggestion.newOwnerDID}`) {
+      if (did !== DID_PREFIX + suggestion.newOwnerDID) {
         return { success: false, message: 'You are not the new owner' }
       }
       const now = Math.floor(Date.now() / 1000)

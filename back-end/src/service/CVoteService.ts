@@ -89,7 +89,7 @@ const EMAIL_TITLE_PROPOSAL_STATUS = {
   [constant.CVOTE_STATUS.VETOED]: 'VETOED'
 }
 
-const DID_PREFIX = 'did:elastos:'
+const { DID_PREFIX } = constant
 const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720
 
 export default class extends Base {
