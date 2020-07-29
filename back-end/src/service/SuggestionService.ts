@@ -14,7 +14,7 @@ import {
   utilCrypto
 } from '../utility'
 const Big = require('big.js')
-const { SUGGESTION_TYPE, CVOTE_STATUS } = constant
+const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX } = constant
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -64,7 +64,7 @@ export default class extends Base {
       }
       const [newOwner, proposal] = await Promise.all([
         this.getDBModel('User').findOne({
-          'did.id': 'did:elastos:' + param.newOwnerDID
+          'did.id': DID_PREFIX + param.newOwnerDID
         }),
         this.getDBModel('CVote').findOne({
           vid: param.targetProposalNum,
@@ -95,7 +95,7 @@ export default class extends Base {
         return doc
       }
       const newSecretary = await this.getDBModel('User').findOne({
-        'did.id': 'did:elastos:' + param.newSecretaryDID
+        'did.id': DID_PREFIX + param.newSecretaryDID
       })
       if (!newSecretary) {
         return {

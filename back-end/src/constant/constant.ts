@@ -385,3 +385,5 @@ export const TRANSACTION_TYPE = {
   SUGGESTION_TO_PROPOSAL: 37,
   COUNCIL_VOTE: 38
 }
+
+export const DID_PREFIX = 'did:elastos:'
