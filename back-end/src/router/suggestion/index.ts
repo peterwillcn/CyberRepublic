@@ -28,6 +28,7 @@ import checkSignature from './check_signature'
 import getSuggestion from './getSuggestion'
 import cmSignatureUrl from './cm_signature_url'
 import ownerSignatureUrl from './owner_signature_url'
+import ownerSignatureCallback from './owner_signature_callback'
 
 export default Base.setRouter([
   {
@@ -173,6 +174,11 @@ export default Base.setRouter([
   {
     path: '/owner-signature-url',
     router: ownerSignatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/owner-signature-cb',
+    router: ownerSignatureCallback,
     method: 'post'
   }
 ])
