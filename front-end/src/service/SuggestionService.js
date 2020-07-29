@@ -419,4 +419,15 @@ export default class extends BaseService {
     })
     return res
   }
+
+  // signature
+  async getOwnerSignatureUrl(id) {
+    const path = `${this.prefixPath}/owner-signature-url`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
 }
