@@ -2,15 +2,7 @@ import Base from './Base'
 import { Document } from 'mongoose'
 import * as _ from 'lodash'
 import { constant } from '../constant'
-import {
-  permissions,
-  getDidPublicKey,
-  getProposalState,
-  getProposalData,
-  getDidName,
-  ela,
-  getVoteResultByTxid
-} from '../utility'
+import { permissions, getProposalData, ela } from '../utility'
 import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 import {
@@ -20,7 +12,6 @@ import {
   timestamp,
   logger
 } from '../utility'
-import { use } from 'chai'
 
 const util = require('util')
 const request = require('request')
@@ -85,21 +76,21 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
 }
 
 const EMAIL_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION] : 'Passed',
-  [constant.CVOTE_STATUS.ACTIVE] : 'Passed',
-  [constant.CVOTE_STATUS.REJECT] : 'Rejected',
-  [constant.CVOTE_STATUS.VETOED] : 'Rejected',
-} 
+  [constant.CVOTE_STATUS.NOTIFICATION]: 'Passed',
+  [constant.CVOTE_STATUS.ACTIVE]: 'Passed',
+  [constant.CVOTE_STATUS.REJECT]: 'Rejected',
+  [constant.CVOTE_STATUS.VETOED]: 'Rejected'
+}
 
 const EMAIL_TITLE_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION] : constant.CVOTE_STATUS.NOTIFICATION,
-  [constant.CVOTE_STATUS.ACTIVE] : 'PASSED',
-  [constant.CVOTE_STATUS.REJECT] : 'REJECTED',
-  [constant.CVOTE_STATUS.VETOED] : 'VETOED',
+  [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.NOTIFICATION,
+  [constant.CVOTE_STATUS.ACTIVE]: 'PASSED',
+  [constant.CVOTE_STATUS.REJECT]: 'REJECTED',
+  [constant.CVOTE_STATUS.VETOED]: 'VETOED'
 }
 
 const DID_PREFIX = 'did:elastos:'
-const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720 
+const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720
 
 export default class extends Base {
   // create a DRAFT propoal with minimal info
@@ -550,12 +541,12 @@ export default class extends Base {
     })
     if (isOneDay) {
       await db_cvote.update(
-        { _id: {$in:cvoteIds} },
+        { _id: { $in: cvoteIds } },
         { $set: { notifiedOneDay: true } }
       )
     } else {
       await db_cvote.update(
-        { _id: {$in:cvoteIds} },
+        { _id: { $in: cvoteIds } },
         { $set: { notified: true } }
       )
     }
@@ -724,7 +715,7 @@ export default class extends Base {
       'proposedEndsHeight',
       'notificationEndsHeight',
       'rejectAmount',
-      'rejectThroughAmount',
+      'rejectThroughAmount'
     ]
 
     // const list = await db_cvote.list(query, { vid: -1 }, 0, fields.join(' '))
@@ -747,11 +738,11 @@ export default class extends Base {
     ])
 
     const list = _.map(rs[0], (o: any) => {
-      let proposedEnds = (o.proposedEndsHeight - currentHeight) * 2 
-      let notificationEnds = (o.notificationEndsHeight - currentHeight) * 2 
+      let proposedEnds = (o.proposedEndsHeight - currentHeight) * 2
+      let notificationEnds = (o.notificationEndsHeight - currentHeight) * 2
       if (process.env.NODE_ENV === 'staging') {
-        proposedEnds = (o.proposedEndsHeight - currentHeight) * 252 
-        notificationEnds = (o.notificationEndsHeight - currentHeight) * 252 
+        proposedEnds = (o.proposedEndsHeight - currentHeight) * 252
+        notificationEnds = (o.notificationEndsHeight - currentHeight) * 252
       }
       return {
         ...o._doc,
@@ -1426,7 +1417,7 @@ export default class extends Base {
         rejectThroughAmount
       }
     )
-    if (proposalStatus !== proposal.status && updateStatus.nModified ==1) {
+    if (proposalStatus !== proposal.status && updateStatus.nModified == 1) {
       this.notifyProposer(proposal, proposalStatus, 'community')
       return rs.data.registerheight + STAGE_BLOCKS * 2
     }
@@ -2093,7 +2084,7 @@ export default class extends Base {
     })
     const toUsers = []
     const toMails = _.map(user, 'email')
-    const subject = `【${(EMAIL_TITLE_PROPOSAL_STATUS[status])}】Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]}`
+    const subject = `【${EMAIL_TITLE_PROPOSAL_STATUS[status]}】Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]}`
     const body = `
         <p>Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]} by the ${by}.</p>
         <br />
