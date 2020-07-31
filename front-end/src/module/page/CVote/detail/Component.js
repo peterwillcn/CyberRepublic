@@ -963,7 +963,6 @@ class C extends StandardPage {
       currentUserId,
       updateProposal
     } = this.props
-    const { voteHistory } = this.props.data
     const ownerVote = _.find(data.voteResult, (o) => {
       if (o.votedBy && o.votedBy._id == currentUserId) {
         return o
