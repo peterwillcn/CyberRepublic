@@ -86,7 +86,7 @@ const Component = ({
           ) : null}
         </div>
         <div>
-            { !_.isEmpty(votehistoryBy) ? <ViewVoteHistoryButton data={votehistoryBy} /> : null }
+            { votehistoryBy.length > 1 ? <ViewVoteHistoryButton data={votehistoryBy} /> : null }
         </div>
       </Item>
     )
