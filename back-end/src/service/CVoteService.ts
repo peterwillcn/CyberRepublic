@@ -1011,7 +1011,7 @@ export default class extends Base {
       .findOne(query, '-voteHistory')
       .populate(
         'voteResult.votedBy',
-        constant.DB_SELECTED_FIELDS.USER.NAME_AVATAR
+        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
       .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
@@ -1028,14 +1028,15 @@ export default class extends Base {
     const res = {...rs._doc}
     _.forEach(rs._doc.voteResult, (o: any) => {
       if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
-        const data = {
-          ...o,
+        voteHistory.push({
+          ...o._doc,
           isCurrentVote: true
-        }
-        voteHistory.push(data)
+        })
       }
     })
-    res.voteHistory = voteHistory
+    res.voteHistory = _.sortBy(voteHistory, function(item) {
+      return -item.reasonCreatedAt;
+    })
     if (res.budgetAmount) {
       const doc = JSON.parse(JSON.stringify(res))
       // deal with 7e-08
