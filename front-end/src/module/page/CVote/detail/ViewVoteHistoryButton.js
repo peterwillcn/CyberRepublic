@@ -23,10 +23,24 @@ class ViewVoteHistoryButton extends Component {
   }
 
   VotesNode = (data, key) => {
-    // console.log(data)
+    let voteStatus = data.status
+    if (
+      voteStatus == undefined ||
+      voteStatus == 'failed' ||
+      voteStatus == 'unchain'
+    ) {
+      voteStatus = I18N.get(`council.voting.chainStatus.unchain`)
+    }
+    if (voteStatus == 'chained') {
+      voteStatus = I18N.get(`council.voting.chainStatus.chained`)
+    }
+    if (voteStatus == 'chaining') {
+      voteStatus = I18N.get(`council.voting.chainStatus.chaining`)
+    }
+
     const avatarName = [data.votedBy.profile.firstName, data.votedBy.profile.lastName]
 
-    const createdAt =  data.reasonCreatedAt
+    const createdAt = data.reasonCreatedAt
     const format = 'YYYY-MM-DD'
     const formatTime = 'hh:mm:ss'
     const proposed = moment(createdAt).format(format)
@@ -35,15 +49,18 @@ class ViewVoteHistoryButton extends Component {
     const valueNode = (
       <ItemStatus key={KeyframeEffect}>
         <div className="vote-value">
-          <span style={{background:colorStyle[data.value],padding:'3px'}}>
+          <span style={{ background: colorStyle[data.value], padding: '3px' }}>
             {I18N.get(`council.voting.type.${data.value}`)}
           </span>
         </div>
-        <div><span  style={{ whiteSpace: 'pre-wrap' }}>{proposed+"\n"+detailTime}</span></div>
-        <div className="status">{ data.isCurrentVote ? "View More Votes" : null}</div>
+        <div><span style={{ whiteSpace: 'pre-wrap' }}>{proposed + "\n" + detailTime}</span></div>
+        <div className="status">{data.isCurrentVote
+          ? I18N.get('council.voting.viewHistory.current')
+          : null}
+        </div>
       </ItemStatus>
     )
-    const userNode = ( 
+    const userNode = (
       <Item key={key}>
         {data.votedBy.did.avatar || avatarName[0] == 'undefined' ? (
           <Avatar
@@ -67,7 +84,7 @@ class ViewVoteHistoryButton extends Component {
             </Avatar>
           )}
         <div>{data.votedBy.did.didName}</div>
-        <div className="status">{data.status.toUpperCase()}</div>
+        <div className="status">{voteStatus}</div>
       </Item>
     )
 
@@ -92,7 +109,7 @@ class ViewVoteHistoryButton extends Component {
     )
 
     return (
-      <Timeline.Item key={key} color={data.value == 'support' ? 'green' : 'red'}>
+      <Timeline.Item key={key} color={'green'}>
         <ResultRow key={key}>
           {valueNode}
           {userNode}
@@ -105,7 +122,9 @@ class ViewVoteHistoryButton extends Component {
   render() {
     const voteNode = _.map(this.props.data, (o, key) => this.VotesNode(o, key))
     return (<span>
-      <VoteHistornBtn type={"primary"} onClick={this.hideModal}>View Vote History</VoteHistornBtn>
+      <VoteHistornBtn type={"primary"} onClick={this.hideModal}>
+        {I18N.get(`council.voting.viewHistory.btn`)}
+      </VoteHistornBtn>
       <Modal
         visible={this.state.visible}
         onOk={this.handleCancel}
@@ -161,8 +180,9 @@ const Item = styled.div`
   align-items: center;
   text-align: center;
   .status {
+    width: 60px;
     color: #FFFFFF;
-    border-radius: 10px;
+    border-radius: 15px;
     background: #008D85;
     font-size: 13px;
     font-style: normal;
@@ -186,7 +206,7 @@ const ResultRow = styled.div`
   margin-bottom: 30px;
 `
 
-const VoteHistornBtn = styled.button `
+const VoteHistornBtn = styled.button`
   width: 150px;
   height: 17px;
 

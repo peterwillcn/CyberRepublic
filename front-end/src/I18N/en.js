@@ -824,6 +824,9 @@ const en = {
 
   'council.voting.voteResult.onchain':'Vote onchain',
   
+  'council.voting.viewHistory.btn': 'View Vote History',
+  'council.voting.viewHistory.current':'Current Voting',
+
   // Landing
   'landing.cr': 'Cyber Republic',
   'landing.footer.note': 'Stay up to date with Cyber Republic',

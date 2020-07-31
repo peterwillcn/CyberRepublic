@@ -898,7 +898,8 @@ class C extends StandardPage {
               'votedBy.profile.lastName'
             )} `,
             didName: _.get(cur, 'votedBy.did.didName'),
-            avatar: _.get(cur, 'votedBy.profile.avatar'),
+            avatar: _.get(cur, 'votedBy.profile.avatar') || 
+              _.get(cur, 'votedBy.did.avatar'),
             reason: cur.reason,
             votedBy,
             status: cur.status

@@ -797,6 +797,9 @@ const zh = {
   
   'council.voting.voteResult.onchain':'投票上链',
 
+  'council.voting.viewHistory.btn': '投票历史',
+  'council.voting.viewHistory.current':'当前投票',
+
   // Landing
   'landing.cr': 'Cyber Republic',
   'landing.footer.note': '及时了解 Cyber Republic 的动态',
