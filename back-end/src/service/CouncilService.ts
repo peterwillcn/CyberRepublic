@@ -3,6 +3,7 @@ import { constant } from '../constant'
 import { CVOTE_STATUS_TO_WALLET_STATUS } from './CVoteService'
 import { ela, logger, getInformationByDid, getDidName } from '../utility'
 import * as moment from 'moment'
+import cvote from 'src/router/cvote'
 
 const _ = require('lodash')
 
@@ -131,6 +132,7 @@ export default class extends Base {
   }
 
   public async councilInformation(param: any): Promise<any> {
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
     const { id, did } = param
 
     if (!id && !did) {
@@ -246,7 +248,6 @@ export default class extends Base {
             'title',
             'status',
             'voteResult',
-            'voteHistory'
           ]
           const proposalList = await this.proposalMode
             .getDBInstance()
@@ -255,7 +256,6 @@ export default class extends Base {
                 $or: [
                   { proposer: council.user._id },
                   { 'voteResult.votedBy': council.user._id },
-                  { 'voteHistory.votedBy': council.user._id }
                 ]
               },
               proposalFields
@@ -265,7 +265,11 @@ export default class extends Base {
               'createdBy',
               constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
             )
-
+          const cvoteHistory = await db_cvote_history
+            .getDBInstance()
+            .find({votedBy: council.user._id})
+            .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+          const history = _.keyBy(cvoteHistory, 'votedBy._id')
           term = _.map(proposalList, (o: any) => {
             const didName = _.get(o, 'createdBy.did.didName')
             let voteResult = _.filter(
@@ -276,10 +280,9 @@ export default class extends Base {
             )
             if (_.isEmpty(voteResult)) {
               voteResult = _.filter(
-                o.voteHistory,
-                (o: any) =>
-                  council.user._id.equals(o.votedBy) &&
-                  o.status == constant.CVOTE_CHAIN_STATUS.CHAINED
+                history,
+                (e: any) => e.proposalBy.equals(o._id) &&
+                  e.status == constant.CVOTE_CHAIN_STATUS.CHAINED
               )
             }
             const currentVoteResult = _.get(voteResult[0], 'value')

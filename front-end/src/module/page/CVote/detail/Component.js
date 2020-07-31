@@ -936,6 +936,7 @@ class C extends StandardPage {
       currentUserId,
       updateProposal
     } = this.props
+    const { voteHistory } = this.props.data
     const ownerVote = _.find(data.voteResult, (o) => {
       if (o.votedBy && o.votedBy._id == currentUserId) {
         return o
@@ -958,7 +959,8 @@ class C extends StandardPage {
         isProposed,
         isCouncil,
         currentUserId,
-        ownerVote
+        ownerVote,
+        voteHistory,
       }
       return <VoteResultComponent {...props} key={key} />
     })

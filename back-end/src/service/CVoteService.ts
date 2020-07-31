@@ -196,7 +196,6 @@ export default class extends Base {
       })
     )
     doc.voteResult = voteResult
-    doc.voteHistory = voteResult
 
     try {
       const res: any = await db_cvote.save(doc)
@@ -998,6 +997,7 @@ export default class extends Base {
 
   public async getById(id): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
     // access proposal by reference number
     const isNumber = /^\d*$/.test(id)
     let query: any
@@ -1017,17 +1017,32 @@ export default class extends Base {
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .populate('reference', constant.DB_SELECTED_FIELDS.SUGGESTION.ID)
       .populate('referenceElip', 'vid')
+    const voteHistory = await db_cvote_history
+      .getDBInstance()
+      .find({proposalBy: rs._doc._id})
+      .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+
     if (!rs) {
       return { success: true, empty: true }
     }
-
-    if (rs.budgetAmount) {
-      const doc = JSON.parse(JSON.stringify(rs))
+    const res = {...rs._doc}
+    _.forEach(rs._doc.voteResult, (o: any) => {
+      if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
+        const data = {
+          ...o,
+          isCurrentVote: true
+        }
+        voteHistory.push(data)
+      }
+    })
+    res.voteHistory = voteHistory
+    if (res.budgetAmount) {
+      const doc = JSON.parse(JSON.stringify(res))
       // deal with 7e-08
       doc.budgetAmount = Big(doc.budgetAmount).toFixed()
       return doc
     }
-    return rs
+    return res
   }
 
   public async getNewVid() {
@@ -1079,6 +1094,8 @@ export default class extends Base {
 
   public async vote(param): Promise<Document> {
     const db_cvote = this.getDBModel('CVote')
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
+    
     const { _id, value, reason } = param
     const cur = await db_cvote.findOne({ _id })
     const votedBy = _.get(this.currentUser, '_id')
@@ -1086,15 +1103,6 @@ export default class extends Base {
       throw 'invalid proposal id'
     }
     const currentVoteResult = _.find(cur._doc.voteResult, ['votedBy', votedBy])
-    const currentVoteHistory = cur._doc.voteHistory
-    const currentVoteHistoryIndex = _.findLastIndex(currentVoteHistory, [
-      'votedBy',
-      votedBy
-    ])
-
-    currentVoteHistory[currentVoteHistoryIndex] = {
-      ..._.omit(currentVoteResult, ['_id'])
-    }
     const reasonCreateDate = new Date()
     await db_cvote.update(
       {
@@ -1116,20 +1124,9 @@ export default class extends Base {
         }
       }
     )
-    await db_cvote.update(
-      {
-        _id,
-        'voteHistory.votedBy': votedBy
-      },
-      {
-        $set: {
-          'voteHistory.$': { ..._.omit(currentVoteResult, ['_id']) }
-        },
-        $inc: {
-          __v: 1
-        }
-      }
-    )
+    if (!_.find(currentVoteResult,['value',constant.CVOTE_RESULT.UNDECIDED])) {
+      await db_cvote_history.save({..._.omit(currentVoteResult, ['_id']),proposalBy:_id})
+    }
 
     return await this.getById(_id)
   }
@@ -1579,13 +1576,12 @@ export default class extends Base {
 
   public async getProposalById(id): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
-
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
     const fields = [
       'vid',
       'status',
       'abstract',
       'voteResult',
-      'voteHistory',
       'createdAt',
       'proposalHash',
       'rejectAmount',
@@ -1619,15 +1615,18 @@ export default class extends Base {
     const proposalId = proposal._id
 
     const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
-    const voteHistoryList = _.groupBy(proposal._doc.voteHistory, 'votedBy._id')
+    const cvoteHistory = await db_cvote_history
+        .getDBInstance()
+        .find({proposalBy:proposalId})
+        .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
     const voteResultWithNull = _.map(proposal._doc.voteResult, (o: any) => {
       let result
       if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
         result = o._doc
       } else {
         const historyList = _.filter(
-          voteHistoryList[o.votedBy._id],
-          (e: any) => e.status === constant.CVOTE_CHAIN_STATUS.CHAINED
+          cvoteHistory,
+          (e: any) => e.status === constant.CVOTE_CHAIN_STATUS.CHAINED && o.votedBy._id.toString() == e.votedBy._id.toString()
         )
         if (!_.isEmpty(historyList)) {
           const history = _.sortBy(historyList, 'createdAt')
