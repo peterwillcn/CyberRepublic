@@ -29,13 +29,18 @@ class ViewVoteHistoryButton extends Component {
       voteStatus == 'failed' ||
       voteStatus == 'unchain'
     ) {
-      voteStatus = I18N.get(`council.voting.chainStatus.unchain`)
+      voteStatus = (
+        <div className="status unchain">
+          <div>{I18N.get(`council.voting.chainStatus.unchain`)}</div>
+        </div>
+      )
     }
     if (voteStatus == 'chained') {
-      voteStatus = I18N.get(`council.voting.chainStatus.chained`)
-    }
-    if (voteStatus == 'chaining') {
-      voteStatus = I18N.get(`council.voting.chainStatus.chaining`)
+      voteStatus = (
+        <div className="status chained">
+          <div>{I18N.get(`council.voting.chainStatus.chained`)}</div>
+        </div>
+      )
     }
 
     const avatarName = [data.votedBy.profile.firstName, data.votedBy.profile.lastName]
@@ -84,7 +89,7 @@ class ViewVoteHistoryButton extends Component {
             </Avatar>
           )}
         <div>{data.votedBy.did.didName}</div>
-        <div className="status">{voteStatus}</div>
+        {data.reason !== '' ? voteStatus : null}
       </Item>
     )
 
@@ -180,17 +185,37 @@ const Item = styled.div`
   align-items: center;
   text-align: center;
   .status {
-    width: 60px;
-    color: #FFFFFF;
-    border-radius: 15px;
-    background: #008D85;
+    text-align: center;
+    border-radius: 10px;
     font-size: 13px;
-    font-style: normal;
-    font-weight: normal;
+    width: 70px;
+    height: 20px;
     margin-top: 8px;
-    padding: 3px;
+  }
+  .status.chained {
+    color: #fff;
+    background: #008d85;
+  }
+  .status.unchain {
+    background: #ffffff;
+    border: 1px solid #008d85;
+    color: #008d85;
   }
 `
+
+const testm = [
+  `.status {
+    width: 70px;
+    height: 20px;
+    color: #FFFFFF;
+    border-radius: 10px;
+    background: #008D85;
+    font-size: 13px;
+    text-align: center;
+    margin-top: 8px;
+    padding: 3px;
+  }`
+]
 
 const Reason = styled.div`
   margin-left: 25px;
