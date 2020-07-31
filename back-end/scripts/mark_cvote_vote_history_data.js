@@ -1,4 +1,6 @@
 require('../dist/src/config')
+const _ = require('lodash')
+
 ;(async () => {
   const db = await require('../dist/src/db').default
   const DB = await db.create()
