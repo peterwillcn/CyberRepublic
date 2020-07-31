@@ -155,7 +155,7 @@ export const ViewOldDataBtn = styled.div`
 `
 export const CurrentHeight = styled.div`
   width: 100%;
-  height: 149px;
+  height: 80px;
   margin-left: 0px;
 `
 export const CurrentHeightTitle = styled.div`

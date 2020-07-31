@@ -440,18 +440,20 @@ export default class extends BaseComponent {
 
   renderCurrentHeight = () => {
     const { currentHeight } = this.state
-    return (
-      <CurrentHeight>
-        <CurrentHeightContent>
-          <CurrentHeightImg src={'/assets/images/Elastos_Logo.png'}></CurrentHeightImg>
-          <CurrentHeightTitle>
-            {I18N.get('proposal.fields.currentHeight')}:
-          </CurrentHeightTitle>
-          {currentHeight ? currentHeight.toLocaleString() : 0}
-          <CurrentHeightFooter />
-        </CurrentHeightContent>
-      </CurrentHeight>
-    )
+    let currentHeightDiv = null
+    if (currentHeight) {
+      currentHeightDiv = (<CurrentHeight>
+      <CurrentHeightContent>
+        <CurrentHeightImg src={'/assets/images/Elastos_Logo.png'}></CurrentHeightImg>
+        <CurrentHeightTitle>
+          {I18N.get('proposal.fields.currentHeight')}:
+        </CurrentHeightTitle>
+        {currentHeight ? currentHeight.toLocaleString() : 0}
+        <CurrentHeightFooter />
+      </CurrentHeightContent>
+    </CurrentHeight>)
+    }
+    return currentHeightDiv
   }
 
   onPageChange = (page, pageSize) => {
