@@ -10,17 +10,23 @@ const _ = require('lodash')
   try {
     const proposalList = await db_cvote.find({old:{$exists:false}})
     console.log('proposalList.length', proposalList.length)
+    const voteHistory = []
     _.forEach(proposalList,(e) => {
       _.forEach(e.voteHistory, async (o) => {
-        if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
-          const doc = {
+        if (o.status === "chained") {
+          voteHistory.push({
             ...o._doc,
             proposalBy: e._id
-          }
-          await db_cvote_history.save(doc)
+          })
         }
       })
     })
+    console.log("voteHistory.length", voteHistory.length)
+    if (voteHistory.length >0) {
+      const bulk = db_cvote_history.getDBInstance().collection.initializeUnorderedBulkOp()
+      voteHistory.forEach((e) => bulk.insert(e))
+      await bulk.execute()
+    }
   } catch (err) {
     console.error(err)
   }
