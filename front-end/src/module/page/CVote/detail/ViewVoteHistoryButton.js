@@ -23,7 +23,10 @@ class ViewVoteHistoryButton extends Component {
   }
 
   VotesNode = (data, key) => {
-    let voteStatus = data.status
+    if (!data) {
+      return
+    }
+    let voteStatus = data && data.status
     if (
       voteStatus == undefined ||
       voteStatus == 'failed' ||
@@ -45,7 +48,7 @@ class ViewVoteHistoryButton extends Component {
 
     const avatarName = [data.votedBy.profile.firstName, data.votedBy.profile.lastName]
 
-    const createdAt = data.reasonCreatedAt
+    const createdAt = data.reasonCreatedAt || data.createdAt
     const format = 'YYYY-MM-DD'
     const formatTime = 'hh:mm:ss'
     const proposed = moment(createdAt).format(format)
