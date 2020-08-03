@@ -108,5 +108,6 @@ export const Suggestion = {
   newSecretaryDID: String,
   newSecretaryPublicKey: String,
   targetProposalHash: String,
+  newAddress: String,
   old: Boolean // mark an old suggestion
 }

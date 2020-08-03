@@ -20,8 +20,8 @@ class SelectSuggType extends Component {
       proposalNum: value && value.proposalNum,
       newOwnerDID: (value && value.newOwnerDID) || '',
       termination: value && value.termination,
-      changeOwner: value && value.changeOwner,
-      changeAddress: value && value.changeAddress,
+      changeOwner: (value && value.changeOwner) || false,
+      changeAddress: (value && value.changeAddress) || false,
       newAddress: value && value.newAddress
     }
   }
@@ -38,7 +38,15 @@ class SelectSuggType extends Component {
     let data
     switch (type) {
       case CHANGE_PROPOSAL:
-        data = { type, newOwnerDID, proposalNum }
+        if (changeOwner && !changeAddress) {
+          data = { type, newOwnerDID, proposalNum }
+        }
+        if (changeAddress && !changeOwner) {
+          data = { type, newAddress, proposalNum }
+        }
+        if (changeAddress && changeOwner) {
+          data = { type, newOwnerDID, newAddress, proposalNum }
+        }
         break
       case CHANGE_SECRETARY:
         data = { type, newSecretaryDID }
