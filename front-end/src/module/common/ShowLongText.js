@@ -29,7 +29,11 @@ class ShowLongText extends Component {
     }
     const myObserver = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
-        if (entry.contentRect.height < entry.target.scrollHeight) {
+        const rs = window.getComputedStyle(el).overflowY
+        if (
+          rs === 'hidden' &&
+          entry.contentRect.height < entry.target.scrollHeight
+        ) {
           this.setState({ show: true })
         } else {
           this.setState({ show: false })

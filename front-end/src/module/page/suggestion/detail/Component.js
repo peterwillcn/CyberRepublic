@@ -453,6 +453,10 @@ export default class extends StandardPage {
           return `
             <h2>${I18N.get('suggestion.fields.plan')}</h2>
             <p>${getPlanHtml(detail.plan.teamInfo)}</p>
+            <h2>${I18N.get(`suggestion.plan.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(detail.planIntro)
+            )}</p>
           `
         }
         if (
@@ -467,6 +471,10 @@ export default class extends StandardPage {
             <p>${I18N.get('suggestion.budget.address')}</p>
             <p>${detail.elaAddress}</p>
             <p>${getBudgetHtml(detail.budget)}</p>
+            <h2>${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(detail.budgetIntro)
+            )}</p>
           `
         }
         return `

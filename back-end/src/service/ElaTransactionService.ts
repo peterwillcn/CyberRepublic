@@ -58,7 +58,7 @@ export default class extends Base {
         const currentConfig = await this.configModel.getDBInstance().findOne()
         await this.configModel
             .getDBInstance()
-            .update({ _id: currentConfig._id }, { $set: { currentHeight } })
+            .update({_id: currentConfig._id}, {$set: {currentHeight}})
     }
 
 }
