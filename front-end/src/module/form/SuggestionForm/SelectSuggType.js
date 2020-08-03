@@ -124,7 +124,7 @@ class SelectSuggType extends Component {
               {I18N.get('suggestion.form.type.changeProposalAddress')}
             </Checkbox>
             {changeOwner && (
-              <div>
+              <div className="sub">
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewOwner')}
                 </Label>
@@ -136,7 +136,7 @@ class SelectSuggType extends Component {
               </div>
             )}
             {changeAddress && (
-              <div>
+              <div className="sub">
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewAddress')}
                 </Label>
@@ -185,5 +185,8 @@ const Section = styled.div`
   max-width: 390px;
   .number {
     margin-bottom: 16px;
+  }
+  .sub {
+    margin-top: 16px;
   }
 `
