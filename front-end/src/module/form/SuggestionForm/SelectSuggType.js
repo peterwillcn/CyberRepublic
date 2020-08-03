@@ -33,7 +33,9 @@ class SelectSuggType extends Component {
       newOwnerDID,
       newSecretaryDID,
       proposalNum,
-      termination
+      termination,
+      changeAddress,
+      changeOwner
     } = this.state
     let data
     switch (type) {

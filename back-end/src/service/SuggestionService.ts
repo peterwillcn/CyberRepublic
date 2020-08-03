@@ -333,6 +333,57 @@ export default class extends Base {
     return result
   }
 
+  private unsetTypeDoc(param: any) {
+    const { type, newOwnerDID, newAddress } = param
+    let unsetDoc = {}
+    if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      if (newOwnerDID && !newAddress) {
+        unsetDoc = {
+          newSecretaryDID: true,
+          newSecretaryPublicKey: true,
+          closeProposalNum: true,
+          newAddress: true
+        }
+      }
+      if (!newOwnerDID && newAddress) {
+        unsetDoc = {
+          newSecretaryDID: true,
+          newSecretaryPublicKey: true,
+          closeProposalNum: true,
+          newOwnerDID: true
+        }
+      }
+      if (newOwnerDID && newAddress) {
+        unsetDoc = {
+          newSecretaryDID: true,
+          newSecretaryPublicKey: true,
+          closeProposalNum: true
+        }
+      }
+    }
+    if (type && type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      unsetDoc = {
+        closeProposalNum: true,
+        targetProposalHash: true,
+        newOwnerDID: true,
+        newOwnerPublicKey: true,
+        newAddress: true,
+        targetProposalNum: true
+      }
+    }
+    if (type && type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
+      unsetDoc = {
+        newOwnerDID: true,
+        newOwnerPublicKey: true,
+        newAddress: true,
+        targetProposalNum: true,
+        newSecretaryDID: true,
+        newSecretaryPublicKey: true
+      }
+    }
+    return unsetDoc
+  }
+
   public async update(param: any) {
     const { id, update } = param
     const userId = _.get(this.currentUser, '_id')
@@ -360,6 +411,7 @@ export default class extends Base {
       return doc
     }
 
+    const unsetDoc = this.unsetTypeDoc(param)
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
       doc.budgetIntro = _.get(currDraft, 'budgetIntro')
@@ -369,9 +421,9 @@ export default class extends Base {
 
     if (update) {
       doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
-      await this.model.update({ _id: id }, { $set: doc })
+      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
     } else {
-      await this.model.update({ _id: id }, { $set: doc })
+      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
     }
     return this.show({ id })
   }
