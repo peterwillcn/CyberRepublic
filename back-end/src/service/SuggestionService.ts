@@ -94,11 +94,14 @@ export default class extends Base {
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
-      if (
-        currDoc &&
-        currDoc.type === param.type &&
-        currDoc.newSecretaryDID === param.newSecretaryDID
-      ) {
+      if (!param.newSecretaryDID) {
+        return {
+          success: false,
+          message: 'No this new secretary',
+          secretary: false
+        }
+      }
+      if (currDoc && currDoc.newSecretaryDID === param.newSecretaryDID) {
         return doc
       }
       const newSecretary = await this.getDBModel('User').findOne({
@@ -115,11 +118,14 @@ export default class extends Base {
     }
 
     if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
-      if (
-        currDoc &&
-        currDoc.type === param.type &&
-        currDoc.closeProposalNum === param.closeProposalNum
-      ) {
+      if (!param.closeProposalNum) {
+        return {
+          success: false,
+          message: 'The proposal number is invalid',
+          proposal: false
+        }
+      }
+      if (currDoc && currDoc.closeProposalNum === param.closeProposalNum) {
         return doc
       }
       const proposal = await this.getDBModel('CVote').findOne({
