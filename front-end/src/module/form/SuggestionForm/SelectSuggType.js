@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Radio, InputNumber, Input } from 'antd'
+import { Radio, InputNumber, Input, Checkbox } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
@@ -19,7 +19,9 @@ class SelectSuggType extends Component {
       newSecretaryDID: (value && value.newSecretaryDID) || '',
       proposalNum: value && value.proposalNum,
       newOwnerDID: (value && value.newOwnerDID) || '',
-      termination: value && value.termination
+      termination: value && value.termination,
+      changeOwner: value && value.changeOwner,
+      changeAddress: value && value.changeAddress
     }
   }
 
@@ -68,13 +70,18 @@ class SelectSuggType extends Component {
     })
   }
 
+  handleCheckboxChange = (e, field) => {
+    this.setState({ [field]: e.target.checked })
+  }
+
   render() {
     const {
       type,
       newOwnerDID,
       newSecretaryDID,
       proposalNum,
-      termination
+      termination,
+      changeOwner
     } = this.state
     return (
       <div>
@@ -103,14 +110,28 @@ class SelectSuggType extends Component {
                 min={1}
               />
             </div>
-            <div>
-              <Label>{I18N.get('suggestion.form.type.proposalNewOwner')}</Label>
-              <Input
-                onChange={(e) => this.handleChange(e, 'newOwnerDID')}
-                value={newOwnerDID}
-                placeholder={I18N.get('suggestion.form.type.ownerInfo')}
-              />
-            </div>
+            <Checkbox
+              onChange={(e) => this.handleCheckboxChange(e, 'changeOwner')}
+            >
+              {I18N.get('suggestion.form.type.changeProposalOwner')}
+            </Checkbox>
+            <Checkbox
+              onChange={(e) => this.handleCheckboxChange(e, 'changeAddress')}
+            >
+              {I18N.get('suggestion.form.type.changeProposalAddress')}
+            </Checkbox>
+            {changeOwner && (
+              <div>
+                <Label>
+                  {I18N.get('suggestion.form.type.proposalNewOwner')}
+                </Label>
+                <Input
+                  onChange={(e) => this.handleChange(e, 'newOwnerDID')}
+                  value={newOwnerDID}
+                  placeholder={I18N.get('suggestion.form.type.ownerInfo')}
+                />
+              </div>
+            )}
           </Section>
         )}
         {type === CHANGE_SECRETARY && (
