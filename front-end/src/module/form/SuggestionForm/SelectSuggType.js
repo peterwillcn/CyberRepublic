@@ -17,9 +17,9 @@ class SelectSuggType extends Component {
     this.state = {
       type: (value && value.type) || '1',
       newSecretaryDID: (value && value.newSecretaryDID) || '',
-      proposalNum: (value && value.proposalNum) || null,
+      proposalNum: value && value.proposalNum,
       newOwnerDID: (value && value.newOwnerDID) || '',
-      termination: (value && value.termination) || null
+      termination: value && value.termination
     }
   }
 
@@ -82,24 +82,16 @@ class SelectSuggType extends Component {
           onChange={(e) => this.handleChange(e, 'type')}
           value={type}
         >
-          <Radio value={NEW_MOTION}>
-            {I18N.get('suggestion.form.type.newMotion')}
-          </Radio>
-          <Radio value={MOTION_AGAINST}>
-            {I18N.get('suggestion.form.type.motionAgainst')}
-          </Radio>
-          <Radio value={CHANGE_PROPOSAL}>
-            {I18N.get('suggestion.form.type.changeProposalOwner')}
-          </Radio>
-          <Radio value={CHANGE_SECRETARY}>
-            {I18N.get('suggestion.form.type.changeSecretary')}
-          </Radio>
-          <Radio value={TERMINATE_PROPOSAL}>
-            {I18N.get('suggestion.form.type.terminateProposal')}
-          </Radio>
-          <Radio value={ANYTHING_ELSE}>
-            {I18N.get('suggestion.form.type.anythingElse')}
-          </Radio>
+          {[
+            NEW_MOTION,
+            CHANGE_PROPOSAL,
+            TERMINATE_PROPOSAL,
+            CHANGE_SECRETARY
+          ].map((item) => (
+            <Radio value={item} key={item}>
+              {I18N.get(`suggestion.form.type.${item}`)}
+            </Radio>
+          ))}
         </Radio.Group>
         {type === CHANGE_PROPOSAL && (
           <Section>
