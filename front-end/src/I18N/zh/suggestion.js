@@ -94,6 +94,7 @@ export default {
       changeProposalAddress: '变更提案 ELA 接收地址',
       proposalNum: '提案编号',
       proposalNewOwner: '提案新负责人',
+      proposalNewAddress: '提案新地址',
       newSecretary: '新秘书长',
       ownerInfo: `请输入提案新负责人的 DID`,
       secretaryInfo: `请输入新秘书长的 DID`

@@ -21,7 +21,8 @@ class SelectSuggType extends Component {
       newOwnerDID: (value && value.newOwnerDID) || '',
       termination: value && value.termination,
       changeOwner: value && value.changeOwner,
-      changeAddress: value && value.changeAddress
+      changeAddress: value && value.changeAddress,
+      newAddress: value && value.newAddress
     }
   }
 
@@ -81,7 +82,9 @@ class SelectSuggType extends Component {
       newSecretaryDID,
       proposalNum,
       termination,
-      changeOwner
+      changeOwner,
+      changeAddress,
+      newAddress
     } = this.state
     return (
       <div>
@@ -129,6 +132,17 @@ class SelectSuggType extends Component {
                   onChange={(e) => this.handleChange(e, 'newOwnerDID')}
                   value={newOwnerDID}
                   placeholder={I18N.get('suggestion.form.type.ownerInfo')}
+                />
+              </div>
+            )}
+            {changeAddress && (
+              <div>
+                <Label>
+                  {I18N.get('suggestion.form.type.proposalNewAddress')}
+                </Label>
+                <Input
+                  onChange={(e) => this.handleChange(e, 'newAddress')}
+                  value={newAddress}
                 />
               </div>
             )}

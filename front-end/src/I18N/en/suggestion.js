@@ -94,6 +94,7 @@ export default {
       changeProposalAddress: 'Change the Proposal ELA Address',
       proposalNum: 'Proposal Number',
       proposalNewOwner: 'Proposal New Owner',
+      proposalNewAddress: 'Proposal New ELA Address',
       newSecretary: 'New Secretary',
       ownerInfo: `Please input the new owner's DID`,
       secretaryInfo: `Please input the new secretary's DID`
