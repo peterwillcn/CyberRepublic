@@ -54,36 +54,43 @@ export default class extends Base {
 
   private async getTypeDoc(param: any, doc: any, currDoc?: any) {
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
-      if (
-        currDoc &&
-        currDoc.type === param.type &&
-        currDoc.newOwnerDID === param.newOwnerDID &&
-        currDoc.targetProposalNum === param.targetProposalNum
-      ) {
-        return doc
-      }
-      const [newOwner, proposal] = await Promise.all([
-        this.getDBModel('User').findOne({
-          'did.id': DID_PREFIX + param.newOwnerDID
-        }),
-        this.getDBModel('CVote').findOne({
-          vid: param.targetProposalNum,
-          old: { $exists: false },
-          status: CVOTE_STATUS.ACTIVE
-        })
-      ])
-      if (!newOwner) {
-        return { success: false, message: 'No this new owner', owner: false }
-      }
-      if (!proposal) {
+      if (!param.targetProposalHash) {
         return {
           success: false,
           message: 'The proposal number is invalid',
           proposal: false
         }
       }
-      doc.newOwnerPublicKey = newOwner.did.compressedPublicKey
-      doc.targetProposalHash = proposal.proposalHash
+      if (
+        !currDoc ||
+        (currDoc && currDoc.targetProposalNum !== param.targetProposalNum)
+      ) {
+        const proposal = this.getDBModel('CVote').findOne({
+          vid: param.targetProposalNum,
+          old: { $exists: false },
+          status: CVOTE_STATUS.ACTIVE
+        })
+        if (!proposal) {
+          return {
+            success: false,
+            message: 'The proposal number is invalid',
+            proposal: false
+          }
+        }
+        doc.targetProposalHash = proposal.proposalHash
+      }
+      if (
+        param.newOwnerDID &&
+        (!currDoc || (currDoc && currDoc.newOwnerDID !== param.newOwnerDID))
+      ) {
+        const newOwner = this.getDBModel('User').findOne({
+          'did.id': DID_PREFIX + param.newOwnerDID
+        })
+        if (!newOwner) {
+          return { success: false, message: 'No this new owner', owner: false }
+        }
+        doc.newOwnerPublicKey = newOwner.did.compressedPublicKey
+      }
     }
 
     if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
