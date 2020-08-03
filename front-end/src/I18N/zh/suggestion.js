@@ -84,7 +84,7 @@ export default {
       [SUGGESTION_TYPE.NEW_MOTION]: '新动议',
       [SUGGESTION_TYPE.MOTION_AGAINST]: '反对动议',
       [SUGGESTION_TYPE.ANYTHING_ELSE]: '其它事宜',
-      [SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER]: '更换提案负责人',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: '更换提案负责人',
       [SUGGESTION_TYPE.CHANGE_SECRETARY]: '更换秘书长',
       [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: '终止提案',
       newMotion: '新动议',

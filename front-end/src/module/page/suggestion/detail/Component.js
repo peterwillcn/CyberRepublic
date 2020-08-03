@@ -560,7 +560,7 @@ export default class extends StandardPage {
       return
     }
     const type = _.get(detail, 'type')
-    if (type !== SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+    if (type !== SUGGESTION_TYPE.CHANGE_PROPOSAL) {
       return
     }
     const signature = _.get(detail, 'signature.data')
@@ -574,7 +574,7 @@ export default class extends StandardPage {
           getSignatureUrl={getOwnerSignatureUrl}
           getSignature={getSignature}
           id={detail._id}
-          type={SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER}
+          type={SUGGESTION_TYPE.CHANGE_PROPOSAL}
         />
       )
     )

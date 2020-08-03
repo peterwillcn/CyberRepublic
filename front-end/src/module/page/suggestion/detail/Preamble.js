@@ -6,7 +6,7 @@ import moment from 'moment/moment'
 import { Col, message } from 'antd'
 import { SUGGESTION_TYPE } from '@/constant'
 const {
-  CHANGE_PROPOSAL_OWNER,
+  CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
   TERMINATE_PROPOSAL
 } = SUGGESTION_TYPE
@@ -91,13 +91,13 @@ class Preamble extends Component {
             `did:elastos:${detail.newSecretaryDID}`
           )}
         {detail.type &&
-          detail.type === CHANGE_PROPOSAL_OWNER &&
+          detail.type === CHANGE_PROPOSAL &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.owner'),
             `did:elastos:${detail.newOwnerDID}`
           )}
         {detail.type &&
-          detail.type === CHANGE_PROPOSAL_OWNER &&
+          detail.type === CHANGE_PROPOSAL &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.targetProposalNum'),
             `#${detail.targetProposalNum}`
@@ -134,7 +134,7 @@ class Preamble extends Component {
             'signature'
           )}
         {detail.type &&
-          detail.type === CHANGE_PROPOSAL_OWNER &&
+          detail.type === CHANGE_PROPOSAL &&
           detail.newOwnerSignature &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.newOwnerSignature'),

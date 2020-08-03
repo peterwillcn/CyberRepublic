@@ -53,7 +53,7 @@ export default class extends Base {
   }
 
   private async getTypeDoc(param: any, doc: any, currDoc?: any) {
-    if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+    if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
       if (
         currDoc &&
         currDoc.type === param.type &&
@@ -1393,7 +1393,7 @@ export default class extends Base {
       if (!suggestion) {
         return { success: false, message: 'No this suggestion' }
       }
-      if (suggestion.type !== SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+      if (suggestion.type !== SUGGESTION_TYPE.CHANGE_PROPOSAL) {
         return {
           success: false,
           message: 'The type of this suggestion is not valid'
@@ -1587,7 +1587,7 @@ export default class extends Base {
         }
       }
       switch (suggestion.type) {
-        case SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER:
+        case SUGGESTION_TYPE.CHANGE_PROPOSAL:
           let newOwnerPublicKey: string
           if (suggestion.newOwnerPublicKey) {
             newOwnerPublicKey = suggestion.newOwnerPublicKey
@@ -1740,7 +1740,7 @@ export default class extends Base {
                 { $set: { signature: { data: decoded.data } } }
               )
               // notify new owner to sign
-              if (suggestion.type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+              if (suggestion.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
                 this.notifyPeopleToSign(suggestion, suggestion.newOwnerDID)
               }
               // notify new secretary general to sign
@@ -1773,7 +1773,7 @@ export default class extends Base {
     const { id, type } = param
     const suggestion = await this.show({ id })
     if (suggestion) {
-      if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER) {
+      if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
         const signature = _.get(suggestion, 'newOwnerSignature')
         if (signature) {
           return { success: true, data: suggestion }

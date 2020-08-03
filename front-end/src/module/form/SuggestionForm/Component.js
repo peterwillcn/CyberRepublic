@@ -29,7 +29,7 @@ const TAB_KEYS = [
 ]
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
 const {
-  CHANGE_PROPOSAL_OWNER,
+  CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
   TERMINATE_PROPOSAL
 } = SUGGESTION_TYPE
@@ -137,7 +137,7 @@ class C extends BaseComponent {
     if (type && typeof type !== 'string') {
       values.type = type.type
       switch (type.type) {
-        case CHANGE_PROPOSAL_OWNER:
+        case CHANGE_PROPOSAL:
           values.newOwnerDID = type.newOwnerDID
           values.targetProposalNum = type.proposalNum
           break
@@ -267,7 +267,7 @@ class C extends BaseComponent {
     if (id === 'type') {
       let data
       switch (initialValues.type) {
-        case CHANGE_PROPOSAL_OWNER:
+        case CHANGE_PROPOSAL:
           data = {
             type: initialValues.type,
             proposalNum: initialValues.targetProposalNum,

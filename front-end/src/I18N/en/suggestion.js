@@ -84,7 +84,7 @@ export default {
       [SUGGESTION_TYPE.NEW_MOTION]: 'New Motion',
       [SUGGESTION_TYPE.MOTION_AGAINST]: 'Motion Against',
       [SUGGESTION_TYPE.ANYTHING_ELSE]: 'Anything Else',
-      [SUGGESTION_TYPE.CHANGE_PROPOSAL_OWNER]: 'Change Proposal Owner',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: 'Change Proposal Owner',
       [SUGGESTION_TYPE.CHANGE_SECRETARY]: 'Change Secretary',
       [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: 'Terminate Proposal',
       newMotion: 'New Motion',

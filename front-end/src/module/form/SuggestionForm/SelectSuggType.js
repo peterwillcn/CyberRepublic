@@ -5,7 +5,7 @@ import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
 const {
   NEW_MOTION,
-  CHANGE_PROPOSAL_OWNER,
+  CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
   TERMINATE_PROPOSAL
 } = SUGGESTION_TYPE
@@ -34,7 +34,7 @@ class SelectSuggType extends Component {
     } = this.state
     let data
     switch (type) {
-      case CHANGE_PROPOSAL_OWNER:
+      case CHANGE_PROPOSAL:
         data = { type, newOwnerDID, proposalNum }
         break
       case CHANGE_SECRETARY:
@@ -88,7 +88,7 @@ class SelectSuggType extends Component {
           <Radio value={MOTION_AGAINST}>
             {I18N.get('suggestion.form.type.motionAgainst')}
           </Radio>
-          <Radio value={CHANGE_PROPOSAL_OWNER}>
+          <Radio value={CHANGE_PROPOSAL}>
             {I18N.get('suggestion.form.type.changeProposalOwner')}
           </Radio>
           <Radio value={CHANGE_SECRETARY}>
@@ -101,7 +101,7 @@ class SelectSuggType extends Component {
             {I18N.get('suggestion.form.type.anythingElse')}
           </Radio>
         </Radio.Group>
-        {type === CHANGE_PROPOSAL_OWNER && (
+        {type === CHANGE_PROPOSAL && (
           <Section>
             <div className="number">
               <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
