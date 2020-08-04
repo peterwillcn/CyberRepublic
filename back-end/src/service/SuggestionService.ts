@@ -1894,12 +1894,6 @@ export default class extends Base {
           message: 'This suggestion had been made into a proposal.'
         }
       }
-      if (suggestion && suggestion.proposed === true) {
-        return {
-          success: false,
-          message: 'This suggestion is proposed.'
-        }
-      }
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
       const jwtClaims: any = {
