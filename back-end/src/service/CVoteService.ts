@@ -1459,6 +1459,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         command: 'voteforproposal',
         data: {
+          id: cur.vid,
           proposalHash: cur.proposalHash
         }
       }
@@ -1589,15 +1590,19 @@ export default class extends Base {
       'proposedEndsHeight',
       'notificationEndsHeight'
     ]
+    const isNumber = /^\d*$/.test(id)
+    let query: any
+    if (isNumber) {
+      query = { vid: parseInt(id), old: { $exists: false } }
+    } else {
+      query = { proposalHash: id, old: { $exists: false } }
+    }
+
     const proposal = await db_cvote
       .getDBInstance()
-      .findOne({ vid: id, old: { $ne: true } }, fields.join(' '))
+      .findOne(query, fields.join(' '))
       .populate(
         'voteResult.votedBy',
-        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
-      )
-      .populate(
-        'voteHistory.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
 

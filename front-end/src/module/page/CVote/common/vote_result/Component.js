@@ -87,7 +87,11 @@ const Component = ({
         </div>
         <div>
           {votehistoryBy.length > 1 ||
-            (_.isEmpty(_.find(votehistoryBy, ['isCurrentVote', true])) && !_.isEmpty(data.reason))
+            (
+              !_.isEmpty(_.find(votehistoryBy, ['status', 'chained']))
+              &&
+              _.isEmpty(_.find(votehistoryBy,['isCurrentVote', true]))
+            )
             ? <ViewVoteHistoryButton data={votehistoryBy} />
             : null}
         </div>
