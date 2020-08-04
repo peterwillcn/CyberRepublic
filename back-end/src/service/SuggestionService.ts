@@ -2041,4 +2041,89 @@ export default class extends Base {
       return { success: false }
     }
   }
+
+  public async secretarySignatureCallback(param: any) {
+    try {
+      const jwtToken = param.jwt
+      const claims: any = jwt.decode(jwtToken)
+      if (!_.get(claims, 'req')) {
+        return {
+          code: 400,
+          success: false,
+          message: 'Problems parsing jwt token.'
+        }
+      }
+      const payload: any = jwt.decode(
+        claims.req.slice('elastos://crproposal/'.length)
+      )
+      if (!_.get(payload, 'sid')) {
+        return {
+          code: 400,
+          success: false,
+          message: 'Problems parsing jwt token of CR website.'
+        }
+      }
+      const suggestion = await this.model.findById({
+        _id: payload.sid
+      })
+      if (!suggestion) {
+        return {
+          code: 400,
+          success: false,
+          message: 'There is no this suggestion.'
+        }
+      }
+      const signature = _.get(suggestion, 'newSecretarySignature')
+      if (signature) {
+        return {
+          code: 400,
+          success: false,
+          message: 'This suggestion had been signed.'
+        }
+      }
+      const secPublicKey = _.get(suggestion, 'newSecretaryPublicKey')
+      if (!secPublicKey) {
+        return {
+          code: 400,
+          success: false,
+          message: `Can not get your DID's public key.`
+        }
+      }
+      return jwt.verify(
+        jwtToken,
+        secPublicKey,
+        async (err: any, decoded: any) => {
+          if (err) {
+            return {
+              code: 401,
+              success: false,
+              message: 'Verify signatrue failed.'
+            }
+          } else {
+            try {
+              await this.model.update(
+                { _id: payload.sid },
+                { $set: { newSecretarySignature: { data: decoded.data } } }
+              )
+              return { code: 200, success: true, message: 'Ok' }
+            } catch (err) {
+              logger.error(err)
+              return {
+                code: 500,
+                success: false,
+                message: 'DB can not save the signature.'
+              }
+            }
+          }
+        }
+      )
+    } catch (err) {
+      logger.error(err)
+      return {
+        code: 500,
+        success: false,
+        message: 'Something went wrong'
+      }
+    }
+  }
 }
