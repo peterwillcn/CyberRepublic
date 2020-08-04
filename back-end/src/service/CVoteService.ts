@@ -1002,7 +1002,7 @@ export default class extends Base {
     const isNumber = /^\d*$/.test(id)
     let query: any
     if (isNumber) {
-      query = { vid: parseInt(id) }
+      query = { vid: parseInt(id), old: { $exists: false } }
     } else {
       query = { _id: id }
     }
