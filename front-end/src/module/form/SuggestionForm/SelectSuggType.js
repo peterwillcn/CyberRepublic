@@ -14,20 +14,21 @@ class SelectSuggType extends Component {
   constructor(props) {
     super(props)
     const value = props.initialValue
+    console.log('value', value)
     this.state = {
       type: (value && value.type) || '1',
       newSecretaryDID: (value && value.newSecretaryDID) || '',
       proposalNum: value && value.proposalNum,
       newOwnerDID: (value && value.newOwnerDID) || '',
       termination: value && value.termination,
-      changeOwner: (value && value.changeOwner) || false,
-      changeAddress: (value && value.changeAddress) || false,
+      changeOwner: value && value.newOwnerDID ? true : false,
+      changeAddress: value && value.newAddress ? true : false,
       newAddress: value && value.newAddress
     }
   }
 
   changeValue() {
-    const { onChange } = this.props
+    const { onChange, callback } = this.props
     const {
       type,
       newOwnerDID,
@@ -35,16 +36,17 @@ class SelectSuggType extends Component {
       proposalNum,
       termination,
       changeAddress,
-      changeOwner
+      changeOwner,
+      newAddress
     } = this.state
     let data
     switch (type) {
       case CHANGE_PROPOSAL:
         if (changeOwner && !changeAddress) {
-          data = { type, newOwnerDID, proposalNum }
+          data = { type, newOwnerDID, proposalNum, newAddress: '' }
         }
         if (changeAddress && !changeOwner) {
-          data = { type, newAddress, proposalNum }
+          data = { type, newAddress, proposalNum, newOwnerDID: '' }
         }
         if (changeAddress && changeOwner) {
           data = { type, newOwnerDID, newAddress, proposalNum }
@@ -61,6 +63,7 @@ class SelectSuggType extends Component {
         break
     }
     onChange(data)
+    callback('type')
   }
 
   handleChange = (e, field) => {
@@ -82,7 +85,9 @@ class SelectSuggType extends Component {
   }
 
   handleCheckboxChange = (e, field) => {
-    this.setState({ [field]: e.target.checked })
+    this.setState({ [field]: e.target.checked }, () => {
+      this.changeValue()
+    })
   }
 
   render() {
@@ -124,11 +129,13 @@ class SelectSuggType extends Component {
               />
             </div>
             <Checkbox
+              checked={changeOwner}
               onChange={(e) => this.handleCheckboxChange(e, 'changeOwner')}
             >
               {I18N.get('suggestion.form.type.changeProposalOwner')}
             </Checkbox>
             <Checkbox
+              checked={changeAddress}
               onChange={(e) => this.handleCheckboxChange(e, 'changeAddress')}
             >
               {I18N.get('suggestion.form.type.changeProposalAddress')}

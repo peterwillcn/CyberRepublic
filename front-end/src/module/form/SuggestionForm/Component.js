@@ -138,8 +138,12 @@ class C extends BaseComponent {
       values.type = type.type
       switch (type.type) {
         case CHANGE_PROPOSAL:
-          values.newAddress = type.newAddress
-          values.newOwnerDID = type.newOwnerDID
+          if (type.newAddress) {
+            values.newAddress = type.newAddress
+          }
+          if (type.newOwnerDID) {
+            values.newOwnerDID = type.newOwnerDID
+          }
           values.targetProposalNum = type.proposalNum
           break
         case CHANGE_SECRETARY:

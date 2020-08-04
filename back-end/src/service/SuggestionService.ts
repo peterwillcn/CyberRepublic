@@ -32,7 +32,8 @@ const BASE_FIELDS = [
   'targetProposalNum',
   'newOwnerDID',
   'newSecretaryDID',
-  'closeProposalNum'
+  'closeProposalNum',
+  'newAddress'
 ]
 
 interface BudgetItem {
@@ -54,7 +55,7 @@ export default class extends Base {
 
   private async getTypeDoc(param: any, doc: any, currDoc?: any) {
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
-      if (!param.targetProposalHash) {
+      if (!param.targetProposalNum) {
         return {
           success: false,
           message: 'The proposal number is invalid',
@@ -65,7 +66,7 @@ export default class extends Base {
         !currDoc ||
         (currDoc && currDoc.targetProposalNum !== param.targetProposalNum)
       ) {
-        const proposal = this.getDBModel('CVote').findOne({
+        const proposal = await this.getDBModel('CVote').findOne({
           vid: param.targetProposalNum,
           old: { $exists: false },
           status: CVOTE_STATUS.ACTIVE
@@ -83,7 +84,7 @@ export default class extends Base {
         param.newOwnerDID &&
         (!currDoc || (currDoc && currDoc.newOwnerDID !== param.newOwnerDID))
       ) {
-        const newOwner = this.getDBModel('User').findOne({
+        const newOwner = await this.getDBModel('User').findOne({
           'did.id': DID_PREFIX + param.newOwnerDID
         })
         if (!newOwner) {
@@ -350,7 +351,8 @@ export default class extends Base {
           newSecretaryDID: true,
           newSecretaryPublicKey: true,
           closeProposalNum: true,
-          newOwnerDID: true
+          newOwnerDID: true,
+          newOwnerPublicKey: true
         }
       }
       if (newOwnerDID && newAddress) {
@@ -410,7 +412,6 @@ export default class extends Base {
     if (doc && doc.success === false) {
       return doc
     }
-
     const unsetDoc = this.unsetTypeDoc(param)
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
