@@ -105,6 +105,7 @@ export const Suggestion = {
   newOwnerDID: String,
   newOwnerPublicKey: String,
   newOwnerSignature: String,
+  newSecretarySignature: String,
   newSecretaryDID: String,
   newSecretaryPublicKey: String,
   targetProposalHash: String,
