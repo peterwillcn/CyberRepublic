@@ -25,6 +25,7 @@ export default {
       proposalHash: 'Hash',
       type: 'Type',
       owner: 'New Proposal Owner',
+      address: 'New Proposal ELA Address',
       secretary: 'New Secretary General',
       targetProposalNum: 'Proposal Number',
       closeProposalNum: 'Terminate Proposal',

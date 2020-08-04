@@ -92,9 +92,17 @@ class Preamble extends Component {
           )}
         {detail.type &&
           detail.type === CHANGE_PROPOSAL &&
+          detail.newOwnerDID &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.owner'),
             `did:elastos:${detail.newOwnerDID}`
+          )}
+        {detail.type &&
+          detail.type === CHANGE_PROPOSAL &&
+          detail.newAddress &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.fields.preambleSub.address'),
+            detail.newAddress
           )}
         {detail.type &&
           detail.type === CHANGE_PROPOSAL &&
