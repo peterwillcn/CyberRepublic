@@ -824,7 +824,7 @@ const en = {
 
   'council.voting.voteResult.onchain':'Vote onchain',
   
-  'council.voting.viewHistory.btn': 'View Vote History',
+  'council.voting.viewHistory.btn': 'Voting history',
   'council.voting.viewHistory.current':'Current Voting',
 
   // Landing
