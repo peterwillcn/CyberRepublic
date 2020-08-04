@@ -1918,10 +1918,30 @@ export default class extends Base {
       }
       switch (suggestion.type) {
         case SUGGESTION_TYPE.CHANGE_PROPOSAL:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'changeproposalowner',
+            targetproposalhash: suggestion.targetProposalHash,
+            newrecipient: suggestion.newRecipient,
+            newownerpublickey: suggestion.newOwnerPublicKey,
+            newownersignature: suggestion.newOwnerSignature
+          }
           break
         case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'secretarygeneral',
+            secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
+            secretarygeneraldid: suggestion.newSecretaryDID,
+            secretarygenerasignature: suggestion.newSecretarySignature
+          }
           break
         case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'closeproposal',
+            targetproposalhash: suggestion.targetProposalHash
+          }
           break
         default:
           jwtClaims.data = {
