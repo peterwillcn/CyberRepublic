@@ -618,7 +618,15 @@ export default class extends StandardPage {
         </StyledButton>
       </Col>
     )
-    const makeIntoProposalBtn = signature &&
+    const type = _.get('detail', 'type')
+    let isSignable = signature
+    if (type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      isSignable = signature && _.get('detail', 'newOwnerSignature')
+    }
+    if (type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      isSignable = signature && _.get('detail', 'newSecretarySignature')
+    }
+    const makeIntoProposalBtn = isSignable &&
       isCouncil &&
       !isReference && (
         <Col xs={24} sm={8}>
