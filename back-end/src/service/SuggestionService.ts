@@ -1902,22 +1902,35 @@ export default class extends Base {
       }
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
-      const jwtClaims = {
+      const jwtClaims: any = {
         iat: now,
         exp: now + 60 * 60 * 24,
         command: 'createproposal',
         iss: process.env.APP_DID,
         sid: suggestion._id,
         data: {
-          proposaltype: 'normal',
           categorydata: '',
           ownerpublickey: suggestion.ownerPublicKey,
           drafthash: suggestion.draftHash,
-          budgets: this.convertBudget(suggestion.budget),
-          recipient: suggestion.elaAddress,
           signature: suggestion.signature.data,
           did: councilMemberDid
         }
+      }
+      switch (suggestion.type) {
+        case SUGGESTION_TYPE.CHANGE_PROPOSAL:
+          break
+        case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          break
+        case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
+          break
+        default:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'normal',
+            budgets: this.convertBudget(suggestion.budget),
+            recipient: suggestion.elaAddress
+          }
+          break
       }
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
