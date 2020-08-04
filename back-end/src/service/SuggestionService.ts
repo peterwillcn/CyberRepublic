@@ -1894,6 +1894,12 @@ export default class extends Base {
           message: 'This suggestion had been made into a proposal.'
         }
       }
+      if (!_.get(suggestion, 'signature.data')) {
+        return {
+          success: false,
+          message: 'The owner of this suggetion does not sign'
+        }
+      }
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
       const jwtClaims: any = {
@@ -1912,6 +1918,12 @@ export default class extends Base {
       }
       switch (suggestion.type) {
         case SUGGESTION_TYPE.CHANGE_PROPOSAL:
+          if (!suggestion.newOwnerSignature) {
+            return {
+              success: false,
+              message: 'The new owner does not sign'
+            }
+          }
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'changeproposalowner',
@@ -1922,6 +1934,12 @@ export default class extends Base {
           }
           break
         case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          if (!suggestion.newSecretarySignature) {
+            return {
+              success: false,
+              message: 'The new secretary does not sign'
+            }
+          }
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'secretarygeneral',
