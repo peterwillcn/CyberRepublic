@@ -37,7 +37,7 @@ export default {
       replaces: 'Replaces',
       superseded: 'Superseded-By'
     },
-    filter: '过滤',
+    filter: '高级选项',
     elipStatus: 'Elip 状态',
     creationDate: '创建日期'
   },

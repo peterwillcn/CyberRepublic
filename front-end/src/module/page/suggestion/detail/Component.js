@@ -437,8 +437,8 @@ export default class extends StandardPage {
     const { detail } = this.props
     const sections = [
       'abstract',
-      'goal',
       'motivation',
+      'goal',
       'plan',
       'relevance',
       'budget'

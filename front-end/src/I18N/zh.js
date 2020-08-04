@@ -316,6 +316,8 @@ const zh = {
   // suggestion error
   'suggestion.create.error.required': '必填项',
   'suggestion.create.error.tooShort': '文字太短',
+  'suggestion.vote.error.empty': '请输入内容',
+  'suggestion.vote.error.tooLong': '内容太长',
 
   // suggestion rules
   'suggestion.rules': '规则',

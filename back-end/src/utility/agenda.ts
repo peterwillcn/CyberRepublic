@@ -79,6 +79,7 @@ agenda.define(JOB_NAME.INTOPROPOSAL, async (job: any) => {
   }
 })
 agenda.define(JOB_NAME.CVOTEJOB, async (job: any) => {
+  console.log('------begin cvote poll proposal------')
   try {
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
@@ -89,6 +90,7 @@ agenda.define(JOB_NAME.CVOTEJOB, async (job: any) => {
   }
 })
 agenda.define(JOB_NAME.COUNCILJOB, async (job: any) => {
+  console.log('------begin council poll change------')
   try {
     const DB = await db.create()
     const councilService = new CouncilService(DB, { user: undefined })
@@ -100,6 +102,7 @@ agenda.define(JOB_NAME.COUNCILJOB, async (job: any) => {
   }
 })
 agenda.define(JOB_NAME.USERJOB, async (job: any) => {
+  console.log('------begin user poll did infomation------')
   try {
     const DB = await db.create()
     const userService = new UserService(DB, { user: undefined })
@@ -110,6 +113,7 @@ agenda.define(JOB_NAME.USERJOB, async (job: any) => {
   }
 })
 agenda.define(JOB_NAME.COUNCILREVIEWJOB, async (job: any) => {
+  console.log('------begin new council review------')
   try{
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
@@ -120,6 +124,7 @@ agenda.define(JOB_NAME.COUNCILREVIEWJOB, async (job: any) => {
   }
 })
 agenda.define(JOB_NAME.TRANSACTIONJOB, async (job: any) => {
+  console.log('------begin new append transaction------')
   try{
     const DB = await db.create()
     const elaTransactionService = new ElaTransactionService(DB, { user: undefined })
@@ -130,6 +135,7 @@ agenda.define(JOB_NAME.TRANSACTIONJOB, async (job: any) => {
   }
 })
 agenda.define(JOB_NAME.NOTIFICATIONCOUNCILVOTE, async (job: any) => {
+  console.log('------begin notification council to vote------')
   try{
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
@@ -153,13 +159,13 @@ agenda.define(JOB_NAME.PROCESSOLDDATAONCE, async (job: any) => {
 ;(async function () {
   console.log('------cron job starting------')
   await agenda.start()
-  await agenda.every('2 minutes', JOB_NAME.INTOPROPOSAL)
-  await agenda.every('2 minutes', JOB_NAME.CVOTEJOB)
+  await agenda.every('5 minutes', JOB_NAME.INTOPROPOSAL)
+  await agenda.every('5 minutes', JOB_NAME.CVOTEJOB)
   await agenda.every('5 minutes', JOB_NAME.COUNCILJOB)
   await agenda.every('30 minutes', JOB_NAME.USERJOB)
-  await agenda.every('2 minutes', JOB_NAME.UPDATEMILESTONE)
-  await agenda.every('2 minutes', JOB_NAME.COUNCILREVIEWJOB)
-  await agenda.every('1 minutes', JOB_NAME.TRANSACTIONJOB)
-  await agenda.every('1 minutes', JOB_NAME.NOTIFICATIONCOUNCILVOTE)
+  await agenda.every('5 minutes', JOB_NAME.UPDATEMILESTONE)
+  await agenda.every('5 minutes', JOB_NAME.COUNCILREVIEWJOB)
+  await agenda.every('3 minutes', JOB_NAME.TRANSACTIONJOB)
+  await agenda.every('3 minutes', JOB_NAME.NOTIFICATIONCOUNCILVOTE)
   await agenda.now(JOB_NAME.PROCESSOLDDATAONCE)
 })()

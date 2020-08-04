@@ -54,6 +54,8 @@ class ViewVoteHistoryButton extends Component {
     const proposed = moment(createdAt).format(format)
     const detailTime = moment(createdAt).format(formatTime)
 
+    const isCurrentVote = data && data.isCurrentVote
+
     const valueNode = (
       <ItemStatus key={KeyframeEffect}>
         <div className="vote-value">
@@ -62,7 +64,7 @@ class ViewVoteHistoryButton extends Component {
           </span>
         </div>
         <div><span style={{ whiteSpace: 'pre-wrap' }}>{proposed + "\n" + detailTime}</span></div>
-        <div className="status">{data.isCurrentVote
+        <div className="status">{isCurrentVote
           ? I18N.get('council.voting.viewHistory.current')
           : null}
         </div>
@@ -118,11 +120,20 @@ class ViewVoteHistoryButton extends Component {
 
     return (
       <Timeline.Item key={key} color={'green'}>
-        <ResultRow key={key}>
-          {valueNode}
-          {userNode}
-          {reasonNode}
-        </ResultRow>
+        {isCurrentVote
+          ? <CurrentResultRow key={key}>
+            {valueNode}
+            {userNode}
+            {reasonNode}
+          </CurrentResultRow>
+          :
+          <ResultRow key={key}>
+            {valueNode}
+            {userNode}
+            {reasonNode}
+          </ResultRow>
+        }
+        
       </Timeline.Item>
     )
   }
@@ -140,7 +151,7 @@ class ViewVoteHistoryButton extends Component {
         footer={null}
         width={880}
       >
-        <Timeline style={{ margin: '50px' }}>
+        <Timeline style={{ margin: '30px' }}>
           {voteNode}
         </Timeline>
       </Modal></span>
@@ -231,7 +242,15 @@ const Reason = styled.div`
 
 const ResultRow = styled.div`
   display: flex;
+  padding: 30px 20px;
   margin-bottom: 30px;
+`
+const CurrentResultRow = styled.div`
+  display: flex;
+  margin-bottom: 30px;
+  padding: 30px 20px;
+  background: #E5EDF7;
+  border-radius: 8px;
 `
 
 const VoteHistornBtn = styled.button`
