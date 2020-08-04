@@ -62,6 +62,9 @@ export default class extends Base {
           proposal: false
         }
       }
+      if (param.newAddress) {
+        doc.newRecipient = param.newAddress
+      }
       if (
         !currDoc ||
         (currDoc && currDoc.targetProposalNum !== param.targetProposalNum)
@@ -79,7 +82,10 @@ export default class extends Base {
           }
         }
         doc.targetProposalHash = proposal.proposalHash
+        doc.newRecipient = !param.newAddress && proposal.elaAddress
+        doc.newOwnerPublicKey = !param.newOwnerDID && proposal.ownerPublicKey
       }
+
       if (
         param.newOwnerDID &&
         (!currDoc || (currDoc && currDoc.newOwnerDID !== param.newOwnerDID))
@@ -351,8 +357,7 @@ export default class extends Base {
           newSecretaryDID: true,
           newSecretaryPublicKey: true,
           closeProposalNum: true,
-          newOwnerDID: true,
-          newOwnerPublicKey: true
+          newOwnerDID: true
         }
       }
       if (newOwnerDID && newAddress) {
@@ -370,6 +375,7 @@ export default class extends Base {
         newOwnerDID: true,
         newOwnerPublicKey: true,
         newAddress: true,
+        newRecipient: true,
         targetProposalNum: true
       }
     }
@@ -378,6 +384,7 @@ export default class extends Base {
         newOwnerDID: true,
         newOwnerPublicKey: true,
         newAddress: true,
+        newRecipient: true,
         targetProposalNum: true,
         newSecretaryDID: true,
         newSecretaryPublicKey: true
@@ -1492,7 +1499,7 @@ export default class extends Base {
           drafthash: suggestion.draftHash,
           proposaltype: 'changeproposalowner',
           targetproposalhash: suggestion.targetProposalHash,
-          newrecipient: suggestion.elaAddress,
+          newrecipient: suggestion.newRecipient,
           newownerpublickey: suggestion.newOwnerPublicKey
         }
       }
@@ -1668,11 +1675,14 @@ export default class extends Base {
             newOwnerPublicKey = rs.compressedPublicKey
             fields.newOwnerPublicKey = newOwnerPublicKey
           }
+
+          await this.model.update({ _id: suggestion._id }, { $set: fields })
+
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'changeproposalowner',
             targetproposalhash: suggestion.targetProposalHash,
-            newrecipient: suggestion.elaAddress,
+            newrecipient: suggestion.newRecipient,
             newownerpublickey: newOwnerPublicKey
           }
           break
@@ -1714,8 +1724,6 @@ export default class extends Base {
           }
           break
       }
-
-      await this.model.update({ _id: suggestion._id }, { $set: fields })
 
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
