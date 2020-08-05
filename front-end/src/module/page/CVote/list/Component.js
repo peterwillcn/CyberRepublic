@@ -238,7 +238,10 @@ export default class extends BaseComponent {
       },
       {
         title: I18N.get('council.voting.author'),
-        dataIndex: 'proposedBy'
+        dataIndex: 'proposer.profile.firstName',
+        render: (proposer, item) => (
+          userUtil.formatUsername(item.proposer)
+        )
       },
       {
         title: I18N.get('council.voting.voteByCouncil'),

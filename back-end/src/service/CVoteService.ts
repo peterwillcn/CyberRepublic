@@ -731,6 +731,10 @@ export default class extends Base {
     const cursor = db_cvote
       .getDBInstance()
       .find(query, fields.join(' '))
+      .populate(
+        'proposer',
+        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
+      )
       .sort({ vid: -1 })
 
     if (param.results) {
