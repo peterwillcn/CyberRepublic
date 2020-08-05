@@ -78,6 +78,9 @@ export default createContainer(
       },
       async getOwnerSignatureUrl(id) {
         return service.getOwnerSignatureUrl(id)
+      },
+      async getSecretarySignatureUrl(id) {
+        return service.getSecretarySignatureUrl(id)
       }
     }
   }

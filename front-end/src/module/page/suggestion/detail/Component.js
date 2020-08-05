@@ -44,7 +44,6 @@ import MilestonesReadonly from '@/module/form/SuggestionForm/MilestonesReadonly'
 import SignSuggestionButton from './SignSuggetionButton'
 import CMSignSuggestionButton from './CMSignSuggestionButton'
 import NewOwnerSignSuggBtn from './NewOwnerSignSuggBtn'
-import NewSecretarySignSuggBtn from './NewSecretarySignSuggBtn'
 import {
   Container,
   Title,
@@ -600,7 +599,7 @@ export default class extends StandardPage {
 
     return (
       isSignable && (
-        <NewSecretarySignSuggBtn
+        <NewOwnerSignSuggBtn
           getSignatureUrl={getSecretarySignatureUrl}
           getSignature={getSignature}
           id={detail._id}

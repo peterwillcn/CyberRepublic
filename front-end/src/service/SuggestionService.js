@@ -430,4 +430,14 @@ export default class extends BaseService {
     })
     return res
   }
+
+  async getSecretarySignatureUrl(id) {
+    const path = `${this.prefixPath}/sec-signature-url`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
 }
