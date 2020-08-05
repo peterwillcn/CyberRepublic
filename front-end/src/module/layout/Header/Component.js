@@ -208,9 +208,12 @@ export default class extends BaseComponent {
     if (_.includes(keys, 'admin')) {
       keys = _.union(_.without(keys, ['admin']), ['profile'])
     }
-
     return _.map(keys, function(o) {
-      if (o === 'council' || o === 'candidates') return 'councils'
+      if (o === 'council' || o === 'candidates') {
+        return 'councils'
+      } else {
+        return o
+      }
     })
   }
 
