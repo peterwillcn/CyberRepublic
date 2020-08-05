@@ -257,6 +257,39 @@ class C extends BaseComponent {
     return cb()
   }
 
+  validateType = (rule, value, cb) => {
+    const type = _.get(value, 'type')
+    switch (type) {
+      case CHANGE_PROPOSAL:
+        if (!value.proposalNum) {
+          return cb(I18N.get('suggestion.form.error.proposalNum'))
+        }
+        if (value.changeOwner && !value.newOwnerDID) {
+          return cb(I18N.get('suggestion.form.error.newOwner'))
+        }
+        if (value.changeAddress && !this.validateAddress(value.newAddress)) {
+          return cb(I18N.get('suggestion.form.error.elaAddress'))
+        }
+        if (!value.newOwnerDID && !value.newAddress) {
+          return cb(I18N.get('suggestion.form.error.changeWhat'))
+        }
+        break
+      case CHANGE_SECRETARY:
+        if (!value.newSecretaryDID) {
+          cb(I18N.get('suggestion.form.error.secretary'))
+        }
+        break
+      case TERMINATE_PROPOSAL:
+        if (!value.termination) {
+          cb(I18N.get('suggestion.form.error.proposalNum'))
+        }
+        break
+      default:
+        break
+    }
+    return cb()
+  }
+
   getTextarea(id) {
     const initialValues = _.isEmpty(this.props.initialValues)
       ? { type: '1' }
@@ -270,6 +303,7 @@ class C extends BaseComponent {
       }
     ]
     if (id === 'type') {
+      rules.push({ validator: this.validateType })
       let data
       switch (initialValues.type) {
         case CHANGE_PROPOSAL:

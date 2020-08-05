@@ -38,30 +38,30 @@ class SelectSuggType extends Component {
       changeOwner,
       newAddress
     } = this.state
-    let data
+    let data = { type }
     switch (type) {
       case CHANGE_PROPOSAL:
+        data.proposalNum = proposalNum
+        data.changeOwner = changeOwner
+        data.changeAddress = changeAddress
         if (changeOwner && !changeAddress) {
-          data = { type, newOwnerDID, proposalNum }
+          data.newOwnerDID = newOwnerDID
         }
         if (changeAddress && !changeOwner) {
-          data = { type, newAddress, proposalNum }
+          data.newAddress = newAddress
         }
         if (changeAddress && changeOwner) {
-          data = { type, newOwnerDID, newAddress, proposalNum }
-        }
-        if (!changeOwner && !changeAddress) {
-          data = { type, proposalNum }
+          data.newOwnerDID = newOwnerDID
+          data.newAddress = newAddress
         }
         break
       case CHANGE_SECRETARY:
-        data = { type, newSecretaryDID }
+        data.newSecretaryDID = newSecretaryDID
         break
       case TERMINATE_PROPOSAL:
-        data = { type, termination }
+        data.termination = termination
         break
       default:
-        data = { type }
         break
     }
     onChange(data)

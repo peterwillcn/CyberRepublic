@@ -95,7 +95,7 @@ export default {
       changeProposalAddress: '变更提案 ELA 接收地址',
       proposalNum: '提案编号',
       proposalNewOwner: '提案新负责人',
-      proposalNewAddress: '提案新地址',
+      proposalNewAddress: '提案新 ELA 接收地址',
       newSecretary: '新秘书长',
       ownerInfo: `请输入提案新负责人的 DID`,
       secretaryInfo: `请输入新秘书长的 DID`
@@ -135,7 +135,11 @@ export default {
       introduction: '里程碑简介不能为空',
       noOwner: `提案新负责人账号不存在`,
       noSecretary: `新的秘书长账号不存在`,
-      noProposal: `无效的提案编号`
+      noProposal: `无效的提案编号`,
+      proposalNum: '提案编号为空',
+      secretary: '新秘书长 DID 为空',
+      newOwner: '新负责人 DID 为空',
+      changeWhat: '请选择变更的内容'
     }
   },
   modal: {

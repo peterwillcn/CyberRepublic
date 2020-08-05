@@ -133,8 +133,12 @@ export default {
       exception: 'Something went wrong',
       notEqual: `The toal budget is not equal to the sum of each payment amount.`,
       noOwner: `The new owner does not exist.`,
-      noSecretary: `The new secretary does not exist.`,
-      noProposal: `The proposal number is invalid.`
+      noSecretary: `The new secretary general does not exist.`,
+      noProposal: `The proposal number is invalid.`,
+      proposalNum: 'The proposal number is emtpy.',
+      secretary: 'The new secretary general DID is emtpy.',
+      newOwner: 'The new owner DID is empty.',
+      changeWhat: 'Please select a item to change'
     }
   },
   modal: {
