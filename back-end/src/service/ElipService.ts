@@ -397,17 +397,30 @@ export default class extends Base {
     if (!_.isEmpty(param.author)) {
       let search = param.author
       const db_user = this.getDBModel('User')
-      const pattern = search.split(' ').join('|')
-      const users = await db_user
+      let pattern = search.split(' ')
+      let users
+      if (pattern.length > 1){
+        users = await db_user
         .getDBInstance()
         .find({
-          $or: [
-            { username: { $regex: search, $options: 'i' } },
-            { 'profile.firstName': { $regex: pattern, $options: 'i' } },
-            { 'profile.lastName': { $regex: pattern, $options: 'i' } }
-          ]
+            // { username: { $regex: search, $options: 'i' } },
+            'profile.firstName': { $regex: pattern[0], $options: 'i'},
+            'profile.lastName': { $regex: pattern[1], $options: 'i' } 
         })
         .select('_id')
+      } else {
+        pattern = pattern.join("|")
+        users = await db_user
+          .getDBInstance()
+          .find({
+            $or: [
+              // { username: { $regex: search, $options: 'i' } },
+              { 'profile.firstName': { $regex: pattern, $options: 'i' } },
+              { 'profile.lastName': { $regex: pattern, $options: 'i' } }
+            ]
+          })
+          .select('_id')
+      }
       const userIds = users.map((el: { _id: string }) => el._id)
       // prevent members to search private ELIPs
       if (!_.isEmpty(query.createdBy)) {
