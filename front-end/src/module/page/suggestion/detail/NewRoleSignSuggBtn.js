@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Popover, Spin, message } from 'antd'
+import { Popover, Spin } from 'antd'
 import QRCode from 'qrcode.react'
 import I18N from '@/I18N'
 import { StyledButton } from './style'
 
-class NewOwnerSignSuggBtn extends Component {
+class NewRoleSignSuggBtn extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -96,7 +96,7 @@ class NewOwnerSignSuggBtn extends Component {
   }
 }
 
-export default NewOwnerSignSuggBtn
+export default NewRoleSignSuggBtn
 
 const Content = styled.div`
   padding: 16px;
