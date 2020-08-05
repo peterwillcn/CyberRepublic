@@ -11,6 +11,7 @@ class ShowLongText extends Component {
       toggle: false,
       show: false
     }
+    this.observer = null
   }
 
   showMore = () => {
@@ -41,6 +42,13 @@ class ShowLongText extends Component {
       })
     })
     myObserver.observe(el)
+    this.observer = myObserver
+  }
+
+  componentWillUnmount() {
+    const { id } = this.props
+    const el = document.querySelector(`#${id}`)
+    this.observer.unobserve(el)
   }
 
   render() {
