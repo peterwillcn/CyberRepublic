@@ -198,7 +198,7 @@ const Label = styled.div`
 `
 const Section = styled.div`
   margin-top: 24px;
-  max-width: 390px;
+  max-width: 520px;
   .number {
     margin-bottom: 16px;
   }
