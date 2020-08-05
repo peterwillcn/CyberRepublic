@@ -409,14 +409,13 @@ export default class extends Base {
         })
         .select('_id')
       } else {
-        pattern = pattern.join("|")
         users = await db_user
           .getDBInstance()
           .find({
             $or: [
               // { username: { $regex: search, $options: 'i' } },
-              { 'profile.firstName': { $regex: pattern, $options: 'i' } },
-              { 'profile.lastName': { $regex: pattern, $options: 'i' } }
+              { 'profile.firstName': { $regex: pattern[0], $options: 'i' } },
+              { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
             ]
           })
           .select('_id')
