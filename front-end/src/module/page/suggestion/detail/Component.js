@@ -44,6 +44,7 @@ import MilestonesReadonly from '@/module/form/SuggestionForm/MilestonesReadonly'
 import SignSuggestionButton from './SignSuggetionButton'
 import CMSignSuggestionButton from './CMSignSuggestionButton'
 import NewOwnerSignSuggBtn from './NewOwnerSignSuggBtn'
+import NewSecretarySignSuggBtn from './NewSecretarySignSuggBtn'
 import {
   Container,
   Title,
@@ -137,6 +138,7 @@ export default class extends StandardPage {
     const actionsNode = this.renderActionsNode()
     const ownerActionsNode = this.renderOwnerActionsNode()
     const newOwnerActionNode = this.renderNewOwnerActionNode()
+    const newSecretaryActionNode = this.renderNewSecretaryActionNode()
     const councilActionsNode = this.renderCouncilActionsNode()
     const editForm = this.renderEditForm()
     const commentNode = this.renderCommentNode()
@@ -168,6 +170,7 @@ export default class extends StandardPage {
               {actionsNode}
               {ownerActionsNode}
               {newOwnerActionNode}
+              {newSecretaryActionNode}
               {councilActionsNode}
             </div>
             <div style={{ marginTop: 60 }}>{commentNode}</div>
@@ -186,6 +189,7 @@ export default class extends StandardPage {
                 {actionsNode}
                 {ownerActionsNode}
                 {newOwnerActionNode}
+                {newSecretaryActionNode}
                 {councilActionsNode}
                 <div style={{ marginTop: 60 }}>{commentNode}</div>
               </Col>
@@ -575,6 +579,32 @@ export default class extends StandardPage {
           getSignature={getSignature}
           id={detail._id}
           type={SUGGESTION_TYPE.CHANGE_PROPOSAL}
+        />
+      )
+    )
+  }
+
+  renderNewSecretaryActionNode() {
+    const { detail, user, getSecretarySignatureUrl, getSignature } = this.props
+    const currDID = _.get(user, 'did.id')
+    if (!currDID) {
+      return
+    }
+    const type = _.get(detail, 'type')
+    if (type !== SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      return
+    }
+    const signature = _.get(detail, 'signature.data')
+    const did = _.get(detail, 'newSecretaryDID')
+    const isSignable = signature && did && currDID === 'did:elastos:' + did
+
+    return (
+      isSignable && (
+        <NewSecretarySignSuggBtn
+          getSignatureUrl={getSecretarySignatureUrl}
+          getSignature={getSignature}
+          id={detail._id}
+          type={SUGGESTION_TYPE.CHANGE_SECRETARY}
         />
       )
     )

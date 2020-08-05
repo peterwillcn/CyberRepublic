@@ -14,7 +14,6 @@ class SelectSuggType extends Component {
   constructor(props) {
     super(props)
     const value = props.initialValue
-    console.log('value', value)
     this.state = {
       type: (value && value.type) || '1',
       newSecretaryDID: (value && value.newSecretaryDID) || '',
