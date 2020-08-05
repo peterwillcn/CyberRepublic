@@ -42,13 +42,16 @@ class SelectSuggType extends Component {
     switch (type) {
       case CHANGE_PROPOSAL:
         if (changeOwner && !changeAddress) {
-          data = { type, newOwnerDID, proposalNum, newAddress: '' }
+          data = { type, newOwnerDID, proposalNum }
         }
         if (changeAddress && !changeOwner) {
-          data = { type, newAddress, proposalNum, newOwnerDID: '' }
+          data = { type, newAddress, proposalNum }
         }
         if (changeAddress && changeOwner) {
           data = { type, newOwnerDID, newAddress, proposalNum }
+        }
+        if (!changeOwner && !changeAddress) {
+          data = { type, proposalNum }
         }
         break
       case CHANGE_SECRETARY:
