@@ -10078,7 +10078,8 @@ li.ant-menu-item.ant-menu-item-selected:after {
   bottom: -2px;
 }
 .ant-menu-horizontal > .ant-menu-item-selected > a {
-  color: #43af92;
+  /* color: #43af92; */
+  color: #000;
 }
 .ant-menu-horizontal:after {
   content: "\20";
