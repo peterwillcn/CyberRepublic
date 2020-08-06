@@ -10062,7 +10062,7 @@ li.ant-menu-item.ant-menu-item-selected:after {
   color: #000;
 }
 .ant-menu-horizontal > .ant-menu-item:hover,
-.ant-menu-horizontal > .ant-menu-submenu:hover{
+.ant-menu-horizontal > .ant-menu-submenu:hover {
   border-bottom: 2px solid #43af92;
   font-weight: 500 !important;
   color: #43af92;
