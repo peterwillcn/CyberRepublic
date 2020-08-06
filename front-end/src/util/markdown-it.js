@@ -10,6 +10,7 @@ import mark from 'markdown-it-mark'
 import deflist from 'markdown-it-deflist'
 import ins from 'markdown-it-ins'
 import { getSiteUrl } from './url'
+import I18N from '@/I18N'
 
 const mdi = markdownIt({
   html: true,
@@ -88,10 +89,10 @@ export const getPlanHtml = plan => {
   return `
     <div>
       <p>
-        <span>Team Member#</span>
-        <span>Role</span>
-        <span>Responsibility</span>
-        <span>More info</span>
+        <span>${I18N.get('suggestion.plan.teamMember')}#</span>
+        <span>${I18N.get('suggestion.plan.role')}</span>
+        <span>${I18N.get('suggestion.plan.responsibility')}</span>
+        <span>${I18N.get('suggestion.plan.moreInfo')}</span>
       </p>
       ${lists}
     </div>
@@ -118,10 +119,11 @@ export const getBudgetHtml = budget => {
   return `
     <div>
       <p>
-        <span>Payment#</span>
-        <span>Amount(ELA)</span>
-        <span>Reasons</span>
-        <span>Payment of Criteria</span>
+        <span>${I18N.get('suggestion.budget.payment')}#</span>
+        <span>${I18N.get('suggestion.budget.type')}</span>
+        <span>${I18N.get('suggestion.budget.amount')}(ELA)</span>
+        <span>${I18N.get('suggestion.budget.goal')}</span>
+        <span>${I18N.get('suggestion.budget.criteria')}</span>
       </p>
       ${lists}
     </div>
