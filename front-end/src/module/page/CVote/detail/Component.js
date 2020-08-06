@@ -340,6 +340,7 @@ class C extends StandardPage {
             <p>${data.budgetAmount}</p>
             <p>${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
+            <p>${I18N.get('suggestion.budget.schedule')}</p>
             <p>${getBudgetHtml(data.budget)}</p>
           `
           }
@@ -350,6 +351,7 @@ class C extends StandardPage {
           ) {
             return `
             <h2>${I18N.get('proposal.fields.plan')}</h2>
+            <h2>${I18N.get('suggestion.plan.teamInfo')}</h2>
             <p>${getPlanHtml(data.plan.teamInfo)}</p>
           `
           }
