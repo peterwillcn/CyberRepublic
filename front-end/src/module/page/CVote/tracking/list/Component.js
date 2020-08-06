@@ -4,7 +4,7 @@ import moment from 'moment/moment'
 import BaseComponent from '@/model/BaseComponent'
 import DraftEditor from '@/module/common/DraftEditor'
 import CRPopover from '@/module/shared/Popover/Component'
-import { Row, Col, Button, List, Collapse, message } from 'antd'
+import { Row, Col, Button, List, Collapse, message,Empty } from 'antd'
 import I18N from '@/I18N'
 import { CONTENT_TYPE, DATE_FORMAT, CVOTE_TRACKING_STATUS } from '@/constant'
 import styled from 'styled-components'
@@ -88,7 +88,15 @@ export default class extends BaseComponent {
     const dataList = _.filter(withdrawalHistory, (o) => {
       return !_.isEmpty(o.review) && o.milestoneKey !== completion[0].milestoneKey
     })
-    if (!withdrawalHistory || withdrawalHistory.length === 0) return null
+    if (!dataList || dataList.length === 0) return (<Empty
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+      description={
+        <span>
+          {I18N.get("proposal.text.noData")}
+        </span>
+      }
+    >
+    </Empty>)
     const body = (
       <List
         itemLayout="horizontal"
