@@ -4,7 +4,7 @@ import moment from 'moment/moment'
 import BaseComponent from '@/model/BaseComponent'
 import DraftEditor from '@/module/common/DraftEditor'
 import CRPopover from '@/module/shared/Popover/Component'
-import { Row, Col, Button, List, Collapse, message } from 'antd'
+import { Row, Col, Button, List, Collapse, message, Empty } from 'antd'
 import I18N from '@/I18N'
 import { CONTENT_TYPE, DATE_FORMAT, CVOTE_SUMMARY_STATUS, CVOTE_STATUS } from '@/constant'
 import styled from 'styled-components'
@@ -41,15 +41,24 @@ export default class extends BaseComponent {
   }
 
   renderPrivateList() {
-    const { withdrawalHistory,budget } = this.props.proposal
-    const completion = _.filter(budget,{'type':'COMPLETION'})
-    if (!withdrawalHistory || withdrawalHistory.length === 0) return null
+    const { withdrawalHistory, budget } = this.props.proposal
+    const completion = _.filter(budget, { 'type': 'COMPLETION' })
+    const dataList = _.filter(withdrawalHistory, { 'milestoneKey': completion[0].milestoneKey })
+    if (!dataList || dataList.length === 0) return (<Empty
+      image={Empty.PRESENTED_IMAGE_SIMPLE}
+      description={
+        <span>
+          {I18N.get("proposal.text.noData")}
+        </span>
+      }
+    >
+    </Empty>)
     const body = (
       <List
         itemLayout="horizontal"
         grid={{ column: 1 }}
         split={false}
-        dataSource={_.filter(withdrawalHistory,{'milestoneKey':completion[0].milestoneKey})}
+        dataSource={dataList}
         renderItem={item => (
           <StyledPrivateItem actions={[]}>
             <StyledRow gutter={16}>
@@ -91,7 +100,7 @@ export default class extends BaseComponent {
   renderWithdrawalActions(item) {
     const { secretariat } = this.state
     let body
-    if (item.review !== undefined){
+    if (item.review !== undefined) {
       body = (
         <CommentCol span={21} status={item.review.opinion}>
           <CommentContent>
@@ -100,13 +109,13 @@ export default class extends BaseComponent {
                 return (
                   <span key={key}>
                     {item}
-                    <br/>
+                    <br />
                   </span>
                 )
               })}
             </div>
             <CommentFooter>
-              { secretariat && secretariat.didName ? secretariat.didName + " , " : null}
+              {secretariat && secretariat.didName ? secretariat.didName + " , " : null}
               {moment(item.review.createdAt).format(DATE_FORMAT)}
             </CommentFooter>
           </CommentContent>
@@ -250,9 +259,9 @@ export default class extends BaseComponent {
 
   refetch = async () => {
     this.ord_loading(true)
-    const { listData, proposal,getSecretariat } = this.props
-    const secretariat =  await getSecretariat()
-    this.setState({secretariat})
+    const { listData, proposal, getSecretariat } = this.props
+    const secretariat = await getSecretariat()
+    this.setState({ secretariat })
     const param = this.getQuery()
     const paramCVote = {
       id: proposal._id

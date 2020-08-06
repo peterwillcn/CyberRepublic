@@ -64,7 +64,8 @@ export default {
         header: '',
         footer: ''
       }
-    }
+    },
+    noData: 'No Data'
   },
   status: {
     tracking: {
