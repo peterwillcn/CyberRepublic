@@ -547,7 +547,6 @@ export default class extends StandardPage {
         ) {
           return `
             <h2>${I18N.get('suggestion.fields.plan')}</h2>
-            <h2>${I18N.get('suggestion.plan.teamInfo')}</h2>
             <p>${getPlanHtml(detail.plan.teamInfo)}</p>
           `
         }
@@ -562,7 +561,6 @@ export default class extends StandardPage {
             <p>${detail.budgetAmount}</p>
             <p>${I18N.get('suggestion.budget.address')}</p>
             <p>${detail.elaAddress}</p>
-            <p>${I18N.get('suggestion.budget.schedule')}</p>
             <p>${getBudgetHtml(detail.budget)}</p>
           `
         }
