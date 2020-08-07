@@ -88,6 +88,7 @@ export const getPlanHtml = plan => {
     .join('')
   return `
     <div>
+      <p>${I18N.get('suggestion.plan.teamInfo')}</p>
       <p>
         <span>${I18N.get('suggestion.plan.teamMember')}#</span>
         <span>${I18N.get('suggestion.plan.role')}</span>
@@ -117,6 +118,7 @@ export const getBudgetHtml = budget => {
     .join('')
   return `
     <div>
+      <p>${I18N.get('suggestion.budget.schedule')}</p>
       <p>
         <span>${I18N.get('suggestion.budget.payment')}#</span>
         <span>${I18N.get('suggestion.budget.type')}</span>
