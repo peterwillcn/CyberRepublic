@@ -131,7 +131,7 @@ class ViewVoteHistoryButton extends Component {
             {reasonNode}
           </ResultRow>
         }
-        
+
       </Timeline.Item>
     )
   }
