@@ -558,6 +558,10 @@ export default class extends StandardPage {
 
   renderNewOwnerActionNode() {
     const { detail, user, getOwnerSignatureUrl, getSignature } = this.props
+    const newOwnerSig = _.get(detail, 'newOwnerSignature')
+    if (newOwnerSig) {
+      return
+    }
     const currDID = _.get(user, 'did.id')
     if (!currDID) {
       return
@@ -585,6 +589,10 @@ export default class extends StandardPage {
 
   renderNewSecretaryActionNode() {
     const { detail, user, getSecretarySignatureUrl, getSignature } = this.props
+    const newSecSig = _.get(detail, 'newSecretarySignature')
+    if (newSecSig) {
+      return
+    }
     const currDID = _.get(user, 'did.id')
     if (!currDID) {
       return
