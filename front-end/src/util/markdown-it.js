@@ -108,8 +108,9 @@ export const getBudgetHtml = budget => {
       return `
         <p>
           <span>${index + 1}</span>
+          <span>${I18N.get(`suggestion.budget.${item.type}`)}</span>
           <span>${item.amount}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.reasons))}</span>
+          <span>${Number(item.milestoneKey) + 1}</span>
           <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.criteria))}</span>
         </p>
       `
