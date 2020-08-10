@@ -173,6 +173,22 @@ export default class extends Base {
       txHash
     }
 
+    if (suggestion.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      doc.closeProposalNum = suggestion.closeProposalNum
+    }
+    if (suggestion.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      doc.newSecretaryDID = suggestion.newSecretaryDID
+    }
+    if (suggestion.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
+      doc.targetProposalNum = suggestion.targetProposalNum
+      if (suggestion.newOwnerDID) {
+        doc.newOwnerDID = suggestion.newOwnerDID
+      }
+      if (suggestion.newAddress) {
+        doc.newAddress = suggestion.newAddress
+      }
+    }
+
     Object.assign(doc, _.pick(suggestion, BASE_FIELDS))
 
     const councilMembers = await db_user.find({
