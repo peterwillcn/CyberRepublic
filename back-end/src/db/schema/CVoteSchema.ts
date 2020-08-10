@@ -223,5 +223,10 @@ export const CVote = {
   },
   txHash: {
     type: String
-  }
+  },
+  targetProposalNum: String,
+  closeProposalNum: String,
+  newSecretaryDID: String,
+  newOwnerDID: String,
+  newAddress: String
 }
