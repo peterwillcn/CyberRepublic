@@ -103,6 +103,7 @@ export const Suggestion = {
   closeProposalNum: Number, // terminate a proposal
   targetProposalNum: Number, // change the proposal owner
   newOwnerDID: String,
+  // if no newOwnerDID, the newOwnerPublicKey is the compressed public key of  the target proposal's proposer
   newOwnerPublicKey: String,
   newOwnerSignature: String,
   newSecretarySignature: String,

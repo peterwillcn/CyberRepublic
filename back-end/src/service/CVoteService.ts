@@ -1419,6 +1419,27 @@ export default class extends Base {
         )
       ])
     }
+    if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
+      const db_user = this.getDBModel('User')
+      const setDoc: any = {}
+      if (proposal.newOwnerDID) {
+        const newOwner = await db_user.findOne({
+          'did.id': DID_PREFIX + proposal.newOwnerDID
+        })
+        setDoc.proposer = newOwner._id
+        setDoc.proposedBy = userUtil.formatUsername(newOwner)
+      }
+      if (proposal.newAddress) {
+        setDoc.elaAddress = proposal.newAddress
+      }
+      await db_cvote.update(
+        {
+          vid: proposal.targetProposalNum,
+          old: { $exists: false }
+        },
+        setDoc
+      )
+    }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
       const budget = proposal.budget.map((item: any) => {
         if (item.type === 'ADVANCE') {
