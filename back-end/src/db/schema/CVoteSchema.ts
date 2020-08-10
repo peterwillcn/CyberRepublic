@@ -230,5 +230,6 @@ export const CVote = {
   newOwnerDID: String,
   newAddress: String,
   terminatedBy: Number,
-  changedBy: Number
+  changedBy: Number,
+  oldProposer: { type: Schema.Types.ObjectId, ref: 'users' }
 }

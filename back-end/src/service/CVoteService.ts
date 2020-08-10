@@ -1444,6 +1444,7 @@ export default class extends Base {
         })
         setDoc.proposer = newOwner._id
         setDoc.proposedBy = userUtil.formatUsername(newOwner)
+        setDoc.oldProposer = proposal.proposer
       }
       if (proposal.newAddress) {
         setDoc.elaAddress = proposal.newAddress
