@@ -177,7 +177,8 @@ export const CVOTE_STATUS = create([
   'FINAL',
   'DEFERRED',
   'INCOMPLETED',
-  'VETOED'
+  'VETOED',
+  'TERMINATED'
 ])
 export const CVOTE_TRACKING_STATUS = create([
   'DRAFT',

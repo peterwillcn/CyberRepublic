@@ -1319,8 +1319,8 @@ export default class extends Base {
         await callback(array[index], index, array)
       }
     }
-    const rejectThroughAmount: any =
-      (await ela.currentCirculatingSupply()) * 0.1
+    // prettier-ignore
+    const rejectThroughAmount: any = (await ela.currentCirculatingSupply()) * 0.1
     await asyncForEach(list, async (o: any) => {
       const { proposalHash, status } = o._doc
       const rs: any = await getProposalData(proposalHash)
@@ -1397,6 +1397,15 @@ export default class extends Base {
 
     const proposalStatus = CHAIN_STATUS_TO_PROPOSAL_STATUS[chainStatus]
     const proposal = await db_cvote.findById(_id)
+    if (proposal.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      await db_cvote.update(
+        {
+          vid: proposal.closeProposalNum,
+          old: { $exists: false }
+        },
+        { status: constant.CVOTE_STATUS.TERMINATED }
+      )
+    }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
       const budget = proposal.budget.map((item: any) => {
         if (item.type === 'ADVANCE') {
