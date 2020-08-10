@@ -1602,5 +1602,6 @@ en[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = 'INCOMPLETED'
 en[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = 'DEFERRED'
 en[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = 'NOTIFICATION'
 en[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = 'VETOED'
+en[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = 'TERMINATED'
 
 export default en

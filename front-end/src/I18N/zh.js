@@ -1541,6 +1541,7 @@ zh[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = '未完成'
 zh[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = '已过期'
 zh[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = '公示期'
 zh[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = '社区否决'
+zh[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = '已终止'
 
 
 export default zh
