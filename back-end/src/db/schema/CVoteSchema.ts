@@ -229,5 +229,6 @@ export const CVote = {
   newSecretaryDID: String,
   newOwnerDID: String,
   newAddress: String,
-  terminatedBy: Number
+  terminatedBy: Number,
+  changedBy: Number
 }

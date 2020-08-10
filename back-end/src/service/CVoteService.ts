@@ -1437,7 +1437,7 @@ export default class extends Base {
     }
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
       const db_user = this.getDBModel('User')
-      const setDoc: any = {}
+      const setDoc: any = { changedBy: proposal.vid }
       if (proposal.newOwnerDID) {
         const newOwner = await db_user.findOne({
           'did.id': DID_PREFIX + proposal.newOwnerDID
