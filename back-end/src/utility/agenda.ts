@@ -41,7 +41,7 @@ agenda.define(JOB_NAME.INTOPROPOSAL, async (job: any) => {
 
     const suggestions = await DB.getModel('Suggestion').find({
       'proposers.did': { $exists: true },
-      'proposalHash': { $exists: false }
+      proposalHash: { $exists: false }
     })
     console.log('suggestions', suggestions.length)
     if (!suggestions.length) {
@@ -114,46 +114,48 @@ agenda.define(JOB_NAME.USERJOB, async (job: any) => {
 })
 agenda.define(JOB_NAME.COUNCILREVIEWJOB, async (job: any) => {
   console.log('------begin new council review------')
-  try{
+  try {
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
     await cvoteService.updateVoteStatusByChain()
     console.log(JOB_NAME.COUNCILREVIEWJOB, 'at working')
-  }catch (err) {
-    console.log('',err)
+  } catch (err) {
+    console.log('', err)
   }
 })
 agenda.define(JOB_NAME.TRANSACTIONJOB, async (job: any) => {
   console.log('------begin new append transaction------')
-  try{
+  try {
     const DB = await db.create()
-    const elaTransactionService = new ElaTransactionService(DB, { user: undefined })
+    const elaTransactionService = new ElaTransactionService(DB, {
+      user: undefined
+    })
     await elaTransactionService.appendAllTransaction()
     console.log(JOB_NAME.TRANSACTIONJOB, 'at working')
-  }catch (err) {
-    console.log('',err)
+  } catch (err) {
+    console.log('', err)
   }
 })
 agenda.define(JOB_NAME.NOTIFICATIONCOUNCILVOTE, async (job: any) => {
   console.log('------begin notification council to vote------')
-  try{
+  try {
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
     await cvoteService.notifyCouncilToVote(constant.ONE_DAY)
     await cvoteService.notifyCouncilToVote(constant.THREE_DAY)
     console.log(JOB_NAME.NOTIFICATIONCOUNCILVOTE, 'at working')
-  }catch (err) {
-    console.log('',err)
+  } catch (err) {
+    console.log('', err)
   }
 })
 agenda.define(JOB_NAME.PROCESSOLDDATAONCE, async (job: any) => {
-  try{
+  try {
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
     await cvoteService.processOldData()
     console.log(JOB_NAME.PROCESSOLDDATAONCE, 'at working')
-  }catch (err) {
-    console.log('',err)
+  } catch (err) {
+    console.log('', err)
   }
 })
 ;(async function () {
