@@ -22,7 +22,7 @@ const {
 } = MILESTONE_STATUS
 
 const { COMPLETION } = SUGGESTION_BUDGET_TYPE
-const { FINAL, ACTIVE } = CVOTE_STATUS
+const { FINAL, ACTIVE, TERMINATED } = CVOTE_STATUS
 
 class PaymentList extends Component {
   constructor(props) {
@@ -67,7 +67,8 @@ class PaymentList extends Component {
   isVisible() {
     const { user, status } = this.props
     return (
-      (this.isOwner() || user.is_secretary) && [ACTIVE, FINAL].includes(status)
+      (this.isOwner() || user.is_secretary) &&
+      [ACTIVE, FINAL, TERMINATED].includes(status)
     )
   }
 
