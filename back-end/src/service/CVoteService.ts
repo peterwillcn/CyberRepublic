@@ -1406,6 +1406,19 @@ export default class extends Base {
         { status: constant.CVOTE_STATUS.TERMINATED }
       )
     }
+    if (proposal.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      const db_user = this.getDBModel('User')
+      await Promise.all([
+        db_user.update(
+          { role: constant.USER_ROLE.SECRETARY },
+          { role: constant.USER_ROLE.MEMBER }
+        ),
+        db_user.update(
+          { 'did.id': DID_PREFIX + proposal.newSecretaryDID },
+          { role: constant.USER_ROLE.SECRETARY }
+        )
+      ])
+    }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
       const budget = proposal.budget.map((item: any) => {
         if (item.type === 'ADVANCE') {

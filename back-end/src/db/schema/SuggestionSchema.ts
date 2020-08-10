@@ -109,7 +109,8 @@ export const Suggestion = {
   newSecretaryDID: String,
   newSecretaryPublicKey: String,
   targetProposalHash: String,
-  newAddress: String,
+  newAddress: String, // new ELA address
+  // if no newAddress, the newRecipient is the target proposal's ELA address
   newRecipient: String,
   old: Boolean // mark an old suggestion
 }
