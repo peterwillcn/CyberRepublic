@@ -228,5 +228,6 @@ export const CVote = {
   closeProposalNum: String,
   newSecretaryDID: String,
   newOwnerDID: String,
-  newAddress: String
+  newAddress: String,
+  terminatedBy: Number
 }

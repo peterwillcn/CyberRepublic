@@ -1419,7 +1419,7 @@ export default class extends Base {
           vid: proposal.closeProposalNum,
           old: { $exists: false }
         },
-        { status: constant.CVOTE_STATUS.TERMINATED }
+        { status: constant.CVOTE_STATUS.TERMINATED, terminatedBy: proposal.vid }
       )
     }
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
