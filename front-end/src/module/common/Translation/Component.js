@@ -4,6 +4,7 @@ import { Modal, Spin } from 'antd'
 import I18N from '@/I18N'
 import sanitizeHtml from '@/util/html'
 import { TranslateButton, ModalBody, TranslationText, Container, Footer, LangText } from './style'
+import _ from 'lodash'
 
 export default class extends BaseComponent {
   constructor(props) {
@@ -18,18 +19,29 @@ export default class extends BaseComponent {
 
   translate = async (lang) => {
     const { gTranslate, text } = this.props
+    var imgReg = /<img.*?(?:>|\/>)/gi
+    const replaceStr = "%%%-%%%"
+    let imgArr = text.match(imgReg)
+    imgArr = _.map(imgArr, (o) => {
+      return o.replace(" "," style='width:100%;display:block' ")
+    })
+    const translateText = text.replace(imgReg,replaceStr)
     this.setState({
       isTranslateModalOpen: true,
       translation: '',
       selectedLang: lang,
     })
-    const res = await gTranslate({ text, target: lang })
-    this.setState({ translation: res.translation })
+    const res = await gTranslate({ text:translateText, target: lang })
+    let content = String(res.translation)
+    imgArr.forEach((e)=>{
+      content = content.replace(replaceStr,e)
+    })
+    this.setState({ translation: content })
   }
 
   renderTranslationModal() {
     const { isTranslateModalOpen, translation } = this.state
-    const translationNode = translation ? <TranslationText dangerouslySetInnerHTML={{ __html: sanitizeHtml(translation) }} /> : <Spin />
+    const translationNode = translation ? <TranslationText dangerouslySetInnerHTML={{ __html: translation }} /> : <Spin />
 
     return (
       <Modal

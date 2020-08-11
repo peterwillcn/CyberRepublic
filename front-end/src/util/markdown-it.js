@@ -88,12 +88,12 @@ export const getPlanHtml = plan => {
     .join('')
   return `
     <div>
-      <p>${I18N.get('suggestion.plan.teamInfo')}</p>
+      <p translate="no">${I18N.get('suggestion.plan.teamInfo')}</p>
       <p>
-        <span>${I18N.get('suggestion.plan.teamMember')}#</span>
-        <span>${I18N.get('suggestion.plan.role')}</span>
-        <span>${I18N.get('suggestion.plan.responsibility')}</span>
-        <span>${I18N.get('suggestion.plan.moreInfo')}</span>
+        <span translate="no">${I18N.get('suggestion.plan.teamMember')}#</span>
+        <span translate="no">${I18N.get('suggestion.plan.role')}</span>
+        <span translate="no">${I18N.get('suggestion.plan.responsibility')}</span>
+        <span translate="no">${I18N.get('suggestion.plan.moreInfo')}</span>
       </p>
       ${lists}
     </div>
@@ -109,7 +109,7 @@ export const getBudgetHtml = budget => {
       return `
         <p>
           <span>${index + 1}</span>
-          <span>${I18N.get(`suggestion.budget.${item.type}`)}</span>
+          <span translate="no">${I18N.get(`suggestion.budget.${item.type}`)}</span>
           <span>${item.amount}</span>
           <span>${Number(item.milestoneKey) + 1}</span>
           <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.criteria))}</span>
@@ -119,13 +119,13 @@ export const getBudgetHtml = budget => {
     .join('')
   return `
     <div>
-      <p>${I18N.get('suggestion.budget.schedule')}</p>
+      <p translate="no">${I18N.get('suggestion.budget.schedule')}</p>
       <p>
-        <span>${I18N.get('suggestion.budget.payment')}#</span>
-        <span>${I18N.get('suggestion.budget.type')}</span>
-        <span>${I18N.get('suggestion.budget.amount')}(ELA)</span>
-        <span>${I18N.get('suggestion.budget.goal')}</span>
-        <span>${I18N.get('suggestion.budget.criteria')}</span>
+        <span translate="no">${I18N.get('suggestion.budget.payment')}#</span>
+        <span translate="no">${I18N.get('suggestion.budget.type')}</span>
+        <span translate="no">${I18N.get('suggestion.budget.amount')}(ELA)</span>
+        <span translate="no">${I18N.get('suggestion.budget.goal')}</span>
+        <span translate="no">${I18N.get('suggestion.budget.criteria')}</span>
       </p>
       ${lists}
     </div>
