@@ -376,8 +376,9 @@ export default class extends StandardPage {
   showCreateForm = () => {
     const { isLogin, history, user } = this.props
     if (!isLogin) {
-      const query = { create: true }
-      loginRedirectWithQuery({ query })
+      // const query = { create: true }
+      // loginRedirectWithQuery({ query })
+      sessionStorage.setItem('loginRedirect', '/suggestion/create')
       history.push('/login')
       return
     }
