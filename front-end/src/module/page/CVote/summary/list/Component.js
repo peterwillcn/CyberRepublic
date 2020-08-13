@@ -56,13 +56,14 @@ export default class extends BaseComponent {
     const dataList = completion[0] && _.filter(withdrawalHistory, {
       milestoneKey:  completion[0].milestoneKey
     })
-    if (!dataList || dataList.length === 0)
+    if (!dataList || dataList.length === 0) {
       return (
         <Empty
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           description={<span>{I18N.get('proposal.text.noData')}</span>}
         />
       )
+    }
     const body = (
       <List
         itemLayout="horizontal"
