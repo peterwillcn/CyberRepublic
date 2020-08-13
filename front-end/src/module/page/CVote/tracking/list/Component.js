@@ -4,7 +4,7 @@ import moment from 'moment/moment'
 import BaseComponent from '@/model/BaseComponent'
 import DraftEditor from '@/module/common/DraftEditor'
 import CRPopover from '@/module/shared/Popover/Component'
-import { Row, Col, Button, List, Collapse, message,Empty } from 'antd'
+import { Row, Col, Button, List, Collapse, message, Empty } from 'antd'
 import I18N from '@/I18N'
 import { CONTENT_TYPE, DATE_FORMAT, CVOTE_TRACKING_STATUS } from '@/constant'
 import styled from 'styled-components'
@@ -17,7 +17,7 @@ export default class extends BaseComponent {
     super(p)
 
     this.state = {
-      loading: true,
+      loading: true
     }
   }
 
@@ -39,7 +39,11 @@ export default class extends BaseComponent {
   }
 
   renderTitle() {
-    return <ContentTitle id="tracking">{I18N.get('proposal.fields.tracking')}</ContentTitle>
+    return (
+      <ContentTitle id="tracking">
+        {I18N.get('proposal.fields.tracking')}
+      </ContentTitle>
+    )
   }
 
   renderPrivateList() {
@@ -51,7 +55,7 @@ export default class extends BaseComponent {
         grid={{ column: 1 }}
         split={false}
         dataSource={privateList}
-        renderItem={item => (
+        renderItem={(item) => (
           <StyledPrivateItem actions={[]}>
             <StyledRow gutter={16}>
               <LeftCol span={21} status={item.status}>
@@ -62,10 +66,14 @@ export default class extends BaseComponent {
                     editorEnabled={false}
                   />
                 </StyledRichContent>
-                <StyledFooter>{moment(item.createdAt).format(DATE_FORMAT)}</StyledFooter>
+                <StyledFooter>
+                  {moment(item.createdAt).format(DATE_FORMAT)}
+                </StyledFooter>
               </LeftCol>
               <RightCol span={3}>
-                <Status status={item.status}>{I18N.get(`proposal.status.tracking.${item.status}`)}</Status>
+                <Status status={item.status}>
+                  {I18N.get(`proposal.status.tracking.${item.status}`)}
+                </Status>
               </RightCol>
             </StyledRow>
             {this.renderActions(item)}
@@ -75,7 +83,10 @@ export default class extends BaseComponent {
     )
     return (
       <StyledCollapse defaultActiveKey={['1']} expandIconPosition="right">
-        <Panel header={I18N.get('proposal.text.tracking.reviewDetails')} key="1">
+        <Panel
+          header={I18N.get('proposal.text.tracking.reviewDetails')}
+          key="1"
+        >
           {body}
         </Panel>
       </StyledCollapse>
@@ -84,29 +95,32 @@ export default class extends BaseComponent {
 
   renderWithdrawalList() {
     const { withdrawalHistory, budget } = this.props.proposal
-    const completion = _.filter(budget, { 'type': 'COMPLETION' })
+    const completion = _.filter(budget, { type: 'COMPLETION' })
     const dataList = _.filter(withdrawalHistory, (o) => {
-      return !_.isEmpty(o.review) && o.milestoneKey !== completion[0].milestoneKey
+      return (
+        !_.isEmpty(o.review) && o.milestoneKey !== completion[0].milestoneKey
+      )
     })
-    if (!dataList || dataList.length === 0) return (<Empty
-      image={Empty.PRESENTED_IMAGE_SIMPLE}
-      description={
-        <span>
-          {I18N.get("proposal.text.noData")}
-        </span>
-      }
-    >
-    </Empty>)
+    if (!dataList || dataList.length === 0)
+      return (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={<span>{I18N.get('proposal.text.noData')}</span>}
+        />
+      )
     const body = (
       <List
         itemLayout="horizontal"
         grid={{ column: 1 }}
         split={false}
         dataSource={dataList}
-        renderItem={item => (
+        renderItem={(item) => (
           <StyledPrivateItem actions={[]}>
             <StyledRow gutter={16}>
-              <LeftCol span={21} status={item.review ? item.review.opinion : 'REVIEWING'}>
+              <LeftCol
+                span={21}
+                status={item.review ? item.review.opinion : 'REVIEWING'}
+              >
                 <StyledRichContent span={21}>
                   <DraftEditor
                     value={item.message}
@@ -122,8 +136,14 @@ export default class extends BaseComponent {
                 </StyledFooter>
               </LeftCol>
               <RightCol span={3}>
-                <Status status={item.review ? item.review.opinion : 'REVIEWING'}>
-                  {I18N.get(`proposal.status.withdrawal.${item.review ? item.review.opinion : 'REVIEWING'}`)}
+                <Status
+                  status={item.review ? item.review.opinion : 'REVIEWING'}
+                >
+                  {I18N.get(
+                    `proposal.status.withdrawal.${
+                      item.review ? item.review.opinion : 'REVIEWING'
+                    }`
+                  )}
                 </Status>
               </RightCol>
             </StyledRow>
@@ -134,7 +154,10 @@ export default class extends BaseComponent {
     )
     return (
       <StyledCollapse defaultActiveKey={['1']} expandIconPosition="right">
-        <Panel header={I18N.get('proposal.text.tracking.reviewDetails')} key="1">
+        <Panel
+          header={I18N.get('proposal.text.tracking.reviewDetails')}
+          key="1"
+        >
           {body}
         </Panel>
       </StyledCollapse>
@@ -184,9 +207,7 @@ export default class extends BaseComponent {
   renderBtns(id) {
     const { trackingId } = this.state
     const btnReject = (
-      <Button
-        onClick={this.showModal.bind(this, id)}
-      >
+      <Button onClick={this.showModal.bind(this, id)}>
         {I18N.get('proposal.btn.tracking.reject')}
       </Button>
     )
@@ -210,7 +231,6 @@ export default class extends BaseComponent {
       />
     )
 
-
     return (
       <BtnGroup>
         {popOverReject}
@@ -231,7 +251,9 @@ export default class extends BaseComponent {
       )
     } else if (item.status === CVOTE_TRACKING_STATUS.REJECT) {
       const commenter = _.get(item, 'comment.createdBy')
-      const commenterName = commenter ? `${userUtil.formatUsername(commenter)}, ` : ''
+      const commenterName = commenter
+        ? `${userUtil.formatUsername(commenter)}, `
+        : ''
 
       body = (
         <CommentCol span={21} status={item.status}>
@@ -255,11 +277,7 @@ export default class extends BaseComponent {
       )
     }
 
-    return (
-      <StyledRow gutter={16}>
-        {body}
-      </StyledRow>
-    )
+    return <StyledRow gutter={16}>{body}</StyledRow>
   }
 
   renderWithdrawalActions(item) {
@@ -280,7 +298,9 @@ export default class extends BaseComponent {
               })}
             </div>
             <CommentFooter>
-              {secretariat && secretariat.didName ? secretariat.didName + " , " : null}
+              {secretariat && secretariat.didName
+                ? secretariat.didName + ' , '
+                : null}
               {moment(item.review.createdAt).format(DATE_FORMAT)}
             </CommentFooter>
           </CommentContent>
@@ -288,11 +308,7 @@ export default class extends BaseComponent {
       )
     }
 
-    return (
-      <StyledRow gutter={16}>
-        {body}
-      </StyledRow>
-    )
+    return <StyledRow gutter={16}>{body}</StyledRow>
   }
 
   getQuery = () => {
@@ -313,33 +329,30 @@ export default class extends BaseComponent {
   }
 }
 
-
 const colorMap = {
   PUBLISHED: {
     dark: '#43AF92',
-    light: 'rgba(29, 233, 182, 0.1)',
+    light: 'rgba(29, 233, 182, 0.1)'
   },
   REJECT: {
     dark: '#BE1313',
-    light: 'rgba(252, 192, 192, 0.2)',
+    light: 'rgba(252, 192, 192, 0.2)'
   },
   REVIEWING: {
     dark: '#CCCCCC',
-    light: 'rgba(204, 204, 204, 0.2)',
+    light: 'rgba(204, 204, 204, 0.2)'
   },
   REJECTED: {
     dark: '#BE1313',
-    light: 'rgba(252, 192, 192, 0.2)',
+    light: 'rgba(252, 192, 192, 0.2)'
   },
   APPROVED: {
     dark: '#43AF92',
-    light: 'rgba(29, 233, 182, 0.1)',
+    light: 'rgba(29, 233, 182, 0.1)'
   }
 }
 
-
-export const Container = styled.div`
-`
+export const Container = styled.div``
 export const StyledRichContent = styled.div`
   .md-RichEditor-root {
     figure.md-block-image {
@@ -351,58 +364,56 @@ export const StyledRichContent = styled.div`
   }
 `
 export const StyledCollapse = styled(Collapse)`
-  border: none!important;
+  border: none !important;
   margin-top: 30px;
   .ant-collapse-content-box {
-    padding: 0!important;
+    padding: 0 !important;
   }
   .ant-collapse-content {
-    border: none!important;
+    border: none !important;
   }
   .ant-collapse-header {
     text-align: center;
-    padding-left: 0!important;
-    color: #008D85!important;
+    padding-left: 0 !important;
+    color: #008d85 !important;
     background-color: white;
     .ant-collapse-arrow {
-      right: calc(50% - 70px)!important;
+      right: calc(50% - 70px) !important;
     }
   }
   > .ant-collapse-item {
-    border-bottom: none!important;
+    border-bottom: none !important;
   }
 `
 
 export const StyledRow = styled(Row)`
-  margin: 0!important;
+  margin: 0 !important;
 `
 
 export const StyledItem = styled(List.Item)`
   background: rgba(29, 233, 182, 0.1);
-  border: 1px solid rgba(0, 141, 133, 0.2)!important;
+  border: 1px solid rgba(0, 141, 133, 0.2) !important;
   margin: 10px auto;
   padding-left: 20px;
   .md-RichEditor-root {
     background: none;
-    padding-left: 20px!important;
+    padding-left: 20px !important;
   }
 `
 
-export const StyledPrivateItem = styled(List.Item)`
-
-`
+export const StyledPrivateItem = styled(List.Item)``
 
 export const LeftCol = styled(Col)`
   margin: 10px auto;
   padding-left: 20px;
   .md-RichEditor-root {
     background: none;
-    padding-left: 20px!important;
+    padding-left: 20px !important;
   }
-  ${props => `
+  ${(props) => `
     background: ${colorMap[props.status].light};
     border-left: 4px solid ${colorMap[props.status].dark};
-  `}
+  `};
 `
 export const RightCol = styled(Col)`
   padding-top: 20px;
@@ -414,14 +425,13 @@ export const CommentCol = styled(LeftCol)`
 `
 
 export const CommentContent = styled.div`
-  padding: 20px 20px  20px 30px;
+  padding: 20px 20px 20px 30px;
 `
 
 export const Status = styled.span`
-  ${props => `
+  ${(props) => `
     background: ${colorMap[props.status].dark};
-  `}
-  color: white;
+  `} color: white;
   font-size: 8px;
   padding: 1px 5px;
 `
