@@ -481,7 +481,7 @@ class C extends BaseComponent {
         if (_.isEmpty(commentPlainText)) {
           this.props.form.setFields({
             comment: {
-              errors: [new Error('Please input comment')],
+              errors: [new Error(I18N.get('suggestion.vote.error.empty'))],
             },
           })
 
@@ -492,7 +492,7 @@ class C extends BaseComponent {
           this.props.form.setFields({
             comment: {
               value: comment,
-              errors: [new Error('Comment is too long')],
+              errors: [new Error(I18N.get('suggestion.vote.error.tooLong'))],
             },
           })
 

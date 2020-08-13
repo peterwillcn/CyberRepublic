@@ -8,7 +8,7 @@ function MarkedPreview({ content, style }) {
       dangerouslySetInnerHTML={{
         __html: convertMarkdownToHtml(content)
       }}
-      style={style}
+      innerStyle={style}
     />
   )
 }
@@ -202,5 +202,5 @@ const Wrapper = styled.div`
     top: -0.25em;
     vertical-align: top;
   }
-  ${props => props.style}
+  ${(props) => props.innerStyle};
 `

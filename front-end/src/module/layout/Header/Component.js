@@ -12,6 +12,7 @@ import Headroom from 'react-headroom'
 import ChinaFlag from './ChinaFlag'
 import UsFlag from './UsFlag'
 import './style.scss'
+import SubMenu from 'antd/lib/menu/SubMenu'
 
 const { Header } = Layout
 
@@ -156,7 +157,6 @@ export default class extends BaseComponent {
         <Menu.Item key="council">
           {I18N.get('navigation.council.submenu.incumbent')}
         </Menu.Item>
-
         <Menu.Item key="candidates">
           {I18N.get('navigation.council.submenu.candidate')}
         </Menu.Item>
@@ -192,7 +192,15 @@ export default class extends BaseComponent {
         'admin',
         'developer',
         'social',
-        'community'
+        'community',
+        'council',
+        'candidates',
+        'whitepaper',
+        'suggestion',
+        'elips',
+        'proposals',
+        'what-is-new',
+        'resources'
       ],
       key => ((this.props.pathname || '').indexOf(`/${key}`) === 0 ? key : '')
     )
@@ -200,8 +208,13 @@ export default class extends BaseComponent {
     if (_.includes(keys, 'admin')) {
       keys = _.union(_.without(keys, ['admin']), ['profile'])
     }
-
-    return keys
+    return _.map(keys, function(o) {
+      if (o === 'council' || o === 'candidates') {
+        return 'councils'
+      } else {
+        return o
+      }
+    })
   }
 
   ord_render() {
@@ -266,6 +279,22 @@ export default class extends BaseComponent {
             onClick={this.clickItem.bind(this)}
             className="c_Header_Menu pull-right"
             selectedKeys={this.getSelectedKeys()}
+            mode="horizontal">
+            {this.props.isLogin ? (
+              <Menu.Item className="c_MenuItem link" key="profile">
+                {I18N.get('navigation.profile')}
+              </Menu.Item>
+            ) : (
+                <Menu.Item className="c_MenuItem link" key="login">
+                  {I18N.get('0201')}
+                </Menu.Item>
+              )}
+          </Menu>
+
+          <Menu
+            onClick={this.clickItem.bind(this)}
+            className="c_Header_Menu pull-center"
+            selectedKeys={this.getSelectedKeys()}
             mode="horizontal"
           >
             <Menu.Item className="c_MenuItem link" key="councils">
@@ -310,17 +339,7 @@ export default class extends BaseComponent {
                 </a>
               </Dropdown>
             </Menu.Item>
-
-            {this.props.isLogin ? (
-              <Menu.Item className="c_MenuItem link" key="profile">
-                {I18N.get('navigation.profile')}
-              </Menu.Item>
-            ) : (
-              <Menu.Item className="c_MenuItem link" key="login">
-                {I18N.get('0201')}
-              </Menu.Item>
-            )}
-          </Menu>
+            </Menu>
           <div className="clearfix" />
           {this.renderProfileToast()}
           {this.renderCompleteProfileModal()}

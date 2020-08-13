@@ -1,6 +1,7 @@
 import Base from './Base'
 import * as _ from 'lodash'
 import * as jwt from 'jsonwebtoken'
+import { Types } from 'mongoose'
 import { constant } from '../constant'
 import {
   mail,
@@ -190,7 +191,9 @@ export default class extends Base {
                 )
               ])
 
-              this.notifySecretaries(this.updateMailTemplate(proposal.vid))
+              this.notifySecretaries(
+                this.updateMailTemplate(proposal.vid, proposal._id)
+              )
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
               logger.error(err)
@@ -330,12 +333,12 @@ export default class extends Base {
     }
   }
 
-  private updateMailTemplate(id: string) {
+  private updateMailTemplate(vid: string, _id: Types.ObjectId) {
     const subject = `【Payment Review】One payment request is waiting for your review`
     const body = `
-      <p>One payment request in proposal #${id} is waiting for your review:</p>
+      <p>One payment request in proposal #${vid} is waiting for your review:</p>
       <p>Click this link to view more details:</p>
-      <p><a href="${process.env.SERVER_URL}/proposals/${id}">${process.env.SERVER_URL}/proposals/${id}</a></p>
+      <p><a href="${process.env.SERVER_URL}/proposals/${_id}">${process.env.SERVER_URL}/proposals/${_id}</a></p>
       <br />
       <p>Cyber Republic Team</p>
       <p>Thanks</p>

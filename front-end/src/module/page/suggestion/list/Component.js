@@ -575,15 +575,6 @@ export default class extends StandardPage {
               </FilterItem>
               <FilterItem className="filter-checkbox">
                 <Checkbox
-                  checked={infoNeeded}
-                  onChange={this.handleInfoNeededChange}
-                />
-                <CheckboxText>
-                  {I18N.get('suggestion.tag.type.INFO_NEEDED')}
-                </CheckboxText>
-              </FilterItem>
-              <FilterItem className="filter-checkbox">
-                <Checkbox
                   checked={referenceStatus}
                   onChange={this.handleReferenceStatusChange}
                 />

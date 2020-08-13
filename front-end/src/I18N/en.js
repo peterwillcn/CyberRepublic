@@ -318,6 +318,8 @@ const en = {
   // suggestion error
   'suggestion.create.error.required': 'This field is required',
   'suggestion.create.error.tooShort': 'This field is too short',
+  'suggestion.vote.error.empty': 'Please input comment',
+  'suggestion.vote.error.tooLong': 'Comment is too long',
 
   // suggestion rules
   'suggestion.rules': 'Rules',
@@ -824,6 +826,9 @@ const en = {
 
   'council.voting.voteResult.onchain':'Vote onchain',
   
+  'council.voting.viewHistory.btn': 'Voting history',
+  'council.voting.viewHistory.current':'Current Voting',
+
   // Landing
   'landing.cr': 'Cyber Republic',
   'landing.footer.note': 'Stay up to date with Cyber Republic',

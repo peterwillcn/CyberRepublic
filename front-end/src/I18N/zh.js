@@ -316,6 +316,8 @@ const zh = {
   // suggestion error
   'suggestion.create.error.required': '必填项',
   'suggestion.create.error.tooShort': '文字太短',
+  'suggestion.vote.error.empty': '请输入内容',
+  'suggestion.vote.error.tooLong': '内容太长',
 
   // suggestion rules
   'suggestion.rules': '规则',
@@ -796,6 +798,9 @@ const zh = {
   'council.voting.voteResult.unvoted': '待投票',
   
   'council.voting.voteResult.onchain':'投票上链',
+
+  'council.voting.viewHistory.btn': '投票历史',
+  'council.voting.viewHistory.current':'当前投票',
 
   // Landing
   'landing.cr': 'Cyber Republic',

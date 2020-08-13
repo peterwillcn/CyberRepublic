@@ -107,6 +107,11 @@
   float: right;
 }
 
+.pull-center {
+  display: inline-table;
+  justify-content: center;
+}
+
 .inline-block {
   display: inline-block;
 }

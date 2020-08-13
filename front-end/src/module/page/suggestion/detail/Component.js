@@ -194,13 +194,14 @@ export default class extends StandardPage {
             </Row>
           </MediaQuery>
           {editForm}
-          {uri.hasQuery('new') && !signature && (
-            <SignSuggestionModal
-              id={detail._id}
-              getSignatureUrl={this.props.getSignatureUrl}
-              getSignature={this.props.getSignature}
-            />
-          )}
+          {uri.hasQuery('new') &&
+            !signature && (
+              <SignSuggestionModal
+                id={detail._id}
+                getSignatureUrl={this.props.getSignatureUrl}
+                getSignature={this.props.getSignature}
+              />
+            )}
         </Container>
         <Footer />
       </div>
@@ -221,9 +222,11 @@ export default class extends StandardPage {
       text = <a href={`https://blockchain.elastos.org/tx/${value}`}>{value}</a>
     }
     if (item === 'proposalHash') {
-      btn = <CopyButton onClick={() => this.copyToClip(value)} >
+      btn = (
+        <CopyButton onClick={() => this.copyToClip(value)}>
           {I18N.get('suggestion.btn.copyHash')}
         </CopyButton>
+      )
     }
     return (
       <Item>
@@ -239,11 +242,11 @@ export default class extends StandardPage {
   }
 
   copyToClip(content) {
-    var aux = document.createElement("input"); 
-    aux.setAttribute("value", content); 
-    document.body.appendChild(aux); 
-    aux.select();
-    const err = document.execCommand("copy"); 
+    var aux = document.createElement('input')
+    aux.setAttribute('value', content)
+    document.body.appendChild(aux)
+    aux.select()
+    const err = document.execCommand('copy')
     document.body.removeChild(aux)
     if (err) {
       message.success(I18N.get('btn.CopyHash'))
@@ -347,11 +350,11 @@ export default class extends StandardPage {
                     editable={false}
                   />
                 ) : (
-                    <MilestonesReadonly
-                      initialValue={detail.plan.milestone}
-                      editable={false}
-                    />
-                  )}
+                  <MilestonesReadonly
+                    initialValue={detail.plan.milestone}
+                    editable={false}
+                  />
+                )}
                 <Subtitle>{I18N.get('suggestion.plan.teamInfo')}</Subtitle>
                 <TeamInfoList list={detail.plan.teamInfo} editable={false} />
                 <Subtitle>{I18N.get('suggestion.plan.introduction')}</Subtitle>
@@ -382,7 +385,9 @@ export default class extends StandardPage {
                   milestone={detail.plan.milestone}
                   editable={false}
                 />
-                <Subtitle>{I18N.get('suggestion.budget.introduction')}</Subtitle>
+                <Subtitle>
+                  {I18N.get('suggestion.budget.introduction')}
+                </Subtitle>
                 <MarkdownPreview content={detail.budgetIntro} />
               </div>
             )
@@ -546,9 +551,9 @@ export default class extends StandardPage {
           typeof detail.plan !== 'string'
         ) {
           return `
-            <h2>${I18N.get('suggestion.fields.plan')}</h2>
+            <h2 translate="no">${I18N.get('suggestion.fields.plan')}</h2>
             <p>${getPlanHtml(detail.plan.teamInfo)}</p>
-            <h2>${I18N.get(`suggestion.plan.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(`suggestion.plan.introduction`)}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(detail.planIntro)
             )}</p>
@@ -560,23 +565,25 @@ export default class extends StandardPage {
           typeof detail.budget !== 'string'
         ) {
           return `
-            <h2>${I18N.get('suggestion.fields.budget')}</h2>
-            <p>${I18N.get('suggestion.budget.total')}</p>
+            <h2 translate="no">${I18N.get('suggestion.fields.budget')}</h2>
+            <p translate="no">${I18N.get('suggestion.budget.total')}</p>
             <p>${detail.budgetAmount}</p>
-            <p>${I18N.get('suggestion.budget.address')}</p>
+            <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${detail.elaAddress}</p>
             <p>${getBudgetHtml(detail.budget)}</p>
-            <h2>${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(
+              `suggestion.budget.introduction`
+            )}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(detail.budgetIntro)
             )}</p>
           `
         }
         return `
-          <h2>${I18N.get(`suggestion.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`suggestion.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
-          removeImageFromMarkdown(detail[section])
-        )}</p>
+            removeImageFromMarkdown(detail[section])
+          )}</p>
           `
       })
       .join('')
@@ -660,20 +667,21 @@ export default class extends StandardPage {
     const signature = _.get(detail, 'signature.data')
     const makeIntoProposalPanel = this.renderMakeIntoProposalPanel()
 
-    const considerBtn = (isCouncil || isAdmin) && signature && (
-      <Col xs={24} sm={8}>
-        <Popconfirm
-          title={I18N.get('suggestion.modal.consideration')}
-          onConfirm={() => this.consider()}
-          okText={I18N.get('.yes')}
-          cancelText={I18N.get('.no')}
-        >
-          <StyledButton type="ebp" className="cr-btn cr-btn-default">
-            {I18N.get('suggestion.btnText.markConsider')}
-          </StyledButton>
-        </Popconfirm>
-      </Col>
-    )
+    const considerBtn = (isCouncil || isAdmin) &&
+      signature && (
+        <Col xs={24} sm={8}>
+          <Popconfirm
+            title={I18N.get('suggestion.modal.consideration')}
+            onConfirm={() => this.consider()}
+            okText={I18N.get('.yes')}
+            cancelText={I18N.get('.no')}
+          >
+            <StyledButton type="ebp" className="cr-btn cr-btn-default">
+              {I18N.get('suggestion.btnText.markConsider')}
+            </StyledButton>
+          </Popconfirm>
+        </Col>
+      )
     const needMoreInfoBtn = (isCouncil || isAdmin) && (
       <Col xs={24} sm={8}>
         <StyledButton
