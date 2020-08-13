@@ -96,7 +96,8 @@ export default class extends BaseComponent {
   renderWithdrawalList() {
     const { withdrawalHistory, budget } = this.props.proposal
     const completion = _.filter(budget, { type: 'COMPLETION' })
-    const dataList = _.filter(withdrawalHistory, (o) => {
+    // prettier-ignore
+    const dataList = completion[0] && _.filter(withdrawalHistory, (o) => {
       return (
         !_.isEmpty(o.review) && o.milestoneKey !== completion[0].milestoneKey
       )

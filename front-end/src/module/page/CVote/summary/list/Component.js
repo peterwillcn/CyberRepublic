@@ -52,8 +52,9 @@ export default class extends BaseComponent {
   renderPrivateList() {
     const { withdrawalHistory, budget } = this.props.proposal
     const completion = _.filter(budget, { type: 'COMPLETION' })
-    const dataList = _.filter(withdrawalHistory, {
-      milestoneKey: completion[0].milestoneKey
+    // prettier-ignore
+    const dataList = completion[0] && _.filter(withdrawalHistory, {
+      milestoneKey:  completion[0].milestoneKey
     })
     if (!dataList || dataList.length === 0)
       return (
