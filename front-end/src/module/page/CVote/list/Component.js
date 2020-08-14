@@ -814,7 +814,7 @@ export default class extends BaseComponent {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  {_.map(CVOTE_STATUS, (value) => (
+                  {_.map(CVOTE_STATUS, (value) => value !== 'DRAFT' && (
                     <Select.Option key={value} value={value}>
                       {I18N.get(`cvoteStatus.${value}`)}
                     </Select.Option>
