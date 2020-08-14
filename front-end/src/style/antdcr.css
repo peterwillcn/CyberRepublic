@@ -10051,8 +10051,6 @@ li.ant-menu-item.ant-menu-item-selected:after {
   float: left;
   border-bottom: 2px solid transparent;
 }
-.ant-menu-horizontal > .ant-menu-item:hover,
-.ant-menu-horizontal > .ant-menu-submenu:hover,
 .ant-menu-horizontal > .ant-menu-item-active,
 .ant-menu-horizontal > .ant-menu-submenu-active,
 .ant-menu-horizontal > .ant-menu-item-open,
@@ -10060,6 +10058,13 @@ li.ant-menu-item.ant-menu-item-selected:after {
 .ant-menu-horizontal > .ant-menu-item-selected,
 .ant-menu-horizontal > .ant-menu-submenu-selected {
   border-bottom: 2px solid #43af92;
+  font-weight: 500 !important;
+  color: #000;
+}
+.ant-menu-horizontal > .ant-menu-item:hover,
+.ant-menu-horizontal > .ant-menu-submenu:hover {
+  border-bottom: 2px solid #43af92;
+  font-weight: 500 !important;
   color: #43af92;
 }
 .ant-menu-horizontal > .ant-menu-item > a {
@@ -10073,7 +10078,8 @@ li.ant-menu-item.ant-menu-item-selected:after {
   bottom: -2px;
 }
 .ant-menu-horizontal > .ant-menu-item-selected > a {
-  color: #43af92;
+  /* color: #43af92; */
+  color: #000;
 }
 .ant-menu-horizontal:after {
   content: "\20";

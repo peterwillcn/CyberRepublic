@@ -238,7 +238,10 @@ export default class extends BaseComponent {
       },
       {
         title: I18N.get('council.voting.author'),
-        dataIndex: 'proposedBy'
+        dataIndex: 'proposer.profile.firstName',
+        render: (proposer, item) => (
+          userUtil.formatUsername(item.proposer)
+        )
       },
       {
         title: I18N.get('council.voting.voteByCouncil'),
@@ -811,7 +814,7 @@ export default class extends BaseComponent {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  {_.map(CVOTE_STATUS, (value) => (
+                  {_.map(CVOTE_STATUS, (value) => value !== 'DRAFT' && (
                     <Select.Option key={value} value={value}>
                       {I18N.get(`cvoteStatus.${value}`)}
                     </Select.Option>

@@ -23,9 +23,7 @@ class ViewVoteHistoryButton extends Component {
   }
 
   VotesNode = (data, key) => {
-    if (!data) {
-      return
-    }
+    if (!data) return
     let voteStatus = data && data.status
     if (
       voteStatus == undefined ||
@@ -133,7 +131,7 @@ class ViewVoteHistoryButton extends Component {
             {reasonNode}
           </ResultRow>
         }
-        
+
       </Timeline.Item>
     )
   }

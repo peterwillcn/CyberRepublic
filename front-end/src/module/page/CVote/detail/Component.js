@@ -311,7 +311,7 @@ class C extends StandardPage {
       result = sections
         .map((section) => {
           return `
-          <h2>${I18N.get(`elip.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`elip.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
             removeImageFromMarkdown(data[section])
           )}</p>
@@ -335,13 +335,13 @@ class C extends StandardPage {
             typeof data.budget !== 'string'
           ) {
             return `
-            <h2>${I18N.get('proposal.fields.budget')}</h2>
-            <p>${I18N.get('suggestion.budget.total')}</p>
+            <h2 translate="no">${I18N.get('proposal.fields.budget')}</h2>
+            <p translate="no">${I18N.get('suggestion.budget.total')}</p>
             <p>${data.budgetAmount}</p>
-            <p>${I18N.get('suggestion.budget.address')}</p>
+            <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
             <p>${getBudgetHtml(data.budget)}</p>
-            <h2>${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(`suggestion.budget.introduction`)}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(data.budgetIntro)
             )}</p>
@@ -353,16 +353,16 @@ class C extends StandardPage {
             typeof data.plan !== 'string'
           ) {
             return `
-            <h2>${I18N.get('proposal.fields.plan')}</h2>
+            <h2 translate="no">${I18N.get('proposal.fields.plan')}</h2>
             <p>${getPlanHtml(data.plan.teamInfo)}</p>
-            <h2>${I18N.get(`suggestion.plan.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(`suggestion.plan.introduction`)}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(data.planIntro)
             )}</p>
           `
           }
           return `
-          <h2>${I18N.get(`proposal.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`proposal.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
             removeImageFromMarkdown(data[section])
           )}</p>

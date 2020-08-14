@@ -164,6 +164,7 @@ const StyledRow = styled.tr`
     padding: 8px 16px;
     color: #000;
     overflow-wrap: break-word;
+    vertical-align: middle;
     > button {
       margin: 0 4px;
     }
