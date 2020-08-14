@@ -308,10 +308,16 @@ export const avatar_map = {
     'https://s3-ap-southeast-1.amazonaws.com/s3-cr-asia-prod/19691cdc-913f-40d1-9d1d-f88b709fcecf_yipeng.jpeg'
 }
 
-export const CVOTE_TYPE = {
-  1: 'New Motion',
-  2: 'Motion Against',
-  3: 'Anything Else'
+export const PROPOSAL_TYPE = {
+  NEW_MOTION: '1',
+  MOTION_AGAINST: '2',
+  ANYTHING_ELSE: '3',
+  STANDARD_TRACK: '4',
+  PROCESS: '5',
+  INFORMATIONAL: '6',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
 }
 
 export const USER_SKILLSET = {

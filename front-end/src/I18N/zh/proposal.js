@@ -2,7 +2,8 @@ import {
   CVOTE_TRACKING_STATUS,
   CVOTE_SUMMARY_STATUS,
   CVOTE_WITHDRAWAL_STATUS,
-  ABSTRACT_MAX_WORDS
+  ABSTRACT_MAX_WORDS,
+  PROPOSAL_TYPE
 } from '@/constant'
 
 export default {
@@ -137,5 +138,16 @@ export default {
     approved: '已批准并发布',
     draftSaved: '草稿保存成功，请前往提案列表查看',
     proposalPublished: '提案发布成功'
+  },
+  type: {
+    [PROPOSAL_TYPE.NEW_MOTION]: '新动议',
+    [PROPOSAL_TYPE.MOTION_AGAINST]: '反对动议',
+    [PROPOSAL_TYPE.ANYTHING_ELSE]: '其它事宜',
+    [PROPOSAL_TYPE.STANDARD_TRACK]: '标准跟踪 ELIP',
+    [PROPOSAL_TYPE.PROCESS]: '流程 ELIP',
+    [PROPOSAL_TYPE.INFORMATIONAL]: '信息 ELIP',
+    [PROPOSAL_TYPE.CHANGE_PROPOSAL]: '变更提案动议',
+    [PROPOSAL_TYPE.CHANGE_SECRETARY]: '变更秘书长动议',
+    [PROPOSAL_TYPE.TERMINATE_PROPOSAL]: '终止提案动议',
   }
 }

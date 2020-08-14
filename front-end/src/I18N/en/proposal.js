@@ -2,7 +2,8 @@ import {
   CVOTE_TRACKING_STATUS,
   CVOTE_SUMMARY_STATUS,
   CVOTE_WITHDRAWAL_STATUS,
-  ABSTRACT_MAX_WORDS
+  ABSTRACT_MAX_WORDS,
+  PROPOSAL_TYPE
 } from '@/constant'
 
 export default {
@@ -136,5 +137,16 @@ export default {
     approved: 'Approved and published successfully',
     draftSaved: 'Saved as draft successfully, you can check it in proposal list page',
     proposalPublished: 'Proposal published successfully'
+  },
+  type: {
+    [PROPOSAL_TYPE.NEW_MOTION]: 'New Motion',
+    [PROPOSAL_TYPE.MOTION_AGAINST]: 'Motion Against',
+    [PROPOSAL_TYPE.ANYTHING_ELSE]: 'Anything Else',
+    [PROPOSAL_TYPE.STANDARD_TRACK]: 'Standards Tracking ELIP',
+    [PROPOSAL_TYPE.PROCESS]: 'Process ELIP',
+    [PROPOSAL_TYPE.INFORMATIONAL]: 'Information ELIP',
+    [PROPOSAL_TYPE.CHANGE_PROPOSAL]: 'Motion to change a proposal',
+    [PROPOSAL_TYPE.CHANGE_SECRETARY]: 'Motion for new CR Council Secretary General',
+    [PROPOSAL_TYPE.TERMINATE_PROPOSAL]: 'Motion to terminate a proposal',
   }
 }
