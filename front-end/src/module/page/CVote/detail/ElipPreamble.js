@@ -23,15 +23,17 @@ const Component = ({
   user
 }) => {
   const result = {proposal, title, proposer, type, status, created}
-  const typeMap = {
-    4: I18N.get('council.voting.type.standardTrack'),
-    5: I18N.get('council.voting.type.process'),
-    6: I18N.get('council.voting.type.information'),
-  }
   const proposalValue = proposal && `#${proposal}`
   const proposerValue = <PopoverProfile owner={proposer} curUser={user} />
   const statusValue = I18N.get(`cvoteStatus.${status}`)
-  const preambles = {...result, proposal: proposalValue, proposer: proposerValue, type: typeMap[result.type], status: statusValue, created: moment(created).format('MMM D, YYYY')}
+  const preambles = {
+    ...result,
+    proposal: proposalValue,
+    proposer: proposerValue,
+    type: I18N.get(`elip.form.typeTitle.${result.type}`),
+    status: statusValue,
+    created: moment(created).format('MMM D, YYYY')
+  }
   const itemFunction = (key, value) => (
     <Item key={key}>
       <Col span={6}>
