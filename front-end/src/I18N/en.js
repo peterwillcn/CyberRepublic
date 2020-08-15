@@ -780,10 +780,6 @@ const en = {
   'council.voting.chainStatus.unchain':'UnChain',
   'council.voting.chainStatus.failed':'Failed',
 
-
-  'council.voting.type.newMotion': 'New Motion',
-  'council.voting.type.motionAgainst': 'Motion Against',
-  'council.voting.type.anythingElse': 'Anything Else',
   'council.voting.type.standardTrack': 'Standards Tracking ELIP',
   'council.voting.type.information': 'Information ELIP',
   'council.voting.type.process': 'Process ELIP',
