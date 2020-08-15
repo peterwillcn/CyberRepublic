@@ -346,7 +346,7 @@ export default class extends BaseComponent {
          const itemsCSV = _.map(list, v => [
          v.vid,
          v.title,
-         PROPOSAL_TYPE[v.type],
+         I18N.get(`proposal.type.${v.type}`),
          v.proposedBy,
          this.renderEndsInForCSV(v),
          this.voteDataByUserForCSV(v),
@@ -538,14 +538,6 @@ export default class extends BaseComponent {
 
   refetch = async () => {
     this.ord_loading(true)
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
-    }
     const { listData, canManage, getCurrentheight } = this.props
     const param = this.getQuery()
     const page = 1
@@ -570,7 +562,7 @@ export default class extends BaseComponent {
         dataCSV.push([
           v.vid,
           v.title,
-          PROPOSAL_TYPE[v.type],
+          I18N.get(`proposal.type.${v.type}`),
           v.proposedBy,
           this.renderEndsInForCSV(v),
           this.renderCommunityEndsInForCSV(v),
