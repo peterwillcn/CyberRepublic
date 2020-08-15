@@ -877,11 +877,19 @@ export default class extends BaseComponent {
                   value={type}
                   onChange={this.handleTypeChange}
                 >
-                  {_.map(PROPOSAL_TYPE, (value, key) => (
-                    <Select.Option key={key} value={value}>
-                      {I18N.get(`proposal.type.${value}`)}
-                    </Select.Option>
-                  ))}
+                  {_.map(PROPOSAL_TYPE, (value, key) => {
+                    const rs = _.includes([
+                      PROPOSAL_TYPE.MOTION_AGAINST,
+                      PROPOSAL_TYPE.ANYTHING_ELSE
+                    ], value)
+                    return (
+                      !rs && (
+                        <Select.Option key={key} value={value}>
+                          {I18N.get(`proposal.type.${value}`)}
+                        </Select.Option>
+                      )
+                    )
+                  })}
                 </Select>
               </FilterItem>
               <FilterItem>
