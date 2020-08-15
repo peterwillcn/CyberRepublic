@@ -756,9 +756,6 @@ const zh = {
   'council.voting.chainStatus.unchain':'未上链',
   'council.voting.chainStatus.failed':'上链失败',
 
-  'council.voting.type.standardTrack': '标准跟踪 ELIP',
-  'council.voting.type.information': '信息 ELIP',
-  'council.voting.type.process': '流程 ELIP',
   'council.voting.type.support': '赞成',
   'council.voting.type.reject': '否决',
   'council.voting.type.abstention': '弃权',
