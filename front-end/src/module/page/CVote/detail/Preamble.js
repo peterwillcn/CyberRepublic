@@ -25,11 +25,6 @@ const Component = ({
     <Header id="preamble">{I18N.get('proposal.fields.preamble')}</Header>
   )
 
-  const typeMap = {
-    1: I18N.get('council.voting.type.newMotion'),
-    2: I18N.get('council.voting.type.motionAgainst'),
-    3: I18N.get('council.voting.type.anythingElse')
-  }
   // type
   const typeNode = (
     <Item>
@@ -37,7 +32,7 @@ const Component = ({
         <ItemTitle>{I18N.get('proposal.fields.type')}</ItemTitle>
       </Col>
       <Col span={18}>
-        <ItemText>{typeMap[type]}</ItemText>
+        <ItemText>{I18N.get(`proposal.type.${type}`)}</ItemText>
       </Col>
     </Item>
   )
