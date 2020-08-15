@@ -23,7 +23,7 @@ import VoteStats from '../stats/Component'
 import userUtil from '@/util/user'
 import { ReactComponent as UpIcon } from '@/assets/images/icon-up.svg'
 import { ReactComponent as DownIcon } from '@/assets/images/icon-down.svg'
-
+import { PROPOSAL_TYPE } from '@/constant'
 // style
 import {
   Container,
@@ -193,14 +193,6 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
-    }
     const { canManage, isSecretary, isCouncil } = this.props
     const canCreateProposal = !isCouncil && !isSecretary
     const { isVisitableFilter } = this.state
@@ -234,7 +226,7 @@ export default class extends BaseComponent {
       {
         title: I18N.get('council.voting.type'),
         dataIndex: 'type',
-        render: (type, item) => PROPOSAL_TYPE[type]
+        render: (type, item) => I18N.get(`proposal.type.${type}`)
       },
       {
         title: I18N.get('council.voting.author'),
@@ -894,8 +886,8 @@ export default class extends BaseComponent {
                   onChange={this.handleTypeChange}
                 >
                   {_.map(PROPOSAL_TYPE, (value, key) => (
-                    <Select.Option key={key} value={key}>
-                      {value}
+                    <Select.Option key={key} value={value}>
+                      {I18N.get(`proposal.type.${value}`)}
                     </Select.Option>
                   ))}
                 </Select>
