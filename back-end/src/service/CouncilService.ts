@@ -3,7 +3,6 @@ import { constant } from '../constant'
 import { CVOTE_STATUS_TO_WALLET_STATUS } from './CVoteService'
 import { ela, logger, getInformationByDid, getDidName } from '../utility'
 import * as moment from 'moment'
-import cvote from 'src/router/cvote'
 
 const _ = require('lodash')
 
