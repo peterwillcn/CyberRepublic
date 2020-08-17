@@ -119,30 +119,21 @@ export default class extends DetailPage {
     } else if (!_.isEmpty(dataList)) {
       content = this.renderList()
     }
-    if (!this.state.version && version > 0) {
-      this.setState({ version })
-    }
-    if (!this.state.version || !dataList || dataList.length === 0) {
+    if (!version || !dataList || dataList.length === 0) {
       return content
     }
 
-    const currDetail = dataList.find((e) => {
-      if (e.version === version) {
-        return e
-      }
-      return null
-    })
-
+    const showVersion = this.state.version ? this.state.version : version
     const selectedDetail = dataList.find((e) => {
-      if (e.version === this.state.version) {
+      if (e.version === showVersion) {
         return e
       }
       return null
     })
 
-    const diffDetail = this.diffObject(currDetail, selectedDetail)
+    // const diffDetail = this.diffObject(currDetail, selectedDetail)
 
-    content = this.renderDetail(diffDetail)
+    content = this.renderDetail(selectedDetail)
 
     const headerNode = this.renderHeader()
     const historyList = this.renderHistoryList()
@@ -247,7 +238,7 @@ export default class extends DetailPage {
       dataList,
       detail: { version }
     } = this.props
-
+    const showVersion = this.state.version ? this.state.version : version
     return (
       <HistoryList className="historyList">
         {dataList &&
@@ -255,7 +246,7 @@ export default class extends DetailPage {
             <div
               key={item.version}
               className={`versionItem ${
-                item.version === this.state.version ? 'versionSelected' : ''
+                item.version === showVersion ? 'versionSelected' : ''
               }`}
               onClick={(e) => {
                 this.setState({ version: item.version })
