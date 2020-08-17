@@ -80,7 +80,7 @@ class C extends BaseComponent {
     const header = 'Create Permission'
     return (
       <h2 className="name komu-a">
-        {header}
+        {I18N.get('permission.btn')}
       </h2>
     )
   }
@@ -100,19 +100,19 @@ class C extends BaseComponent {
     }
     const formContent = (
       <div>
-        <FormItem label="Name" {...formItemLayout}>
+        <FormItem label={I18N.get('permission.form.name')} {...formItemLayout}>
           {p.name}
         </FormItem>
-        <FormItem label="ResourceType" {...formItemLayout}>
+        <FormItem label={I18N.get('permission.form.resource')} {...formItemLayout}>
           {p.resourceType}
         </FormItem>
-        <FormItem label="Desc" {...formItemLayout}>
+        <FormItem label={I18N.get('permission.form.desc')} {...formItemLayout}>
           {p.desc}
         </FormItem>
-        <FormItem label="HttpMethod" {...formItemLayout}>
+        <FormItem label={I18N.get('permission.form.http')} {...formItemLayout}>
           {p.httpMethod}
         </FormItem>
-        <FormItem label="Url" {...formItemLayout}>
+        <FormItem label={I18N.get('permission.form.url')} {...formItemLayout}>
           {p.url}
         </FormItem>
 

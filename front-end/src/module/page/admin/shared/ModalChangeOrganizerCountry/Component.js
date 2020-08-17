@@ -2,6 +2,7 @@ import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
 import { Form, Input, Modal, Select, Button } from 'antd'
 import config from '@/config'
+import I18N from '@/I18N'
 
 const FormItem = Form.Item
 
@@ -17,10 +18,12 @@ export default Form.create()(
 
       const footerModal = (
         <div>
-          <Button onClick={onCreate} type="primary" className="ant-btn-ebp">Change organizer</Button>
+          <Button onClick={onCreate} type="primary" className="ant-btn-ebp">
+            {I18N.get('communities.form.organizer.change')}
+          </Button>
           {/* Don't need on this pharse */}
           {/* <Button onClick={handleRemoveCountry}>Remove country</Button> */}
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCancel}>{I18N.get('communities.btn.cancel')}</Button>
         </div>
       )
 
@@ -29,7 +32,7 @@ export default Form.create()(
       return (
         <Modal
           visible={visible}
-          title="Change organizer"
+          title={I18N.get('communities.form.organizer.change')}
           footer={footerModal}
           okText="Create"
           onCancel={onCancel}
@@ -38,7 +41,7 @@ export default Form.create()(
           <Form>
             <FormItem
               {...formItemLayout}
-              label="Country">
+              label={I18N.get('communities.form.country')}>
               {getFieldDecorator('geolocation', {})(
                 <Select
                   disabled={true}
@@ -56,13 +59,13 @@ export default Form.create()(
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="Organizer">
+              label={I18N.get('communities.form.organizer')}>
               {getFieldDecorator('leader', {
                 rules: [{required: true, message: 'This field is required'}]
               })(
                 <Select
                   showSearch={true}
-                  placeholder="Please select a member"
+                  placeholder={I18N.get('communities.form.leader.placeholder')}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {users.map((leader, index) => {

@@ -354,6 +354,61 @@ const en = {
 
   // Roles & Permissions
   'permission.title': 'Roles & Permissions',
+  'permission.btn': 'Create Permission',
+  'permission.btn.tips': 'Require server to restart to take effect',
+  'permission.form.name': 'Name',
+  'permission.form.resource': 'ResourceType',
+  'permission.form.desc': 'Desc',
+  'permission.form.http': 'HttpMethod',
+  'permission.form.url': 'Url',
+  'permission.tab.admin': 'ADMIN',
+  'permission.tab.council': 'COUNCIL',
+  'permission.tab.secretary': 'SECRETARY',
+  'permission.tab.custom': 'CUSTOM',
+  'permission.tab.member': 'MEMBER',
+  'permission.tab.leader': 'LEADER',
+
+  // Communities
+  'communities.btn': 'Add Country',
+  'communities.btn.add': 'Add Country',
+  'communities.btn.cancel': 'Cancel',
+  'communities.btn.delete': 'Delete',
+  'communities.form.country': 'Country',
+  'communities.form.name': 'Name',
+  'communities.form.leader': 'Leader',
+  'communities.form.organizer': 'Organizer',
+  'communities.form.required':'This field is required',
+  'communities.form.country.placeholder': 'Please select a country',
+  'communities.form.leader.placeholder': 'Please select a member',
+  'communities.form.add.success': 'Add new country successfully',
+  'communities.form.add.error': 'Error while add country',
+  'communities.form.organizer.change': 'Change Organizer',
+  
+  'communities.organizer.has': 'Has Organizer(s)',
+  'communities.organizer.needs': 'Needs an Organizer',
+
+  'communitites.country.organizers': 'Country Organizers',
+  'communities.btn.add.country': 'Add',
+  'communities.btn.add.state': 'Add states / province',
+  'communities.btn.add.city': 'Add City',
+  'communities.btn.add.region': 'Add Region',
+  'communities.btn.add.school': 'Add School',
+  'communities.btn.add.region': 'Add region',
+  'communities.btn.update.state': 'Update states / provinces',
+  'communities.btn.update.city': 'Update city',
+  'communities.btn.update.region': 'Update region',
+  'communities.btn.update.school': 'Update school',
+  'communities.form.title.state': 'Add states / provinces',
+  'communities.form.title.city': 'Add city',
+  'communities.form.title.region': 'Add region',
+  'communities.form.title.school': 'Add school',
+  'communities.form.organizer.success': 'Add new organizer successfully',
+  'communities.form.organizer.error': 'Error while add organizer',
+  'communitites.form.country.change': 'Change organizer successfully',
+  'communities.form.country.update': 'Update community successfully',
+  'communities.form.country.delete': 'Delete community successfully',
+  'communitites.form.country.success': 'Add new sub community successfully',
+  'communitites.form.country.error': 'Error while adding new sub community',
 
   // Developer
   'developer.breadcrumb.developers': 'Community',
@@ -706,6 +761,8 @@ const en = {
   'task.applyReason': 'Why you wanted to join this task',
   'task.createNew': 'Propose New Task',
 
+  'task.select.status': 'Select a status',
+
   // General
   'select.placeholder': 'Please select',
   '.ok': 'Ok',
@@ -990,6 +1047,13 @@ const en = {
   'profile.submission.table.created': 'Created',
 
   'profile.member.vote.qrcodeTip':'Open ELA wallet and scan vote (for community review)',
+
+  'profile.forms.table.header.title': 'Title',
+  'profile.forms.table.header.name': 'Name',
+  'profile.forms.table.header.campaign': 'Campaign',
+  'profile.forms.table.header.created': 'CreatedAt',
+  'profile.forms.show': 'Show Archived',
+  'profile.forms.search': 'Search',
 
   // Validate Form
   'ambassadors.form.required': 'This must be filled out',
@@ -1294,6 +1358,12 @@ const en = {
   'from.UserEditForm.label.profession': 'Profession',
   'from.UserEditForm.label.portfolio': 'Portfolio',
   'from.UserEditForm.label.github': 'GitHub',
+  'from.UserEditForm.label.linkedin': 'LinkedIn',
+  'from.UserEditForm.label.telegram': 'Telegram',
+  'from.UserEditForm.label.reddit': 'Reddit',
+  'from.UserEditForm.label.wechat': 'WeChat',
+  'from.UserEditForm.label.twitter': 'Twitter',
+  'from.UserEditForm.label.facebook': 'Facebook',
   'from.UserEditForm.username.required': 'Username is required',
   'from.UserEditForm.firstName.required': 'First name is required',
   'from.UserEditForm.lastName.required': 'Last name is required',
