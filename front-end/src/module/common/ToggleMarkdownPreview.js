@@ -40,8 +40,8 @@ const Wrapper = styled.div`
   }
 
   label figure {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     background-color: #008d85;
     border-radius: 50%;
     display: flex;
@@ -51,7 +51,7 @@ const Wrapper = styled.div`
 
   label svg {
     fill: #fff;
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 `
