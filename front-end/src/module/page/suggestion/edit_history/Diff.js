@@ -16,13 +16,14 @@ const fnMap = {
   chars: jsdiff.diffChars,
   words: jsdiff.diffWords,
   sentences: jsdiff.diffSentences,
-  json: jsdiff.diffJson,
+  json: jsdiff.diffJson
 }
 
 const StyledSpan = styled.span`
   > * {
     padding-bottom: 4px;
-    background-color: ${props => props.highlight && 'rgba(29, 233, 182, 0.1)'};
+    background-color: ${(props) =>
+      props.highlight && 'rgba(29, 233, 182, 0.1)'};
   }
 `
 
@@ -40,12 +41,17 @@ export default ({ type, inputA, inputB }) => {
       spanStyle.textDecoration = 'line-through'
     }
 
-    return <StyledSpan key={index} highlight={part.added || part.removed} style={spanStyle} dangerouslySetInnerHTML={{ __html: converter.makeHtml(sanitizeHtml(part.value)) }} />
+    return (
+      <StyledSpan
+        key={index}
+        highlight={part.added || part.removed}
+        style={spanStyle}
+        dangerouslySetInnerHTML={{
+          __html: converter.makeHtml(sanitizeHtml(part.value))
+        }}
+      />
+    )
     // return <span key={index} style={spanStyle}>{part.value}</span>
   })
-  return (
-    <div className="diff-result">
-      {result}
-    </div>
-  )
+  return <div className="diff-result">{result}</div>
 }

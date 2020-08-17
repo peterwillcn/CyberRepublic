@@ -6,7 +6,6 @@ import I18N from '@/I18N'
 import BackLink from '@/module/shared/BackLink/Component'
 import styled from 'styled-components'
 import difflib from 'difflib'
-import StandardPage from '../../StandardPage'
 import Diff from './Diff'
 import DetailPage from '../detail/Component'
 import MetaContainer from '../common/historymeta/Container'
@@ -41,34 +40,34 @@ export default class extends DetailPage {
     }
     for (const k in myobj) {
       if (obj1.hasOwnProperty(k) && obj2.hasOwnProperty(k)) {
-        if ((typeof obj1[k]) === (typeof obj2[k])) {
+        if (typeof obj1[k] === typeof obj2[k]) {
           if (typeof obj1[k] === 'object') {
-            if (k === 'milestone'
-            ) {
+            if (k === 'milestone') {
               diffObj[k] = obj2[k]
             } else {
               diffObj[k] = this.diffObject(obj1[k], obj2[k])
             }
           } else if (typeof obj1[k] === 'string') {
-            if (k === '_id'
-                || k === 'title'
-                || k === 'createdAt'
-                || k === 'updatedAt'
-                || k === 'elaAddress'
-                || k === 'type'
-                || k === 'amount'
-                || k === 'contentType'
-                || k === 'milestoneKey'
-                || k === 'date'
-                || k === 'member'
-                || k === 'role'
-                || k === 'reference'
-                || k === 'comments'
-                || k === 'dislikes'
-                || k === 'likes'
-                || k === 'link'
-                || k === 'subscribers'
-                || k === 'tags'
+            if (
+              k === '_id' ||
+              k === 'title' ||
+              k === 'createdAt' ||
+              k === 'updatedAt' ||
+              k === 'elaAddress' ||
+              k === 'type' ||
+              k === 'amount' ||
+              k === 'contentType' ||
+              k === 'milestoneKey' ||
+              k === 'date' ||
+              k === 'member' ||
+              k === 'role' ||
+              k === 'reference' ||
+              k === 'comments' ||
+              k === 'dislikes' ||
+              k === 'likes' ||
+              k === 'link' ||
+              k === 'subscribers' ||
+              k === 'tags'
             ) {
               diffObj[k] = obj2[k]
             } else {
@@ -80,9 +79,9 @@ export default class extends DetailPage {
                 const c2 = da[i][2]
                 f = c0
                 if (f === '-') {
-                  str += '<span style=\'background-color: rgba(252, 192, 192, 0.2)\'>'
+                  str += `<span style='background-color: rgba(252, 192, 192, 0.2)'>`
                 } else if (f === '+') {
-                  str += '<span style=\'background-color: #1DE9B633\'>'
+                  str += "<span style='background-color: #1DE9B633'>"
                 }
                 str += c2
                 if (f !== ' ') {
@@ -106,22 +105,24 @@ export default class extends DetailPage {
 
   ord_renderContent() {
     const { dataList, match, loading, detail } = this.props
-    const {version} = detail
+    const { version } = detail
     const id = _.get(match, 'params.id')
     let content
     if (loading) {
-      content = <div className="center"><Spin size="large" /></div>
+      content = (
+        <div className="center">
+          <Spin size="large" />
+        </div>
+      )
     } else if (_.isEmpty(dataList)) {
       content = null
     } else if (!_.isEmpty(dataList)) {
       content = this.renderList()
     }
     if (!this.state.version && version > 0) {
-      this.setState({version})
+      this.setState({ version })
     }
-    if (!this.state.version
-        || !dataList
-        || dataList.length === 0) {
+    if (!this.state.version || !dataList || dataList.length === 0) {
       return content
     }
 
@@ -167,21 +168,24 @@ export default class extends DetailPage {
     const { detail, currentUserId, isAdmin } = this.props
     const signature = _.get(detail, 'signature.data')
     const isOwner = currentUserId === _.get(detail, 'createdBy._id') || isAdmin
-    return !signature && isOwner && (
-      <Button
-        onClick={this.handleRevertVersion}
-        className="btn-create-suggestion"
-        htmlType="button"
-        style={{ marginRight: 10 }}
-      >
-        {I18N.get('suggestion.form.button.revertVersion')}
-      </Button>
+    return (
+      !signature &&
+      isOwner && (
+        <Button
+          onClick={this.handleRevertVersion}
+          className="btn-create-suggestion"
+          htmlType="button"
+          style={{ marginRight: 10 }}
+        >
+          {I18N.get('suggestion.form.button.revertVersion')}
+        </Button>
+      )
     )
   }
 
   renderMetaNode() {
     const { dataList, detail, user } = this.props
-    let {version} = detail
+    let { version } = detail
     if (version < 10) version = 10
     if (this.state.version) version = this.state.version
     const sDetail = dataList.find((e) => {
@@ -189,18 +193,22 @@ export default class extends DetailPage {
         return e
       }
     })
-    return sDetail && (
-      <MetaContainer
-        data={sDetail}
-        user={user}
-        content={this.renderTitleButton()}
-      />
+    return (
+      sDetail && (
+        <MetaContainer
+          data={sDetail}
+          user={user}
+          content={this.renderTitleButton()}
+        />
+      )
     )
   }
 
   renderHeader() {
     return (
-      <Header className="historyTitle">{this.props.header || I18N.get('suggestion.editHistory')}</Header>
+      <Header className="historyTitle">
+        {this.props.header || I18N.get('suggestion.editHistory')}
+      </Header>
     )
   }
 
@@ -226,36 +234,46 @@ export default class extends DetailPage {
     return (
       <Item key={_id}>
         {metaNode}
-        <Title><Diff inputA={dataOld.title} inputB={dataNew.title} type="words" /></Title>
+        <Title>
+          <Diff inputA={dataOld.title} inputB={dataNew.title} type="words" />
+        </Title>
         <Diff inputA={dataOld.desc} inputB={dataNew.desc} type="words" />
       </Item>
     )
   }
 
   renderHistoryList() {
-    const { dataList, detail: { version } } = this.props
+    const {
+      dataList,
+      detail: { version }
+    } = this.props
 
     return (
       <HistoryList className="historyList">
-        {dataList && dataList.map((item) => (
-          <div key={item.version}
-               className={`versionItem ${item.version === this.state.version ? 'versionSelected' : ''}`}
-               onClick={(e) => {
-                 this.setState({version: item.version})
-               }}
-          >
-            <div/>
-            <VersionValue>
-              Version
-              {' '}
-              {item.version / 10}
-              {item.version % 10 === 0 ? '.0' : ''}
-              {' '}
-              <VersionTag>{item.version === version ? 'Current version' : null}</VersionTag>
-            </VersionValue>
-            <VersionTime>{moment(item.createdAt).format('MMM D, YYYY HH:mm A')}</VersionTime>
-          </div>
-        ))}
+        {dataList &&
+          dataList.map((item) => (
+            <div
+              key={item.version}
+              className={`versionItem ${
+                item.version === this.state.version ? 'versionSelected' : ''
+              }`}
+              onClick={(e) => {
+                this.setState({ version: item.version })
+              }}
+            >
+              <div />
+              <VersionValue>
+                Version {item.version / 10}
+                {item.version % 10 === 0 ? '.0' : ''}{' '}
+                <VersionTag>
+                  {item.version === version ? 'Current version' : null}
+                </VersionTag>
+              </VersionValue>
+              <VersionTime>
+                {moment(item.createdAt).format('MMM D, YYYY HH:mm A')}
+              </VersionTime>
+            </div>
+          ))}
       </HistoryList>
     )
   }
@@ -277,13 +295,13 @@ export default class extends DetailPage {
 const Siderbar = styled.div`
   display: block;
   height: 100%;
-  background-color: #FFF;
+  background-color: #fff;
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 `
 
 const HistoryList = styled.div`
   height: 100%;
-  background-color: #FFF
+  background-color: #fff;
 `
 const VersionValue = styled.p`
   padding: 0;
