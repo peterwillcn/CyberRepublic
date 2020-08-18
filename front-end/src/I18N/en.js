@@ -122,6 +122,7 @@ const en = {
 
   'login.success': 'Welcome back',
   'logout.success': 'logout success',
+  'login.noBindingDID': 'Please register an account or log in with an existing account',
 
   'mentions.notFound': 'User not found',
 
