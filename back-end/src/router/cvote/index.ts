@@ -20,6 +20,7 @@ import check_signature from './check_signature'
 import memberVote from './memberVote'
 import updateAborted from './update_aborted'
 import getCurrentHeight from './get_current_height'
+import getAllAuthor from './get_author'
 
 export default Base.setRouter([
   {
@@ -120,6 +121,11 @@ export default Base.setRouter([
   {
     path: '/get_current_height',
     router: getCurrentHeight,
+    method: 'get'
+  },
+  {
+    path: '/get_author',
+    router: getAllAuthor,
     method: 'get'
   }
 ])
