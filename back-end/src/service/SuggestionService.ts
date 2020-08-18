@@ -1686,6 +1686,7 @@ export default class extends Base {
         sid: suggestion._id,
         callbackurl: `${process.env.API_URL}/api/suggestion/signature-callback`,
         data: {
+          userdid: did,
           categorydata: '',
           ownerpublickey: ownerPublicKey,
           drafthash: draftHash
