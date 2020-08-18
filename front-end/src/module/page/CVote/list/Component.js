@@ -10,7 +10,8 @@ import {
   Input,
   DatePicker,
   Checkbox,
-  Icon
+  Icon,
+  Spin,
 } from 'antd'
 import rangePickerLocale from 'antd/es/date-picker/locale/zh_CN'
 import { CSVLink } from 'react-csv'
@@ -95,9 +96,11 @@ export default class extends BaseComponent {
       author,
       type,
       endsDate,
-      showOldData: false
+      showOldData: false,
+      fetching: false
     }
 
+    this.authorSearch = _.debounce(this.authorSearch.bind(this), 800)
     this.debouncedRefetch = _.debounce(this.refetch.bind(this), 300)
   }
 
@@ -135,7 +138,7 @@ export default class extends BaseComponent {
   }
 
   handleAuthorChange = (e) => {
-    this.setState({ author: e.target.value })
+    this.setState({ author: e})
   }
 
   handleTypeChange = (type) => {
@@ -554,7 +557,7 @@ export default class extends BaseComponent {
       5: I18N.get('council.voting.type.process'),
       6: I18N.get('council.voting.type.information')
     }
-    const { listData, canManage, getCurrentheight } = this.props
+    const { listData, canManage, getCurrentheight, getAllAuthor } = this.props
     const param = this.getQuery()
     const page = 1
     try {
@@ -596,12 +599,14 @@ export default class extends BaseComponent {
       param.results = 10
       const { list, total } = await listData(param, canManage)
       const rs = await getCurrentheight()
+      const authorArr = await getAllAuthor()
       this.setState({
         list,
         alllist: dataCSV,
         total,
         page: (page && parseInt(page)) || 1,
-        currentHeight: rs
+        currentHeight: rs,
+        authorArr,
       })
     } catch (error) {
       logger.error(error)
@@ -782,6 +787,12 @@ export default class extends BaseComponent {
       )
   }
 
+  authorSearch = async (data) => {
+    this.setState({authorList: [],fetching:true})
+    const authorList = await this.props.getAllAuthor({data, old:this.state.showOldData})
+    this.setState({authorList,fetching:false})
+  }
+
   renderFilterPanel = (PROPOSAL_TYPE) => {
     const {
       status,
@@ -800,6 +811,8 @@ export default class extends BaseComponent {
       rangePickerOptions.locale = rangePickerLocale
     }
     const colSpan = isCouncil ? 8 : 12
+    const { Option } = Select
+    const options = _.map(this.state.authorList,(o => <Option key={o._id}>{o.firstName+ ' '+o.lastName}</Option>))
     return (
       <FilterPanel isCouncil={isCouncil}>
         <Row type="flex" gutter={10} className="filter">
@@ -881,7 +894,19 @@ export default class extends BaseComponent {
                   {I18N.get('proposal.fields.author')}
                 </FilterItemLabel>
                 <div className="filter-input">
-                  <Input value={author} onChange={this.handleAuthorChange} />
+                  <Select
+                    showSearch
+                    // labelInValue
+                    value={this.state.author}
+                    style={{ width: '100%' }}
+                    showArrow={false}
+                    filterOption={false}
+                    onSearch={this.authorSearch}
+                    onChange={this.handleAuthorChange}
+                    notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
+                  >
+                    {options}
+                  </Select>
                 </div>
               </FilterItem>
               <FilterItem>

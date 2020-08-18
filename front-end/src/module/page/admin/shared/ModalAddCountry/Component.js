@@ -2,6 +2,7 @@ import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
 import { Form, Modal, Select, Button } from 'antd'
 import config from '@/config'
+import I18N from '@/I18N'
 import _ from 'lodash'
 
 const FormItem = Form.Item
@@ -18,8 +19,8 @@ export default Form.create()(
 
       const footerModal = (
         <div>
-          <Button onClick={onCreate} className="ant-btn-ebp" type="primary">Add country</Button>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onCreate} className="ant-btn-ebp" type="primary">{I18N.get('communities.btn.add')}</Button>
+          <Button onClick={onCancel}>{I18N.get('communities.btn.cancel')}</Button>
         </div>
       )
 
@@ -36,7 +37,7 @@ export default Form.create()(
       return (
         <Modal
           visible={visible}
-          title="Add country"
+          title={I18N.get('communities.btn')}
           footer={footerModal}
           okText="Create"
           onCancel={onCancel}
@@ -45,13 +46,13 @@ export default Form.create()(
           <Form>
             <FormItem
               {...formItemLayout}
-              label="Country">
+              label={I18N.get('communities.form.country')}>
               {getFieldDecorator('geolocation', {
-                rules: [{required: true, message: 'This field is required'}]
+                rules: [{required: true, message: `${I18N.get('communities.form.required')}`}]
               })(
                 <Select
                   showSearch={true}
-                  placeholder="Please select a country"
+                  placeholder={I18N.get('communities.form.country.placeholder')}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {listCountriesEl}
@@ -60,13 +61,13 @@ export default Form.create()(
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="Leader">
+              label={I18N.get('communities.form.leader')}>
               {getFieldDecorator('leader', {
-                rules: [{required: false, message: 'This field is required'}]
+                rules: [{required: false, message: `${I18N.get('communities.form.required')}`}]
               })(
                 <Select
                   showSearch={true}
-                  placeholder="Please select a member"
+                  placeholder={I18N.get('communities.form.leader.placeholder')}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {users.map((leader, index) => {

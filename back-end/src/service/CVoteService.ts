@@ -601,33 +601,7 @@ export default class extends Base {
     }
     // createBy
     if (param.author && param.author.length) {
-      let search = param.author
-      const db_user = this.getDBModel('User')
-      let pattern = search.split(' ')
-      let users
-      if (pattern.length > 1){
-        users = await db_user
-        .getDBInstance()
-        .find({
-            // { username: { $regex: search, $options: 'i' } },
-            'profile.firstName': { $regex: pattern[0], $options: 'i'},
-            'profile.lastName': { $regex: pattern[1], $options: 'i' } 
-        })
-        .select('_id')
-      } else {
-        users = await db_user
-          .getDBInstance()
-          .find({
-            $or: [
-              // { username: { $regex: search, $options: 'i' } },
-              { 'profile.firstName': { $regex: pattern[0], $options: 'i' } },
-              { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
-            ]
-          })
-          .select('_id')
-      }
-      const userIds = _.map(users, (el: { _id: string }) => el._id)
-      query.createdBy = { $in: userIds }
+      query.proposer = param.author
     }
     // cvoteType
     if (
@@ -2156,5 +2130,58 @@ export default class extends Base {
       recVariables
     }
     mail.send(mailObj)
+  }
+
+  public async getAllAuthor(param: any) {
+    if (_.isEmpty(param)) return
+    const db_cvote = this.getDBModel('CVote')
+    let search = ""
+    _.forEach(param.data,(o: any) => search += o)
+    const authorList = await db_cvote
+      .getDBInstance()
+      .find(
+        {
+          old: {
+            $exists: param.old
+          }
+        },
+        ['proposer']
+      )
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+
+    const authorArr = []
+    _.forEach(authorList, (o: any) => {
+      if (o.proposer && !_.find(authorArr,{"_id":o.proposer._id})) {
+        authorArr.push({
+          _id : o.proposer._id,
+          firstName: o.proposer.profile.firstName,
+          lastName: o.proposer.profile.lastName
+        })
+      }
+    })
+    const sp = search.split(" ")
+    const rs = []
+    _.forEach(authorArr,(o) => {
+      if (rs.length > 1) {
+        if (
+        o.firstName.search(sp[0]) !== -1
+        && o.lastName.search(sp[1]) !== -1
+        ) {
+          rs.push(o)
+        } else if (
+          o.lastName.search(sp[1]) !== -1
+        ) {
+          rs.push(o)
+        }
+      } else {
+        if ( o.firstName.search(sp[0]) !== -1
+        || o.lastName.search(sp[0]) !== -1
+        ) {
+          rs.push(o)
+        }
+      }
+    })
+
+    return rs
   }
 }

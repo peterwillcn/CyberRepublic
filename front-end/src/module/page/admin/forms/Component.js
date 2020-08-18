@@ -3,6 +3,7 @@ import AdminPage from '../BaseAdmin'
 import moment from 'moment'
 import _ from 'lodash'
 import { logger } from '@/util'
+import I18N from '@/I18N'
 import '../admin.scss'
 import './style.scss'
 
@@ -76,7 +77,7 @@ export default class extends AdminPage {
 
     const columns = [
       {
-        title: 'Title',
+        title: I18N.get('profile.forms.table.header.title'),
         dataIndex: 'title',
         width: '20%',
         className: 'fontWeight500 allow-wrap',
@@ -98,20 +99,20 @@ export default class extends AdminPage {
         }
 
       }, {
-        title: 'Name',
+        title: I18N.get('profile.forms.table.header.name'),
         dataIndex: 'fullLegalName',
         render: (fullLegalName, record) => {
           return fullLegalName || (record.createdBy ? (`${record.createdBy.profile.firstName} ${record.createdBy.profile.lastName}`) : '')
         }
       }, {
-        title: 'Campaign',
+        title: I18N.get('profile.forms.table.header.campaign'),
         dataIndex: 'campaign',
         className: 'fontWeight500 allow-wrap',
         render: (campaign, record) => {
           return config.dict.formCampaigns[campaign] || _.capitalize(campaign)
         }
       }, {
-        title: 'Created',
+        title: I18N.get('profile.forms.table.header.created'),
         dataIndex: 'createdAt',
         render: (createdAt) => moment(createdAt).format('MMM D'),
         sorter: (a, b) => {
@@ -168,10 +169,10 @@ export default class extends AdminPage {
                   <Input.Search onSearch={this.handleSearch.bind(this)}
                     defaultValue={this.state.textFilter || ''}
                     prefix={<Icon type="file-text" style={{color: 'rgba(0,0,0,.25)'}}/>}
-                    placeholder="search"/>
+                    placeholder={I18N.get('profile.forms.search')}/>
                 </div>
                 <div className="showArchivedContainer pull-right">
-                                    Show Archived
+                                    {I18N.get('profile.forms.show')}
                                     &nbsp;
                   <Checkbox onClick={this.toggleShowArchived.bind(this)} checked={this.state.showArchived}/>
                 </div>
