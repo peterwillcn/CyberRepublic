@@ -122,6 +122,7 @@ const zh = {
 
   'login.success': '欢迎回来',
   'logout.success': '登出成功',
+  'login.noBindingDID': '请注册账号或用已有账号登陆',
 
   'mentions.notFound': '该用户不存在',
 

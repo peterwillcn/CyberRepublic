@@ -520,7 +520,9 @@ export default class extends Base {
               .find({
                 $or: [
                   // { username: { $regex: search, $options: 'i' } },
-                  { 'profile.firstName': { $regex: pattern[0], $options: 'i' } },
+                  {
+                    'profile.firstName': { $regex: pattern[0], $options: 'i' }
+                  },
                   { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
                 ]
               })
@@ -598,15 +600,15 @@ export default class extends Base {
       const db_user = this.getDBModel('User')
       let pattern = search.split(' ')
       let users
-      if (pattern.length > 1){
+      if (pattern.length > 1) {
         users = await db_user
-        .getDBInstance()
-        .find({
+          .getDBInstance()
+          .find({
             // { username: { $regex: search, $options: 'i' } },
-            'profile.firstName': { $regex: pattern[0], $options: 'i'},
-            'profile.lastName': { $regex: pattern[1], $options: 'i' } 
-        })
-        .select('_id')
+            'profile.firstName': { $regex: pattern[0], $options: 'i' },
+            'profile.lastName': { $regex: pattern[1], $options: 'i' }
+          })
+          .select('_id')
       } else {
         users = await db_user
           .getDBInstance()
@@ -1474,6 +1476,12 @@ export default class extends Base {
       'budgetAmount',
       'elaAddress'
     ]
+    if (suggestion.planIntro) {
+      fields.push('planIntro')
+    }
+    if (suggestion.budgetIntro) {
+      fields.push('budgetIntro')
+    }
     const content = {}
     const sortedFields = _.sortBy(fields)
     for (let index in sortedFields) {
