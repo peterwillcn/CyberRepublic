@@ -11,6 +11,7 @@ import {
   permissions,
   logger,
   getDidPublicKey,
+  getPemPublicKey,
   utilCrypto
 } from '../utility'
 const Big = require('big.js')
@@ -1786,17 +1787,29 @@ export default class extends Base {
       const payload: any = jwt.decode(
         claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload.'
+        }
+      }
+
       if (!_.get(payload, 'sid')) {
         return {
           code: 400,
           success: false,
-          message: 'Problems parsing jwt token of CR website.'
+          message: 'no sid in the payload.'
         }
       }
 
-      const suggestion = await this.model.findById({
-        _id: payload.sid
-      })
+      const suggestion = await this.model
+        .getDBInstance()
+        .findById({
+          _id: payload.sid
+        })
+        .populate('createdBy', 'did')
       if (!suggestion) {
         return {
           code: 400,
@@ -1812,19 +1825,33 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const rs: any = await getDidPublicKey(claims.iss)
-      if (!rs) {
+      const ownerDID = _.get(suggestion, 'createdBy.did.id')
+      const isOwner = userDID === claims.iss && ownerDID === claims.iss
+      if (!isOwner) {
+        await this.model.update(
+          { _id: payload.sid },
+          {
+            $set: {
+              signature: {
+                message: 'Please use your own ELA wallet to sign.'
+              }
+            }
+          }
+        )
         return {
           code: 400,
           success: false,
-          message: `Can not get your did's public key.`
+          message: 'Please use your own ELA wallet to sign.'
         }
       }
+
+      const compressedPublicKey = _.get(suggestion, 'ownerPublicKey')
+      const pemPublicKey = getPemPublicKey(compressedPublicKey)
 
       // verify response data from ela wallet
       return jwt.verify(
         jwtToken,
-        rs.publicKey,
+        pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
             await this.model.update(
