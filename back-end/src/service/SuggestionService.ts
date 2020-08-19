@@ -1954,9 +1954,17 @@ export default class extends Base {
     const suggestion = await this.show({ id })
     if (suggestion) {
       if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
-        const signature = _.get(suggestion, 'newOwnerSignature')
+        const signature = _.get(suggestion, 'newOwnerSignature.data')
         if (signature) {
           return { success: true, data: suggestion }
+        }
+        const message = _.get(suggestion, 'newOwnerSignature.message')
+        if (message) {
+          await this.model.update(
+            { _id: id },
+            { $unset: { newOwnerSignature: true } }
+          )
+          return { success: false, message }
         }
         return
       }
