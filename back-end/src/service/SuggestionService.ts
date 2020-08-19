@@ -1833,7 +1833,7 @@ export default class extends Base {
           {
             $set: {
               signature: {
-                message: 'Please use your own ELA wallet to sign.'
+                message: 'The ELA wallet not bound with your CR account.'
               }
             }
           }
@@ -1841,7 +1841,7 @@ export default class extends Base {
         return {
           code: 400,
           success: false,
-          message: 'Please use your own ELA wallet to sign.'
+          message: 'The ELA wallet not bound with your CR account.'
         }
       }
 
