@@ -1520,7 +1520,9 @@ export default class extends Base {
       'status',
       'createdAt',
       'proposer',
-      'proposalHash'
+      'proposalHash',
+      'rejectAmount',
+      'rejectThroughAmount',
     ]
 
     const cursor = db_cvote
@@ -1548,9 +1550,30 @@ export default class extends Base {
 
     // filter return data，add proposalHash to CVoteSchema
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['_id', 'proposer'])
+      let temp = _.omit(o._doc, [
+        '_id',
+        'proposer',
+        'rejectAmount',
+        'rejectThroughAmount'
+      ])
       temp.proposedBy = _.get(o, 'proposer.did.didName')
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
+      if (
+        [constant.CVOTE_STATUS.NOTIFICATION].includes(o.status) &&
+        o.rejectAmount >= 0 &&
+        o.rejectThroughAmount > 0
+      ) {
+        temp.rejectAmount = `${o.rejectAmount}`
+        temp.rejectThroughAmount = `${parseFloat(
+          _.toNumber(o.rejectThroughAmount).toFixed(8)
+        )}`
+        temp.rejectRatio = _.toNumber(
+          (
+            _.toNumber(o.rejectAmount) / _.toNumber(o.rejectThroughAmount)
+          ).toFixed(4)
+        )
+      }
+
       temp.createdAt = timestamp.second(temp.createdAt)
       return _.mapKeys(temp, function (value, key) {
         if (key == 'vid') {
@@ -2212,9 +2235,8 @@ export default class extends Base {
       ) {
         rs.push(o)
       }
-      console.log(rs)
     })
 
-    return rs
+    return _.uniqWith(rs, _.isEqual);
   }
 }
