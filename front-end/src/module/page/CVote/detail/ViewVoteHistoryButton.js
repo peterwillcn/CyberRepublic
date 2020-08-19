@@ -153,7 +153,7 @@ class ViewVoteHistoryButton extends Component {
 
   render() {
     const {currentVote, historyVote} = this.pretreatmentData()
-    const currentVoteNode = this.VotesNode(currentVote,currentVote._id)
+    const currentVoteNode = this.VotesNode(currentVote,"currentVote")
     const voteNode = _.map(historyVote, (o, key) => this.VotesNode(o, key))
     return (<span>
       <VoteHistornBtn type={"primary"} onClick={this.hideModal}>
