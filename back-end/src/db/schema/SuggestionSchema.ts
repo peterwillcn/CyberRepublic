@@ -106,7 +106,7 @@ export const Suggestion = {
   // if no newOwnerDID, the newOwnerPublicKey is the compressed public key of  the target proposal's proposer
   newOwnerPublicKey: String,
   newOwnerSignature: { data: String, message: String },
-  newSecretarySignature: String,
+  newSecretarySignature: { data: String, message: String },
   newSecretaryDID: String,
   newSecretaryPublicKey: String,
   targetProposalHash: String,

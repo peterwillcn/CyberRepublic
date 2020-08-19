@@ -2108,6 +2108,12 @@ export default class extends Base {
           message: 'The owner of this suggetion does not sign'
         }
       }
+      if (!_.get(suggestion, 'newSecretarySignature.data')) {
+        return {
+          success: false,
+          message: 'You had signed'
+        }
+      }
       const did = _.get(this.currentUser, 'did.id')
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
@@ -2179,7 +2185,7 @@ export default class extends Base {
           message: 'There is no this suggestion.'
         }
       }
-      const signature = _.get(suggestion, 'newSecretarySignature')
+      const signature = _.get(suggestion, 'newSecretarySignature.data')
       if (signature) {
         return {
           code: 400,
