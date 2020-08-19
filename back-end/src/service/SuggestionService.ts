@@ -2015,6 +2015,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         sid: suggestion._id,
         data: {
+          userdid: councilMemberDid,
           categorydata: '',
           ownerpublickey: suggestion.ownerPublicKey,
           drafthash: suggestion.draftHash,
