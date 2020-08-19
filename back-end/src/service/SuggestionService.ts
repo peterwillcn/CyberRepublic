@@ -1535,6 +1535,7 @@ export default class extends Base {
         sid: suggestion._id,
         callbackurl: `${process.env.API_URL}/api/suggestion/new-owner-signature-cb`,
         data: {
+          userdid: did,
           categorydata: '',
           ownerpublickey: suggestion.ownerPublicKey,
           drafthash: suggestion.draftHash,
@@ -1572,6 +1573,14 @@ export default class extends Base {
       const payload: any = jwt.decode(
         claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload.'
+        }
+      }
       if (!_.get(payload, 'sid')) {
         return {
           code: 400,
@@ -1598,26 +1607,41 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const ownerPublicKey = _.get(suggestion, 'newOwnerPublicKey')
-      if (!ownerPublicKey) {
+      const newOwnerDID = DID_PREFIX + suggestion.newOwnerDID
+      const isNewOwner = userDID === claims.iss && claims.iss === newOwnerDID
+      if (!isNewOwner) {
+        await this.model.update(
+          { _id: payload.sid },
+          {
+            newOwnerSignature: {
+              message: 'The ELA wallet not bound with your CR account.'
+            }
+          }
+        )
+        return {
+          code: 400,
+          success: false,
+          message: 'The ELA wallet not bound with your CR account.'
+        }
+      }
+      const compressedKey = _.get(suggestion, 'newOwnerPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
         return {
           code: 400,
           success: false,
           message: `Can not get your DID's public key.`
         }
       }
-
       return jwt.verify(
         jwtToken,
-        ownerPublicKey,
+        pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
             await this.model.update(
               { _id: payload.sid },
               {
-                $set: {
-                  newOwnerSignature: { message: 'Verify signature failed.' }
-                }
+                newOwnerSignature: { message: 'Verify signature failed.' }
               }
             )
             return {
@@ -1629,7 +1653,7 @@ export default class extends Base {
             try {
               await this.model.update(
                 { _id: payload.sid },
-                { $set: { newOwnerSignature: { data: decoded.data } } }
+                { newOwnerSignature: { data: decoded.data } }
               )
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
@@ -1816,7 +1840,7 @@ export default class extends Base {
         return {
           code: 400,
           success: false,
-          message: 'no sid in the payload.'
+          message: 'No sid in the payload.'
         }
       }
 
