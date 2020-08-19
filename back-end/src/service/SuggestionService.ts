@@ -1511,6 +1511,14 @@ export default class extends Base {
           message: 'The owner of this suggetion does not sign'
         }
       }
+
+      if (_.get(suggestion, 'newOwnerSignature.data')) {
+        return {
+          success: false,
+          message: 'You had signed'
+        }
+      }
+
       const did = _.get(this.currentUser, 'did.id')
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
@@ -1582,7 +1590,7 @@ export default class extends Base {
           message: 'There is no this suggestion.'
         }
       }
-      const signature = _.get(suggestion, 'newOwnerSignature')
+      const signature = _.get(suggestion, 'newOwnerSignature.data')
       if (signature) {
         return {
           code: 400,
@@ -1604,10 +1612,18 @@ export default class extends Base {
         ownerPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
+            await this.model.update(
+              { _id: payload.sid },
+              {
+                $set: {
+                  newOwnerSignature: { message: 'Verify signature failed.' }
+                }
+              }
+            )
             return {
               code: 401,
               success: false,
-              message: 'Verify signatrue failed.'
+              message: 'Verify signature failed.'
             }
           } else {
             try {
@@ -1858,14 +1874,14 @@ export default class extends Base {
               { _id: payload.sid },
               {
                 $set: {
-                  signature: { message: 'Verify signatrue failed.' }
+                  signature: { message: 'Verify signature failed.' }
                 }
               }
             )
             return {
               code: 401,
               success: false,
-              message: 'Verify signatrue failed.'
+              message: 'Verify signature failed.'
             }
           } else {
             try {
