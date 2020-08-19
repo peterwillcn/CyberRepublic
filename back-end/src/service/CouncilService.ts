@@ -15,23 +15,52 @@ export default class extends Base {
   private secretariatModel: any
   private userMode: any
   private proposalMode: any
+  private configModel: any
 
   protected init() {
     this.model = this.getDBModel('Council')
     this.secretariatModel = this.getDBModel('Secretariat')
     this.userMode = this.getDBModel('User')
     this.proposalMode = this.getDBModel('CVote')
+    this.configModel = this.getDBModel('Config')
   }
 
   public async term(): Promise<any> {
     const fields = ['index', 'startDate', 'endDate', 'status']
 
     const result = await this.model.getDBInstance().find({}, fields)
+    
+    const currentConfig = await this.configModel.getDBInstance().findOne()
+    const crRelatedStageStatus = await ela.getCrrelatedStage()
+    const {
+      ondutyendheight,
+      invoting,
+      votingstartheight,
+      votingendheight
+    } = crRelatedStageStatus
+    const { currentHeight } = currentConfig
+    let votingStart
+    if (invoting) {
+      votingStart = await ela.getTimestampByHeight(votingstartheight)
+    }
 
     return _.map(result, (o: any) => {
       let dateObj = {}
       if (o.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
+        // staging one block time
+        // const difference = (ondutyendheight - currentHeight) * 252 * 60
+        // pro one block time
+        const difference = (ondutyendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = o.startDate && moment(o.startDate).unix()
+        dateObj['endDate'] = difference + (o.startDate && moment(o.startDate).unix())
+      }
+      if (o.status == constant.TERM_COUNCIL_STATUS.VOTING && invoting) {
+        // staging one block time
+        // const difference = (votingendheight - currentHeight) * 252 * 60
+        // pro one block time
+        const difference = (votingendheight - currentHeight) * 2 * 60
+        dateObj['startDate'] = votingStart
+        dateObj['endDate'] = difference + votingStart
       }
       if (o.status === constant.TERM_COUNCIL_STATUS.HISTORY) {
         dateObj['endDate'] = o.endDate && moment(o.endDate).unix()
@@ -53,7 +82,8 @@ export default class extends Base {
       'councilMembers.did',
       'councilMembers.user.did',
       'councilMembers.location',
-      'councilMembers.status'
+      'councilMembers.status',
+      'councilMembers.impeachmentVotes',
     ]
 
     const secretariatFields = [
@@ -97,9 +127,34 @@ export default class extends Base {
         data: null
       }
     }
+    
+    let circulatingSupply
+    if (result.status === constant.TERM_COUNCIL_STATUS.CURRENT) {
+      circulatingSupply = (await ela.currentCirculatingSupply()) * 0.2
+    }
 
-    const filterFields = (o: any) => {
-      return _.omit(o, ['_id', 'user', 'startDate', 'endDate'])
+    const filterFields = (o: any, status: any) => {
+      const fields = ['_id', 'user', 'startDate', 'endDate']
+      if (status !== constant.TERM_COUNCIL_STATUS.CURRENT) {
+        fields.push('impeachmentVotes')
+        return _.omit(o, fields)
+      }
+
+      if (
+        o.impeachmentVotes >= 0 &&
+        circulatingSupply &&
+        circulatingSupply > 0
+      ) {
+        o.rejectRatio =
+          o.impeachmentVotes == 0
+            ? 0
+            : _.toNumber(
+                (
+                  _.toNumber(o.impeachmentVotes) / _.toNumber(circulatingSupply)
+                ).toFixed(8)
+              )
+      }
+      return _.omit(o, fields)
     }
 
     const councilList =
@@ -113,12 +168,12 @@ export default class extends Base {
             ].includes(e.status)
           )
     const council = _.map(councilList, (o: any) => ({
-      ...filterFields(o._doc),
+      ...filterFields(o._doc, result.status),
       ...this.getUserInformation(o._doc, o.user)
     }))
 
     const secretariat = _.map(secretariatResult, (o: any) => ({
-      ...filterFields(o._doc),
+      ...filterFields(o._doc, null),
       ...this.getUserInformation(o._doc, o.user),
       startDate: moment(o.startDate).unix(),
       endDate: o.endDate && moment(o.endDate).unix()
@@ -126,7 +181,8 @@ export default class extends Base {
 
     return {
       council,
-      secretariat
+      secretariat,
+      circulatingSupply
     }
   }
 

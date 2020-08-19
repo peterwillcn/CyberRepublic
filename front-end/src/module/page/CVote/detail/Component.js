@@ -259,7 +259,7 @@ class C extends StandardPage {
           return (
             <div style={finalStyle}>
               <Row>
-                <Col span={this.state.smallSpace ? 24 : 12}>
+                <Col span={this.state.smallSpace || !isNotification ? 24 : 12}>
                   <FixedHeader>
                     {metaNode}
                     {titleNode}

@@ -75,7 +75,7 @@ export default class extends AdminPage {
       }
       return _.extend(prev, { [curr.resourceType]: [curr] })
     }, {})
-    const panes = _.map(roles, role => <TabPane tab={USER_ROLE_TO_TEXT[role]} key={role}>{this.renderList(role, accuData)}</TabPane>)
+    const panes = _.map(roles, role => <TabPane tab={I18N.get(`permission.tab.${role.toLocaleLowerCase()}`)} key={role}>{this.renderList(role, accuData)}</TabPane>)
     return (
       <Tabs defaultActiveKey={roles[0]}>
         {panes}
@@ -127,9 +127,9 @@ export default class extends AdminPage {
     return (
       <div>
         <Button onClick={this.showCreateForm}>
-          Create Permission
+          {I18N.get('permission.btn')}
         </Button>
-        <span style={{ marginLeft: '10px' }}>(Require server to restart to take effect)</span>
+        <span style={{ marginLeft: '10px' }}>({I18N.get('permission.btn.tips')})</span>
       </div>
     )
   }

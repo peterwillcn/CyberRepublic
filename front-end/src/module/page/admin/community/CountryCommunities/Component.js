@@ -9,6 +9,7 @@ import { USER_GENDER } from '@/constant'
 import Navigator from '../../../shared/HomeNavigator/Container'
 import { logger } from '@/util'
 import '../style.scss'
+import I18N from '@/I18N'
 
 export default class extends AdminPage {
 
@@ -51,10 +52,10 @@ export default class extends AdminPage {
           geolocation: values.geolocation,
           leaderIds: values.leader || '',
         }).then(() => {
-          message.success('Add new country successfully')
+          message.success(I18N.get('communities.form.add.success'))
           this.loadCommunities()
         }).catch((err) => {
-          message.error('Error while add country')
+          message.error(I18N.get('communities.form.add.error'))
           logger.error(err)
         })
       })
@@ -196,8 +197,8 @@ export default class extends AdminPage {
             <Link to={`/admin/community/${community._id}/country/${community.geolocation}`}>
               <Card title={community.name}>
                 {community.leaderIds.length ?
-                  <p className="text-light-gray">Has Organizer(s)</p> :
-                  <p className="highlight-text">Needs an Organizer</p>
+                  <p className="text-light-gray">{I18N.get('communities.organizer.has')}</p> :
+                  <p className="highlight-text">{I18N.get('communities.organizer.needs')}</p>
                 }
                 {/* <List
                                 dataSource={community.leaders}
@@ -243,7 +244,7 @@ export default class extends AdminPage {
                 </Col>
                 <Col span={20} className="admin-right-column wrap-box-user">
                   <div>
-                    <Button className="ant-btn-ebp pull-right" onClick={this.showModalAddCountry} type="primary">Add country</Button>
+                    <Button className="ant-btn-ebp pull-right" onClick={this.showModalAddCountry} type="primary">{I18N.get('communities.btn')}</Button>
                     <Row className="clearfix">
                       {listCommunitiesEl}
                     </Row>

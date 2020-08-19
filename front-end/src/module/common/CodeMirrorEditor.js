@@ -43,11 +43,13 @@ class Component extends BaseComponent {
 
   ord_render() {
     const { show, value } = this.state
-    const { name, autofocus } = this.props
+    const { name, autofocus, upload } = this.props
     return (
       <Wrapper>
         <Toolbar>
-          <UploadBase64Image insertImage={this.insertImage} name={name} />
+          {upload === false ? null : (
+            <UploadBase64Image insertImage={this.insertImage} name={name} />
+          )}
           <ToggleMarkdownPreview togglePreview={this.togglePreview} />
         </Toolbar>
         {show === false ? (
@@ -80,7 +82,8 @@ class Component extends BaseComponent {
 
 Component.propTypes = {
   name: PropTypes.string.isRequired,
-  autofocus: PropTypes.bool
+  autofocus: PropTypes.bool,
+  upload: PropTypes.bool
 }
 
 export default Component
