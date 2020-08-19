@@ -612,15 +612,15 @@ export default class extends Base {
       const db_user = this.getDBModel('User')
       let pattern = search.split(' ')
       let users
-      if (pattern.length > 1){
+      if (pattern.length > 1) {
         users = await db_user
-        .getDBInstance()
-        .find({
+          .getDBInstance()
+          .find({
             // { username: { $regex: search, $options: 'i' } },
-            'profile.firstName': { $regex: pattern[0], $options: 'i'},
-            'profile.lastName': { $regex: pattern[1], $options: 'i' } 
-        })
-        .select('_id')
+            'profile.firstName': { $regex: pattern[0], $options: 'i' },
+            'profile.lastName': { $regex: pattern[1], $options: 'i' }
+          })
+          .select('_id')
       } else {
         users = await db_user
           .getDBInstance()
@@ -750,10 +750,7 @@ export default class extends Base {
     const cursor = db_cvote
       .getDBInstance()
       .find(query, fields.join(' '))
-      .populate(
-        'proposer',
-        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
-      )
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .sort({ vid: -1 })
 
     if (param.results) {
