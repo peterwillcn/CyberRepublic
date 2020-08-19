@@ -1885,9 +1885,15 @@ export default class extends Base {
         }
       }
 
-      const compressedPublicKey = _.get(suggestion, 'ownerPublicKey')
-      const pemPublicKey = getPemPublicKey(compressedPublicKey)
-
+      const compressedKey = _.get(suggestion, 'ownerPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
+        return {
+          code: 400,
+          success: false,
+          message: `Can not get your DID's public key.`
+        }
+      }
       // verify response data from ela wallet
       return jwt.verify(
         jwtToken,
