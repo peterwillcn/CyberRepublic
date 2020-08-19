@@ -1231,6 +1231,10 @@ export default class extends Base {
   // council vote onchain
   public async onchain(param) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const db_cvote = this.getDBModel('CVote')
       const userId = _.get(this.currentUser, '_id')
       const { id } = param
@@ -1268,6 +1272,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         command: 'reviewproposal',
         data: {
+          userdid: did,
           proposalHash: cur.proposalHash,
           voteResult: voteResultOnChain[currentVoteResult.value],
           opinionHash: currentVoteResult.reasonHash,
