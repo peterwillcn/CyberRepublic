@@ -144,9 +144,17 @@ class ViewVoteHistoryButton extends Component {
     )
   }
 
+  pretreatmentData = () => {
+    const data = this.props.data
+    const currentVote = _.find(data, { "isCurrentVote": true })
+    const historyVote = _.filter(data, (o) => { return !o.isCurrentVote })
+    return { currentVote, historyVote }
+  }
+
   render() {
-    const data = _.sortBy(this.props.data,(o) => {return o._id})
-    const voteNode = _.map(data, (o, key) => this.VotesNode(o, key))
+    const {currentVote, historyVote} = this.pretreatmentData()
+    const currentVoteNode = this.VotesNode(currentVote,currentVote._id)
+    const voteNode = _.map(historyVote, (o, key) => this.VotesNode(o, key))
     return (<span>
       <VoteHistornBtn type={"primary"} onClick={this.hideModal}>
         {I18N.get(`council.voting.viewHistory.btn`)}
@@ -159,6 +167,7 @@ class ViewVoteHistoryButton extends Component {
         width={880}
       >
         <Timeline style={{ margin: '30px' }}>
+          {currentVoteNode}
           {voteNode}
         </Timeline>
       </Modal></span>
