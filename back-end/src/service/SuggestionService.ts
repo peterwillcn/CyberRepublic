@@ -1968,6 +1968,21 @@ export default class extends Base {
         }
         return
       }
+      if (type && type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+        const signature = _.get(suggestion, 'newSecretarySignature.data')
+        if (signature) {
+          return { success: true, data: suggestion }
+        }
+        const message = _.get(suggestion, 'newSecretarySignature.message')
+        if (message) {
+          await this.model.update(
+            { _id: id },
+            { $unset: { newSecretarySignature: true } }
+          )
+          return { success: false, message }
+        }
+        return
+      }
       const signature = _.get(suggestion, 'signature.data')
       if (signature) {
         return { success: true, data: suggestion }
