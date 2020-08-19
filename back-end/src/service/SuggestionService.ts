@@ -2187,8 +2187,9 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const secPublicKey = _.get(suggestion, 'newSecretaryPublicKey')
-      if (!secPublicKey) {
+      const compressedKey = _.get(suggestion, 'newSecretaryPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
         return {
           code: 400,
           success: false,
@@ -2197,7 +2198,7 @@ export default class extends Base {
       }
       return jwt.verify(
         jwtToken,
-        secPublicKey,
+        pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
             return {
