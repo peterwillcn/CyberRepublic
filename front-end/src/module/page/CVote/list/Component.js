@@ -812,7 +812,12 @@ export default class extends BaseComponent {
     }
     const colSpan = isCouncil ? 8 : 12
     const { Option } = Select
-    const options = _.map(this.state.authorList,(o => <Option key={o._id}>{o.firstName+ ' '+o.lastName}</Option>))
+    const options = _.map(this.state.authorList, (o => {
+      const isEmpty = _.isEmpty(o.firstName)
+      return (<Option key={o._id}>
+        { !isEmpty ? o.firstName + ' ' + o.lastName : o.username}
+      </Option>)
+    }))
     return (
       <FilterPanel isCouncil={isCouncil}>
         <Row type="flex" gutter={10} className="filter">

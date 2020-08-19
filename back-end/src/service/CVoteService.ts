@@ -2135,8 +2135,8 @@ export default class extends Base {
   public async getAllAuthor(param: any) {
     if (_.isEmpty(param.data)) return
     const db_cvote = this.getDBModel('CVote')
-    let searchAuthor = ""
-    _.forEach(param.data,(o: any) => searchAuthor += o)
+    let searchAuthor = ''
+    _.forEach(param.data, (o: any) => (searchAuthor += o))
     const authorList = await db_cvote
       .getDBInstance()
       .find(
@@ -2154,38 +2154,65 @@ export default class extends Base {
       if (
         o.proposer &&
         o.proposer.profile &&
-        !_.find(authorArr, { _id: o.proposer._id }) &&
-        !_.isEmpty(o.proposer.profile.firstName) &&
-        !_.isEmpty(o.proposer.profile.lastName)
+        !_.find(authorArr, { _id: o.proposer._id })
       ) {
         authorArr.push({
           _id: o.proposer._id,
           firstName: o.proposer.profile.firstName,
-          lastName: o.proposer.profile.lastName
+          lastName: o.proposer.profile.lastName,
+          username: o.proposer.username
         })
       }
     })
-    const sp = searchAuthor.split(" ")
+    const sp = searchAuthor.split(' ')
     const rs = []
-    _.forEach(authorArr,(o) => {
-      if (sp.length > 1) {
-        if (
-        o.firstName.search(sp[0]) !== -1
-        && o.lastName.search(sp[1]) !== -1
-        ) {
-          rs.push(o)
-        } else if (
-          o.lastName.search(sp[1]) !== -1
-        ) {
-          rs.push(o)
-        }
-      } else {
-        if ( o.firstName.search(sp[0]) !== -1
-        || o.lastName.search(sp[0]) !== -1
-        ) {
-          rs.push(o)
+    _.forEach(authorArr, (o) => {
+      const firstName = o.firstName && o.firstName.toLowerCase()
+      const lastName = o.lastName && o.lastName.toLowerCase()
+      const username = o.username && o.username.toLowerCase()
+      if (firstName && lastName) {
+        if (sp.length > 1) {
+          if (
+            firstName.search(sp[0].toLowerCase()) !== -1 &&
+            lastName.search(sp[1].toLowerCase()) !== -1
+          ) {
+            rs.push(o)
+          } else if (lastName.search(sp[1].toLowerCase()) !== -1) {
+            rs.push(o)
+          } 
+        } else {
+          if (
+            firstName.search(sp[0].toLowerCase()) !== -1 ||
+            lastName.search(sp[0].toLowerCase()) !== -1
+          ) {
+            rs.push(o)
+          }
+          if (username && username.search(sp[0].toLowerCase()) !== -1) {
+            rs.push(o)
+          }
         }
       }
+    })
+
+    _.forEach(authorArr, (o) => {
+      const username = o.username && o.username.toLowerCase()
+      if (
+        username &&
+        !_.find(rs, { _id: o._id }) &&
+        sp.length > 1 &&
+        (username.search(sp[0].toLowerCase()) !== -1 ||
+          username.search(sp[1].toLowerCase()) !== -1)
+      ) {
+        rs.push(o)
+      }
+      if (
+        username && sp.length == 1 &&
+        !_.find(rs, { _id: o._id }) &&
+        username.search(sp[0].toLowerCase()) !== -1
+      ) {
+        rs.push(o)
+      }
+      console.log(rs)
     })
 
     return rs
