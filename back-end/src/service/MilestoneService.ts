@@ -124,6 +124,14 @@ export default class extends Base {
       const payload: any = jwt.decode(
         claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload.'
+        }
+      }
       const proposalHash = _.get(payload, 'data.proposalhash')
       const messageHash = _.get(payload, 'data.messagehash')
       if (!proposalHash || !messageHash) {
@@ -134,12 +142,33 @@ export default class extends Base {
         }
       }
 
-      const proposal = await this.model.findOne({ proposalHash })
+      const proposal = await this.model
+        .getDBInstance()
+        .findOne({ proposalHash })
+        .populate('proposer', 'did')
       if (!proposal) {
         return {
           code: 400,
           success: false,
           message: 'There is no this proposal.'
+        }
+      }
+      const ownerDID = _.get(proposal, 'proposer.did.id')
+      const isOwner = userDID === claims.iss && ownerDID === claims.iss
+      if (!isOwner) {
+        this.model.update(
+          {
+            proposalHash,
+            'withdrawalHistory.messageHash': messageHash
+          },
+          {
+            'withdrawalHistory.$.error': `The ELA wallet not bound with your CR account.`
+          }
+        )
+        return {
+          code: 400,
+          success: false,
+          message: 'The ELA wallet not bound with your CR account.'
         }
       }
       const ownerPublicKey = _.get(proposal, 'ownerPublicKey')
@@ -181,7 +210,10 @@ export default class extends Base {
                     proposalHash,
                     'withdrawalHistory.messageHash': messageHash
                   },
-                  { 'withdrawalHistory.$.signature': decoded.data }
+                  {
+                    $set: { 'withdrawalHistory.$.signature': decoded.data },
+                    $unset: { 'withdrawalHistory.$.error': true }
+                  }
                 ),
                 this.model.update(
                   {

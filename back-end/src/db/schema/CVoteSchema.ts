@@ -46,6 +46,7 @@ const withdrawalHistorySchema = {
   milestoneKey: String,
   signature: String,
   createdAt: Date,
+  error: String,
   review: {
     reason: String,
     reasonHash: String,
