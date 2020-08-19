@@ -9,7 +9,8 @@ import {
   user as userUtil,
   utilCrypto,
   getPemPublicKey,
-  getUtxosByAmount
+  getUtxosByAmount,
+  permissions
 } from '../utility'
 const Big = require('big.js')
 const {
@@ -272,6 +273,15 @@ export default class extends Base {
 
   public async review(param: any) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
+      const role = _.get(this.currentUser, 'role')
+      if (!permissions.isSecretary(role)) {
+        return { success: false, message: 'No access right.' }
+      }
+
       const { id, milestoneKey, reason, opinion, applicationId } = param
       if (!reason || !opinion || ![APPROVED, REJECTED].includes(opinion)) {
         return { success: false, message: 'Some param is invalid.' }
@@ -344,6 +354,7 @@ export default class extends Base {
         command: 'reviewmilestone',
         iss: process.env.APP_DID,
         data: {
+          userdid: did,
           proposalhash: proposal.proposalHash,
           messagehash: history.messageHash,
           stage: this.paymentStage(proposal.budget, milestoneKey),
