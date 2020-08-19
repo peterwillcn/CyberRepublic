@@ -2212,9 +2212,8 @@ export default class extends Base {
       ) {
         rs.push(o)
       }
-      console.log(rs)
     })
 
-    return rs
+    return _.uniqWith(rs, _.isEqual);
   }
 }
