@@ -505,6 +505,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         callbackurl: '',
         data: {
+          userdid: _.get(this.currentUser, 'did.id'),
           proposalhash: proposal.proposalHash,
           amount: Big(`${sum}e+8`).toString(),
           recipient: proposal.elaAddress,
