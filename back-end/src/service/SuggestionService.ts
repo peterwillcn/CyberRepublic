@@ -2133,6 +2133,7 @@ export default class extends Base {
         sid: suggestion._id,
         callbackurl: `${process.env.API_URL}/api/suggestion/sec-signature-cb`,
         data: {
+          userdid: did,
           categorydata: '',
           ownerpublickey: suggestion.ownerPublicKey,
           drafthash: suggestion.draftHash,
@@ -2168,11 +2169,19 @@ export default class extends Base {
       const payload: any = jwt.decode(
         claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload'
+        }
+      }
       if (!_.get(payload, 'sid')) {
         return {
           code: 400,
           success: false,
-          message: 'Problems parsing jwt token of CR website.'
+          message: 'No sid in the payload'
         }
       }
       const suggestion = await this.model.findById({
@@ -2191,6 +2200,23 @@ export default class extends Base {
           code: 400,
           success: false,
           message: 'This suggestion had been signed.'
+        }
+      }
+      const secretaryDID = _.get(suggestion, 'newSecretaryDID')
+      const isSecretary = userDID === claims.iss && claims.iss === secretaryDID
+      if (!isSecretary) {
+        await this.model.update(
+          { _id: payload.sid },
+          {
+            newSecretarySignature: {
+              message: 'The ELA wallet not bound with your CR account.'
+            }
+          }
+        )
+        return {
+          code: 400,
+          success: false,
+          message: 'The ELA wallet not bound with your CR account.'
         }
       }
       const compressedKey = _.get(suggestion, 'newSecretaryPublicKey')
@@ -2216,7 +2242,7 @@ export default class extends Base {
             try {
               await this.model.update(
                 { _id: payload.sid },
-                { $set: { newSecretarySignature: { data: decoded.data } } }
+                { newSecretarySignature: { data: decoded.data } }
               )
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
