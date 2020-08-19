@@ -1533,7 +1533,7 @@ export default class extends Base {
         command: 'createsuggestion',
         iss: process.env.APP_DID,
         sid: suggestion._id,
-        callbackurl: `${process.env.API_URL}/api/suggestion/owner-signature-cb`,
+        callbackurl: `${process.env.API_URL}/api/suggestion/new-owner-signature-cb`,
         data: {
           categorydata: '',
           ownerpublickey: suggestion.ownerPublicKey,
@@ -1557,7 +1557,7 @@ export default class extends Base {
     }
   }
 
-  public async ownerSignatureCallback(param: any) {
+  public async newOwnerSignatureCallback(param: any) {
     try {
       const jwtToken = param.jwt
       const claims: any = jwt.decode(jwtToken)

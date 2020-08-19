@@ -179,7 +179,7 @@ export default Base.setRouter([
     method: 'post'
   },
   {
-    path: '/owner-signature-cb',
+    path: '/new-owner-signature-cb',
     router: ownerSignatureCallback,
     method: 'post'
   },
