@@ -2133,10 +2133,10 @@ export default class extends Base {
   }
 
   public async getAllAuthor(param: any) {
-    if (_.isEmpty(param)) return
+    if (_.isEmpty(param.data)) return
     const db_cvote = this.getDBModel('CVote')
-    let search = ""
-    _.forEach(param.data,(o: any) => search += o)
+    let searchAuthor = ""
+    _.forEach(param.data,(o: any) => searchAuthor += o)
     const authorList = await db_cvote
       .getDBInstance()
       .find(
@@ -2151,18 +2151,24 @@ export default class extends Base {
 
     const authorArr = []
     _.forEach(authorList, (o: any) => {
-      if (o.proposer && !_.find(authorArr,{"_id":o.proposer._id})) {
+      if (
+        o.proposer &&
+        o.proposer.profile &&
+        !_.find(authorArr, { _id: o.proposer._id }) &&
+        !_.isEmpty(o.proposer.profile.firstName) &&
+        !_.isEmpty(o.proposer.profile.lastName)
+      ) {
         authorArr.push({
-          _id : o.proposer._id,
+          _id: o.proposer._id,
           firstName: o.proposer.profile.firstName,
           lastName: o.proposer.profile.lastName
         })
       }
     })
-    const sp = search.split(" ")
+    const sp = searchAuthor.split(" ")
     const rs = []
     _.forEach(authorArr,(o) => {
-      if (rs.length > 1) {
+      if (sp.length > 1) {
         if (
         o.firstName.search(sp[0]) !== -1
         && o.lastName.search(sp[1]) !== -1
