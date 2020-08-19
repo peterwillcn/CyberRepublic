@@ -262,6 +262,9 @@ export default class extends Base {
       if (_.get(history[0], 'signature')) {
         return { success: true, detail: proposal }
       }
+      if (_.get(history[0], 'error')) {
+        return { success: false, message: history[0].error }
+      }
     } else {
       return { success: false }
     }

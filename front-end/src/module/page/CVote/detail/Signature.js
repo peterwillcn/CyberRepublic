@@ -69,10 +69,7 @@ class Signature extends Component {
     if (!this._isMounted) {
       return
     }
-    const {
-      proposalId,
-      getPaymentSignature
-    } = this.props
+    const { proposalId, getPaymentSignature } = this.props
     const { messageHash } = this.state
     const rs = await getPaymentSignature({ proposalId, messageHash })
     if (rs && rs.success) {
