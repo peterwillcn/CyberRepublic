@@ -37,6 +37,10 @@ export default class extends Base {
 
   public async applyPayment(param: any) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const { id, milestoneKey, message } = param
       if (!message) {
         return { success: false }
@@ -451,6 +455,10 @@ export default class extends Base {
 
   public async withdraw(param: any) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const { id, milestoneKey } = param
       const proposal = await this.model.findById(id)
       if (!proposal) {
