@@ -86,6 +86,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         callbackurl: `${process.env.API_URL}/api/proposals/milestones/signature-callback`,
         data: {
+          userdid: _.get(this.currentUser, 'did.id'),
           proposalhash: proposal.proposalHash,
           messagehash: messageHash,
           stage: this.paymentStage(proposal.budget, milestoneKey),
