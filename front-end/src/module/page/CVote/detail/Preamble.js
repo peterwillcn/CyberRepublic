@@ -21,7 +21,10 @@ const Component = ({
   txHash,
   copyFun,
   closeProposalNum,
-  newSecretaryDID
+  newSecretaryDID,
+  targetProposalNum,
+  newOwnerDID,
+  newAddress
 }) => {
   // header
   const headerNode = (
@@ -64,15 +67,51 @@ const Component = ({
       </Col>
     </Item>
   )
+  const targetProposalNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.targetProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`#${targetProposalNum}`}</ItemText>
+      </Col>
+    </Item>
+  )
   const newSecretaryNode = (
     <Item>
       <Col span={6}>
         <ItemTitle>
-          {I18N.get('proposal.fields.preambleSub.closeProposalNum')}
+          {I18N.get('proposal.fields.preambleSub.secretary')}
         </ItemTitle>
       </Col>
       <Col span={18}>
         <ItemText>{`did:elastos:${newSecretaryDID}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newOwnerNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.owner')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newOwnerDID}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newAddressNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.address')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newAddress}`}</ItemText>
       </Col>
     </Item>
   )
@@ -171,7 +210,10 @@ const Component = ({
       {reference && reference.displayId ? refereeNode : null}
       {typeNode}
       {closeProposalNum ? closeProposalNode : null}
+      {targetProposalNum? targetProposalNode: null}
       {newSecretaryDID ? newSecretaryNode : null}
+      {newOwnerDID ? newOwnerNode: null}
+      {newAddress ? newAddressNode : null}
       {statusNode}
       {createdNode}
       {txHash ? txHashNode : null}

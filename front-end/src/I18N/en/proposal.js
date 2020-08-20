@@ -19,6 +19,10 @@ export default {
       created: 'Created',
       hash: 'Hash',
       txHash: 'TxID',
+      owner: 'New Proposal Owner',
+      address: 'New Proposal ELA Address',
+      secretary: 'New Secretary General',
+      targetProposalNum: 'Proposal Number',
       closeProposalNum: 'Terminate Proposal'
     },
     abstract: 'Abstract',

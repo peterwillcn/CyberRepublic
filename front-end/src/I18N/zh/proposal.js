@@ -19,6 +19,10 @@ export default {
       created: '创建日期',
       hash: 'Hash',
       txHash: 'TxID',
+      owner: '变更提案新负责人',
+      address: '变更提案新 ELA 地址',
+      secretary: '新秘书长',
+      targetProposalNum: '变更提案编号',
       closeProposalNum: '终止提案'
     },
     abstract: '摘要',
