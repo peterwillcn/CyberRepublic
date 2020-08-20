@@ -20,7 +20,8 @@ const Component = ({
   proposalHash,
   txHash,
   copyFun,
-  closeProposalNum
+  closeProposalNum,
+  newSecretaryDID
 }) => {
   // header
   const headerNode = (
@@ -60,6 +61,18 @@ const Component = ({
       </Col>
       <Col span={18}>
         <ItemText>{`#${closeProposalNum}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newSecretaryNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.closeProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newSecretaryDID}`}</ItemText>
       </Col>
     </Item>
   )
@@ -158,6 +171,7 @@ const Component = ({
       {reference && reference.displayId ? refereeNode : null}
       {typeNode}
       {closeProposalNum ? closeProposalNode : null}
+      {newSecretaryDID ? newSecretaryNode : null}
       {statusNode}
       {createdNode}
       {txHash ? txHashNode : null}
