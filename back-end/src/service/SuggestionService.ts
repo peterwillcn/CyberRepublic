@@ -2129,7 +2129,7 @@ export default class extends Base {
           message: 'The owner of this suggetion does not sign'
         }
       }
-      if (!_.get(suggestion, 'newSecretarySignature.data')) {
+      if (_.get(suggestion, 'newSecretarySignature.data')) {
         return {
           success: false,
           message: 'You had signed'
