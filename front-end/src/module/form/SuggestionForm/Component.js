@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, Button, Row, Tabs, Radio, message } from 'antd'
+import { Form, Input, Button, Row, Tabs, message } from 'antd'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
@@ -9,8 +9,9 @@ import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
 import PaymentSchedule from './PaymentSchedule'
 import ImplementationPlan from './ImplementationPlan'
 import { wordCounter } from '@/util'
-import { SUGGESTION_BUDGET_TYPE } from '@/constant'
+import { SUGGESTION_BUDGET_TYPE, SUGGESTION_TYPE } from '@/constant'
 import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
+import SelectSuggType from './SelectSuggType'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -27,6 +28,11 @@ const TAB_KEYS = [
   'budget'
 ]
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
+const {
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 
 class C extends BaseComponent {
   constructor(props) {
@@ -81,20 +87,8 @@ class C extends BaseComponent {
         })
         return
       }
-
       const milestone = _.get(values, 'plan.milestone')
-      const amount = _.get(values, 'budget.budgetAmount')
       const pItems = _.get(values, 'budget.paymentItems')
-
-      const sum = pItems.reduce((sum, item) => {
-        return (sum += Number(item.amount))
-      }, 0)
-
-      if (Number(amount) !== sum) {
-        this.setState({ loading: false })
-        message.error(I18N.get('suggestion.form.error.notEqual'))
-        return
-      }
 
       const initiation = pItems.filter(
         (item) => item.type === ADVANCE && item.milestoneKey === '0'
@@ -119,11 +113,11 @@ class C extends BaseComponent {
       // exclude old suggestion data
       if (budget && typeof budget !== 'string') {
         values.budget = budget.paymentItems
-        values.budgetAmount = Number(budget.budgetAmount)
+        values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-
-      await callback(values)
+      const rs = this.formatType(values)
+      await callback(rs)
       this.setState({ loading: false })
     })
   }
@@ -138,6 +132,33 @@ class C extends BaseComponent {
     this.handleSave(e, onSaveDraft)
   }
 
+  formatType = (values) => {
+    const type = _.get(values, 'type')
+    if (type && typeof type !== 'string') {
+      values.type = type.type
+      switch (type.type) {
+        case CHANGE_PROPOSAL:
+          if (type.newAddress) {
+            values.newAddress = type.newAddress
+          }
+          if (type.newOwnerDID) {
+            values.newOwnerDID = type.newOwnerDID
+          }
+          values.targetProposalNum = type.proposalNum
+          break
+        case CHANGE_SECRETARY:
+          values.newSecretaryDID = type.newSecretaryDID
+          break
+        case TERMINATE_PROPOSAL:
+          values.closeProposalNum = type.termination
+          break
+        default:
+          break
+      }
+    }
+    return values
+  }
+
   handleSaveDraft = () => {
     const { isEditMode, form } = this.props
     if (!isEditMode && this.props.onSaveDraft) {
@@ -145,10 +166,11 @@ class C extends BaseComponent {
       const budget = form.getFieldValue('budget')
       if (budget) {
         values.budget = budget.paymentItems
-        values.budgetAmount = budget.budgetAmount && Number(budget.budgetAmount)
+        values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-      this.props.onSaveDraft(values)
+      const rs = this.formatType(values)
+      this.props.onSaveDraft(rs)
     }
   }
 
@@ -217,29 +239,53 @@ class C extends BaseComponent {
     return cb()
   }
 
-  validateAmount = (value) => {
-    const reg = /^(0|[1-9][0-9]*)(\.[0-9]*)?$/
-    return (!isNaN(value) && reg.test(value)) || value === '' ? true : false
-  }
-
   validateAddress = (value) => {
     const reg = /^[E8][a-zA-Z0-9]{33}$/
     return reg.test(value)
   }
 
   validateBudget = (rule, value, cb) => {
-    const amount = _.get(value, 'budgetAmount')
     const address = _.get(value, 'elaAddress')
     const pItems = _.get(value, 'paymentItems')
 
-    if (!this.validateAmount(amount)) {
-      return cb(I18N.get('suggestion.form.error.isNaN'))
-    }
     if (!this.validateAddress(address)) {
       return cb(I18N.get('suggestion.form.error.elaAddress'))
     }
     if (_.isEmpty(pItems)) {
       return cb(I18N.get('suggestion.form.error.schedule'))
+    }
+    return cb()
+  }
+
+  validateType = (rule, value, cb) => {
+    const type = _.get(value, 'type')
+    switch (type) {
+      case CHANGE_PROPOSAL:
+        if (!value.proposalNum) {
+          return cb(I18N.get('suggestion.form.error.proposalNum'))
+        }
+        if (value.changeOwner && !value.newOwnerDID) {
+          return cb(I18N.get('suggestion.form.error.newOwner'))
+        }
+        if (value.changeAddress && !this.validateAddress(value.newAddress)) {
+          return cb(I18N.get('suggestion.form.error.elaAddress'))
+        }
+        if (!value.newOwnerDID && !value.newAddress) {
+          return cb(I18N.get('suggestion.form.error.changeWhat'))
+        }
+        break
+      case CHANGE_SECRETARY:
+        if (!value.newSecretaryDID) {
+          cb(I18N.get('suggestion.form.error.secretary'))
+        }
+        break
+      case TERMINATE_PROPOSAL:
+        if (!value.termination) {
+          cb(I18N.get('suggestion.form.error.proposalNum'))
+        }
+        break
+      default:
+        break
     }
     return cb()
   }
@@ -257,19 +303,38 @@ class C extends BaseComponent {
       }
     ]
     if (id === 'type') {
+      rules.push({ validator: this.validateType })
+      let data
+      switch (initialValues.type) {
+        case CHANGE_PROPOSAL:
+          data = {
+            type: initialValues.type,
+            proposalNum: initialValues.targetProposalNum,
+            newOwnerDID: initialValues.newOwnerDID,
+            newAddress: initialValues.newAddress
+          }
+          break
+        case CHANGE_SECRETARY:
+          data = {
+            type: initialValues.type,
+            newSecretaryDID: initialValues.newSecretaryDID
+          }
+          break
+        case TERMINATE_PROPOSAL:
+          data = {
+            type: initialValues.type,
+            termination: initialValues.closeProposalNum
+          }
+          break
+        default:
+          data = { type: initialValues.type }
+          break
+      }
       return getFieldDecorator(id, {
         rules,
-        initialValue: initialValues[id]
+        initialValue: data
       })(
-        <Radio.Group>
-          <Radio value="1">{I18N.get('suggestion.form.type.newMotion')}</Radio>
-          <Radio value="2">
-            {I18N.get('suggestion.form.type.motionAgainst')}
-          </Radio>
-          <Radio value="3">
-            {I18N.get('suggestion.form.type.anythingElse')}
-          </Radio>
-        </Radio.Group>
+        <SelectSuggType initialValue={data} callback={this.onTextareaChange} />
       )
     }
 
@@ -307,13 +372,15 @@ class C extends BaseComponent {
         initialBudget = initialValues.budget && {
           budgetAmount: initialValues.budgetAmount,
           elaAddress: initialValues.elaAddress,
-          paymentItems: initialValues.budget
+          paymentItems: initialValues.budget,
+          budgetIntro: initialValues.budgetIntro
         }
       } else {
         initialBudget = {
           budgetAmount: initialValues.budget,
           elaAddress: '',
-          paymentItems: []
+          paymentItems: [],
+          budgetIntro: ''
         }
       }
 
@@ -342,6 +409,7 @@ class C extends BaseComponent {
         content={initialValues[id]}
         activeKey={id}
         name={id}
+        upload={id === 'abstract' ? false : true}
       />
     )
   }

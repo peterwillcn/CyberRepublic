@@ -122,6 +122,7 @@ const zh = {
 
   'login.success': '欢迎回来',
   'logout.success': '登出成功',
+  'login.noBindingDID': '请注册账号或用已有账号登陆',
 
   'mentions.notFound': '该用户不存在',
 
@@ -316,6 +317,8 @@ const zh = {
   // suggestion error
   'suggestion.create.error.required': '必填项',
   'suggestion.create.error.tooShort': '文字太短',
+  'suggestion.vote.error.empty': '请输入内容',
+  'suggestion.vote.error.tooLong': '内容太长',
 
   // suggestion rules
   'suggestion.rules': '规则',
@@ -344,7 +347,63 @@ const zh = {
     '向亦来云基金会或CR的任何成员索要信息将不被受理，这超出了CR共识的范畴。对于这些问题，请联系社区经理。',
 
   // Roles & Permissions
-  'permission.title': 'Roles & Permissions',
+  'permission.title': '角色与权限',
+  'permission.btn': '创建权限',
+  'permission.btn.tips': '要求服务器重新启动才能生效',
+  'permission.form.name': '名称',
+  'permission.form.resource': '资源类型',
+  'permission.form.desc': '描述',
+  'permission.form.http': 'Http请求方法',
+  'permission.form.url': 'Url',
+  'permission.tab.admin': '管理员',
+  'permission.tab.council': '委员',
+  'permission.tab.secretary': '秘书长',
+  'permission.tab.custom': '自定义',
+  'permission.tab.member': '用户',
+  'permission.tab.leader': '领导者',
+  
+  // Communities
+  'communities.btn': '添加国家',
+  'communities.btn.add': '添加国家',
+  'communities.btn.cancel': '取消',
+  'communities.btn.delete': '删除',
+  'communities.form.country': '国家',
+  'communities.form.name': '名称',
+  'communities.form.leader': '领导者',
+  'communities.form.organizer': '组织者',
+  'communities.form.required':'这是必填项',
+  'communities.form.country.placeholder': '请选择一个国家',
+  'communities.form.leader.placeholder': '请选择一个用户',
+  'communities.form.add.success': '成功添加新国家',
+  'communities.form.add.error': '添加国家/地区时出错',
+  'communities.form.organizer.change': '更改组织者',
+  
+  'communities.organizer.has': '有组织者',
+  'communities.organizer.needs': '需要一个组织者',
+
+  'communitites.country.organizers': '国家组织者',
+  'communities.btn.add.country': '添加',
+  'communities.btn.add.state': '添加州省',
+  'communities.btn.add.city': '添加城市',
+  'communities.btn.add.region': '添加地区',
+  'communities.btn.add.school': '添加学校',
+  'communities.btn.add.region': '添加地区',
+  'communities.btn.update.state': '更新州省',
+  'communities.btn.update.city': '更新城市',
+  'communities.btn.update.region': '更新地区',
+  'communities.btn.update.school': '更新学校',
+  'communities.form.title.state': '添加州省',
+  'communities.form.title.city': '添加城市',
+  'communities.form.title.region': '添加地区',
+  'communities.form.title.school': '添加学校',
+  'communities.form.organizer.success': '成功添加新的组织者',
+  'communities.form.organizer.error': '添加组织者是出错',
+  'communitites.form.country.change': '成功更改组织者',
+  'communities.form.country.update': '更新社区成功',
+  'communities.form.country.delete': '删除社区成功',
+  'communitites.form.country.success': '成功添加新的子社区',
+  'communitites.form.country.error': '添加新的子社区时出错',
+
 
   // Developer
   'developer.breadcrumb.developers': '社区',
@@ -684,6 +743,8 @@ const zh = {
   'task.applyReason': '为什么您想加入这个任务',
   'task.createNew': '提交一个新任务',
 
+  'task.select.status': '选择一个状态',
+
   // General
   'select.placeholder': '请选择',
   '.ok': '确定',
@@ -754,12 +815,6 @@ const zh = {
   'council.voting.chainStatus.unchain':'未上链',
   'council.voting.chainStatus.failed':'上链失败',
 
-  'council.voting.type.newMotion': '新动议',
-  'council.voting.type.motionAgainst': '反对动议',
-  'council.voting.type.anythingElse': '其它事宜',
-  'council.voting.type.standardTrack': '标准跟踪 ELIP',
-  'council.voting.type.information': '信息 ELIP',
-  'council.voting.type.process': '流程 ELIP',
   'council.voting.type.support': '赞成',
   'council.voting.type.reject': '否决',
   'council.voting.type.abstention': '弃权',
@@ -796,6 +851,9 @@ const zh = {
   'council.voting.voteResult.unvoted': '待投票',
   
   'council.voting.voteResult.onchain':'投票上链',
+
+  'council.voting.viewHistory.btn': '投票历史',
+  'council.voting.viewHistory.current':'当前投票',
 
   // Landing
   'landing.cr': 'Cyber Republic',
@@ -951,7 +1009,14 @@ const zh = {
   'profile.submission.table.type': '类型',
   'profile.submission.table.created': '创建日期',
 
-  'profile.member.vote.qrcodeTip':'打开 ELA 钱包扫码投票',
+  'profile.member.vote.qrcodeTip':'打开 ELA 钱包扫码投票（社区投票专用）',
+
+  'profile.forms.table.header.title': '标题',
+  'profile.forms.table.header.name': '名称',
+  'profile.forms.table.header.campaign': '竞选',
+  'profile.forms.table.header.created': '创建时间',
+  'profile.forms.show': '显示已存档',
+  'profile.forms.search': '搜索',
 
   // Validate Form
   'ambassadors.form.required': '必填项目',
@@ -1239,6 +1304,13 @@ const zh = {
   'from.UserEditForm.label.profession': '职业',
   'from.UserEditForm.label.portfolio': '作品集',
   'from.UserEditForm.label.github': 'GitHub',
+  'from.UserEditForm.label.linkedin': '领英',
+  'from.UserEditForm.label.telegram': '电报',
+  'from.UserEditForm.label.reddit': '红迪网',
+  'from.UserEditForm.label.wechat': '微信',
+  'from.UserEditForm.label.twitter': '推特',
+  'from.UserEditForm.label.facebook': '脸书',
+
   'from.UserEditForm.username.required': '用户名为必填项',
   'from.UserEditForm.firstName.required': '名字为必填项',
   'from.UserEditForm.lastName.required': '姓氏为必填项',
@@ -1265,6 +1337,8 @@ const zh = {
   'from.UserProfileForm.text.lastName': '姓氏',
   'from.UserProfileForm.text.slogan': '个人标语',
   'from.UserProfileForm.text.motto': '个人座右铭',
+
+  'btn.CopyHash': '复制成功',
 
   // CR Video / Earn ELA page
   'cr-video.here': '点击这里',
@@ -1474,6 +1548,7 @@ const zh = {
       }
     },
     contact: '联系',
+    did: 'DID',
     no1: {
       name: 'Alex Shipp',
       intro: '亦来云基金会编辑、量子财富观共同作者、量子财富节点拥有者，暂时没有固定驻地。',
@@ -1532,7 +1607,8 @@ zh[`cvoteStatus.${CVOTE_STATUS.FINAL}`] = '已完成'
 zh[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = '未完成'
 zh[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = '已过期'
 zh[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = '公示期'
-zh[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = '已否决'
+zh[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = '社区否决'
+zh[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = '已终止'
 
 
 export default zh

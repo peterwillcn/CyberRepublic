@@ -259,7 +259,7 @@ class C extends StandardPage {
           return (
             <div style={finalStyle}>
               <Row>
-                <Col span={isNotification ? 12 : 24}>
+                <Col span={this.state.smallSpace || !isNotification ? 24 : 12}>
                   <FixedHeader>
                     {metaNode}
                     {titleNode}
@@ -267,7 +267,7 @@ class C extends StandardPage {
                     {subTitleNode}
                   </FixedHeader>
                 </Col>
-                {isNotification ? (
+                {isNotification && !this.state.smallSpace ? (
                   <Col span={12}>
                     <FixedHeader>{memberVoteNode}</FixedHeader>
                   </Col>
@@ -311,7 +311,7 @@ class C extends StandardPage {
       result = sections
         .map((section) => {
           return `
-          <h2>${I18N.get(`elip.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`elip.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
             removeImageFromMarkdown(data[section])
           )}</p>
@@ -335,12 +335,16 @@ class C extends StandardPage {
             typeof data.budget !== 'string'
           ) {
             return `
-            <h2>${I18N.get('proposal.fields.budget')}</h2>
-            <p>${I18N.get('suggestion.budget.total')}</p>
+            <h2 translate="no">${I18N.get('proposal.fields.budget')}</h2>
+            <p translate="no">${I18N.get('suggestion.budget.total')}</p>
             <p>${data.budgetAmount}</p>
-            <p>${I18N.get('suggestion.budget.address')}</p>
+            <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
             <p>${getBudgetHtml(data.budget)}</p>
+            <h2 translate="no">${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(data.budgetIntro)
+            )}</p>
           `
           }
           if (
@@ -349,12 +353,16 @@ class C extends StandardPage {
             typeof data.plan !== 'string'
           ) {
             return `
-            <h2>${I18N.get('proposal.fields.plan')}</h2>
+            <h2 translate="no">${I18N.get('proposal.fields.plan')}</h2>
             <p>${getPlanHtml(data.plan.teamInfo)}</p>
+            <h2 translate="no">${I18N.get(`suggestion.plan.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(data.planIntro)
+            )}</p>
           `
           }
           return `
-          <h2>${I18N.get(`proposal.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`proposal.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
             removeImageFromMarkdown(data[section])
           )}</p>
@@ -890,7 +898,8 @@ class C extends StandardPage {
               'votedBy.profile.lastName'
             )} `,
             didName: _.get(cur, 'votedBy.did.didName'),
-            avatar: _.get(cur, 'votedBy.profile.avatar'),
+            avatar: _.get(cur, 'votedBy.profile.avatar') || 
+              _.get(cur, 'votedBy.did.avatar'),
             reason: cur.reason,
             votedBy,
             status: cur.status
@@ -980,7 +989,8 @@ class C extends StandardPage {
         isProposed,
         isCouncil,
         currentUserId,
-        ownerVote
+        ownerVote,
+        voteHistory,
       }
       return <VoteResultComponent {...props} key={key} />
     })
@@ -993,14 +1003,14 @@ class C extends StandardPage {
   }
 
   copyToClip(content) {
-    var aux = document.createElement("input"); 
-    aux.setAttribute("value", content); 
-    document.body.appendChild(aux); 
-    aux.select();
-    const err = document.execCommand("copy"); 
+    var aux = document.createElement('input')
+    aux.setAttribute('value', content)
+    document.body.appendChild(aux)
+    aux.select()
+    const err = document.execCommand('copy')
     document.body.removeChild(aux)
     if (err) {
-      message.success('粘贴成功')
+      message.success(I18N.get('btn.CopyHash'))
     }
   }
 

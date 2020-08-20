@@ -46,6 +46,7 @@ const withdrawalHistorySchema = {
   milestoneKey: String,
   signature: String,
   createdAt: Date,
+  error: String,
   review: {
     reason: String,
     reasonHash: String,
@@ -84,7 +85,7 @@ export const CVote = {
     type: String
   },
   budgetAmount: {
-    type: Number
+    type: Schema.Types.Mixed
   },
   elaAddress: {
     type: String
@@ -223,5 +224,13 @@ export const CVote = {
   },
   txHash: {
     type: String
-  }
+  },
+  targetProposalNum: String,
+  closeProposalNum: String,
+  newSecretaryDID: String,
+  newOwnerDID: String,
+  newAddress: String,
+  terminatedBy: Number,
+  changedBy: Number,
+  oldProposer: { type: Schema.Types.ObjectId, ref: 'users' }
 }

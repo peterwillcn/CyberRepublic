@@ -16,6 +16,7 @@ export default class extends Base {
     public async appendAllTransaction() {
         const startHeight = process.env.NODE_ENV === 'production' ? 675209 : 799
         const currentHeight = await ela.height()
+        if (!currentHeight) return
         const currentConfig = await this.configModel.getDBInstance().findOne()
         const preHeight = (currentConfig && currentConfig.height) || startHeight
 
@@ -58,7 +59,7 @@ export default class extends Base {
         const currentConfig = await this.configModel.getDBInstance().findOne()
         await this.configModel
             .getDBInstance()
-            .update({ _id: currentConfig._id }, { $set: { currentHeight } })
+            .update({_id: currentConfig._id}, {$set: {currentHeight}})
     }
 
 }

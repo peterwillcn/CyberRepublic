@@ -2,15 +2,7 @@ import Base from './Base'
 import { Document } from 'mongoose'
 import * as _ from 'lodash'
 import { constant } from '../constant'
-import {
-  permissions,
-  getDidPublicKey,
-  getProposalState,
-  getProposalData,
-  getDidName,
-  ela,
-  getVoteResultByTxid
-} from '../utility'
+import { permissions, getProposalData, ela } from '../utility'
 import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 import {
@@ -20,7 +12,6 @@ import {
   timestamp,
   logger
 } from '../utility'
-import { use } from 'chai'
 
 const util = require('util')
 const request = require('request')
@@ -84,8 +75,22 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
   }
 }
 
-const DID_PREFIX = 'did:elastos:'
-const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720 
+const EMAIL_PROPOSAL_STATUS = {
+  [constant.CVOTE_STATUS.NOTIFICATION]: 'Passed',
+  [constant.CVOTE_STATUS.ACTIVE]: 'Passed',
+  [constant.CVOTE_STATUS.REJECT]: 'Rejected',
+  [constant.CVOTE_STATUS.VETOED]: 'Rejected'
+}
+
+const EMAIL_TITLE_PROPOSAL_STATUS = {
+  [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.NOTIFICATION,
+  [constant.CVOTE_STATUS.ACTIVE]: 'PASSED',
+  [constant.CVOTE_STATUS.REJECT]: 'REJECTED',
+  [constant.CVOTE_STATUS.VETOED]: 'VETOED'
+}
+
+const { DID_PREFIX } = constant
+const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720
 
 export default class extends Base {
   // create a DRAFT propoal with minimal info
@@ -168,6 +173,22 @@ export default class extends Base {
       txHash
     }
 
+    if (suggestion.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      doc.closeProposalNum = suggestion.closeProposalNum
+    }
+    if (suggestion.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      doc.newSecretaryDID = suggestion.newSecretaryDID
+    }
+    if (suggestion.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
+      doc.targetProposalNum = suggestion.targetProposalNum
+      if (suggestion.newOwnerDID) {
+        doc.newOwnerDID = suggestion.newOwnerDID
+      }
+      if (suggestion.newAddress) {
+        doc.newAddress = suggestion.newAddress
+      }
+    }
+
     Object.assign(doc, _.pick(suggestion, BASE_FIELDS))
 
     const councilMembers = await db_user.find({
@@ -182,7 +203,6 @@ export default class extends Base {
       })
     )
     doc.voteResult = voteResult
-    doc.voteHistory = voteResult
 
     try {
       const res: any = await db_cvote.save(doc)
@@ -471,23 +491,16 @@ export default class extends Base {
   public async notifyCouncilToVote(DateTime: any) {
     // find cvote before 1 day expiration without vote yet for each council member
     const db_cvote = this.getDBModel('CVote')
-    // prettier-ignore
-    const nearExpiredTime = Date.now() - (constant.CVOTE_COUNCIL_EXPIRATION - DateTime)
-    // prettier-ignore
-    const createTime = DateTime == constant.ONE_DAY
-      ? Date.now() - constant.CVOTE_COUNCIL_EXPIRATION
-      : Date.now() - constant.CVOTE_COUNCIL_EXPIRATION + constant.ONE_DAY
-
-    const isNotifiedThreeDay = DateTime == constant.THREE_DAY ? false : true
-    const isNotifiedOneDay = DateTime == constant.ONE_DAY ? true : false
+    let startHeight = process.env.NODE_ENV == 'staging' ? 17 : 2160
+    let endHeight = process.env.NODE_ENV == 'staging' ? 16 : 2150
+    const isOneDay = DateTime == constant.ONE_DAY
+    if (isOneDay) {
+      startHeight = process.env.NODE_ENV == 'staging' ? 5 : 720
+      endHeight = process.env.NODE_ENV == 'staging' ? 4 : 710
+    }
     let unvotedCVotes = await db_cvote
       .getDBInstance()
       .find({
-        proposedAt: {
-          $lt: nearExpiredTime,
-          $gt: createTime
-        },
-        notified: isNotifiedThreeDay,
         status: constant.CVOTE_STATUS.PROPOSED,
         'voteResult.value': constant.CVOTE_RESULT.UNDECIDED,
         old: {
@@ -498,10 +511,20 @@ export default class extends Base {
         'voteResult.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL
       )
-    if (DateTime == constant.ONE_DAY) {
+    const currentHeight = await ela.height()
+    unvotedCVotes = _.filter(unvotedCVotes, (o: any) => {
+      const lastHeight = o.proposedEndsHeight - currentHeight
+      if (lastHeight >= endHeight && lastHeight <= startHeight) {
+        return o
+      }
+    })
+    if (isOneDay) {
       unvotedCVotes = _.filter(unvotedCVotes, ['notifiedOneDay', false])
+    } else {
+      unvotedCVotes = _.filter(unvotedCVotes, ['notified', false])
     }
-    const promptTime = DateTime == constant.ONE_DAY ? '24 hours' : '3 days'
+    const cvoteIds = []
+    const promptTime = isOneDay ? '24 hours' : '3 days'
     _.each(unvotedCVotes, (cvote) => {
       _.each(cvote.voteResult, (result) => {
         if (result.value === constant.CVOTE_RESULT.UNDECIDED) {
@@ -527,13 +550,21 @@ export default class extends Base {
           mail.send(mailObj)
 
           // update notified to true
-          db_cvote.update(
-            { _id: cvote._id },
-            { $set: { notified: true, notifiedOneDay: isNotifiedOneDay } }
-          )
+          cvoteIds.push(cvote._id)
         }
       })
     })
+    if (isOneDay) {
+      await db_cvote.update(
+        { _id: { $in: cvoteIds } },
+        { $set: { notifiedOneDay: true } }
+      )
+    } else {
+      await db_cvote.update(
+        { _id: { $in: cvoteIds } },
+        { $set: { notified: true } }
+      )
+    }
   }
 
   /**
@@ -577,21 +608,7 @@ export default class extends Base {
     }
     // createBy
     if (param.author && param.author.length) {
-      let search = param.author
-      const db_user = this.getDBModel('User')
-      const pattern = search.split(' ').join('|')
-      const users = await db_user
-        .getDBInstance()
-        .find({
-          $or: [
-            { username: { $regex: search, $options: 'i' } },
-            { 'profile.firstName': { $regex: pattern, $options: 'i' } },
-            { 'profile.lastName': { $regex: pattern, $options: 'i' } }
-          ]
-        })
-        .select('_id')
-      const userIds = _.map(users, (el: { _id: string }) => el._id)
-      query.createdBy = { $in: userIds }
+      query.proposer = param.author
     }
     // cvoteType
     if (
@@ -697,7 +714,9 @@ export default class extends Base {
       'vote_map',
       'registerHeight',
       'proposedEndsHeight',
-      'notificationEndsHeight'
+      'notificationEndsHeight',
+      'rejectAmount',
+      'rejectThroughAmount'
     ]
 
     // const list = await db_cvote.list(query, { vid: -1 }, 0, fields.join(' '))
@@ -705,6 +724,7 @@ export default class extends Base {
     const cursor = db_cvote
       .getDBInstance()
       .find(query, fields.join(' '))
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .sort({ vid: -1 })
 
     if (param.results) {
@@ -720,11 +740,11 @@ export default class extends Base {
     ])
 
     const list = _.map(rs[0], (o: any) => {
-      let proposedEnds = (o.proposedEndsHeight - currentHeight) * 2 - 30
-      let notificationEnds = (o.notificationEndsHeight - currentHeight) * 2 - 30
+      let proposedEnds = (o.proposedEndsHeight - currentHeight) * 2
+      let notificationEnds = (o.notificationEndsHeight - currentHeight) * 2
       if (process.env.NODE_ENV === 'staging') {
-        proposedEnds = (o.proposedEndsHeight - currentHeight) * 252 - 30
-        notificationEnds = (o.notificationEndsHeight - currentHeight) * 252 - 30
+        proposedEnds = (o.proposedEndsHeight - currentHeight) * 252
+        notificationEnds = (o.notificationEndsHeight - currentHeight) * 252
       }
       return {
         ...o._doc,
@@ -971,11 +991,12 @@ export default class extends Base {
 
   public async getById(id): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
     // access proposal by reference number
     const isNumber = /^\d*$/.test(id)
     let query: any
     if (isNumber) {
-      query = { vid: parseInt(id) }
+      query = { vid: parseInt(id), old: { $exists: false } }
     } else {
       query = { _id: id }
     }
@@ -984,23 +1005,39 @@ export default class extends Base {
       .findOne(query)
       .populate(
         'voteResult.votedBy',
-        constant.DB_SELECTED_FIELDS.USER.NAME_AVATAR
+        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
       .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .populate('reference', constant.DB_SELECTED_FIELDS.SUGGESTION.ID)
       .populate('referenceElip', 'vid')
+    const voteHistory = await db_cvote_history
+      .getDBInstance()
+      .find({ proposalBy: rs._doc._id })
+      .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+
     if (!rs) {
       return { success: true, empty: true }
     }
-
-    if (rs.budgetAmount) {
-      const doc = JSON.parse(JSON.stringify(rs))
+    const res = { ...rs._doc }
+    _.forEach(rs._doc.voteResult, (o: any) => {
+      if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
+        voteHistory.push({
+          ...o._doc,
+          isCurrentVote: true
+        })
+      }
+    })
+    res.voteHistory = _.sortBy(voteHistory, function (item) {
+      return -item.reasonCreatedAt
+    })
+    if (res.budgetAmount) {
+      const doc = JSON.parse(JSON.stringify(res))
       // deal with 7e-08
       doc.budgetAmount = Big(doc.budgetAmount).toFixed()
       return doc
     }
-    return rs
+    return res
   }
 
   public async getNewVid() {
@@ -1050,6 +1087,8 @@ export default class extends Base {
 
   public async vote(param): Promise<Document> {
     const db_cvote = this.getDBModel('CVote')
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
+
     const { _id, value, reason } = param
     const cur = await db_cvote.findOne({ _id })
     const votedBy = _.get(this.currentUser, '_id')
@@ -1057,15 +1096,6 @@ export default class extends Base {
       throw 'invalid proposal id'
     }
     const currentVoteResult = _.find(cur._doc.voteResult, ['votedBy', votedBy])
-    const currentVoteHistory = cur._doc.voteHistory
-    const currentVoteHistoryIndex = _.findLastIndex(currentVoteHistory, [
-      'votedBy',
-      votedBy
-    ])
-
-    currentVoteHistory[currentVoteHistoryIndex] = {
-      ..._.omit(currentVoteResult, ['_id'])
-    }
     const reasonCreateDate = new Date()
     await db_cvote.update(
       {
@@ -1080,14 +1110,22 @@ export default class extends Base {
           'voteResult.$.reasonHash': utilCrypto.sha256D(
             reason + timestamp.second(reasonCreateDate)
           ),
-          'voteResult.$.reasonCreatedAt': reasonCreateDate,
-          voteHistory: currentVoteHistory
+          'voteResult.$.reasonCreatedAt': reasonCreateDate
         },
         $inc: {
           __v: 1
         }
       }
     )
+
+    if (
+      !_.find(currentVoteResult, ['value', constant.CVOTE_RESULT.UNDECIDED])
+    ) {
+      await db_cvote_history.save({
+        ..._.omit(currentVoteResult, ['_id']),
+        proposalBy: _id
+      })
+    }
 
     return await this.getById(_id)
   }
@@ -1155,8 +1193,7 @@ export default class extends Base {
     // url: 'http://54.223.244.60/api/dposnoderpc/check/listcrcandidates',
     const postPromise = util.promisify(request.post, { multiArgs: true })
     await postPromise({
-      url:
-        'https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates',
+      url: `https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates`,
       form: { pageNum, pageSize, state },
       encoding: 'utf8'
     }).then((value) => (ret = value.body))
@@ -1167,6 +1204,10 @@ export default class extends Base {
   // council vote onchain
   public async onchain(param) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const db_cvote = this.getDBModel('CVote')
       const userId = _.get(this.currentUser, '_id')
       const { id } = param
@@ -1204,6 +1245,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         command: 'reviewproposal',
         data: {
+          userdid: did,
           proposalHash: cur.proposalHash,
           voteResult: voteResultOnChain[currentVoteResult.value],
           opinionHash: currentVoteResult.reasonHash,
@@ -1284,8 +1326,8 @@ export default class extends Base {
         await callback(array[index], index, array)
       }
     }
-    const rejectThroughAmount: any =
-      (await ela.currentCirculatingSupply()) * 0.1
+    // prettier-ignore
+    const rejectThroughAmount: any = (await ela.currentCirculatingSupply()) * 0.1
     await asyncForEach(list, async (o: any) => {
       const { proposalHash, status } = o._doc
       const rs: any = await getProposalData(proposalHash)
@@ -1350,7 +1392,9 @@ export default class extends Base {
   public async updateProposalOnNotification(data: any) {
     const {
       WAITING_FOR_WITHDRAWAL,
-      WAITING_FOR_REQUEST
+      WAITING_FOR_REQUEST,
+      WAITING_FOR_APPROVAL,
+      REJECTED
     } = constant.MILESTONE_STATUS
     const db_cvote = this.getDBModel('CVote')
     const { rs, _id } = data
@@ -1362,8 +1406,63 @@ export default class extends Base {
 
     const proposalStatus = CHAIN_STATUS_TO_PROPOSAL_STATUS[chainStatus]
     const proposal = await db_cvote.findById(_id)
-    if (proposalStatus === proposal.status) {
-      return false
+    if (proposal.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      const target = await db_cvote.findOne({
+        vid: proposal.closeProposalNum,
+        old: { $exists: false }
+      })
+      if (target.budget) {
+        const newBudget = target.budget.map((item: any) => {
+          if (
+            [WAITING_FOR_REQUEST, REJECTED, WAITING_FOR_APPROVAL].includes(
+              item.type
+            )
+          ) {
+            return { ...item, status: '' }
+          } else {
+            return { ...item }
+          }
+        })
+        target.budget = newBudget
+      }
+      target.status = constant.CVOTE_STATUS.TERMINATED
+      target.terminatedBy = proposal.vid
+      await target.save()
+    }
+    if (proposal.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      const db_user = this.getDBModel('User')
+      await Promise.all([
+        db_user.update(
+          { role: constant.USER_ROLE.SECRETARY },
+          { role: constant.USER_ROLE.MEMBER }
+        ),
+        db_user.update(
+          { 'did.id': DID_PREFIX + proposal.newSecretaryDID },
+          { role: constant.USER_ROLE.SECRETARY }
+        )
+      ])
+    }
+    if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
+      const db_user = this.getDBModel('User')
+      const setDoc: any = { changedBy: proposal.vid }
+      if (proposal.newOwnerDID) {
+        const newOwner = await db_user.findOne({
+          'did.id': DID_PREFIX + proposal.newOwnerDID
+        })
+        setDoc.proposer = newOwner._id
+        setDoc.proposedBy = userUtil.formatUsername(newOwner)
+        setDoc.oldProposer = proposal.proposer
+      }
+      if (proposal.newAddress) {
+        setDoc.elaAddress = proposal.newAddress
+      }
+      await db_cvote.update(
+        {
+          vid: proposal.targetProposalNum,
+          old: { $exists: false }
+        },
+        setDoc
+      )
     }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
       const budget = proposal.budget.map((item: any) => {
@@ -1391,14 +1490,6 @@ export default class extends Base {
         return rs.data.registerheight + STAGE_BLOCKS * 2
       }
     }
-    switch (proposalStatus) {
-      case constant.CVOTE_STATUS.VETOED:
-        rejectThroughAmount = rejectAmount
-        break
-      case constant.CVOTE_STATUS.NOTIFICATION:
-        rejectThroughAmount = (await ela.currentCirculatingSupply()) * 0.1
-        break
-    }
 
     const updateStatus = await db_cvote.update(
       {
@@ -1410,7 +1501,7 @@ export default class extends Base {
         rejectThroughAmount
       }
     )
-    if (updateStatus && updateStatus.nModified == 1) {
+    if (proposalStatus !== proposal.status && updateStatus.nModified == 1) {
       this.notifyProposer(proposal, proposalStatus, 'community')
       return rs.data.registerheight + STAGE_BLOCKS * 2
     }
@@ -1431,6 +1522,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         command: 'voteforproposal',
         data: {
+          id: cur.vid,
           proposalHash: cur.proposalHash
         }
       }
@@ -1501,7 +1593,9 @@ export default class extends Base {
       'status',
       'createdAt',
       'proposer',
-      'proposalHash'
+      'proposalHash',
+      'rejectAmount',
+      'rejectThroughAmount',
     ]
 
     const cursor = db_cvote
@@ -1529,9 +1623,30 @@ export default class extends Base {
 
     // filter return data，add proposalHash to CVoteSchema
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['_id', 'proposer'])
+      let temp = _.omit(o._doc, [
+        '_id',
+        'proposer',
+        'rejectAmount',
+        'rejectThroughAmount'
+      ])
       temp.proposedBy = _.get(o, 'proposer.did.didName')
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
+      if (
+        [constant.CVOTE_STATUS.NOTIFICATION].includes(o.status) &&
+        o.rejectAmount >= 0 &&
+        o.rejectThroughAmount > 0
+      ) {
+        temp.rejectAmount = `${o.rejectAmount}`
+        temp.rejectThroughAmount = `${parseFloat(
+          _.toNumber(o.rejectThroughAmount).toFixed(8)
+        )}`
+        temp.rejectRatio = _.toNumber(
+          (
+            _.toNumber(o.rejectAmount) / _.toNumber(o.rejectThroughAmount)
+          ).toFixed(4)
+        )
+      }
+
       temp.createdAt = timestamp.second(temp.createdAt)
       return _.mapKeys(temp, function (value, key) {
         if (key == 'vid') {
@@ -1548,13 +1663,12 @@ export default class extends Base {
 
   public async getProposalById(id): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
-
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
     const fields = [
       'vid',
       'status',
       'abstract',
       'voteResult',
-      'voteHistory',
       'createdAt',
       'proposalHash',
       'rejectAmount',
@@ -1562,15 +1676,19 @@ export default class extends Base {
       'proposedEndsHeight',
       'notificationEndsHeight'
     ]
+    const isNumber = /^\d*$/.test(id)
+    let query: any
+    if (isNumber) {
+      query = { vid: parseInt(id), old: { $exists: false } }
+    } else {
+      query = { proposalHash: id, old: { $exists: false } }
+    }
+
     const proposal = await db_cvote
       .getDBInstance()
-      .findOne({ vid: id, old: { $ne: true } }, fields.join(' '))
+      .findOne(query, fields.join(' '))
       .populate(
         'voteResult.votedBy',
-        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
-      )
-      .populate(
-        'voteHistory.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
 
@@ -1588,15 +1706,20 @@ export default class extends Base {
     const proposalId = proposal._id
 
     const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
-    const voteHistoryList = _.groupBy(proposal._doc.voteHistory, 'votedBy._id')
+    const cvoteHistory = await db_cvote_history
+      .getDBInstance()
+      .find({ proposalBy: proposalId })
+      .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
     const voteResultWithNull = _.map(proposal._doc.voteResult, (o: any) => {
       let result
       if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
         result = o._doc
       } else {
         const historyList = _.filter(
-          voteHistoryList[o.votedBy._id],
-          (e: any) => e.status === constant.CVOTE_CHAIN_STATUS.CHAINED
+          cvoteHistory,
+          (e: any) =>
+            e.status === constant.CVOTE_CHAIN_STATUS.CHAINED &&
+            o.votedBy._id.toString() == e.votedBy._id.toString()
         )
         if (!_.isEmpty(historyList)) {
           const history = _.sortBy(historyList, 'createdAt')
@@ -2077,9 +2200,9 @@ export default class extends Base {
     })
     const toUsers = []
     const toMails = _.map(user, 'email')
-    const subject = `【${status}】Your proposal #${cvote.vid} get ${status}`
+    const subject = `【${EMAIL_TITLE_PROPOSAL_STATUS[status]}】Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]}`
     const body = `
-        <p>Your proposal #${cvote.vid} get ${status} by the ${by}.</p>
+        <p>Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]} by the ${by}.</p>
         <br />
         <p>Click here to view more:</p>
         <p><a href="${process.env.SERVER_URL}/proposals/${cvote._id}">${process.env.SERVER_URL}/proposals/${cvote._id}</a></p>
@@ -2105,5 +2228,90 @@ export default class extends Base {
       recVariables
     }
     mail.send(mailObj)
+  }
+
+  public async getAllAuthor(param: any) {
+    if (_.isEmpty(param.data)) return
+    const db_cvote = this.getDBModel('CVote')
+    let searchAuthor = ''
+    _.forEach(param.data, (o: any) => (searchAuthor += o))
+    const authorList = await db_cvote
+      .getDBInstance()
+      .find(
+        {
+          old: {
+            $exists: param.old
+          }
+        },
+        ['proposer']
+      )
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+
+    const authorArr = []
+    _.forEach(authorList, (o: any) => {
+      if (
+        o.proposer &&
+        o.proposer.profile &&
+        !_.find(authorArr, { _id: o.proposer._id })
+      ) {
+        authorArr.push({
+          _id: o.proposer._id,
+          firstName: o.proposer.profile.firstName,
+          lastName: o.proposer.profile.lastName,
+          username: o.proposer.username
+        })
+      }
+    })
+    const sp = searchAuthor.split(' ')
+    const rs = []
+    _.forEach(authorArr, (o) => {
+      const firstName = o.firstName && o.firstName.toLowerCase()
+      const lastName = o.lastName && o.lastName.toLowerCase()
+      const username = o.username && o.username.toLowerCase()
+      if (firstName && lastName) {
+        if (sp.length > 1) {
+          if (
+            firstName.search(sp[0].toLowerCase()) !== -1 &&
+            lastName.search(sp[1].toLowerCase()) !== -1
+          ) {
+            rs.push(o)
+          } else if (lastName.search(sp[1].toLowerCase()) !== -1) {
+            rs.push(o)
+          } 
+        } else {
+          if (
+            firstName.search(sp[0].toLowerCase()) !== -1 ||
+            lastName.search(sp[0].toLowerCase()) !== -1
+          ) {
+            rs.push(o)
+          }
+          if (username && username.search(sp[0].toLowerCase()) !== -1) {
+            rs.push(o)
+          }
+        }
+      }
+    })
+
+    _.forEach(authorArr, (o) => {
+      const username = o.username && o.username.toLowerCase()
+      if (
+        username &&
+        !_.find(rs, { _id: o._id }) &&
+        sp.length > 1 &&
+        (username.search(sp[0].toLowerCase()) !== -1 ||
+          username.search(sp[1].toLowerCase()) !== -1)
+      ) {
+        rs.push(o)
+      }
+      if (
+        username && sp.length == 1 &&
+        !_.find(rs, { _id: o._id }) &&
+        username.search(sp[0].toLowerCase()) !== -1
+      ) {
+        rs.push(o)
+      }
+    })
+
+    return _.uniqWith(rs, _.isEqual);
   }
 }

@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -21,7 +22,15 @@ export default {
       updated: 'Updated',
       signature: 'Signature',
       txHash: 'TxID',
-      proposalHash: 'Hash'
+      proposalHash: 'Hash',
+      type: 'Type',
+      owner: 'New Proposal Owner',
+      address: 'New Proposal ELA Address',
+      secretary: 'New Secretary General',
+      targetProposalNum: 'Proposal Number',
+      closeProposalNum: 'Terminate Proposal',
+      newOwnerSignature: 'New Owner Signature',
+      newSecretarySignature: 'New Secretary General Signature',
     },
     abstract: 'Abstract',
     goal: 'Goal',
@@ -74,9 +83,23 @@ export default {
       title: 'Title'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: 'New Motion',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: 'Motion Against',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: 'Anything Else',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: 'Motion to change a proposal',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: `Motion for new CR Council Secretary General`,
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: 'Motion to terminate a proposal',
       newMotion: 'New Motion',
       motionAgainst: 'Motion Against',
-      anythingElse: 'Anything Else'
+      anythingElse: 'Anything Else',
+      changeProposalOwner: 'Change the Proposal Owner',
+      changeProposalAddress: 'Change the Proposal ELA Address',
+      proposalNum: 'Proposal Number',
+      proposalNewOwner: 'Proposal New Owner',
+      proposalNewAddress: 'Proposal New ELA Address',
+      newSecretary: 'New Secretary',
+      ownerInfo: `Please input the new owner's DID`,
+      secretaryInfo: `Please input the new secretary's DID`
     },
     note: {
       type: 'Select a suggestion type.',
@@ -109,7 +132,14 @@ export default {
       conditioned: 'Project milestone payment can not apply to this milestone.',
       isUsed: 'This milestone has been used.',
       exception: 'Something went wrong',
-      notEqual: `The toal budget is not equal to the sum of each payment amount.`
+      notEqual: `The toal budget is not equal to the sum of each payment amount.`,
+      noOwner: `The new owner does not exist.`,
+      noSecretary: `The new secretary general does not exist.`,
+      noProposal: `The proposal number is invalid.`,
+      proposalNum: 'The proposal number is emtpy.',
+      secretary: 'The new secretary general DID is emtpy.',
+      newOwner: 'The new owner DID is empty.',
+      changeWhat: 'Please select a item to change'
     }
   },
   modal: {
@@ -176,7 +206,8 @@ export default {
     [SUGGESTION_BUDGET_TYPE.CONDITIONED]: 'Project Milestone Payment',
     goal: 'Goal',
     milestone: 'milestone',
-    introduction: 'Budget Statement'
+    introduction: 'Budget Statement',
+    totalBudget: 'Total Budget(ELA): '
   },
   plan: {
     teamMember: 'Team Member',

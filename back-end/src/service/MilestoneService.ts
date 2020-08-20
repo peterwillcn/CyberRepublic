@@ -1,6 +1,7 @@
 import Base from './Base'
 import * as _ from 'lodash'
 import * as jwt from 'jsonwebtoken'
+import { Types } from 'mongoose'
 import { constant } from '../constant'
 import {
   mail,
@@ -8,7 +9,8 @@ import {
   user as userUtil,
   utilCrypto,
   getPemPublicKey,
-  getUtxosByAmount
+  getUtxosByAmount,
+  permissions
 } from '../utility'
 const Big = require('big.js')
 const {
@@ -35,6 +37,10 @@ export default class extends Base {
 
   public async applyPayment(param: any) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const { id, milestoneKey, message } = param
       if (!message) {
         return { success: false }
@@ -85,6 +91,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         callbackurl: `${process.env.API_URL}/api/proposals/milestones/signature-callback`,
         data: {
+          userdid: _.get(this.currentUser, 'did.id'),
           proposalhash: proposal.proposalHash,
           messagehash: messageHash,
           stage: this.paymentStage(proposal.budget, milestoneKey),
@@ -122,6 +129,14 @@ export default class extends Base {
       const payload: any = jwt.decode(
         claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload.'
+        }
+      }
       const proposalHash = _.get(payload, 'data.proposalhash')
       const messageHash = _.get(payload, 'data.messagehash')
       if (!proposalHash || !messageHash) {
@@ -132,12 +147,33 @@ export default class extends Base {
         }
       }
 
-      const proposal = await this.model.findOne({ proposalHash })
+      const proposal = await this.model
+        .getDBInstance()
+        .findOne({ proposalHash })
+        .populate('proposer', 'did')
       if (!proposal) {
         return {
           code: 400,
           success: false,
           message: 'There is no this proposal.'
+        }
+      }
+      const ownerDID = _.get(proposal, 'proposer.did.id')
+      const isOwner = userDID === claims.iss && ownerDID === claims.iss
+      if (!isOwner) {
+        this.model.update(
+          {
+            proposalHash,
+            'withdrawalHistory.messageHash': messageHash
+          },
+          {
+            'withdrawalHistory.$.error': `The ELA wallet not bound with your CR account.`
+          }
+        )
+        return {
+          code: 400,
+          success: false,
+          message: 'The ELA wallet not bound with your CR account.'
         }
       }
       const ownerPublicKey = _.get(proposal, 'ownerPublicKey')
@@ -179,7 +215,10 @@ export default class extends Base {
                     proposalHash,
                     'withdrawalHistory.messageHash': messageHash
                   },
-                  { 'withdrawalHistory.$.signature': decoded.data }
+                  {
+                    $set: { 'withdrawalHistory.$.signature': decoded.data },
+                    $unset: { 'withdrawalHistory.$.error': true }
+                  }
                 ),
                 this.model.update(
                   {
@@ -190,7 +229,9 @@ export default class extends Base {
                 )
               ])
 
-              this.notifySecretaries(this.updateMailTemplate(proposal.vid))
+              this.notifySecretaries(
+                this.updateMailTemplate(proposal.vid, proposal._id)
+              )
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
               logger.error(err)
@@ -226,6 +267,9 @@ export default class extends Base {
       if (_.get(history[0], 'signature')) {
         return { success: true, detail: proposal }
       }
+      if (_.get(history[0], 'error')) {
+        return { success: false, message: history[0].error }
+      }
     } else {
       return { success: false }
     }
@@ -233,6 +277,15 @@ export default class extends Base {
 
   public async review(param: any) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
+      const role = _.get(this.currentUser, 'role')
+      if (!permissions.isSecretary(role)) {
+        return { success: false, message: 'No access right.' }
+      }
+
       const { id, milestoneKey, reason, opinion, applicationId } = param
       if (!reason || !opinion || ![APPROVED, REJECTED].includes(opinion)) {
         return { success: false, message: 'Some param is invalid.' }
@@ -305,6 +358,7 @@ export default class extends Base {
         command: 'reviewmilestone',
         iss: process.env.APP_DID,
         data: {
+          userdid: did,
           proposalhash: proposal.proposalHash,
           messagehash: history.messageHash,
           stage: this.paymentStage(proposal.budget, milestoneKey),
@@ -330,12 +384,12 @@ export default class extends Base {
     }
   }
 
-  private updateMailTemplate(id: string) {
+  private updateMailTemplate(vid: string, _id: Types.ObjectId) {
     const subject = `【Payment Review】One payment request is waiting for your review`
     const body = `
-      <p>One payment request in proposal #${id} is waiting for your review:</p>
+      <p>One payment request in proposal #${vid} is waiting for your review:</p>
       <p>Click this link to view more details:</p>
-      <p><a href="${process.env.SERVER_URL}/proposals/${id}">${process.env.SERVER_URL}/proposals/${id}</a></p>
+      <p><a href="${process.env.SERVER_URL}/proposals/${_id}">${process.env.SERVER_URL}/proposals/${_id}</a></p>
       <br />
       <p>Cyber Republic Team</p>
       <p>Thanks</p>
@@ -401,6 +455,10 @@ export default class extends Base {
 
   public async withdraw(param: any) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const { id, milestoneKey } = param
       const proposal = await this.model.findById(id)
       if (!proposal) {
@@ -466,6 +524,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         callbackurl: '',
         data: {
+          userdid: _.get(this.currentUser, 'did.id'),
           proposalhash: proposal.proposalHash,
           amount: Big(`${sum}e+8`).toString(),
           recipient: proposal.elaAddress,

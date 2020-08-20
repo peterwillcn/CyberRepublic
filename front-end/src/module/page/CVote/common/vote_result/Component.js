@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import I18N from '@/I18N'
 import _ from 'lodash'
 import OnChain from '../../detail/OnChain'
+import ViewVoteHistoryButton from '../../detail/ViewVoteHistoryButton'
 import Translation from '@/module/common/Translation/Container'
 import { Avatar } from 'antd'
 import { USER_AVATAR_DEFAULT } from '@/constant'
@@ -18,7 +19,8 @@ const Component = ({
   updateProposal,
   isProposed,
   isCouncil,
-  currentUserId
+  currentUserId,
+  voteHistory
 }) => {
   const votesNode = _.map(dataList, (data, key) => {
     let voteStatus = data.status
@@ -27,15 +29,22 @@ const Component = ({
       voteStatus == 'failed' ||
       voteStatus == 'unchain'
     ) {
-      voteStatus = I18N.get(`council.voting.chainStatus.unchain`)
+      voteStatus = (
+        <div className="status unchain">
+          <div>{I18N.get(`council.voting.chainStatus.unchain`)}</div>
+        </div>
+      )
     }
     if (voteStatus == 'chained') {
-      voteStatus = I18N.get(`council.voting.chainStatus.chained`)
-    }
-    if (voteStatus == 'chaining') {
-      voteStatus = I18N.get(`council.voting.chainStatus.chaining`)
+      voteStatus = (
+        <div className="status chained">
+          <div>{I18N.get(`council.voting.chainStatus.chained`)}</div>
+        </div>
+      )
     }
     let isOwner = data.votedBy && data.votedBy === currentUserId
+
+    let votehistoryBy = _.filter(voteHistory,['votedBy._id', data.votedBy])
     const avatarName = data.name.split(' ')
     const userNode = (
       <Item key={key}>
@@ -61,7 +70,7 @@ const Component = ({
           </Avatar>
         )}
         <div>{data.didName}</div>
-        <div className="status">{data.reason !== '' ? voteStatus : null}</div>
+        {data.reason !== '' ? voteStatus : null}
         <div style={{ marginTop: '0.5rem' }}>
           {isProposed &&
           isCouncil &&
@@ -75,6 +84,16 @@ const Component = ({
               id={id}
             />
           ) : null}
+        </div>
+        <div>
+          {votehistoryBy.length > 1 ||
+            (
+              !_.isEmpty(_.find(votehistoryBy, ['status', 'chained']))
+              &&
+              _.isEmpty(_.find(votehistoryBy,['isCurrentVote', true]))
+            )
+            ? <ViewVoteHistoryButton data={votehistoryBy} />
+            : null}
         </div>
       </Item>
     )

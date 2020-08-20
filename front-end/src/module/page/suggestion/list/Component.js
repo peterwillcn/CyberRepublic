@@ -376,8 +376,9 @@ export default class extends StandardPage {
   showCreateForm = () => {
     const { isLogin, history, user } = this.props
     if (!isLogin) {
-      const query = { create: true }
-      loginRedirectWithQuery({ query })
+      // const query = { create: true }
+      // loginRedirectWithQuery({ query })
+      sessionStorage.setItem('loginRedirect', '/suggestion/create')
       history.push('/login')
       return
     }
@@ -572,15 +573,6 @@ export default class extends StandardPage {
                 />
                 <CheckboxText>
                   {I18N.get('suggestion.tag.type.UNDER_CONSIDERATION')}
-                </CheckboxText>
-              </FilterItem>
-              <FilterItem className="filter-checkbox">
-                <Checkbox
-                  checked={infoNeeded}
-                  onChange={this.handleInfoNeededChange}
-                />
-                <CheckboxText>
-                  {I18N.get('suggestion.tag.type.INFO_NEEDED')}
                 </CheckboxText>
               </FilterItem>
               <FilterItem className="filter-checkbox">

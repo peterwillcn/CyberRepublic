@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import { Spin } from 'antd'
+import { Spin, message } from 'antd'
 import MediaQuery from 'react-responsive'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
@@ -37,7 +37,7 @@ export default class extends StandardPage {
     } else {
       data = draft
     }
-    this.setState({data, loading: false})
+    this.setState({ data, loading: false })
   }
 
   historyBack = () => {
@@ -45,16 +45,35 @@ export default class extends StandardPage {
     this.props.history.push(`/suggestion/${id}`)
   }
 
-  onSubmit = (model) => {
+  handleTypeErrors = (rs) => {
+    if (rs.owner === false) {
+      return message.error(I18N.get('suggestion.form.error.noOwner'))
+    }
+    if (rs.secretary === false) {
+      return message.error(I18N.get('suggestion.form.error.noSecretary'))
+    }
+    if (rs.proposal === false) {
+      return message.error(I18N.get('suggestion.form.error.noProposal'))
+    }
+  }
+
+  onSubmit = async (model) => {
     const id = this.state.data._id
-    return this.props.updateSuggestion({ id, ...model, update: true })
-      .then(() => this.historyBack())
-      .catch(err => this.setState({ error: err }))
+    const rs = await this.props.updateSuggestion({ id, ...model, update: true })
+    if (rs && rs.success === false) {
+      this.handleTypeErrors(rs)
+      return
+    }
+    this.historyBack()
   }
 
   onSaveDraft = async (model) => {
     const id = this.state.data._id
     const rs = await this.props.saveDraft({ id, ...model })
+    if (rs && rs.success === false) {
+      this.handleTypeErrors(rs)
+      return
+    }
     if (rs) {
       this.historyBack()
     }
@@ -109,5 +128,4 @@ export default class extends StandardPage {
       </div>
     )
   }
-
 }

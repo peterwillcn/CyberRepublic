@@ -145,12 +145,12 @@ export default class extends BaseService {
         method: 'put',
         data: doc
       })
+      return res
     } catch (error) {
       this.dispatch(this.selfRedux.actions.loading_update(false))
       message.error('Error happened, please try again later or contact admin.')
       logger.error(error)
     }
-    return res
   }
 
   async addTag(doc) {
@@ -397,12 +397,12 @@ export default class extends BaseService {
     return res
   }
 
-  async getSignature(id) {
+  async getSignature(id, type) {
     const path = `${this.prefixPath}/signature`
     const rs = await api_request({
       path,
       method: 'post',
-      data: { id }
+      data: { id, type }
     })
     if (rs && rs.success && rs.data) {
       this.dispatch(this.selfRedux.actions.detail_update(rs.data))
@@ -412,6 +412,27 @@ export default class extends BaseService {
 
   async getCMSignatureUrl(id) {
     const path = `${this.prefixPath}/cm-signature-url`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
+
+  // signature
+  async getOwnerSignatureUrl(id) {
+    const path = `${this.prefixPath}/owner-signature-url`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
+
+  async getSecretarySignatureUrl(id) {
+    const path = `${this.prefixPath}/sec-signature-url`
     const res = await api_request({
       path,
       method: 'post',

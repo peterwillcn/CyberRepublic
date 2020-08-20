@@ -11,10 +11,11 @@ import {
   permissions,
   logger,
   getDidPublicKey,
+  getPemPublicKey,
   utilCrypto
 } from '../utility'
 const Big = require('big.js')
-
+const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX } = constant
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -26,7 +27,14 @@ const BASE_FIELDS = [
   'budget',
   'budgetAmount',
   'elaAddress',
-  'plan'
+  'plan',
+  'planIntro',
+  'budgetIntro',
+  'targetProposalNum',
+  'newOwnerDID',
+  'newSecretaryDID',
+  'closeProposalNum',
+  'newAddress'
 ]
 
 interface BudgetItem {
@@ -46,8 +54,107 @@ export default class extends Base {
     this.draftModel = this.getDBModel('SuggestionDraft')
   }
 
-  public async create(param: any): Promise<Document> {
-    const doc = {
+  private async getTypeDoc(param: any, doc: any, currDoc?: any) {
+    if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      if (!param.targetProposalNum) {
+        return {
+          success: false,
+          message: 'The proposal number is invalid',
+          proposal: false
+        }
+      }
+      if (param.newAddress) {
+        doc.newRecipient = param.newAddress
+      }
+      if (
+        !currDoc ||
+        (currDoc && currDoc.targetProposalNum !== param.targetProposalNum)
+      ) {
+        const proposal = await this.getDBModel('CVote').findOne({
+          vid: param.targetProposalNum,
+          old: { $exists: false },
+          status: CVOTE_STATUS.ACTIVE
+        })
+        if (!proposal) {
+          return {
+            success: false,
+            message: 'The proposal number is invalid',
+            proposal: false
+          }
+        }
+        doc.targetProposalHash = proposal.proposalHash
+        doc.newRecipient = !param.newAddress && proposal.elaAddress
+        doc.newOwnerPublicKey = !param.newOwnerDID && proposal.ownerPublicKey
+      }
+
+      if (
+        param.newOwnerDID &&
+        (!currDoc || (currDoc && currDoc.newOwnerDID !== param.newOwnerDID))
+      ) {
+        const newOwner = await this.getDBModel('User').findOne({
+          'did.id': DID_PREFIX + param.newOwnerDID
+        })
+        if (!newOwner) {
+          return { success: false, message: 'No this new owner', owner: false }
+        }
+        doc.newOwnerPublicKey = newOwner.did.compressedPublicKey
+      }
+    }
+
+    if (param && param.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      if (!param.newSecretaryDID) {
+        return {
+          success: false,
+          message: 'No this new secretary',
+          secretary: false
+        }
+      }
+      if (currDoc && currDoc.newSecretaryDID === param.newSecretaryDID) {
+        return doc
+      }
+      const newSecretary = await this.getDBModel('User').findOne({
+        'did.id': DID_PREFIX + param.newSecretaryDID
+      })
+      if (!newSecretary) {
+        return {
+          success: false,
+          message: 'No this new secretary',
+          secretary: false
+        }
+      }
+      doc.newSecretaryPublicKey = newSecretary.did.compressedPublicKey
+    }
+
+    if (param && param.type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
+      if (!param.closeProposalNum) {
+        return {
+          success: false,
+          message: 'The proposal number is invalid',
+          proposal: false
+        }
+      }
+      if (currDoc && currDoc.closeProposalNum === param.closeProposalNum) {
+        return doc
+      }
+      const proposal = await this.getDBModel('CVote').findOne({
+        vid: param.closeProposalNum,
+        old: { $exists: false },
+        status: CVOTE_STATUS.ACTIVE
+      })
+      if (!proposal) {
+        return {
+          success: false,
+          message: 'The proposal number is invalid',
+          proposal: false
+        }
+      }
+      doc.targetProposalHash = proposal.proposalHash
+    }
+    return doc
+  }
+
+  public async create(param: any) {
+    let doc = {
       ...param,
       version: 10,
       createdBy: _.get(this.currentUser, '_id'),
@@ -55,6 +162,10 @@ export default class extends Base {
       // this is a hack for now, we should really be using aggregate pipeline + projection
       // in the sort query
       descUpdatedAt: new Date()
+    }
+    doc = await this.getTypeDoc(param, doc)
+    if (doc && doc.success === false) {
+      return doc
     }
     // save the document
     const result = await this.model.save(doc)
@@ -65,6 +176,30 @@ export default class extends Base {
     })
 
     return result
+  }
+
+  public async notifyPeopleToSign(suggestion, receiverDID) {
+    const subject = `【Signature required】Suggestion <${suggestion.displayId}> is ready for you to sign`
+    const body = `
+      <p>Suggestion <${suggestion.displayId}> <${suggestion.title}> is ready for you to sign</p>
+      <br />
+      <p>Click here to sign now:</p>
+      <br />
+      <p><a href="${process.env.SERVER_URL}/suggestion/${suggestion._id}">${process.env.SERVER_URL}/suggestion/${suggestion._id}</a></p>
+      <br />
+      <br />
+      <p>Thanks</p>
+      <p>Cyber Republic</p>
+    `
+    const receiver = await this.getDBModel('User').findOne({
+      'did.id': receiverDID
+    })
+    mail.send({
+      to: receiver.email,
+      toName: userUtil.formatUsername(receiver),
+      subject,
+      body
+    })
   }
 
   // obsolete method
@@ -156,8 +291,9 @@ export default class extends Base {
     return curhis.version
   }
 
-  public async saveDraft(param: any): Promise<Document> {
+  public async saveDraft(param: any) {
     const { id, update } = param
+
     const userId = _.get(this.currentUser, '_id')
     const currDoc = await this.model.getDBInstance().findById(id)
 
@@ -172,12 +308,23 @@ export default class extends Base {
       throw 'Only owner can edit suggestion'
     }
 
-    const doc = _.pick(param, BASE_FIELDS)
+    let doc = _.pick(param, BASE_FIELDS)
     doc._id = ObjectId(id)
     doc.createdBy = ObjectId(userId)
 
+    doc = await this.getTypeDoc(param, doc, currDoc)
+    if (doc && doc.success === false) {
+      return doc
+    }
+
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
+      if (_.isEmpty(doc.budgetIntro)) {
+        doc.budgetIntro = _.get(currDoc, 'budgetIntro')
+      }
+      if (_.isEmpty(doc.planIntro)) {
+        doc.planIntro = _.get(currDoc, 'planIntro')
+      }
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
@@ -194,7 +341,60 @@ export default class extends Base {
     return result
   }
 
-  public async update(param: any): Promise<Document> {
+  private unsetTypeDoc(param: any) {
+    const { type, newOwnerDID, newAddress } = param
+    let unsetDoc = {}
+    if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      if (newOwnerDID && !newAddress) {
+        unsetDoc = {
+          newSecretaryDID: true,
+          newSecretaryPublicKey: true,
+          closeProposalNum: true,
+          newAddress: true
+        }
+      }
+      if (!newOwnerDID && newAddress) {
+        unsetDoc = {
+          newSecretaryDID: true,
+          newSecretaryPublicKey: true,
+          closeProposalNum: true,
+          newOwnerDID: true
+        }
+      }
+      if (newOwnerDID && newAddress) {
+        unsetDoc = {
+          newSecretaryDID: true,
+          newSecretaryPublicKey: true,
+          closeProposalNum: true
+        }
+      }
+    }
+    if (type && type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      unsetDoc = {
+        closeProposalNum: true,
+        targetProposalHash: true,
+        newOwnerDID: true,
+        newOwnerPublicKey: true,
+        newAddress: true,
+        newRecipient: true,
+        targetProposalNum: true
+      }
+    }
+    if (type && type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
+      unsetDoc = {
+        newOwnerDID: true,
+        newOwnerPublicKey: true,
+        newAddress: true,
+        newRecipient: true,
+        targetProposalNum: true,
+        newSecretaryDID: true,
+        newSecretaryPublicKey: true
+      }
+    }
+    return unsetDoc
+  }
+
+  public async update(param: any) {
     const { id, update } = param
     const userId = _.get(this.currentUser, '_id')
     const currDoc = await this.model.getDBInstance().findById(id)
@@ -214,19 +414,25 @@ export default class extends Base {
       throw 'Only owner can edit suggestion'
     }
 
+    let doc = _.pick(param, BASE_FIELDS)
+    doc.descUpdatedAt = new Date()
+    doc = await this.getTypeDoc(param, doc, currDoc)
+    if (doc && doc.success === false) {
+      return doc
+    }
+    const unsetDoc = this.unsetTypeDoc(param)
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
+      doc.budgetIntro = _.get(currDraft, 'budgetIntro')
+      doc.planIntro = _.get(currDraft, 'planIntro')
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
-    const doc = _.pick(param, BASE_FIELDS)
-    doc.descUpdatedAt = new Date()
-
     if (update) {
       doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
-      await this.model.update({ _id: id }, { $set: doc })
+      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
     } else {
-      await this.model.update({ _id: id }, { $set: doc })
+      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
     }
     return this.show({ id })
   }
@@ -298,17 +504,31 @@ export default class extends Base {
 
         if (filter === SEARCH_FILTERS.NAME) {
           const db_user = this.getDBModel('User')
-          const pattern = search.split(' ').join('|')
-          const users = await db_user
-            .getDBInstance()
-            .find({
-              $or: [
-                { username: { $regex: search, $options: 'i' } },
-                { 'profile.firstName': { $regex: pattern, $options: 'i' } },
-                { 'profile.lastName': { $regex: pattern, $options: 'i' } }
-              ]
-            })
-            .select('_id')
+          let pattern: any = search.split(' ')
+          let users
+          if (pattern.length > 1) {
+            users = await db_user
+              .getDBInstance()
+              .find({
+                // { username: { $regex: search, $options: 'i' } },
+                'profile.firstName': { $regex: pattern[0], $options: 'i' },
+                'profile.lastName': { $regex: pattern[1], $options: 'i' }
+              })
+              .select('_id')
+          } else {
+            users = await db_user
+              .getDBInstance()
+              .find({
+                $or: [
+                  // { username: { $regex: search, $options: 'i' } },
+                  {
+                    'profile.firstName': { $regex: pattern[0], $options: 'i' }
+                  },
+                  { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
+                ]
+              })
+              .select('_id')
+          }
           const userIds = _.map(users, (el: { _id: string }) => el._id)
           query.$or = [{ createdBy: { $in: userIds } }]
         }
@@ -379,17 +599,29 @@ export default class extends Base {
     if (param.author && param.author.length) {
       let search = param.author
       const db_user = this.getDBModel('User')
-      const pattern = search.split(' ').join('|')
-      const users = await db_user
-        .getDBInstance()
-        .find({
-          $or: [
-            { username: { $regex: search, $options: 'i' } },
-            { 'profile.firstName': { $regex: pattern, $options: 'i' } },
-            { 'profile.lastName': { $regex: pattern, $options: 'i' } }
-          ]
-        })
-        .select('_id')
+      let pattern = search.split(' ')
+      let users
+      if (pattern.length > 1) {
+        users = await db_user
+          .getDBInstance()
+          .find({
+            // { username: { $regex: search, $options: 'i' } },
+            'profile.firstName': { $regex: pattern[0], $options: 'i' },
+            'profile.lastName': { $regex: pattern[1], $options: 'i' }
+          })
+          .select('_id')
+      } else {
+        users = await db_user
+          .getDBInstance()
+          .find({
+            $or: [
+              // { username: { $regex: search, $options: 'i' } },
+              { 'profile.firstName': { $regex: pattern[0], $options: 'i' } },
+              { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
+            ]
+          })
+          .select('_id')
+      }
 
       const userIds = _.map(users, (el: { _id: string }) => el._id)
 
@@ -706,8 +938,11 @@ export default class extends Base {
       .getDBInstance()
       .findOne(query)
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
-      .populate('reference', constant.DB_SELECTED_FIELDS.CVOTE.ID_STATUS_HASH_TXID)
-      
+      .populate(
+        'reference',
+        constant.DB_SELECTED_FIELDS.CVOTE.ID_STATUS_HASH_TXID
+      )
+
     if (!doc) {
       return { success: true, empty: true }
     }
@@ -1242,6 +1477,12 @@ export default class extends Base {
       'budgetAmount',
       'elaAddress'
     ]
+    if (suggestion.planIntro) {
+      fields.push('planIntro')
+    }
+    if (suggestion.budgetIntro) {
+      fields.push('budgetIntro')
+    }
     const content = {}
     const sortedFields = _.sortBy(fields)
     for (let index in sortedFields) {
@@ -1251,53 +1492,234 @@ export default class extends Base {
     return utilCrypto.sha256D(JSON.stringify(content))
   }
 
-  /* author signs a suggestion */
-  public async getSignatureUrl(param: { id: string }) {
+  public async getNewOwnerSignatureUrl(param: { id: string }) {
     try {
       const { id } = param
-      const suggestion = await this.model
-        .getDBInstance()
-        .findById(id)
-        .populate('createdBy')
-
+      const suggestion = await this.model.getDBInstance().findById(id)
       if (!suggestion) {
         return { success: false, message: 'No this suggestion' }
       }
-
-      // check if current user is the owner of this suggestion
-      if (!suggestion.createdBy._id.equals(this.currentUser._id)) {
-        return { success: false, message: 'You are not the owner' }
+      if (suggestion.type !== SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+        return {
+          success: false,
+          message: 'The type of this suggestion is not valid'
+        }
+      }
+      if (!_.get(suggestion, 'signature.data')) {
+        return {
+          success: false,
+          message: 'The owner of this suggetion does not sign'
+        }
       }
 
-      if (_.get(suggestion, 'signature.data')) {
-        return { success: false, message: 'You had signed.' }
+      if (_.get(suggestion, 'newOwnerSignature.data')) {
+        return {
+          success: false,
+          message: 'You had signed'
+        }
       }
 
       const did = _.get(this.currentUser, 'did.id')
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
+      if (did !== DID_PREFIX + suggestion.newOwnerDID) {
+        return { success: false, message: 'You are not the new owner' }
+      }
+      const now = Math.floor(Date.now() / 1000)
+      const jwtClaims: any = {
+        iat: now,
+        exp: now + 60 * 60 * 24,
+        command: 'createsuggestion',
+        iss: process.env.APP_DID,
+        sid: suggestion._id,
+        callbackurl: `${process.env.API_URL}/api/suggestion/new-owner-signature-cb`,
+        data: {
+          userdid: did,
+          categorydata: '',
+          ownerpublickey: suggestion.ownerPublicKey,
+          drafthash: suggestion.draftHash,
+          proposaltype: 'changeproposalowner',
+          targetproposalhash: suggestion.targetProposalHash,
+          newrecipient: suggestion.newRecipient,
+          newownerpublickey: suggestion.newOwnerPublicKey
+        }
+      }
+      const jwtToken = jwt.sign(
+        JSON.stringify(jwtClaims),
+        process.env.APP_PRIVATE_KEY,
+        { algorithm: 'ES256' }
+      )
+      const url = `elastos://crproposal/${jwtToken}`
+      return { success: true, url }
+    } catch (err) {
+      logger.error(err)
+      return { success: false }
+    }
+  }
 
-      const rs: {
-        compressedPublicKey: string
-        publicKey: string
-      } = await getDidPublicKey(did)
-      if (!rs) {
+  public async newOwnerSignatureCallback(param: any) {
+    try {
+      const jwtToken = param.jwt
+      const claims: any = jwt.decode(jwtToken)
+      if (!_.get(claims, 'req')) {
         return {
+          code: 400,
           success: false,
-          message: `Can not get your did's public key.`
+          message: 'Problems parsing jwt token.'
         }
       }
 
-      let ownerPublicKey = rs.compressedPublicKey
-      const draftHash = this.getDraftHash(suggestion)
-      await this.model.update(
-        { _id: suggestion._id },
-        { $set: { draftHash, ownerPublicKey } }
+      const payload: any = jwt.decode(
+        claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload.'
+        }
+      }
+      if (!_.get(payload, 'sid')) {
+        return {
+          code: 400,
+          success: false,
+          message: 'Problems parsing jwt token of CR website.'
+        }
+      }
+
+      const suggestion = await this.model.findById({
+        _id: payload.sid
+      })
+      if (!suggestion) {
+        return {
+          code: 400,
+          success: false,
+          message: 'There is no this suggestion.'
+        }
+      }
+      const signature = _.get(suggestion, 'newOwnerSignature.data')
+      if (signature) {
+        return {
+          code: 400,
+          success: false,
+          message: 'This suggestion had been signed.'
+        }
+      }
+      const newOwnerDID = DID_PREFIX + suggestion.newOwnerDID
+      const isNewOwner = userDID === claims.iss && claims.iss === newOwnerDID
+      if (!isNewOwner) {
+        await this.model.update(
+          { _id: payload.sid },
+          {
+            newOwnerSignature: {
+              message: 'The ELA wallet not bound with your CR account.'
+            }
+          }
+        )
+        return {
+          code: 400,
+          success: false,
+          message: 'The ELA wallet not bound with your CR account.'
+        }
+      }
+      const compressedKey = _.get(suggestion, 'newOwnerPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
+        return {
+          code: 400,
+          success: false,
+          message: `Can not get your DID's public key.`
+        }
+      }
+      return jwt.verify(
+        jwtToken,
+        pemPublicKey,
+        async (err: any, decoded: any) => {
+          if (err) {
+            await this.model.update(
+              { _id: payload.sid },
+              {
+                newOwnerSignature: { message: 'Verify signature failed.' }
+              }
+            )
+            return {
+              code: 401,
+              success: false,
+              message: 'Verify signature failed.'
+            }
+          } else {
+            try {
+              await this.model.update(
+                { _id: payload.sid },
+                { newOwnerSignature: { data: decoded.data } }
+              )
+              return { code: 200, success: true, message: 'Ok' }
+            } catch (err) {
+              logger.error(err)
+              return {
+                code: 500,
+                success: false,
+                message: 'DB can not save the new owner signature.'
+              }
+            }
+          }
+        }
+      )
+    } catch (err) {
+      logger.error(err)
+      return {
+        code: 500,
+        success: false,
+        message: 'Something went wrong'
+      }
+    }
+  }
+
+  /* author signs a suggestion */
+  public async getSignatureUrl(param: { id: string }) {
+    try {
+      const { id } = param
+      const suggestion = await this.model.getDBInstance().findById(id)
+      if (!suggestion) {
+        return { success: false, message: 'No this suggestion' }
+      }
+      // check if current user is the owner of this suggestion
+      if (!suggestion.createdBy.equals(this.currentUser._id)) {
+        return { success: false, message: 'You are not the owner' }
+      }
+      if (_.get(suggestion, 'signature.data')) {
+        return { success: false, message: 'You had signed.' }
+      }
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
+
+      let fields: any = {}
+      const draftHash = this.getDraftHash(suggestion)
+      fields.draftHash = draftHash
+      let ownerPublicKey: string
+      if (suggestion.ownerPublicKey) {
+        ownerPublicKey = suggestion.ownerPublicKey
+      } else {
+        const rs: {
+          compressedPublicKey: string
+          publicKey: string
+        } = await getDidPublicKey(did)
+        if (!rs) {
+          return {
+            success: false,
+            message: `Can not get your DID's public key.`
+          }
+        }
+        ownerPublicKey = rs.compressedPublicKey
+        fields.ownerPublicKey = ownerPublicKey
+      }
 
       const now = Math.floor(Date.now() / 1000)
-      const jwtClaims = {
+      const jwtClaims: any = {
         iat: now,
         exp: now + 60 * 60 * 24,
         command: 'createsuggestion',
@@ -1305,21 +1727,79 @@ export default class extends Base {
         sid: suggestion._id,
         callbackurl: `${process.env.API_URL}/api/suggestion/signature-callback`,
         data: {
-          proposaltype: 'normal',
+          userdid: did,
           categorydata: '',
           ownerpublickey: ownerPublicKey,
-          drafthash: draftHash,
-          budgets: this.convertBudget(suggestion.budget),
-          recipient: suggestion.elaAddress
+          drafthash: draftHash
         }
       }
-
+      switch (suggestion.type) {
+        case SUGGESTION_TYPE.CHANGE_PROPOSAL:
+          let newOwnerPublicKey: string
+          if (suggestion.newOwnerPublicKey) {
+            newOwnerPublicKey = suggestion.newOwnerPublicKey
+          } else {
+            const rs: any = await getDidPublicKey(suggestion.newOwnerDID)
+            if (!rs) {
+              return {
+                success: false,
+                message: `Can not get the new owner DID's public key.`
+              }
+            }
+            newOwnerPublicKey = rs.compressedPublicKey
+            fields.newOwnerPublicKey = newOwnerPublicKey
+          }
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'changeproposalowner',
+            targetproposalhash: suggestion.targetProposalHash,
+            newrecipient: suggestion.newRecipient,
+            newownerpublickey: newOwnerPublicKey
+          }
+          break
+        case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          let secretaryPublicKey: string
+          if (suggestion.newSecretaryPublicKey) {
+            secretaryPublicKey = suggestion.newSecretaryPublicKey
+          } else {
+            const rs: any = await getDidPublicKey(suggestion.newSecretaryDID)
+            if (!rs) {
+              return {
+                success: false,
+                message: `Can not get the new secretary DID's public key.`
+              }
+            }
+            secretaryPublicKey = rs.compressedPublicKey
+            fields.newSecretaryPublicKey = secretaryPublicKey
+          }
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'secretarygeneral',
+            secretarygeneralpublickey: secretaryPublicKey,
+            secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID
+          }
+          break
+        case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'closeproposal',
+            targetproposalhash: suggestion.targetProposalHash
+          }
+          break
+        default:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'normal',
+            budgets: this.convertBudget(suggestion.budget),
+            recipient: suggestion.elaAddress
+          }
+          break
+      }
+      await this.model.update({ _id: suggestion._id }, { $set: fields })
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
         process.env.APP_PRIVATE_KEY,
-        {
-          algorithm: 'ES256'
-        }
+        { algorithm: 'ES256' }
       )
       const url = `elastos://crproposal/${jwtToken}`
       return { success: true, url }
@@ -1344,17 +1824,29 @@ export default class extends Base {
       const payload: any = jwt.decode(
         claims.req.slice('elastos://crproposal/'.length)
       )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload.'
+        }
+      }
+
       if (!_.get(payload, 'sid')) {
         return {
           code: 400,
           success: false,
-          message: 'Problems parsing jwt token of CR website.'
+          message: 'No sid in the payload.'
         }
       }
 
-      const suggestion = await this.model.findById({
-        _id: payload.sid
-      })
+      const suggestion = await this.model
+        .getDBInstance()
+        .findById({
+          _id: payload.sid
+        })
+        .populate('createdBy', 'did')
       if (!suggestion) {
         return {
           code: 400,
@@ -1370,33 +1862,53 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const rs: any = await getDidPublicKey(claims.iss)
-      if (!rs) {
+      const ownerDID = _.get(suggestion, 'createdBy.did.id')
+      const isOwner = userDID === claims.iss && ownerDID === claims.iss
+      if (!isOwner) {
+        await this.model.update(
+          { _id: payload.sid },
+          {
+            $set: {
+              signature: {
+                message: 'The ELA wallet not bound with your CR account.'
+              }
+            }
+          }
+        )
         return {
           code: 400,
           success: false,
-          message: `Can not get your did's public key.`
+          message: 'The ELA wallet not bound with your CR account.'
         }
       }
 
+      const compressedKey = _.get(suggestion, 'ownerPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
+        return {
+          code: 400,
+          success: false,
+          message: `Can not get your DID's public key.`
+        }
+      }
       // verify response data from ela wallet
       return jwt.verify(
         jwtToken,
-        rs.publicKey,
+        pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
             await this.model.update(
               { _id: payload.sid },
               {
                 $set: {
-                  signature: { message: 'Verify signatrue failed.' }
+                  signature: { message: 'Verify signature failed.' }
                 }
               }
             )
             return {
               code: 401,
               success: false,
-              message: 'Verify signatrue failed.'
+              message: 'Verify signature failed.'
             }
           } else {
             try {
@@ -1404,6 +1916,14 @@ export default class extends Base {
                 { _id: payload.sid },
                 { $set: { signature: { data: decoded.data } } }
               )
+              // notify new owner to sign
+              if (suggestion.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+                this.notifyPeopleToSign(suggestion, suggestion.newOwnerDID)
+              }
+              // notify new secretary general to sign
+              if (suggestion.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+                this.notifyPeopleToSign(suggestion, suggestion.newSecretaryDID)
+              }
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
               logger.error(err)
@@ -1427,9 +1947,39 @@ export default class extends Base {
   }
 
   public async checkSignature(param: any) {
-    const { id } = param
+    const { id, type } = param
     const suggestion = await this.show({ id })
     if (suggestion) {
+      if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+        const signature = _.get(suggestion, 'newOwnerSignature.data')
+        if (signature) {
+          return { success: true, data: suggestion }
+        }
+        const message = _.get(suggestion, 'newOwnerSignature.message')
+        if (message) {
+          await this.model.update(
+            { _id: id },
+            { $unset: { newOwnerSignature: true } }
+          )
+          return { success: false, message }
+        }
+        return
+      }
+      if (type && type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+        const signature = _.get(suggestion, 'newSecretarySignature.data')
+        if (signature) {
+          return { success: true, data: suggestion }
+        }
+        const message = _.get(suggestion, 'newSecretarySignature.message')
+        if (message) {
+          await this.model.update(
+            { _id: id },
+            { $unset: { newSecretarySignature: true } }
+          )
+          return { success: false, message }
+        }
+        return
+      }
       const signature = _.get(suggestion, 'signature.data')
       if (signature) {
         return { success: true, data: suggestion }
@@ -1470,30 +2020,76 @@ export default class extends Base {
           message: 'This suggestion had been made into a proposal.'
         }
       }
-      if (suggestion && suggestion.proposed === true) {
+      if (!_.get(suggestion, 'signature.data')) {
         return {
           success: false,
-          message: 'This suggestion is proposed.'
+          message: 'The owner of this suggetion does not sign'
         }
       }
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
-      const jwtClaims = {
+      const jwtClaims: any = {
         iat: now,
         exp: now + 60 * 60 * 24,
         command: 'createproposal',
         iss: process.env.APP_DID,
         sid: suggestion._id,
         data: {
-          proposaltype: 'normal',
+          userdid: councilMemberDid,
           categorydata: '',
           ownerpublickey: suggestion.ownerPublicKey,
           drafthash: suggestion.draftHash,
-          budgets: this.convertBudget(suggestion.budget),
-          recipient: suggestion.elaAddress,
           signature: suggestion.signature.data,
           did: councilMemberDid
         }
+      }
+      switch (suggestion.type) {
+        case SUGGESTION_TYPE.CHANGE_PROPOSAL:
+          if (!_.get(suggestion, 'newOwnerSignature.data')) {
+            return {
+              success: false,
+              message: 'The new owner does not sign'
+            }
+          }
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'changeproposalowner',
+            targetproposalhash: suggestion.targetProposalHash,
+            newrecipient: suggestion.newRecipient,
+            newownerpublickey: suggestion.newOwnerPublicKey,
+            newownersignature: suggestion.newOwnerSignature.data
+          }
+          break
+        case SUGGESTION_TYPE.CHANGE_SECRETARY:
+          if (!_.get(suggestion, 'newSecretarySignature.data')) {
+            return {
+              success: false,
+              message: 'The new secretary general does not sign'
+            }
+          }
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'secretarygeneral',
+            secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
+            secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID,
+            secretarygenerasignature: suggestion.newSecretarySignature.data
+          }
+          break
+        case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'closeproposal',
+            targetproposalhash: suggestion.targetProposalHash
+          }
+          break
+        default:
+          jwtClaims.data = {
+            ...jwtClaims.data,
+            proposaltype: 'normal',
+            budgets: this.convertBudget(suggestion.budget),
+            recipient: suggestion.elaAddress
+          }
+          break
       }
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
@@ -1511,6 +2107,184 @@ export default class extends Base {
     } catch (err) {
       logger.error(err)
       return { success: false }
+    }
+  }
+
+  public async getNewSecretarySignatureUrl(param: { id: string }) {
+    try {
+      const { id } = param
+      const suggestion = await this.model.getDBInstance().findById(id)
+      if (!suggestion) {
+        return { success: false, message: 'No this suggestion' }
+      }
+      if (suggestion.type !== SUGGESTION_TYPE.CHANGE_SECRETARY) {
+        return {
+          success: false,
+          message: 'The type of this suggestion is not valid'
+        }
+      }
+      if (!_.get(suggestion, 'signature.data')) {
+        return {
+          success: false,
+          message: 'The owner of this suggetion does not sign'
+        }
+      }
+      if (_.get(suggestion, 'newSecretarySignature.data')) {
+        return {
+          success: false,
+          message: 'You had signed'
+        }
+      }
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
+      if (did !== DID_PREFIX + suggestion.newSecretaryDID) {
+        return {
+          success: false,
+          message: 'You are not the new secretary general'
+        }
+      }
+      const now = Math.floor(Date.now() / 1000)
+      const jwtClaims: any = {
+        iat: now,
+        exp: now + 60 * 60 * 24,
+        command: 'createsuggestion',
+        iss: process.env.APP_DID,
+        sid: suggestion._id,
+        callbackurl: `${process.env.API_URL}/api/suggestion/sec-signature-cb`,
+        data: {
+          userdid: did,
+          categorydata: '',
+          ownerpublickey: suggestion.ownerPublicKey,
+          drafthash: suggestion.draftHash,
+          proposaltype: 'secretarygeneral',
+          secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
+          secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID
+        }
+      }
+      const jwtToken = jwt.sign(
+        JSON.stringify(jwtClaims),
+        process.env.APP_PRIVATE_KEY,
+        { algorithm: 'ES256' }
+      )
+      const url = `elastos://crproposal/${jwtToken}`
+      return { success: true, url }
+    } catch (err) {
+      logger.error(err)
+      return { success: false }
+    }
+  }
+
+  public async secretarySignatureCallback(param: any) {
+    try {
+      const jwtToken = param.jwt
+      const claims: any = jwt.decode(jwtToken)
+      if (!_.get(claims, 'req')) {
+        return {
+          code: 400,
+          success: false,
+          message: 'Problems parsing jwt token.'
+        }
+      }
+      const payload: any = jwt.decode(
+        claims.req.slice('elastos://crproposal/'.length)
+      )
+      const userDID = _.get(payload, 'data.userdid')
+      if (!userDID) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No userdid in the payload'
+        }
+      }
+      if (!_.get(payload, 'sid')) {
+        return {
+          code: 400,
+          success: false,
+          message: 'No sid in the payload'
+        }
+      }
+      const suggestion = await this.model.findById({
+        _id: payload.sid
+      })
+      if (!suggestion) {
+        return {
+          code: 400,
+          success: false,
+          message: 'There is no this suggestion.'
+        }
+      }
+      const signature = _.get(suggestion, 'newSecretarySignature.data')
+      if (signature) {
+        return {
+          code: 400,
+          success: false,
+          message: 'This suggestion had been signed.'
+        }
+      }
+      const savedDID = _.get(suggestion, 'newSecretaryDID')
+      const secretaryDID = savedDID && DID_PREFIX + savedDID
+      const isSecretary = userDID === claims.iss && claims.iss === secretaryDID
+      if (!isSecretary) {
+        await this.model.update(
+          { _id: payload.sid },
+          {
+            newSecretarySignature: {
+              message: 'The ELA wallet not bound with your CR account.'
+            }
+          }
+        )
+        return {
+          code: 400,
+          success: false,
+          message: 'The ELA wallet not bound with your CR account.'
+        }
+      }
+      const compressedKey = _.get(suggestion, 'newSecretaryPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
+        return {
+          code: 400,
+          success: false,
+          message: `Can not get your DID's public key.`
+        }
+      }
+      return jwt.verify(
+        jwtToken,
+        pemPublicKey,
+        async (err: any, decoded: any) => {
+          if (err) {
+            return {
+              code: 401,
+              success: false,
+              message: 'Verify signatrue failed.'
+            }
+          } else {
+            try {
+              await this.model.update(
+                { _id: payload.sid },
+                { newSecretarySignature: { data: decoded.data } }
+              )
+              return { code: 200, success: true, message: 'Ok' }
+            } catch (err) {
+              logger.error(err)
+              return {
+                code: 500,
+                success: false,
+                message: 'DB can not save the signature.'
+              }
+            }
+          }
+        }
+      )
+    } catch (err) {
+      logger.error(err)
+      return {
+        code: 500,
+        success: false,
+        message: 'Something went wrong'
+      }
     }
   }
 }

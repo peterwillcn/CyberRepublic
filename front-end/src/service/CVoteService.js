@@ -238,4 +238,13 @@ export default class extends BaseService {
     })
     return rs.secretariat
   }
+
+  async getAllAuthor(data) {
+    const rs = await api_request({
+      path: `/api/cvote/get_author`,
+      data,
+      method: 'get'
+    })
+    return rs
+  }
 }

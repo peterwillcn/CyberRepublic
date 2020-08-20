@@ -100,5 +100,18 @@ export const Suggestion = {
       timestamp: String
     }
   ],
+  closeProposalNum: Number, // terminate a proposal
+  targetProposalNum: Number, // change the proposal owner
+  newOwnerDID: String,
+  // if no newOwnerDID, the newOwnerPublicKey is the compressed public key of  the target proposal's proposer
+  newOwnerPublicKey: String,
+  newOwnerSignature: { data: String, message: String },
+  newSecretarySignature: { data: String, message: String },
+  newSecretaryDID: String,
+  newSecretaryPublicKey: String,
+  targetProposalHash: String,
+  newAddress: String, // new ELA address
+  // if no newAddress, the newRecipient is the target proposal's ELA address
+  newRecipient: String,
   old: Boolean // mark an old suggestion
 }

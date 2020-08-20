@@ -122,6 +122,7 @@ const en = {
 
   'login.success': 'Welcome back',
   'logout.success': 'logout success',
+  'login.noBindingDID': 'Please register an account or log in with an existing account',
 
   'mentions.notFound': 'User not found',
 
@@ -318,6 +319,8 @@ const en = {
   // suggestion error
   'suggestion.create.error.required': 'This field is required',
   'suggestion.create.error.tooShort': 'This field is too short',
+  'suggestion.vote.error.empty': 'Please input comment',
+  'suggestion.vote.error.tooLong': 'Comment is too long',
 
   // suggestion rules
   'suggestion.rules': 'Rules',
@@ -352,6 +355,61 @@ const en = {
 
   // Roles & Permissions
   'permission.title': 'Roles & Permissions',
+  'permission.btn': 'Create Permission',
+  'permission.btn.tips': 'Require server to restart to take effect',
+  'permission.form.name': 'Name',
+  'permission.form.resource': 'ResourceType',
+  'permission.form.desc': 'Desc',
+  'permission.form.http': 'HttpMethod',
+  'permission.form.url': 'Url',
+  'permission.tab.admin': 'ADMIN',
+  'permission.tab.council': 'COUNCIL',
+  'permission.tab.secretary': 'SECRETARY',
+  'permission.tab.custom': 'CUSTOM',
+  'permission.tab.member': 'MEMBER',
+  'permission.tab.leader': 'LEADER',
+
+  // Communities
+  'communities.btn': 'Add Country',
+  'communities.btn.add': 'Add Country',
+  'communities.btn.cancel': 'Cancel',
+  'communities.btn.delete': 'Delete',
+  'communities.form.country': 'Country',
+  'communities.form.name': 'Name',
+  'communities.form.leader': 'Leader',
+  'communities.form.organizer': 'Organizer',
+  'communities.form.required':'This field is required',
+  'communities.form.country.placeholder': 'Please select a country',
+  'communities.form.leader.placeholder': 'Please select a member',
+  'communities.form.add.success': 'Add new country successfully',
+  'communities.form.add.error': 'Error while add country',
+  'communities.form.organizer.change': 'Change Organizer',
+  
+  'communities.organizer.has': 'Has Organizer(s)',
+  'communities.organizer.needs': 'Needs an Organizer',
+
+  'communitites.country.organizers': 'Country Organizers',
+  'communities.btn.add.country': 'Add',
+  'communities.btn.add.state': 'Add states / province',
+  'communities.btn.add.city': 'Add City',
+  'communities.btn.add.region': 'Add Region',
+  'communities.btn.add.school': 'Add School',
+  'communities.btn.add.region': 'Add region',
+  'communities.btn.update.state': 'Update states / provinces',
+  'communities.btn.update.city': 'Update city',
+  'communities.btn.update.region': 'Update region',
+  'communities.btn.update.school': 'Update school',
+  'communities.form.title.state': 'Add states / provinces',
+  'communities.form.title.city': 'Add city',
+  'communities.form.title.region': 'Add region',
+  'communities.form.title.school': 'Add school',
+  'communities.form.organizer.success': 'Add new organizer successfully',
+  'communities.form.organizer.error': 'Error while add organizer',
+  'communitites.form.country.change': 'Change organizer successfully',
+  'communities.form.country.update': 'Update community successfully',
+  'communities.form.country.delete': 'Delete community successfully',
+  'communitites.form.country.success': 'Add new sub community successfully',
+  'communitites.form.country.error': 'Error while adding new sub community',
 
   // Developer
   'developer.breadcrumb.developers': 'Community',
@@ -704,6 +762,8 @@ const en = {
   'task.applyReason': 'Why you wanted to join this task',
   'task.createNew': 'Propose New Task',
 
+  'task.select.status': 'Select a status',
+
   // General
   'select.placeholder': 'Please select',
   '.ok': 'Ok',
@@ -778,13 +838,6 @@ const en = {
   'council.voting.chainStatus.unchain':'UnChain',
   'council.voting.chainStatus.failed':'Failed',
 
-
-  'council.voting.type.newMotion': 'New Motion',
-  'council.voting.type.motionAgainst': 'Motion Against',
-  'council.voting.type.anythingElse': 'Anything Else',
-  'council.voting.type.standardTrack': 'Standards Tracking ELIP',
-  'council.voting.type.information': 'Information ELIP',
-  'council.voting.type.process': 'Process ELIP',
   'council.voting.type.support': 'Yes',
   'council.voting.type.reject': 'No',
   'council.voting.type.abstention': 'Abstained',
@@ -824,6 +877,9 @@ const en = {
 
   'council.voting.voteResult.onchain':'Vote onchain',
   
+  'council.voting.viewHistory.btn': 'Voting history',
+  'council.voting.viewHistory.current':'Current Voting',
+
   // Landing
   'landing.cr': 'Cyber Republic',
   'landing.footer.note': 'Stay up to date with Cyber Republic',
@@ -984,7 +1040,14 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
-  'profile.member.vote.qrcodeTip':'Open ELA wallet and scan vote',
+  'profile.member.vote.qrcodeTip':'Open ELA wallet and scan vote (for community review)',
+
+  'profile.forms.table.header.title': 'Title',
+  'profile.forms.table.header.name': 'Name',
+  'profile.forms.table.header.campaign': 'Campaign',
+  'profile.forms.table.header.created': 'CreatedAt',
+  'profile.forms.show': 'Show Archived',
+  'profile.forms.search': 'Search',
 
   // Validate Form
   'ambassadors.form.required': 'This must be filled out',
@@ -1289,6 +1352,12 @@ const en = {
   'from.UserEditForm.label.profession': 'Profession',
   'from.UserEditForm.label.portfolio': 'Portfolio',
   'from.UserEditForm.label.github': 'GitHub',
+  'from.UserEditForm.label.linkedin': 'LinkedIn',
+  'from.UserEditForm.label.telegram': 'Telegram',
+  'from.UserEditForm.label.reddit': 'Reddit',
+  'from.UserEditForm.label.wechat': 'WeChat',
+  'from.UserEditForm.label.twitter': 'Twitter',
+  'from.UserEditForm.label.facebook': 'Facebook',
   'from.UserEditForm.username.required': 'Username is required',
   'from.UserEditForm.firstName.required': 'First name is required',
   'from.UserEditForm.lastName.required': 'Last name is required',
@@ -1315,6 +1384,8 @@ const en = {
   'from.UserProfileForm.text.lastName': 'Last Name',
   'from.UserProfileForm.text.slogan': 'Bio',
   'from.UserProfileForm.text.motto': 'Profile Motto',
+
+  'btn.CopyHash': 'Copy successful',
 
   // CR Video / Earn ELA page
   'cr-video.here': 'here',
@@ -1533,6 +1604,7 @@ const en = {
       }
     },
     contact: 'Contact',
+    did: 'DID',
     no1: {
       name: 'Alex Shipp',
       intro: 'Elastos Foundation Writer, Era of Quantum Wealth co-author, Quantum Wealth Supernode Owner, without a home base.',
@@ -1594,5 +1666,6 @@ en[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = 'INCOMPLETED'
 en[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = 'DEFERRED'
 en[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = 'NOTIFICATION'
 en[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = 'VETOED'
+en[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = 'TERMINATED'
 
 export default en

@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -21,7 +22,15 @@ export default {
       updated: '更新日期',
       signature: '签名',
       txHash: 'TxID',
-      proposalHash: 'Hash'
+      proposalHash: 'Hash',
+      type: '类型',
+      owner: '变更提案新负责人',
+      address: '变更提案新 ELA 地址',
+      secretary: '新秘书长',
+      targetProposalNum: '变更提案编号',
+      closeProposalNum: '终止提案',
+      newOwnerSignature: '变更提案新负责人签名',
+      newSecretarySignature: '新秘书长签名'
     },
     abstract: '摘要',
     goal: '目标',
@@ -74,21 +83,35 @@ export default {
       title: '标题'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: '新动议',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: '反对动议',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: '其它事宜',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: '变更提案动议',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: '变更秘书长动议',
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: '终止提案动议',
       newMotion: '新动议',
       motionAgainst: '反对动议',
-      anythingElse: '其它事宜'
+      anythingElse: '其它事宜',
+      changeProposalOwner: '变更提案负责人',
+      changeProposalAddress: '变更提案 ELA 接收地址',
+      proposalNum: '提案编号',
+      proposalNewOwner: '提案新负责人',
+      proposalNewAddress: '提案新 ELA 接收地址',
+      newSecretary: '新秘书长',
+      ownerInfo: `请输入提案新负责人的 DID`,
+      secretaryInfo: `请输入新秘书长的 DID`
     },
     note: {
       type: '选择一个建议类型。',
       abstract: '一个关于提案内容的简短描述（不超过200字）。',
       goal: '描述通过执行提案期望达到的效果。目标应该是清晰且可度量的。',
-      motivation: '描述为什么会提出这个提案。对于试图对亦来云有所改变的提案来说，动机至关重要。这里应该清楚的解释为什么现有的机制不足以解决提案想解决的问题，',
+      motivation: `描述为什么会提出这个提案。对于试图对亦来云有所改变的提案来说，动机至关重要。这里应该清楚的解释为什么现有的机制不足以解决提案想解决的问题，`,
       motivationHighlight: '没有足够动机的提案被拒的可能性很大。',
-      relevance: '如果和其它CRC提案有所关联，这里应该提供关联提案的提案号并且说明和相关提案的关系。如果与亦来云技术或者其它CRC提案有冲突，则应该对这些冲突进行说明并解释怎么处理它们。',
-      budget: '如果执行提案需要CRC的经费支持，这里应该说明总的预算以及支出计划。这是一个和执行计划配套的财务计划。',
+      relevance: `如果和其它CRC提案有所关联，这里应该提供关联提案的提案号并且说明和相关提案的关系。如果与亦来云技术或者其它CRC提案有冲突，则应该对这些冲突进行说明并解释怎么处理它们。`,
+      budget: `如果执行提案需要CRC的经费支持，这里应该说明总的预算以及支出计划。这是一个和执行计划配套的财务计划。`,
       type: '选择一个提案类型。',
-      plan: '这里应该说明通过什么方法和过程达成目标，对执行人或者团队应该有一个简单的介绍。如果提案的执行周期比较长，应该设立一些执行过程中的检查点，两个检查点之间不超过3个月。和提案目标一样，检查点也应该是清晰且可度量的。',
-      tracking: '当提案完成的时候，提案人应该在这里提交对提案执行状况的一个总结，包括目标达成状况和财务决算。CRC秘书处负责该部分内容的审核。'
+      plan: `这里应该说明通过什么方法和过程达成目标，对执行人或者团队应该有一个简单的介绍。如果提案的执行周期比较长，应该设立一些执行过程中的检查点，两个检查点之间不超过3个月。和提案目标一样，检查点也应该是清晰且可度量的。`,
+      tracking: `当提案完成的时候，提案人应该在这里提交对提案执行状况的一个总结，包括目标达成状况和财务决算。CRC秘书处负责该部分内容的审核。`
     },
     error: {
       required: '必填项',
@@ -110,7 +133,14 @@ export default {
       isUsed: '该项目阶段已被其它支付项使用了',
       exception: '出错了',
       notEqual: '支付项款之和与项目总金额不一致',
-      introduction: '里程碑简介不能为空'
+      introduction: '里程碑简介不能为空',
+      noOwner: `提案新负责人账号不存在`,
+      noSecretary: `新的秘书长账号不存在`,
+      noProposal: `无效的提案编号`,
+      proposalNum: '提案编号为空',
+      secretary: '新秘书长 DID 为空',
+      newOwner: '新负责人 DID 为空',
+      changeWhat: '请选择变更的内容'
     }
   },
   modal: {
@@ -121,8 +151,8 @@ export default {
     commentsFromCouncil: '来自委员或管理员的评论:',
     consideration: '您确定要将此建议标记为委员会正在审议中？',
     signNotice: '准备好让理事会成员进行审查了吗？',
-    signNoticeNow:'请立即签名建议。',
-    signNoticeNote:'注意：签名后，您将无法编辑建议。',
+    signNoticeNow: '请立即签名建议。',
+    signNoticeNote: '注意：签名后，您将无法编辑建议。',
     signNow: '签名',
     signLater: '稍后'
   },
@@ -141,7 +171,7 @@ export default {
     unarchived: '建议已取消归档',
     revertVersion: '已使用指定版本的内容',
     madeByOtherCM: '其他委员已经把这个建议转成提案了。',
-    councilQRCode: '扫描上面二维码把建议转成提案，提案上链后请到网站提案列表页面查看',
+    councilQRCode: `扫描上面二维码把建议转成提案，提案上链后请到网站提案列表页面查看`,
     toChain: '正在上链中',
     signQRCode: '扫描上面二维码签名建议',
     associateDidFirst: '请先绑定您的 DID'
@@ -177,7 +207,8 @@ export default {
     [SUGGESTION_BUDGET_TYPE.CONDITIONED]: '阶段支付',
     goal: '目标',
     milestone: '里程碑',
-    introduction: '预算说明'
+    introduction: '预算说明',
+    totalBudget: '总金额(ELA)：'
   },
   plan: {
     teamMember: '团队成员',
