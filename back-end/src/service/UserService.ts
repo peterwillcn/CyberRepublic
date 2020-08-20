@@ -790,7 +790,10 @@ export default class extends Base {
                   message: 'This DID had been used by other user.'
                 }
               }
-              const did = { id: decoded.iss }
+              const did = {
+                id: decoded.iss,
+                compressedPublicKey: rs.compressedPublicKey
+              }
               await db_user.update({ _id: payload.userId }, { $set: { did } })
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
