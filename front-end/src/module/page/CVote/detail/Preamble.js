@@ -1,10 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/moment'
-import { Row, Col, Button } from 'antd'
+import { Row, Col } from 'antd'
 import I18N from '@/I18N'
 import PopoverProfile from '@/module/common/PopoverProfile'
 import styled from 'styled-components'
+import { PROPOSAL_TYPE } from '@/constant'
 
 const Component = ({
   vid,
@@ -18,7 +19,8 @@ const Component = ({
   user,
   proposalHash,
   txHash,
-  copyFun
+  copyFun,
+  closeProposalNum
 }) => {
   // header
   const headerNode = (
@@ -46,6 +48,18 @@ const Component = ({
       </Col>
       <Col span={18}>
         <ItemText>{`#${vid}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const closeProposalNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.closeProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`#${closeProposalNum}`}</ItemText>
       </Col>
     </Item>
   )
@@ -143,6 +157,7 @@ const Component = ({
       {proposerNode}
       {reference && reference.displayId ? refereeNode : null}
       {typeNode}
+      {closeProposalNum ? closeProposalNode : null}
       {statusNode}
       {createdNode}
       {txHash ? txHashNode : null}

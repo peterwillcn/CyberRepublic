@@ -18,7 +18,8 @@ export default {
       status: 'Status',
       created: 'Created',
       hash: 'Hash',
-      txHash: 'TxID'
+      txHash: 'TxID',
+      closeProposalNum: 'Terminate Proposal'
     },
     abstract: 'Abstract',
     goal: 'Goal',

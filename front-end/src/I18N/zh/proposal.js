@@ -18,7 +18,8 @@ export default {
       status: '状态',
       created: '创建日期',
       hash: 'Hash',
-      txHash: 'TxID'
+      txHash: 'TxID',
+      closeProposalNum: '终止提案'
     },
     abstract: '摘要',
     goal: '目标',
