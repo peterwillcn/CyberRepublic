@@ -29,7 +29,8 @@ export default {
       secretary: 'New Secretary General',
       targetProposalNum: 'Proposal Number',
       closeProposalNum: 'Terminate Proposal',
-      newOwnerSignature: 'New Owner Signature'
+      newOwnerSignature: 'New Owner Signature',
+      newSecretarySignature: 'New Secretary General Signature',
     },
     abstract: 'Abstract',
     goal: 'Goal',

@@ -29,7 +29,8 @@ export default {
       secretary: '新秘书长',
       targetProposalNum: '变更提案编号',
       closeProposalNum: '终止提案',
-      newOwnerSignature: '变更提案新负责人签名'
+      newOwnerSignature: '变更提案新负责人签名',
+      newSecretarySignature: '新秘书长签名'
     },
     abstract: '摘要',
     goal: '目标',
