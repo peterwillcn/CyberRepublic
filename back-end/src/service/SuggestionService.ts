@@ -2045,7 +2045,7 @@ export default class extends Base {
       }
       switch (suggestion.type) {
         case SUGGESTION_TYPE.CHANGE_PROPOSAL:
-          if (!suggestion.newOwnerSignature) {
+          if (!_.get(suggestion, 'newOwnerSignature.data')) {
             return {
               success: false,
               message: 'The new owner does not sign'
@@ -2057,14 +2057,14 @@ export default class extends Base {
             targetproposalhash: suggestion.targetProposalHash,
             newrecipient: suggestion.newRecipient,
             newownerpublickey: suggestion.newOwnerPublicKey,
-            newownersignature: suggestion.newOwnerSignature
+            newownersignature: suggestion.newOwnerSignature.data
           }
           break
         case SUGGESTION_TYPE.CHANGE_SECRETARY:
-          if (!suggestion.newSecretarySignature) {
+          if (!_.get(suggestion, 'newSecretarySignature.data')) {
             return {
               success: false,
-              message: 'The new secretary does not sign'
+              message: 'The new secretary general does not sign'
             }
           }
           jwtClaims.data = {
@@ -2072,7 +2072,7 @@ export default class extends Base {
             proposaltype: 'secretarygeneral',
             secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
             secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID,
-            secretarygenerasignature: suggestion.newSecretarySignature
+            secretarygenerasignature: suggestion.newSecretarySignature.data
           }
           break
         case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
