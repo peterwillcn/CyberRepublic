@@ -5,7 +5,6 @@ import { Row, Col } from 'antd'
 import I18N from '@/I18N'
 import PopoverProfile from '@/module/common/PopoverProfile'
 import styled from 'styled-components'
-import { PROPOSAL_TYPE } from '@/constant'
 
 const Component = ({
   vid,
