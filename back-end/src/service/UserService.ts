@@ -82,7 +82,15 @@ export default class extends Base {
     if (param.did && _.isString(param.did) && param.did.length === 46) {
       const rs = param.did.split(':')
       if (rs.length === 3 && rs[0] === 'did' && rs[1] === 'elastos') {
-        doc.did = { id: param.did }
+        const result = await getDidPublicKey(param.did)
+        if (result && result.compressedPublicKey) {
+          doc.did = {
+            id: param.did,
+            compressedPublicKey: result.compressedPublicKey
+          }
+        } else {
+          doc.did = { id: param.did }
+        }
       }
     }
 
