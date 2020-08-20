@@ -1776,7 +1776,7 @@ export default class extends Base {
             ...jwtClaims.data,
             proposaltype: 'secretarygeneral',
             secretarygeneralpublickey: secretaryPublicKey,
-            secretarygeneraldid: suggestion.newSecretaryDID
+            secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID
           }
           break
         case SUGGESTION_TYPE.TERMINATE_PROPOSAL:
@@ -2071,7 +2071,7 @@ export default class extends Base {
             ...jwtClaims.data,
             proposaltype: 'secretarygeneral',
             secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
-            secretarygeneraldid: suggestion.newSecretaryDID,
+            secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID,
             secretarygenerasignature: suggestion.newSecretarySignature
           }
           break
@@ -2160,7 +2160,7 @@ export default class extends Base {
           drafthash: suggestion.draftHash,
           proposaltype: 'secretarygeneral',
           secretarygeneralpublickey: suggestion.newSecretaryPublicKey,
-          secretarygeneraldid: suggestion.newSecretaryDID
+          secretarygeneraldid: DID_PREFIX + suggestion.newSecretaryDID
         }
       }
       const jwtToken = jwt.sign(
@@ -2223,7 +2223,8 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const secretaryDID = _.get(suggestion, 'newSecretaryDID')
+      const savedDID = _.get(suggestion, 'newSecretaryDID')
+      const secretaryDID = savedDID && DID_PREFIX + savedDID
       const isSecretary = userDID === claims.iss && claims.iss === secretaryDID
       if (!isSecretary) {
         await this.model.update(
