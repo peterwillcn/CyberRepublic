@@ -1749,9 +1749,6 @@ export default class extends Base {
             newOwnerPublicKey = rs.compressedPublicKey
             fields.newOwnerPublicKey = newOwnerPublicKey
           }
-
-          await this.model.update({ _id: suggestion._id }, { $set: fields })
-
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'changeproposalowner',
@@ -1798,7 +1795,7 @@ export default class extends Base {
           }
           break
       }
-
+      await this.model.update({ _id: suggestion._id }, { $set: fields })
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
         process.env.APP_PRIVATE_KEY,

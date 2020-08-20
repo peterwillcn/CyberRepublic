@@ -150,7 +150,7 @@ class SelectSuggType extends Component {
                 <Input
                   onChange={(e) => this.handleChange(e, 'newOwnerDID')}
                   value={newOwnerDID}
-                  placeholder={I18N.get('suggestion.form.type.ownerInfo')}
+                  placeholder='ibHXCt4ixWjZfbS8oNhjAfBzA8LKyyyyyy'
                 />
               </div>
             )}
@@ -173,7 +173,7 @@ class SelectSuggType extends Component {
             <Input
               onChange={(e) => this.handleChange(e, 'newSecretaryDID')}
               value={newSecretaryDID}
-              placeholder={I18N.get('suggestion.form.type.secretaryInfo')}
+              placeholder='ibHXCt4ixWjZfbS8oNhjAfBzA8LKxxxxxx'
             />
           </Section>
         )}
