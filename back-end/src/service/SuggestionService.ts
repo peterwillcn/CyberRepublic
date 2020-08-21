@@ -11,7 +11,8 @@ import {
   permissions,
   logger,
   getDidPublicKey,
-  utilCrypto
+  utilCrypto,
+  getPemPublicKey
 } from '../utility'
 const Big = require('big.js')
 
@@ -1322,24 +1323,29 @@ export default class extends Base {
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
-
-      const rs: {
-        compressedPublicKey: string
-        publicKey: string
-      } = await getDidPublicKey(did)
-      if (!rs) {
-        return {
-          success: false,
-          message: `Can not get your did's public key.`
+      let fields: any
+      const draftHash = this.getDraftHash(suggestion)
+      fields.draftHash = draftHash
+      let ownerPublicKey: string
+      if (suggestion.ownerPublicKey) {
+        ownerPublicKey = suggestion.ownerPublicKey
+      } else {
+        const compressedKey = _.get(this.currentUser, 'did.compressedPublicKey')
+        if (compressedKey) {
+          ownerPublicKey = compressedKey
+        } else {
+          const rs: {
+            compressedPublicKey: string
+            publicKey: string
+          } = await getDidPublicKey(did)
+          if (rs && rs.compressedPublicKey) {
+            ownerPublicKey = rs.compressedPublicKey
+          }
         }
+        fields.ownerPublicKey = ownerPublicKey
       }
 
-      let ownerPublicKey = rs.compressedPublicKey
-      const draftHash = this.getDraftHash(suggestion)
-      await this.model.update(
-        { _id: suggestion._id },
-        { $set: { draftHash, ownerPublicKey } }
-      )
+      await this.model.update({ _id: suggestion._id }, { $set: fields })
 
       const now = Math.floor(Date.now() / 1000)
       const jwtClaims = {
@@ -1415,19 +1421,21 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const rs: any = await getDidPublicKey(claims.iss)
-      if (!rs) {
+
+      const compressedKey = _.get(suggestion, 'ownerPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
         return {
           code: 400,
           success: false,
-          message: `Can not get your did's public key.`
+          message: `Can not get your DID's public key.`
         }
       }
 
       // verify response data from ela wallet
       return jwt.verify(
         jwtToken,
-        rs.publicKey,
+        pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
             await this.model.update(
