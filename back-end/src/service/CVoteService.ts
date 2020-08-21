@@ -1429,19 +1429,6 @@ export default class extends Base {
       target.terminatedBy = proposal.vid
       await target.save()
     }
-    if (proposal.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
-      const db_user = this.getDBModel('User')
-      await Promise.all([
-        db_user.update(
-          { role: constant.USER_ROLE.SECRETARY },
-          { role: constant.USER_ROLE.MEMBER }
-        ),
-        db_user.update(
-          { 'did.id': DID_PREFIX + proposal.newSecretaryDID },
-          { role: constant.USER_ROLE.SECRETARY }
-        )
-      ])
-    }
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
       const db_user = this.getDBModel('User')
       const setDoc: any = { changedBy: proposal.vid }
