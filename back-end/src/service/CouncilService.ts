@@ -380,7 +380,7 @@ export default class extends Base {
 
   public async eachSecretariatJob() {
     const result = await ela.getSecretaryGeneral()
-    const secretaryPublicKey = _.get(result, 'secretaryGeneral')
+    const secretaryPublicKey = _.get(result, 'secretarygeneral')
     if (!secretaryPublicKey) {
       return
     }
