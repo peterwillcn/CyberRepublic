@@ -121,6 +121,7 @@ export default class extends StandardPage {
               onSubmit={this.onSubmit}
               onCancel={this.historyBack}
               onSaveDraft={this.onSaveDraft}
+              getActiveProposals={this.props.getActiveProposals}
             />
           </div>
         </Container>

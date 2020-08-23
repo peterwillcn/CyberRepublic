@@ -3,6 +3,7 @@ import {
 } from '@/util'
 import Component from './Component'
 import SuggestionService from '@/service/SuggestionService'
+import CVoteService from '@/service/CVoteService'
 
 export default createContainer(Component, (state) => {
   return {
@@ -14,7 +15,7 @@ export default createContainer(Component, (state) => {
   }
 }, () => {
   const service = new SuggestionService()
-
+  const cvoteService = new CVoteService()
   return {
     getDetail(id) {
       return service.getDetail({
@@ -30,6 +31,9 @@ export default createContainer(Component, (state) => {
     },
     saveDraft(suggestion) {
       return service.saveDraft(suggestion)
+    },
+    async getActiveProposals() {
+      return cvoteService.getActiveProposals()
     }
   }
 })
