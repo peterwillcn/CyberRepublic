@@ -22,8 +22,19 @@ class SelectSuggType extends Component {
       termination: value && value.termination,
       changeOwner: value && value.newOwnerDID ? true : false,
       changeAddress: value && value.newAddress ? true : false,
-      newAddress: value && value.newAddress
+      newAddress: value && value.newAddress,
+      proposals: []
     }
+  }
+
+  componentDidMount = async () => {
+    const docs = await this.props.getActiveProposals()
+    const proposals = docs.map((el) => ({
+      value: el.vid,
+      text: `#${el.vid} ${el.title}`
+    }))
+    console.log('proposals', proposals)
+    this.setState({ proposals })
   }
 
   changeValue() {

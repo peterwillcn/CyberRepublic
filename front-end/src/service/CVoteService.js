@@ -247,4 +247,10 @@ export default class extends BaseService {
     })
     return rs
   }
+
+  async getActiveProposals() {
+    const path = `/api/cvote/active_proposals`
+    const res = await api_request({ path })
+    return res
+  }
 }

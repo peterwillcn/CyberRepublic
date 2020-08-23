@@ -305,7 +305,11 @@ class C extends BaseComponent {
         rules,
         initialValue: data
       })(
-        <SelectSuggType initialValue={data} callback={this.onTextareaChange} />
+        <SelectSuggType
+          initialValue={data}
+          callback={this.onTextareaChange}
+          getActiveProposals={this.props.getActiveProposals}
+        />
       )
     }
 
