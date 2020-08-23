@@ -36,7 +36,12 @@ class SelectSuggType extends Component {
       termination,
       changeAddress,
       changeOwner,
-      newAddress
+      newAddress,
+      proposalNumErr,
+      terminationErr,
+      newOwnerDIDErr,
+      newAddressErr,
+      newSecretaryDIDErr
     } = this.state
     let data = { type }
     switch (type) {
@@ -54,12 +59,21 @@ class SelectSuggType extends Component {
           data.newOwnerDID = newOwnerDID
           data.newAddress = newAddress
         }
+        if (proposalNumErr || newOwnerDIDErr || newAddressErr) {
+          data.hasErr = true
+        }
         break
       case CHANGE_SECRETARY:
         data.newSecretaryDID = newSecretaryDID
+        if (newSecretaryDIDErr) {
+          data.hasErr = true
+        }
         break
       case TERMINATE_PROPOSAL:
         data.termination = termination
+        if (terminationErr) {
+          data.hasErr = true
+        }
         break
       default:
         break
@@ -68,20 +82,36 @@ class SelectSuggType extends Component {
     callback('type')
   }
 
+  validateAddress = (value) => {
+    const reg = /^[E8][a-zA-Z0-9]{33}$/
+    return reg.test(value)
+  }
+
+  handleAddress = (e) => {
+    const value = e.target.value
+    this.setState(
+      { newAddress: value, newAddressErr: !this.validateAddress(value) },
+      () => {
+        this.changeValue()
+      }
+    )
+  }
+
   handleChange = (e, field) => {
-    this.setState({ [field]: e.target.value }, () => {
+    const error = `${field}Err`
+    this.setState({ [field]: e.target.value, [error]: !e.target.value }, () => {
       this.changeValue()
     })
   }
 
   handleNumChange = (value) => {
-    this.setState({ proposalNum: value }, () => {
+    this.setState({ proposalNum: value, proposalNumErr: !value }, () => {
       this.changeValue()
     })
   }
 
   handleTerminationChange = (value) => {
-    this.setState({ termination: value }, () => {
+    this.setState({ termination: value, terminationErr: !value }, () => {
       this.changeValue()
     })
   }
@@ -101,7 +131,12 @@ class SelectSuggType extends Component {
       termination,
       changeOwner,
       changeAddress,
-      newAddress
+      newAddress,
+      proposalNumErr,
+      newOwnerDIDErr,
+      newAddressErr,
+      terminationErr,
+      newSecretaryDIDErr
     } = this.state
     return (
       <div>
@@ -129,6 +164,9 @@ class SelectSuggType extends Component {
                 value={proposalNum}
                 min={1}
               />
+              {proposalNumErr && (
+                <Error>{I18N.get('suggestion.form.error.proposalNum')}</Error>
+              )}
             </div>
             <Checkbox
               checked={changeOwner}
@@ -150,8 +188,11 @@ class SelectSuggType extends Component {
                 <Input
                   onChange={(e) => this.handleChange(e, 'newOwnerDID')}
                   value={newOwnerDID}
-                  placeholder='ibHXCt4ixWjZfbS8oNhjAfBzA8LKyyyyyy'
+                  placeholder="ibHXCt4ixWjZfbS8oNhjAfBzA8LKyyyyyy"
                 />
+                {newOwnerDIDErr && (
+                  <Error>{I18N.get('suggestion.form.error.newOwner')}</Error>
+                )}
               </div>
             )}
             {changeAddress && (
@@ -159,10 +200,10 @@ class SelectSuggType extends Component {
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewAddress')}
                 </Label>
-                <Input
-                  onChange={(e) => this.handleChange(e, 'newAddress')}
-                  value={newAddress}
-                />
+                <Input onChange={this.handleAddress} value={newAddress} />
+                {newAddressErr && (
+                  <Error>{I18N.get('suggestion.form.error.elaAddress')}</Error>
+                )}
               </div>
             )}
           </Section>
@@ -173,8 +214,11 @@ class SelectSuggType extends Component {
             <Input
               onChange={(e) => this.handleChange(e, 'newSecretaryDID')}
               value={newSecretaryDID}
-              placeholder='ibHXCt4ixWjZfbS8oNhjAfBzA8LKxxxxxx'
+              placeholder="ibHXCt4ixWjZfbS8oNhjAfBzA8LKxxxxxx"
             />
+            {newSecretaryDIDErr && (
+              <Error>{I18N.get('suggestion.form.error.secretary')}</Error>
+            )}
           </Section>
         )}
         {type === TERMINATE_PROPOSAL && (
@@ -185,6 +229,9 @@ class SelectSuggType extends Component {
               value={termination}
               min={1}
             />
+            {terminationErr && (
+              <Error>{I18N.get('suggestion.form.error.proposalNum')}</Error>
+            )}
           </Section>
         )}
       </div>
@@ -208,4 +255,9 @@ const Section = styled.div`
   .sub {
     margin-top: 16px;
   }
+`
+const Error = styled.div`
+  color: red;
+  font-size: 14px;
+  line-height: 1;
 `

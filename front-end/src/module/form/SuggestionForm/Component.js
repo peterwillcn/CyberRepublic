@@ -258,36 +258,7 @@ class C extends BaseComponent {
   }
 
   validateType = (rule, value, cb) => {
-    const type = _.get(value, 'type')
-    switch (type) {
-      case CHANGE_PROPOSAL:
-        if (!value.proposalNum) {
-          return cb(I18N.get('suggestion.form.error.proposalNum'))
-        }
-        if (value.changeOwner && !value.newOwnerDID) {
-          return cb(I18N.get('suggestion.form.error.newOwner'))
-        }
-        if (value.changeAddress && !this.validateAddress(value.newAddress)) {
-          return cb(I18N.get('suggestion.form.error.elaAddress'))
-        }
-        if (!value.newOwnerDID && !value.newAddress) {
-          return cb(I18N.get('suggestion.form.error.changeWhat'))
-        }
-        break
-      case CHANGE_SECRETARY:
-        if (!value.newSecretaryDID) {
-          cb(I18N.get('suggestion.form.error.secretary'))
-        }
-        break
-      case TERMINATE_PROPOSAL:
-        if (!value.termination) {
-          cb(I18N.get('suggestion.form.error.proposalNum'))
-        }
-        break
-      default:
-        break
-    }
-    return cb()
+    return value.hasErr ? cb(false) : cb()
   }
 
   getTextarea(id) {
