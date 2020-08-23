@@ -132,6 +132,18 @@ export default class extends Base {
     }
   }
 
+  public async getActiveProposals() {
+    const db_cvote = this.getDBModel('CVote')
+    const docs = await db_cvote.find(
+      {
+        status: constant.CVOTE_STATUS.ACTIVE,
+        old: { $exists: false }
+      },
+      'vid title'
+    )
+    return docs
+  }
+
   public async makeSuggIntoProposal(param: any) {
     const db_cvote = this.getDBModel('CVote')
     const db_suggestion = this.getDBModel('Suggestion')
@@ -1582,7 +1594,7 @@ export default class extends Base {
       'proposer',
       'proposalHash',
       'rejectAmount',
-      'rejectThroughAmount',
+      'rejectThroughAmount'
     ]
 
     const cursor = db_cvote
@@ -2264,7 +2276,7 @@ export default class extends Base {
             rs.push(o)
           } else if (lastName.search(sp[1].toLowerCase()) !== -1) {
             rs.push(o)
-          } 
+          }
         } else {
           if (
             firstName.search(sp[0].toLowerCase()) !== -1 ||
@@ -2291,7 +2303,8 @@ export default class extends Base {
         rs.push(o)
       }
       if (
-        username && sp.length == 1 &&
+        username &&
+        sp.length == 1 &&
         !_.find(rs, { _id: o._id }) &&
         username.search(sp[0].toLowerCase()) !== -1
       ) {
@@ -2299,6 +2312,6 @@ export default class extends Base {
       }
     })
 
-    return _.uniqWith(rs, _.isEqual);
+    return _.uniqWith(rs, _.isEqual)
   }
 }

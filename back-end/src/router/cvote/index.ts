@@ -21,6 +21,7 @@ import memberVote from './memberVote'
 import updateAborted from './update_aborted'
 import getCurrentHeight from './get_current_height'
 import getAllAuthor from './get_author'
+import getActiveProposals from './get_active_proposals'
 
 export default Base.setRouter([
   {
@@ -126,6 +127,11 @@ export default Base.setRouter([
   {
     path: '/get_author',
     router: getAllAuthor,
+    method: 'get'
+  },
+  {
+    path: '/active_proposals',
+    router: getActiveProposals,
     method: 'get'
   }
 ])
