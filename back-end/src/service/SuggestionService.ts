@@ -11,8 +11,8 @@ import {
   permissions,
   logger,
   getDidPublicKey,
-  getPemPublicKey,
-  utilCrypto
+  utilCrypto,
+  getPemPublicKey
 } from '../utility'
 const Big = require('big.js')
 const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX } = constant
@@ -1704,17 +1704,18 @@ export default class extends Base {
       if (suggestion.ownerPublicKey) {
         ownerPublicKey = suggestion.ownerPublicKey
       } else {
-        const rs: {
-          compressedPublicKey: string
-          publicKey: string
-        } = await getDidPublicKey(did)
-        if (!rs) {
-          return {
-            success: false,
-            message: `Can not get your DID's public key.`
+        const compressedKey = _.get(this.currentUser, 'did.compressedPublicKey')
+        if (compressedKey) {
+          ownerPublicKey = compressedKey
+        } else {
+          const rs: {
+            compressedPublicKey: string
+            publicKey: string
+          } = await getDidPublicKey(did)
+          if (rs && rs.compressedPublicKey) {
+            ownerPublicKey = rs.compressedPublicKey
           }
         }
-        ownerPublicKey = rs.compressedPublicKey
         fields.ownerPublicKey = ownerPublicKey
       }
 

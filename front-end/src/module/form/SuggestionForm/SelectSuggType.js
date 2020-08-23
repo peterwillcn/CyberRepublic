@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Radio, InputNumber, Input, Checkbox } from 'antd'
+import { Radio, InputNumber, Input, Checkbox, Select } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
+const { Option } = Select
 const {
   NEW_MOTION,
   CHANGE_PROPOSAL,
@@ -22,8 +23,19 @@ class SelectSuggType extends Component {
       termination: value && value.termination,
       changeOwner: value && value.newOwnerDID ? true : false,
       changeAddress: value && value.newAddress ? true : false,
-      newAddress: value && value.newAddress
+      newAddress: value && value.newAddress,
+      proposals: []
     }
+  }
+
+  componentDidMount = async () => {
+    const docs = await this.props.getActiveProposals()
+    const proposals = docs.map((el) => ({
+      value: el.vid,
+      text: `#${el.vid} ${el.title}`
+    }))
+    console.log('proposals', proposals)
+    this.setState({ proposals })
   }
 
   changeValue() {
@@ -36,7 +48,12 @@ class SelectSuggType extends Component {
       termination,
       changeAddress,
       changeOwner,
-      newAddress
+      newAddress,
+      proposalNumErr,
+      terminationErr,
+      newOwnerDIDErr,
+      newAddressErr,
+      newSecretaryDIDErr
     } = this.state
     let data = { type }
     switch (type) {
@@ -54,12 +71,21 @@ class SelectSuggType extends Component {
           data.newOwnerDID = newOwnerDID
           data.newAddress = newAddress
         }
+        if (proposalNumErr || newOwnerDIDErr || newAddressErr) {
+          data.hasErr = true
+        }
         break
       case CHANGE_SECRETARY:
         data.newSecretaryDID = newSecretaryDID
+        if (newSecretaryDIDErr) {
+          data.hasErr = true
+        }
         break
       case TERMINATE_PROPOSAL:
         data.termination = termination
+        if (terminationErr) {
+          data.hasErr = true
+        }
         break
       default:
         break
@@ -68,20 +94,36 @@ class SelectSuggType extends Component {
     callback('type')
   }
 
+  validateAddress = (value) => {
+    const reg = /^[E8][a-zA-Z0-9]{33}$/
+    return reg.test(value)
+  }
+
+  handleAddress = (e) => {
+    const value = e.target.value
+    this.setState(
+      { newAddress: value, newAddressErr: !this.validateAddress(value) },
+      () => {
+        this.changeValue()
+      }
+    )
+  }
+
   handleChange = (e, field) => {
-    this.setState({ [field]: e.target.value }, () => {
+    const error = `${field}Err`
+    this.setState({ [field]: e.target.value, [error]: !e.target.value }, () => {
       this.changeValue()
     })
   }
 
   handleNumChange = (value) => {
-    this.setState({ proposalNum: value }, () => {
+    this.setState({ proposalNum: value, proposalNumErr: !value }, () => {
       this.changeValue()
     })
   }
 
   handleTerminationChange = (value) => {
-    this.setState({ termination: value }, () => {
+    this.setState({ termination: value, terminationErr: !value }, () => {
       this.changeValue()
     })
   }
@@ -101,7 +143,12 @@ class SelectSuggType extends Component {
       termination,
       changeOwner,
       changeAddress,
-      newAddress
+      newAddress,
+      proposalNumErr,
+      newOwnerDIDErr,
+      newAddressErr,
+      terminationErr,
+      newSecretaryDIDErr
     } = this.state
     return (
       <div>
@@ -124,11 +171,19 @@ class SelectSuggType extends Component {
           <Section>
             <div className="number">
               <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
-              <InputNumber
+              <Select
                 onChange={this.handleNumChange}
-                value={proposalNum}
-                min={1}
-              />
+                defaultValue={proposalNum}
+              >
+                {this.state.proposals.map((el) => (
+                  <Option value={el.value} key={el.value}>
+                    {el.text}
+                  </Option>
+                ))}
+              </Select>
+              {proposalNumErr && (
+                <Error>{I18N.get('suggestion.form.error.proposalNum')}</Error>
+              )}
             </div>
             <Checkbox
               checked={changeOwner}
@@ -150,8 +205,11 @@ class SelectSuggType extends Component {
                 <Input
                   onChange={(e) => this.handleChange(e, 'newOwnerDID')}
                   value={newOwnerDID}
-                  placeholder='ibHXCt4ixWjZfbS8oNhjAfBzA8LKyyyyyy'
+                  placeholder="ibHXCt4ixWjZfbS8oNhjAfBzA8LKyyyyyy"
                 />
+                {newOwnerDIDErr && (
+                  <Error>{I18N.get('suggestion.form.error.newOwner')}</Error>
+                )}
               </div>
             )}
             {changeAddress && (
@@ -159,10 +217,10 @@ class SelectSuggType extends Component {
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewAddress')}
                 </Label>
-                <Input
-                  onChange={(e) => this.handleChange(e, 'newAddress')}
-                  value={newAddress}
-                />
+                <Input onChange={this.handleAddress} value={newAddress} />
+                {newAddressErr && (
+                  <Error>{I18N.get('suggestion.form.error.elaAddress')}</Error>
+                )}
               </div>
             )}
           </Section>
@@ -173,18 +231,29 @@ class SelectSuggType extends Component {
             <Input
               onChange={(e) => this.handleChange(e, 'newSecretaryDID')}
               value={newSecretaryDID}
-              placeholder='ibHXCt4ixWjZfbS8oNhjAfBzA8LKxxxxxx'
+              placeholder="ibHXCt4ixWjZfbS8oNhjAfBzA8LKxxxxxx"
             />
+            {newSecretaryDIDErr && (
+              <Error>{I18N.get('suggestion.form.error.secretary')}</Error>
+            )}
           </Section>
         )}
         {type === TERMINATE_PROPOSAL && (
           <Section>
             <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
-            <InputNumber
+            <Select
               onChange={this.handleTerminationChange}
-              value={termination}
-              min={1}
-            />
+              defaultValue={termination}
+            >
+              {this.state.proposals.map((el) => (
+                <Option value={el.value} key={el.value}>
+                  {el.text}
+                </Option>
+              ))}
+            </Select>
+            {terminationErr && (
+              <Error>{I18N.get('suggestion.form.error.proposalNum')}</Error>
+            )}
           </Section>
         )}
       </div>
@@ -208,4 +277,9 @@ const Section = styled.div`
   .sub {
     margin-top: 16px;
   }
+`
+const Error = styled.div`
+  color: red;
+  font-size: 14px;
+  line-height: 1;
 `

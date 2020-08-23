@@ -82,7 +82,15 @@ export default class extends Base {
     if (param.did && _.isString(param.did) && param.did.length === 46) {
       const rs = param.did.split(':')
       if (rs.length === 3 && rs[0] === 'did' && rs[1] === 'elastos') {
-        doc.did = { id: param.did }
+        const result = await getDidPublicKey(param.did)
+        if (result && result.compressedPublicKey) {
+          doc.did = {
+            id: param.did,
+            compressedPublicKey: result.compressedPublicKey
+          }
+        } else {
+          doc.did = { id: param.did }
+        }
       }
     }
 
@@ -790,7 +798,10 @@ export default class extends Base {
                   message: 'This DID had been used by other user.'
                 }
               }
-              const did = { id: decoded.iss }
+              const did = {
+                id: decoded.iss,
+                compressedPublicKey: rs.compressedPublicKey
+              }
               await db_user.update({ _id: payload.userId }, { $set: { did } })
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
