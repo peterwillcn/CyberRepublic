@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Radio, InputNumber, Input, Checkbox } from 'antd'
+import { Radio, InputNumber, Input, Checkbox, Select } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
+const { Option } = Select
 const {
   NEW_MOTION,
   CHANGE_PROPOSAL,
@@ -170,11 +171,16 @@ class SelectSuggType extends Component {
           <Section>
             <div className="number">
               <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
-              <InputNumber
+              <Select
                 onChange={this.handleNumChange}
-                value={proposalNum}
-                min={1}
-              />
+                defaultValue={proposalNum}
+              >
+                {this.state.proposals.map((el) => (
+                  <Option value={el.value} key={el.value}>
+                    {el.text}
+                  </Option>
+                ))}
+              </Select>
               {proposalNumErr && (
                 <Error>{I18N.get('suggestion.form.error.proposalNum')}</Error>
               )}
