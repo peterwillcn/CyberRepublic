@@ -241,11 +241,16 @@ class SelectSuggType extends Component {
         {type === TERMINATE_PROPOSAL && (
           <Section>
             <Label>{I18N.get('suggestion.form.type.proposalNum')}</Label>
-            <InputNumber
+            <Select
               onChange={this.handleTerminationChange}
-              value={termination}
-              min={1}
-            />
+              defaultValue={termination}
+            >
+              {this.state.proposals.map((el) => (
+                <Option value={el.value} key={el.value}>
+                  {el.text}
+                </Option>
+              ))}
+            </Select>
             {terminationErr && (
               <Error>{I18N.get('suggestion.form.error.proposalNum')}</Error>
             )}
