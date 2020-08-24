@@ -341,7 +341,9 @@ class C extends StandardPage {
             <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
             <p>${getBudgetHtml(data.budget)}</p>
-            <h2 translate="no">${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(
+              `suggestion.budget.introduction`
+            )}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(data.budgetIntro)
             )}</p>
@@ -898,7 +900,8 @@ class C extends StandardPage {
               'votedBy.profile.lastName'
             )} `,
             didName: _.get(cur, 'votedBy.did.didName'),
-            avatar: _.get(cur, 'votedBy.profile.avatar') || 
+            avatar:
+              _.get(cur, 'votedBy.profile.avatar') ||
               _.get(cur, 'votedBy.did.avatar'),
             reason: cur.reason,
             votedBy,
@@ -990,7 +993,7 @@ class C extends StandardPage {
         isCouncil,
         currentUserId,
         ownerVote,
-        voteHistory,
+        voteHistory
       }
       return <VoteResultComponent {...props} key={key} />
     })
