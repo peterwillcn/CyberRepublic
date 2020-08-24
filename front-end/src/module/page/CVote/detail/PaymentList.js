@@ -61,7 +61,7 @@ class PaymentList extends Component {
 
   isOwner() {
     const { user, proposer } = this.props
-    return user.current_user_id === proposer._id
+    return user.current_user_id === proposer && proposer._id
   }
 
   isVisible() {

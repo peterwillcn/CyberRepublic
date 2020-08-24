@@ -8,9 +8,12 @@ import CircularProgressbar from '@/module/common/CircularProgressbar'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
 import PaymentSchedule from './PaymentSchedule'
 import ImplementationPlan from './ImplementationPlan'
+import RelevanceSection from './RelevanceSection'
 import { wordCounter } from '@/util'
 import { SUGGESTION_BUDGET_TYPE } from '@/constant'
 import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
+import ImplementationAndBudget from './ImplementationAndBudget'
+import TeamInfoSection from './TeamInfoSection'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -23,8 +26,8 @@ const TAB_KEYS = [
   'motivation',
   'goal',
   'plan',
+  'teamInfo',
   'relevance',
-  'budget'
 ]
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
 
@@ -85,19 +88,19 @@ class C extends BaseComponent {
       const milestone = _.get(values, 'plan.milestone')
       const pItems = _.get(values, 'budget.paymentItems')
 
-      const initiation = pItems.filter(
+      const initiation = !_.isEmpty(pItems) && pItems.filter(
         (item) => item.type === ADVANCE && item.milestoneKey === '0'
       )
-      const completion = pItems.filter((item) => {
+      const completion = !_.isEmpty(pItems) && pItems.filter((item) => {
         return (
           item.type === COMPLETION &&
           item.milestoneKey === (milestone.length - 1).toString()
         )
       })
-      if (
+      if ( !_.isEmpty(pItems) && (
         milestone.length !== pItems.length ||
         initiation.length > 1 ||
-        completion.length !== 1
+        completion.length !== 1)
       ) {
         this.setState({ loading: false })
         message.error(I18N.get('suggestion.form.error.payment'))
@@ -105,13 +108,23 @@ class C extends BaseComponent {
       }
 
       const budget = _.get(values, 'budget')
+      const budgetIntro = _.get(values, 'budgetIntro')
+      const planIntro = _.get(values, 'planIntro')
       // exclude old suggestion data
       if (budget && typeof budget !== 'string') {
         values.budget = budget.paymentItems
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-
+      if (budgetIntro) {
+        values.budgetIntro = budgetIntro
+      }
+      if (planIntro) {
+        values.planIntro = planIntro
+      }
+      if (values.plan && values.teamInfo) {
+        values.plan[`teamInfo`] = values.teamInfo
+      }
       await callback(values)
       this.setState({ loading: false })
     })
@@ -132,10 +145,19 @@ class C extends BaseComponent {
     if (!isEditMode && this.props.onSaveDraft) {
       const values = form.getFieldsValue()
       const budget = form.getFieldValue('budget')
+      const planIntro = form.getFieldValue('planIntro')
+      const budgetIntro = form.getFieldValue('budgetIntro')
+      if (values.plan && values.teamInfo) {
+        values.plan[`teamInfo`] = values.teamInfo
+      }
       if (budget) {
         values.budget = budget.paymentItems
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
+        values.budgetIntro = budgetIntro
+      }
+      if (planIntro) {
+        values.planIntro = planIntro
       }
       this.props.onSaveDraft(values)
     }
@@ -197,11 +219,15 @@ class C extends BaseComponent {
   }
 
   validatePlan = (rule, value, cb) => {
-    if (value && _.isEmpty(value.teamInfo)) {
-      return cb(I18N.get('suggestion.form.error.team'))
-    }
     if (value && _.isEmpty(value.milestone)) {
       return cb(I18N.get('suggestion.form.error.milestones'))
+    }
+    return cb()
+  }
+
+  validateTeamInfo = (rule, value, cb) => {
+    if (_.isEmpty(value)) {
+      return cb(I18N.get('suggestion.form.error.team'))
     }
     return cb()
   }
@@ -268,49 +294,46 @@ class C extends BaseComponent {
       rules.push({
         validator: this.validatePlan
       })
+      return <ImplementationAndBudget 
+        getFieldDecorator={getFieldDecorator}
+        initialValues={initialValues}
+        form={this.props.form}
+        callback={this.onTextareaChange}
+      />
+    }
 
-      return getFieldDecorator('plan', {
+    if (id === 'teamInfo') {
+      let teamInfo = []
+      if (initialValues && initialValues.plan) {
+        teamInfo = initialValues.plan.teamInfo
+      }
+      rules.push({
+        validator: this.validateTeamInfo
+      })
+      return (getFieldDecorator('teamInfo', {
         rules,
-        initialValue: initialValues.plan
+        initialValue: teamInfo
       })(
-        <ImplementationPlan
-          initialValue={initialValues}
-          getFieldDecorator={getFieldDecorator}
+        <TeamInfoSection
+          title={I18N.get('suggestion.plan.teamInfo')}
           callback={this.onTextareaChange}
+          initialValue={teamInfo}
         />
+        )
       )
     }
 
-    if (id === 'budget') {
-      let initialBudget = {}
-      if (initialValues.budget && typeof initialValues.budget !== 'string') {
-        initialBudget = initialValues.budget && {
-          budgetAmount: initialValues.budgetAmount,
-          elaAddress: initialValues.elaAddress,
-          paymentItems: initialValues.budget,
-          budgetIntro: initialValues.budgetIntro
-        }
-      } else {
-        initialBudget = {
-          budgetAmount: initialValues.budget,
-          elaAddress: '',
-          paymentItems: [],
-          budgetIntro: ''
-        }
+    if (id === 'relevance') {
+      let relevance = []
+      if (initialValues.relevance) {
+        relevance = initialValues.relevance
       }
-
-      rules.push({
-        validator: this.validateBudget
-      })
-
-      return getFieldDecorator('budget', {
-        rules,
-        initialValue: initialBudget
+      return getFieldDecorator('relevance', {
+        initialValue: initialValues[id]
       })(
-        <PaymentSchedule
-          initialValue={initialBudget}
-          getFieldDecorator={getFieldDecorator}
+        <RelevanceSection 
           callback={this.onTextareaChange}
+          initialValue={relevance}
         />
       )
     }

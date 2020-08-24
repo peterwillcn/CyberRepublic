@@ -1321,6 +1321,10 @@ const en = {
   'from.UserProfileForm.text.slogan': 'Bio',
   'from.UserProfileForm.text.motto': 'Profile Motto',
 
+  'from.SuggestionForm.title': 'Relevance detail',
+  'from.SuggestionForm.proposal': 'proposal #',
+  'from.SuggestionForm.detail': 'Relevance detail',
+  
   'btn.CopyHash': 'Copy successful',
 
   // CR Video / Earn ELA page

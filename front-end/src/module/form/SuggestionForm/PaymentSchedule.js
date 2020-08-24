@@ -134,6 +134,7 @@ class PaymentSchedule extends Component {
     const disabled = !milestone || flag
     return (
       <Wrapper>
+        <Note>{I18N.get(`suggestion.form.note.budget`)}</Note>
         <Section>
           <Label>{I18N.get('suggestion.budget.address')}</Label>
           <StyledInput
@@ -158,7 +159,9 @@ class PaymentSchedule extends Component {
         ) : null}
         <Section>
           <Label>{`${I18N.get('suggestion.budget.introduction')}`}</Label>
-          {getFieldDecorator('budgetIntro')(
+          {getFieldDecorator('budgetIntro',{
+            initialValue:budgetIntro
+          })(
             <CodeMirrorEditor
               content={budgetIntro}
               activeKey="budgetIntro"
@@ -252,4 +255,8 @@ const Total = styled.div`
 const Digit = styled.span`
   font-size: 18px;
   color: #000;
+`
+const Note = styled.div`
+  margin-top: 20px;
+  margin-bottom: 20px;
 `

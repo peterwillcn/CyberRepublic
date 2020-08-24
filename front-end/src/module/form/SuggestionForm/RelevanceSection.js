@@ -3,16 +3,23 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Button, Modal } from 'antd'
 import I18N from '@/I18N'
-import TeamInfoForm from '@/module/form/TeamInfoForm/Container'
+import RelevanceForm from '@/module/form/RelevanceForm/Container'
 import TeamInfoList from './TeamInfoList'
+import RelevanceList from './RelevanceList'
 
-class TeamInfoSection extends Component {
+
+class RelevanceSection extends Component {
   constructor(props) {
     super(props)
     this.state = {
       visible: false,
-      teamInfos: props.initialValue ? props.initialValue : []
+      data: [],
+      relevances: props.initialValue ? props.initialValue : []
     }
+  }
+
+  setData = value => {
+    this.setState({data: value})
   }
 
   hideModal = () => {
@@ -25,22 +32,22 @@ class TeamInfoSection extends Component {
 
   changeValue = value => {
     const { onChange, callback } = this.props
-    const { teamInfos } = this.state
+    const { relevances } = this.state
     this.setState(
-      { values: [...teamInfos, value.teamInfos] }, () => {
-        onChange(this.state.teamInfos)
-        callback('teamInfo')
+      { values: [...relevances, value.relevances] }, () => {
+        onChange(this.state.relevances)
+        callback('relevances')
       })
   }
 
   handleDelete = index => {
-    const { teamInfos } = this.state
+    const { relevances } = this.state
     this.setState(
       {
-        teamInfos: [...teamInfos.slice(0, index), ...teamInfos.slice(index + 1)]
+        relevances: [...relevances.slice(0, index), ...relevances.slice(index + 1)]
       },
       () => {
-        this.changeValue({ teamInfos: this.state.teamInfos })
+        this.changeValue({ relevances: this.state.relevances })
       }
     )
   }
@@ -50,47 +57,44 @@ class TeamInfoSection extends Component {
   }
 
   handleSubmit = values => {
-    const { teamInfos, index } = this.state
+    const { relevances, index } = this.state
     if (index >= 0) {
-      const rs = teamInfos.map((item, key) => {
+      const rs = relevances.map((item, key) => {
         if (index === key) {
           return values
         }
         return item
       })
-      this.setState({ teamInfos: rs, visible: false }, () => {
-        this.changeValue({ teamInfos: this.state.teamInfos })
+      this.setState({ relevances: rs, visible: false }, () => {
+        this.changeValue({ relevances: this.state.relevances })
       })
       return
     }
     this.setState(
       {
-        teamInfos: [...teamInfos, values],
+        relevances: [...relevances, values],
         visible: false
       },
       () => {
-        this.changeValue({ teamInfos: this.state.teamInfos })
+        this.changeValue({ relevances: this.state.relevances })
       }
     )
   }
 
   render() {
-    const { title } = this.props
-    const { teamInfos, index } = this.state
+    const { relevances, index } = this.state
     return (
       <Wrapper>
         <Header>
-          <Label>{title}</Label>
           <Button onClick={this.showModal}>
-            {I18N.get('suggestion.plan.createTeamInfo')}
+            {I18N.get('suggestion.plan.createRelevance')}
           </Button>
         </Header>
-        {teamInfos.length ? (
-          <TeamInfoList
-            list={teamInfos}
+        {relevances.length ? (
+          <RelevanceList
+            list={relevances}
             onDelete={this.handleDelete}
-            onEdit={this.handleEdit}
-          />
+            onEdit={this.handleEdit}/>
         ) : null}
         <Modal
           maskClosable={false}
@@ -100,10 +104,11 @@ class TeamInfoSection extends Component {
           width={770}
         >
           {this.state.visible === true ? (
-            <TeamInfoForm
-              item={index >= 0 ? teamInfos[index] : null}
+            <RelevanceForm
+              item={index >= 0 ? relevances[index] : null}
               onSubmit={this.handleSubmit}
               onCancel={this.hideModal}
+              callback={this.setData}
             />
           ) : null}
         </Modal>
@@ -112,18 +117,19 @@ class TeamInfoSection extends Component {
   }
 }
 
-TeamInfoSection.propTypes = {
+RelevanceSection.propTypes = {
   title: PropTypes.string,
   onChange: PropTypes.func,
   initialValue: PropTypes.array
 }
 
-export default TeamInfoSection
+export default RelevanceSection
 
 const Wrapper = styled.div`
   margin-bottom: 24px;
 `
 const Header = styled.div`
+  margin-top: 20px;
   margin-bottom: 4px;
   display: flex;
   justify-content: space-between;

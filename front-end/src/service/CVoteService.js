@@ -238,4 +238,13 @@ export default class extends BaseService {
     })
     return rs.secretariat
   }
+
+  async getProposalTitle(data) {
+    const rs = await api_request({
+      path: `/api/cvote/getProposalTitle`,
+      method: 'get',
+      data
+    })
+    return rs
+  }
 }
