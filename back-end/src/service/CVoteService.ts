@@ -2314,4 +2314,19 @@ export default class extends Base {
 
     return _.uniqWith(rs, _.isEqual)
   }
+
+  public async getProposalTitle(param: any) {
+    const db_cvote = this.getDBModel("CVote")
+    if (_.isEmpty(param)) return
+    let value = ""
+    _.forEach(param, (v: any) => {
+      value += v
+    })
+    const proposalList = await db_cvote
+      .getDBInstance()
+      .find({
+        'title': { $regex: value, $options: 'i'},
+      },['_id', 'title'])
+    return proposalList
+  }
 }

@@ -1338,6 +1338,10 @@ const zh = {
   'from.UserProfileForm.text.slogan': '个人标语',
   'from.UserProfileForm.text.motto': '个人座右铭',
 
+  'from.SuggestionForm.title': '相关细节',
+  'from.SuggestionForm.proposal': '提案 #',
+  'from.SuggestionForm.detail': '相关细节',
+
   'btn.CopyHash': '复制成功',
 
   // CR Video / Earn ELA page

@@ -423,8 +423,6 @@ export default class extends Base {
     const unsetDoc = this.unsetTypeDoc(param)
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      doc.budgetIntro = _.get(currDraft, 'budgetIntro')
-      doc.planIntro = _.get(currDraft, 'planIntro')
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 

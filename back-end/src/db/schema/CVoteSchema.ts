@@ -81,9 +81,11 @@ export const CVote = {
   motivation: {
     type: String
   },
-  relevance: {
-    type: String
-  },
+  relevance: [{
+    proposal: Schema.Types.ObjectId,
+    title: String,
+    relevanceDetail: String,
+  }],
   budgetAmount: {
     type: Schema.Types.Mixed
   },

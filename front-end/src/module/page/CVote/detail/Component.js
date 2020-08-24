@@ -36,7 +36,8 @@ import {
   convertMarkdownToHtml,
   removeImageFromMarkdown,
   getPlanHtml,
-  getBudgetHtml
+  getBudgetHtml,
+  getRelevanceHtml,
 } from '@/util/markdown-it'
 import PaymentList from './PaymentList'
 import TeamInfoList from '@/module/form/SuggestionForm/TeamInfoList'
@@ -59,7 +60,8 @@ import {
   PartTitle,
   PartContent,
   Subtitle,
-  Paragraph
+  Paragraph,
+  StyledRow
 } from './style'
 import './style.scss'
 import { ItemText } from '../../suggestion/detail/style'
@@ -109,6 +111,27 @@ const renderRichContent = (data, key, title, user, actions) => {
             <MarkdownPreview content={data.planIntro} />
           </div>
         ) : null}
+      </div>
+    )
+  } else if (key === 'relevance' && data.relevance && typeof data.relevance !== 'string') {
+    rc = (
+      <div key='relevance'>
+        <Subtitle id='relevance'> </Subtitle>
+        {data.relevance.map((item, index) => {
+          return (
+            item && (
+              <StyledRow key={index}>
+                <p>
+                  {I18N.get('from.SuggestionForm.proposal') + `:`}
+                  <a href={`/proposals/${item.proposal}`}>{item.title}</a>
+                </p>
+                <p>
+                  {I18N.get('from.SuggestionForm.detail') + `:`}
+                </p>
+                <MarkdownPreview content={item.relevanceDetail} />
+              </StyledRow>
+            ))
+        })}
       </div>
     )
   } else {
@@ -334,6 +357,7 @@ class C extends StandardPage {
             data.budget &&
             typeof data.budget !== 'string'
           ) {
+            if (_.isEmpty(data.budget)) return null
             return `
             <h2 translate="no">${I18N.get('proposal.fields.budget')}</h2>
             <p translate="no">${I18N.get('suggestion.budget.total')}</p>
@@ -361,6 +385,17 @@ class C extends StandardPage {
             )}</p>
           `
           }
+          if (
+            section === 'relevance' &&
+            data.relevance &&
+            typeof data.relevance !== 'string'
+          ) {
+            return `
+            <h2 translate="no">${I18N.get('suggestion.fields.relevance')}</h2>
+            <p>${getRelevanceHtml(data.relevance)}</p>
+            `
+          }
+
           return `
           <h2 translate="no">${I18N.get(`proposal.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(

@@ -25,7 +25,8 @@ import {
   convertMarkdownToHtml,
   removeImageFromMarkdown,
   getPlanHtml,
-  getBudgetHtml
+  getBudgetHtml,
+  getRelevanceHtml,
 } from '@/util/markdown-it'
 import { logger } from '@/util'
 import URI from 'urijs'
@@ -57,7 +58,9 @@ import {
   StyledAnchor,
   Subtitle,
   CreateProposalText,
-  Paragraph
+  Paragraph,
+  CopyButton,
+  StyledRow,
 } from './style'
 
 import './style.scss'
@@ -271,6 +274,7 @@ export default class extends StandardPage {
             detail.budget &&
             typeof detail.budget !== 'string'
           ) {
+            if (_.isEmpty(detail.budget)) return null
             return (
               <div key="budget">
                 <DescLabel id="budget">
@@ -293,6 +297,35 @@ export default class extends StandardPage {
                 </Subtitle>
                 <MarkdownPreview content={detail.budgetIntro} />
               </div>
+            )
+          }
+
+          if (section === 'relevance' &&
+            detail.relevance &&
+            typeof detail.relevance !== 'sting'
+          ) {
+            return (
+              <div key='relevance'>
+                <DescLabel id='relevance'>
+                  {I18N.get(`suggestion.fields.relevance`)}
+                </DescLabel>
+                {detail.relevance.map((item, index) => {
+                    return (
+                      item && (
+                        <StyledRow key={index}>
+                          <p>
+                            {I18N.get('from.SuggestionForm.proposal') + `:`}
+                            <a href={`/proposals/${item.proposal}`}>{item.title}</a>
+                          </p>
+                          <p>
+                            {I18N.get('from.SuggestionForm.detail') + `:` }
+                          </p>
+                          <MarkdownPreview content={item.relevanceDetail} />
+                        </StyledRow>
+                      )
+                    )
+                  })}
+            </div>
             )
           }
 
@@ -480,6 +513,17 @@ export default class extends StandardPage {
             )}</p>
           `
         }
+        if (
+          section === 'relevance' &&
+          detail.relevance &&
+          typeof detail.relevance !== 'string'
+        ) {
+          return `
+          <h2 translate="no">${I18N.get('suggestion.fields.relevance')}</h2>
+          <p>${getRelevanceHtml(detail.relevance)}</p>
+          `
+        }
+
         return `
           <h2 translate="no">${I18N.get(`suggestion.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
