@@ -20,6 +20,7 @@ import check_signature from './check_signature'
 import memberVote from './memberVote'
 import updateAborted from './update_aborted'
 import getCurrentHeight from './get_current_height'
+import getProposalTitle from './get_proposal_title'
 
 export default Base.setRouter([
   {
@@ -120,6 +121,11 @@ export default Base.setRouter([
   {
     path: '/get_current_height',
     router: getCurrentHeight,
+    method: 'get'
+  },
+  {
+    path: '/getProposalTitle',
+    router: getProposalTitle,
     method: 'get'
   }
 ])
