@@ -43,7 +43,7 @@ export default class extends BaseComponent {
   renderPrivateList() {
     const { withdrawalHistory, budget } = this.props.proposal
     const completion = _.filter(budget, { 'type': 'COMPLETION' })
-    const dataList = _.filter(withdrawalHistory, { 'milestoneKey': completion[0].milestoneKey })
+    const dataList = !_.isEmpty(completion) && _.filter(withdrawalHistory, { 'milestoneKey': completion[0].milestoneKey })
     if (!dataList || dataList.length === 0) return (<Empty
       image={Empty.PRESENTED_IMAGE_SIMPLE}
       description={

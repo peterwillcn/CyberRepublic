@@ -60,7 +60,8 @@ import {
   PartTitle,
   PartContent,
   Subtitle,
-  Paragraph
+  Paragraph,
+  StyledRow
 } from './style'
 import './style.scss'
 import { ItemText } from '../../suggestion/detail/style'
@@ -115,8 +116,8 @@ const renderRichContent = (data, key, title, user, actions) => {
   } else if (key === 'relevance' && data.relevance && typeof data.relevance !== 'string') {
     rc = (
       <div key='relevance'>
-        <Subtitle id='relevance'> {I18N.get(`suggestion.fields.relevance`)} </Subtitle>
-        {detail.relevance.map((item, index) => {
+        <Subtitle id='relevance'> </Subtitle>
+        {data.relevance.map((item, index) => {
           return (
             item && (
               <StyledRow key={index}>
