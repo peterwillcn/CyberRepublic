@@ -225,13 +225,6 @@ export default class extends Base {
     const doc = _.pick(param, BASE_FIELDS)
     doc.descUpdatedAt = new Date()
 
-    const currDraft = await this.draftModel.getDBInstance().findById(id)
-    if (currDraft) {
-      doc.budgetIntro =  _.get(currDraft,'budgetIntro')
-      doc.planIntro = _.get(currDraft,'planIntro')
-      await this.draftModel.remove({ _id: ObjectId(id) })
-    }
-
     if (update) {
       doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
       await this.model.update({ _id: id }, { $set: doc })
