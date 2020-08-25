@@ -158,7 +158,9 @@ class PaymentSchedule extends Component {
         ) : null}
         <Section>
           <Label>{`${I18N.get('suggestion.budget.introduction')}`}</Label>
-          {getFieldDecorator('budgetIntro')(
+          {getFieldDecorator('budgetIntro',{
+            initialValue:budgetIntro
+          })(
             <CodeMirrorEditor
               content={budgetIntro}
               activeKey="budgetIntro"

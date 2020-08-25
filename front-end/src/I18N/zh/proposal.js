@@ -34,7 +34,7 @@ export default {
     hasTrackingMsg: '是否有跟踪信息需要审核',
     isUnvotedByYou: '未被自己投票的提案',
     creationDate: '创建日期',
-    author: '作者',
+    author: '提案人',
     endsDate: '结束日期',
     currentHeight: '当前高度'
   },
