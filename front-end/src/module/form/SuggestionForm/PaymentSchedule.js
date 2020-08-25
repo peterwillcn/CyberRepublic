@@ -136,14 +136,14 @@ class PaymentSchedule extends Component {
       <Wrapper>
         <Note>{I18N.get(`suggestion.form.note.budget`)}</Note>
         <Section>
-          <Label>{I18N.get('suggestion.budget.address')}</Label>
+          <Label> * {I18N.get('suggestion.budget.address')}</Label>
           <StyledInput
             value={address}
             onChange={(e) => this.handleChange(e, 'address')}
           />
         </Section>
         <Section>
-          <Label>{I18N.get('suggestion.budget.schedule')}</Label>
+          <Label> * {I18N.get('suggestion.budget.schedule')}</Label>
           <Button onClick={this.showModal} disabled={disabled ? true : false}>
             {I18N.get('suggestion.budget.create')}
           </Button>
@@ -163,6 +163,7 @@ class PaymentSchedule extends Component {
             initialValue:budgetIntro
           })(
             <CodeMirrorEditor
+              callback={this.props.callback}
               content={budgetIntro}
               activeKey="budgetIntro"
               name="budgetIntro"

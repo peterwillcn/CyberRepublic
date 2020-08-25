@@ -139,17 +139,18 @@ class ImplementationAndBudget extends BaseComponent {
 
   toggle = () => {
     const data = this.props.form.getFieldValue("budget")
-    if (!_.isEmpty(data.budgetIntro)
-    || !_.isEmpty(data.elaAddress)
-    || data.paymentItems.length > 0
+    const temp = localStorage.getItem("draft-suggestion")
+    if (!_.isEmpty(temp.budgetIntro)
+      || !_.isEmpty(data.elaAddress)
+      || data.paymentItems.length > 0
     ) {
-        this.setState({
-            disabled: true
-          })
+      this.setState({
+        disabled: true
+      })
     } else {
-        this.setState({
-            disabled: false
-          })
+      this.setState({
+        disabled: false
+      })
     }
   }
 

@@ -64,13 +64,17 @@ class RelevanceForm extends BaseComponent {
     const { item } = this.props
     const option = _.map(this.state.data, (o) => (<Select.Option key={o.proposal}>{o.title}</Select.Option>))
     const proposalTitle = item && item.title
+    let title = I18N.get('suggestion.plan.createRelevance')
+    if (!_.isEmpty(item)) {
+      title = I18N.get('suggestion.plan.editRelevance')
+    }
     const rules = []
     rules.push({
       validator: this.validatePlan
     })
     return (
       <Wrapper>
-        <Title>{I18N.get('suggestion.plan.createRelevance')}</Title>
+        <Title>{title}</Title>
         <Form onSubmit={this.handleSubmit}>
           <Label>
             {I18N.get('from.SuggestionForm.proposal')}

@@ -26,7 +26,7 @@ const TAB_KEYS = [
   'abstract',
   'motivation',
   'goal',
-  'plan',
+  'planBudget',
   'teamInfo',
   'relevance',
 ]
@@ -180,6 +180,8 @@ class C extends BaseComponent {
       const budget = form.getFieldValue('budget')
       const planIntro = form.getFieldValue('planIntro')
       const budgetIntro = form.getFieldValue('budgetIntro')
+      console.log(planIntro)
+      console.log(budgetIntro)
       if (values.plan && values.teamInfo) {
         values.plan[`teamInfo`] = values.teamInfo
       }
@@ -348,7 +350,7 @@ class C extends BaseComponent {
     }
 
     if (
-      id === 'plan' &&
+      id === 'planBudget' &&
       ((initialValues.plan && typeof initialValues.plan !== 'string') ||
         !initialValues.plan)
     ) {
@@ -415,6 +417,13 @@ class C extends BaseComponent {
 
   renderTabText(id) {
     const hasError = _.has(this.state.errorKeys, id)
+    if (id === 'relevance') {
+      return (
+        <TabText hasErr={hasError}>
+          {I18N.get(`suggestion.fields.${id}`)}
+        </TabText>
+      )
+    }
     return (
       <TabText hasErr={hasError}>
         {I18N.get(`suggestion.fields.${id}`)}*

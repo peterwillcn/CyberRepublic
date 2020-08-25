@@ -5,6 +5,7 @@ import styled from 'styled-components'
 import I18N from '@/I18N'
 import DeleteSvgIcon from '@/module/common/DeleteSvgIcon'
 import EditSvgIcon from '@/module/common/EditSvgIcon'
+import ShowLongText from '@/module/common/ShowLongText'
 
 class RelevanceList extends BaseComponent {
   handleDelete = (index) => {
@@ -29,25 +30,30 @@ class RelevanceList extends BaseComponent {
                 <StyledRow key={index}>
                   <p>{I18N.get('from.SuggestionForm.proposal') + `:` + item.title}</p>
                   <p>
-                    {I18N.get('from.SuggestionForm.detail') + `:` + item.relevanceDetail}
-                    {visible && (
-                      <SvgIcon>
-                        <EditSvgIcon
-                          height="20"
-                          width="20"
-                          type="edit"
-                          onClick={this.handleEdit.bind(this, index)}
-                          style={{ marginRight: 22, cursor: 'pointer' }}
-                        />
-                        <DeleteSvgIcon
-                          height="20"
-                          width="20"
-                          type="delete"
-                          onClick={this.handleDelete.bind(this, index)}
-                          style={{ cursor: 'pointer' }}
-                        />
-                      </SvgIcon>
-                    )}
+                    <TitleLabel>
+                      {I18N.get('from.SuggestionForm.detail') + `:`}
+                      <ShowLongText text={item.relevanceDetail} id={'info' + index} />
+                    </TitleLabel>
+                    <SvgLabel>
+                      {visible && (
+                        <SvgIcon>
+                          <EditSvgIcon
+                            height="20"
+                            width="20"
+                            type="edit"
+                            onClick={this.handleEdit.bind(this, index)}
+                            style={{ marginRight: 22, cursor: 'pointer' }}
+                          />
+                          <DeleteSvgIcon
+                            height="20"
+                            width="20"
+                            type="delete"
+                            onClick={this.handleDelete.bind(this, index)}
+                            style={{ cursor: 'pointer' }}
+                          />
+                        </SvgIcon>
+                      )}
+                    </SvgLabel>
                   </p>
                 </StyledRow>
               )
@@ -88,4 +94,14 @@ const Label = styled.div`
 const SvgIcon = styled.span`
   display: inline;
   float: right;
+`
+
+const TitleLabel = styled.div`
+  width:80%;
+  display: inline-block;
+`
+
+const SvgLabel = styled.div`
+  width:20%;
+  display: inline-block;
 `
