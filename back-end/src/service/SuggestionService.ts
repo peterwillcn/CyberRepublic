@@ -86,7 +86,9 @@ export default class extends Base {
         if (!param.newAddress) {
           doc.newRecipient = proposal.elaAddress
         }
-        doc.newOwnerPublicKey = !param.newOwnerDID && proposal.ownerPublicKey
+        if (!param.newOwnerDID) {
+          doc.newOwnerPublicKey = proposal.ownerPublicKey
+        }
       }
 
       if (
