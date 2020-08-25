@@ -24,6 +24,13 @@ export const CVOTE_TYPE = {
   INFORMATIONAL: '6'
 }
 
+export const CVOTE_TYPE_API = {
+  CHANGE_PROPOSAL: 'changeproposalowner',
+  CHANGE_SECRETARY:'secretarygeneral',
+  TERMINATE_PROPOSAL:'closeproposal',
+  1:'normal'
+}
+
 export const USER_ROLE = {
   ADMIN: 'ADMIN',
   COUNCIL: 'COUNCIL',

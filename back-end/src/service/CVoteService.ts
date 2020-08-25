@@ -1518,6 +1518,7 @@ export default class extends Base {
       'vid',
       'title',
       'status',
+      'type',
       'createdAt',
       'proposer',
       'proposalHash',
@@ -1553,6 +1554,7 @@ export default class extends Base {
       let temp = _.omit(o._doc, [
         '_id',
         'proposer',
+        'type',
         'rejectAmount',
         'rejectThroughAmount'
       ])
@@ -1573,7 +1575,7 @@ export default class extends Base {
           ).toFixed(4)
         )
       }
-
+      temp.type = constant.CVOTE_TYPE_API[o.type]
       temp.createdAt = timestamp.second(temp.createdAt)
       return _.mapKeys(temp, function (value, key) {
         if (key == 'vid') {
@@ -1594,6 +1596,7 @@ export default class extends Base {
     const fields = [
       'vid',
       'status',
+      'type',
       'abstract',
       'voteResult',
       'createdAt',
@@ -1708,11 +1711,13 @@ export default class extends Base {
       {
         id: proposal.vid,
         status: CVOTE_STATUS_TO_WALLET_STATUS[proposal.status],
+        type: constant.CVOTE_TYPE_API[proposal.type],
         abs: proposal.abstract,
         address,
         ..._.omit(proposal._doc, [
           'vid',
           'abstract',
+          'type',
           'rejectAmount',
           'rejectThroughAmount',
           'status',

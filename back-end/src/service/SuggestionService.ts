@@ -1192,7 +1192,7 @@ export default class extends Base {
    * Wallet Api
    */
   public async getSuggestion(id): Promise<any> {
-    const fileds = ['_id', 'displayId', 'title', 'abstract', 'createdAt']
+    const fileds = ['_id', 'displayId', 'title', 'abstract', 'createdAt', 'type']
 
     const suggestion = await this.model
       .getDBInstance()
@@ -1222,6 +1222,7 @@ export default class extends Base {
 
     return {
       ...result,
+      type: constant.CVOTE_TYPE_API[suggestion.type],
       createdAt: timestamp.second(result.createdAt),
       id: suggestion.displayId,
       abs: suggestion.abstract,
