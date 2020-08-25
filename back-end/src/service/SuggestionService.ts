@@ -83,8 +83,12 @@ export default class extends Base {
           }
         }
         doc.targetProposalHash = proposal.proposalHash
-        doc.newRecipient = !param.newAddress && proposal.elaAddress
-        doc.newOwnerPublicKey = !param.newOwnerDID && proposal.ownerPublicKey
+        if (!param.newAddress) {
+          doc.newRecipient = proposal.elaAddress
+        }
+        if (!param.newOwnerDID) {
+          doc.newOwnerPublicKey = proposal.ownerPublicKey
+        }
       }
 
       if (
