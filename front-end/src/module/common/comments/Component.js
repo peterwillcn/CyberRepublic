@@ -106,12 +106,12 @@ class C extends BaseComponent {
       rules: [{
         max: 100, message: 'Headline is too long',
       }, {
-        required: this.props.headlines, message: 'Please input headline!',
+        required: this.props.headlines, message: `${I18N.get('profile.form.headline.error')}`,
       }],
       initialValue: '',
     })
     const headline_el = (
-      <Input placeholder="Headline" />
+      <Input placeholder={I18N.get('profile.form.headline')} />
     )
 
     return {
@@ -347,12 +347,12 @@ class C extends BaseComponent {
     const avatarItem = (info) => {
       const profile = info && info.profile
       const { avatar, firstName, lastName} = profile || {}
-
-      if (avatar || (!firstName && !lastName)) {
+      const { avatar:didAvatar} = !_.isEmpty(info.did) && info.did
+      if (avatar || didAvatar || (!firstName && !lastName)) {
         return (
           <Avatar
             className="comment-avatar pull-left"
-            src={avatar || USER_AVATAR_DEFAULT}
+            src={avatar || didAvatar || USER_AVATAR_DEFAULT}
             shape="circle"
             size={64}
             onClick={() => this.linkUserDetail(info)}

@@ -2,7 +2,7 @@ import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
 import UserContactForm from '@/module/form/UserContactForm/Container'
 import {
-  Button, Icon, Modal, Spin,
+  Button, Icon, Modal, Spin, Avatar
 } from 'antd'
 import I18N from '@/I18N'
 import {
@@ -55,7 +55,9 @@ export default class extends BaseComponent {
     }
 
     const user = this.props.member
-    const avatar = user.profile.avatar || USER_AVATAR_DEFAULT
+    const avatar = user.profile.avatar ||  ( !_.isEmpty(user.did) && user.did.avatar)
+    const avatarName = [user.profile.firstName,user.profile.lastName]
+    // const { avatar:didAvatar} = user.did
     const now = moment(Date.now())
     const localTime = user.profile.timezone
       ? now.tz(user.profile.timezone).format('LT z')
@@ -68,7 +70,23 @@ export default class extends BaseComponent {
         </div>
         <div>
           <div className="profile-image">
-            <img src={avatar} />
+            {avatar || avatarName[0] == 'undefined' ? (
+              <img src={avatar} />
+            ) : (
+                <Avatar
+                  className="comment-avatar"
+                  style={{
+                    backgroundColor: '#000',
+                    fontSize: 50
+                  }}
+                  shape="circle"
+                  size={150}
+                >
+                  {`${avatarName[0] &&
+                    avatarName[0].toUpperCase().substr(0, 1)}${avatarName[1] &&
+                    avatarName[1].toUpperCase().substr(0, 1)}`}
+                </Avatar>
+              )}
           </div>
           <div>
             <div className="profile-info">
