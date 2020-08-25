@@ -30,6 +30,7 @@ import Tracking from '../tracking/Container'
 import Summary from '../summary/Container'
 import Meta from '@/module/common/Meta'
 import SocialShareButtons from '@/module/common/SocialShareButtons'
+import TrackingMessage from '../tracking_message/Container'
 import { logger } from '@/util'
 
 import {
@@ -197,6 +198,7 @@ class C extends StandardPage {
     const voteActionsNode = this.renderVoteActions()
     const voteDetailNode = this.renderVoteResults()
     const trackingNode = this.renderTracking()
+    const trackingMessageNode = this.renderTrackingMessage()
     const summaryNode = this.renderSummary()
 
     // get the first line pure text of abstract
@@ -221,6 +223,7 @@ class C extends StandardPage {
               {isVote ? voteActionsNode : null}
               {voteDetailNode}
               {trackingNode}
+              {trackingMessageNode}
               {summaryNode}
             </Body>
             <SocialShareButtons
@@ -813,6 +816,11 @@ class C extends StandardPage {
     if (!isShowFollowingUp) return null
 
     return <Tracking proposal={data} />
+  }
+
+  renderTrackingMessage() {
+    const { data } = this.props
+    return <TrackingMessage proposal={data} />
   }
 
   renderSummary() {
