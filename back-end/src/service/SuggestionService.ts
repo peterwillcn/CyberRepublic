@@ -180,12 +180,6 @@ export default class extends Base {
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      if (_.isEmpty(doc.budgetIntro)) {
-        doc.budgetIntro = _.get(currDoc,'budgetIntro')
-      }
-      if (_.isEmpty(doc.planIntro)) {
-        doc.planIntro = _.get(currDoc,'planIntro')
-      }
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
@@ -227,8 +221,6 @@ export default class extends Base {
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      doc.budgetIntro =  _.get(currDraft,'budgetIntro')
-      doc.planIntro = _.get(currDraft,'planIntro')
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
