@@ -180,8 +180,6 @@ class C extends BaseComponent {
       const budget = form.getFieldValue('budget')
       const planIntro = form.getFieldValue('planIntro')
       const budgetIntro = form.getFieldValue('budgetIntro')
-      console.log(planIntro)
-      console.log(budgetIntro)
       if (values.plan && values.teamInfo) {
         values.plan[`teamInfo`] = values.teamInfo
       }
@@ -374,7 +372,6 @@ class C extends BaseComponent {
         validator: this.validateTeamInfo
       })
       return (getFieldDecorator('teamInfo', {
-        rules,
         initialValue: teamInfo
       })(
         <TeamInfoSection
@@ -417,7 +414,8 @@ class C extends BaseComponent {
 
   renderTabText(id) {
     const hasError = _.has(this.state.errorKeys, id)
-    if (id === 'relevance') {
+    if (['relevance','planBudget','teamInfo'].includes(id)
+    ) {
       return (
         <TabText hasErr={hasError}>
           {I18N.get(`suggestion.fields.${id}`)}
