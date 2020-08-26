@@ -12,7 +12,6 @@ import Headroom from 'react-headroom'
 import ChinaFlag from './ChinaFlag'
 import UsFlag from './UsFlag'
 import './style.scss'
-import SubMenu from 'antd/lib/menu/SubMenu'
 
 const { Header } = Layout
 
@@ -174,10 +173,6 @@ export default class extends BaseComponent {
         <Menu.Item key="blog">
           {I18N.get('navigation.resources.submenu.blog')}
         </Menu.Item>
-
-        <Menu.Item key="docs">
-          {I18N.get('navigation.resources.submenu.docs')}
-        </Menu.Item>
       </Menu>
     )
   }
@@ -202,7 +197,7 @@ export default class extends BaseComponent {
         'what-is-new',
         'resources'
       ],
-      key => ((this.props.pathname || '').indexOf(`/${key}`) === 0 ? key : '')
+      (key) => ((this.props.pathname || '').indexOf(`/${key}`) === 0 ? key : '')
     )
 
     if (_.includes(keys, 'admin')) {
@@ -279,16 +274,17 @@ export default class extends BaseComponent {
             onClick={this.clickItem.bind(this)}
             className="c_Header_Menu pull-right"
             selectedKeys={this.getSelectedKeys()}
-            mode="horizontal">
+            mode="horizontal"
+          >
             {this.props.isLogin ? (
               <Menu.Item className="c_MenuItem link" key="profile">
                 {I18N.get('navigation.profile')}
               </Menu.Item>
             ) : (
-                <Menu.Item className="c_MenuItem link" key="login">
-                  {I18N.get('0201')}
-                </Menu.Item>
-              )}
+              <Menu.Item className="c_MenuItem link" key="login">
+                {I18N.get('0201')}
+              </Menu.Item>
+            )}
           </Menu>
 
           <Menu
@@ -339,7 +335,7 @@ export default class extends BaseComponent {
                 </a>
               </Dropdown>
             </Menu.Item>
-            </Menu>
+          </Menu>
           <div className="clearfix" />
           {this.renderProfileToast()}
           {this.renderCompleteProfileModal()}
@@ -370,12 +366,13 @@ export default class extends BaseComponent {
     const isShow =
       !this.state.dismissed &&
       !this.isPermanentlyDismissed() &&
-      this.props.isLogin && _.isEmpty(this.props.user.did)
-      // this.hasIncompleteProfile()
+      this.props.isLogin &&
+      _.isEmpty(this.props.user.did)
+    // this.hasIncompleteProfile()
     return (
       isShow && (
         <div className="top-toast">
-          <a onClick={()=> this.props.history.push("/profile/info")}>
+          <a onClick={() => this.props.history.push('/profile/info')}>
             {I18N.get('profile.complete')}
             <Icon type="right" style={{ marginLeft: 8 }} />
           </a>
@@ -403,12 +400,12 @@ export default class extends BaseComponent {
 
     return !_.every(
       requiredProps,
-      prop =>
+      (prop) =>
         _.has(this.props.user, prop) && !_.isEmpty(_.get(this.props.user, prop))
     )
   }
 
-  clickItem = e => {
+  clickItem = (e) => {
     const { key } = e
     const { isLogin } = this.props
 

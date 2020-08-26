@@ -195,7 +195,7 @@ export default class extends AdminPage {
                     showSearch={true}
                     allowClear={true}
                     style={{width: 200, marginLeft: 8}}
-                    placeholder="Select a status"
+                    placeholder={I18N.get('task.select.status')}
                     defaultValue={this.state.statusFilter}
                     onChange={this.changeStatusFilter.bind(this)}
                   >

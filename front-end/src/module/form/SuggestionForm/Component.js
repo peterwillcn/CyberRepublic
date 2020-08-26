@@ -324,6 +324,7 @@ class C extends BaseComponent {
         content={initialValues[id]}
         activeKey={id}
         name={id}
+        upload={id === 'abstract' ? false : true}
       />
     )
   }

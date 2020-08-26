@@ -48,7 +48,9 @@ class ImplementationPlan extends Component {
         />
         <Section>
           <Label>{`${I18N.get('suggestion.plan.introduction')}`}</Label>
-          {getFieldDecorator('planIntro')(
+          {getFieldDecorator('planIntro',{
+            initialValue: planIntro
+          })(
             <CodeMirrorEditor
               callback={callback}
               content={planIntro}

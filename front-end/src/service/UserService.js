@@ -328,7 +328,7 @@ export default class extends BaseService {
 
     const user = _.get(res, 'user')
     if (!user) {
-      return user
+      return res
     }
 
     const userRedux = this.store.getRedux('user')

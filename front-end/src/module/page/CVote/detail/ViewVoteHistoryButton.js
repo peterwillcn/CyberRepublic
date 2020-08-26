@@ -5,6 +5,7 @@ import moment from 'moment/moment'
 import I18N from '@/I18N'
 import { breakPoint } from '@/constants/breakPoint'
 import Translation from '@/module/common/Translation/Container'
+import _ from 'lodash'
 
 class ViewVoteHistoryButton extends Component {
   constructor(props) {
@@ -45,14 +46,14 @@ class ViewVoteHistoryButton extends Component {
     }
 
     const avatarName = [data.votedBy.profile.firstName, data.votedBy.profile.lastName]
-
+    const isCurrentVote = data && data.isCurrentVote
+    
     const createdAt = data.reasonCreatedAt || data.createdAt
     const format = 'YYYY-MM-DD'
     const formatTime = 'hh:mm:ss'
     const proposed = moment(createdAt).format(format)
     const detailTime = moment(createdAt).format(formatTime)
 
-    const isCurrentVote = data && data.isCurrentVote
 
     const valueNode = (
       <ItemStatus key={KeyframeEffect}>
@@ -61,7 +62,12 @@ class ViewVoteHistoryButton extends Component {
             {I18N.get(`council.voting.type.${data.value}`)}
           </span>
         </div>
-        <div><span style={{ whiteSpace: 'pre-wrap' }}>{proposed + "\n" + detailTime}</span></div>
+        {data.reasonCreatedAt || data.createdAt ?
+          (<div>
+            <span style={{ whiteSpace: 'pre-wrap' }}>{proposed + "\n" + detailTime}</span>
+          </div>)
+          : null
+        }
         <div className="status">{isCurrentVote
           ? I18N.get('council.voting.viewHistory.current')
           : null}
@@ -136,8 +142,17 @@ class ViewVoteHistoryButton extends Component {
     )
   }
 
+  pretreatmentData = () => {
+    const data = this.props.data
+    const currentVote = _.find(data, { "isCurrentVote": true })
+    const historyVote = _.filter(data, (o) => { return !o.isCurrentVote })
+    return { currentVote, historyVote }
+  }
+
   render() {
-    const voteNode = _.map(this.props.data, (o, key) => this.VotesNode(o, key))
+    const {currentVote, historyVote} = this.pretreatmentData()
+    const currentVoteNode = this.VotesNode(currentVote,"currentVote")
+    const voteNode = _.map(historyVote, (o, key) => this.VotesNode(o, key))
     return (<span>
       <VoteHistornBtn type={"primary"} onClick={this.hideModal}>
         {I18N.get(`council.voting.viewHistory.btn`)}
@@ -150,6 +165,7 @@ class ViewVoteHistoryButton extends Component {
         width={880}
       >
         <Timeline style={{ margin: '30px' }}>
+          {currentVoteNode}
           {voteNode}
         </Timeline>
       </Modal></span>

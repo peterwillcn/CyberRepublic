@@ -4,7 +4,7 @@ import UserContactForm from '@/module/form/UserContactForm/Container'
 import ProfilePopup from '@/module/profile/OverviewPopup/Container'
 import moment from 'moment-timezone'
 import Comments from '@/module/common/comments/Container'
-import { Col, Row, Icon, Button, Spin, Table, Tag, Modal } from 'antd'
+import { Col, Row, Icon, Button, Spin, Table, Tag, Modal,Avatar } from 'antd'
 import I18N from '@/I18N'
 import { getSafeUrl } from '@/util/url'
 import sanitizeHtml from '@/util/html'
@@ -221,6 +221,8 @@ export default class extends BaseComponent {
   }
 
   renderAvatar(isMobile) {
+    const {member} = this.props
+    const avatarName = [member.profile.firstName,member.profile.lastName]
     return (
       <div
         className={`profile-avatar-container ${
@@ -228,9 +230,27 @@ export default class extends BaseComponent {
         }`}
       >
         <div className="profile-avatar">
-          <img
-            src={this.getAvatarWithFallback(this.props.member.profile.avatar)}
+          {member.did.avatar || avatarName[0] == 'undefined' ? (
+          <Avatar
+            size={64}
+            src={member.did.avatar || USER_AVATAR_DEFAULT}
+            alt="voter avatar"
           />
+        ) : (
+          <Avatar
+            className="comment-avatar pull-left"
+            style={{
+              backgroundColor: '#000',
+              fontSize: 24
+            }}
+            shape="circle"
+            size={64}
+          >
+            {`${avatarName[0] &&
+              avatarName[0].toUpperCase().substr(0, 1)}${avatarName[1] &&
+              avatarName[1].toUpperCase().substr(0, 1)}`}
+          </Avatar>
+        )}
         </div>
       </div>
     )

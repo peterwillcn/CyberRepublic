@@ -11,7 +11,8 @@ import {
   permissions,
   logger,
   getDidPublicKey,
-  utilCrypto
+  utilCrypto,
+  getPemPublicKey
 } from '../utility'
 const Big = require('big.js')
 
@@ -180,12 +181,6 @@ export default class extends Base {
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      if (_.isEmpty(doc.budgetIntro)) {
-        doc.budgetIntro = _.get(currDoc,'budgetIntro')
-      }
-      if (_.isEmpty(doc.planIntro)) {
-        doc.planIntro = _.get(currDoc,'planIntro')
-      }
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
@@ -227,8 +222,6 @@ export default class extends Base {
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      doc.budgetIntro =  _.get(currDraft,'budgetIntro')
-      doc.planIntro = _.get(currDraft,'planIntro')
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
@@ -325,7 +318,9 @@ export default class extends Base {
               .find({
                 $or: [
                   // { username: { $regex: search, $options: 'i' } },
-                  { 'profile.firstName': { $regex: pattern[0], $options: 'i' } },
+                  {
+                    'profile.firstName': { $regex: pattern[0], $options: 'i' }
+                  },
                   { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
                 ]
               })
@@ -403,15 +398,15 @@ export default class extends Base {
       const db_user = this.getDBModel('User')
       let pattern = search.split(' ')
       let users
-      if (pattern.length > 1){
+      if (pattern.length > 1) {
         users = await db_user
-        .getDBInstance()
-        .find({
+          .getDBInstance()
+          .find({
             // { username: { $regex: search, $options: 'i' } },
-            'profile.firstName': { $regex: pattern[0], $options: 'i'},
-            'profile.lastName': { $regex: pattern[1], $options: 'i' } 
-        })
-        .select('_id')
+            'profile.firstName': { $regex: pattern[0], $options: 'i' },
+            'profile.lastName': { $regex: pattern[1], $options: 'i' }
+          })
+          .select('_id')
       } else {
         users = await db_user
           .getDBInstance()
@@ -740,8 +735,11 @@ export default class extends Base {
       .getDBInstance()
       .findOne(query)
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
-      .populate('reference', constant.DB_SELECTED_FIELDS.CVOTE.ID_STATUS_HASH_TXID)
-      
+      .populate(
+        'reference',
+        constant.DB_SELECTED_FIELDS.CVOTE.ID_STATUS_HASH_TXID
+      )
+
     if (!doc) {
       return { success: true, empty: true }
     }
@@ -1190,7 +1188,7 @@ export default class extends Base {
    * Wallet Api
    */
   public async getSuggestion(id): Promise<any> {
-    const fileds = ['_id', 'displayId', 'title', 'abstract', 'createdAt']
+    const fileds = ['_id', 'displayId', 'title', 'abstract', 'createdAt', 'type']
 
     const suggestion = await this.model
       .getDBInstance()
@@ -1220,6 +1218,7 @@ export default class extends Base {
 
     return {
       ...result,
+      type: constant.CVOTE_TYPE_API[suggestion.type],
       createdAt: timestamp.second(result.createdAt),
       id: suggestion.displayId,
       abs: suggestion.abstract,
@@ -1276,6 +1275,12 @@ export default class extends Base {
       'budgetAmount',
       'elaAddress'
     ]
+    if (suggestion.planIntro) {
+      fields.push('planIntro')
+    }
+    if (suggestion.budgetIntro) {
+      fields.push('budgetIntro')
+    }
     const content = {}
     const sortedFields = _.sortBy(fields)
     for (let index in sortedFields) {
@@ -1311,24 +1316,29 @@ export default class extends Base {
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
-
-      const rs: {
-        compressedPublicKey: string
-        publicKey: string
-      } = await getDidPublicKey(did)
-      if (!rs) {
-        return {
-          success: false,
-          message: `Can not get your did's public key.`
+      let fields: any = {}
+      const draftHash = this.getDraftHash(suggestion)
+      fields.draftHash = draftHash
+      let ownerPublicKey: string
+      if (suggestion.ownerPublicKey) {
+        ownerPublicKey = suggestion.ownerPublicKey
+      } else {
+        const compressedKey = _.get(this.currentUser, 'did.compressedPublicKey')
+        if (compressedKey) {
+          ownerPublicKey = compressedKey
+        } else {
+          const rs: {
+            compressedPublicKey: string
+            publicKey: string
+          } = await getDidPublicKey(did)
+          if (rs && rs.compressedPublicKey) {
+            ownerPublicKey = rs.compressedPublicKey
+          }
         }
+        fields.ownerPublicKey = ownerPublicKey
       }
 
-      let ownerPublicKey = rs.compressedPublicKey
-      const draftHash = this.getDraftHash(suggestion)
-      await this.model.update(
-        { _id: suggestion._id },
-        { $set: { draftHash, ownerPublicKey } }
-      )
+      await this.model.update({ _id: suggestion._id }, { $set: fields })
 
       const now = Math.floor(Date.now() / 1000)
       const jwtClaims = {
@@ -1404,19 +1414,21 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const rs: any = await getDidPublicKey(claims.iss)
-      if (!rs) {
+
+      const compressedKey = _.get(suggestion, 'ownerPublicKey')
+      const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
+      if (!pemPublicKey) {
         return {
           code: 400,
           success: false,
-          message: `Can not get your did's public key.`
+          message: `Can not get your DID's public key.`
         }
       }
 
       // verify response data from ela wallet
       return jwt.verify(
         jwtToken,
-        rs.publicKey,
+        pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
             await this.model.update(

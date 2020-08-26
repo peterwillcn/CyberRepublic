@@ -2,6 +2,7 @@ import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
 import { Form, Input, Modal, Select, Button } from 'antd'
 import {COMMUNITY_TYPE} from '@/constant'
+import I18N from '@/I18N'
 
 import config from '@/config'
 
@@ -20,24 +21,24 @@ export default Form.create()(
       let contextTitle
       switch (communityType) {
         case COMMUNITY_TYPE.STATE:
-          contextTitle = 'Update states / provinces'
+          contextTitle = I18N.get('communities.btn.update.state')
           break
         case COMMUNITY_TYPE.CITY:
-          contextTitle = 'Update city'
+          contextTitle = I18N.get('communities.btn.update.city')
           break
         case COMMUNITY_TYPE.REGION:
-          contextTitle = 'Update region'
+          contextTitle = I18N.get('communities.btn.update.region')
           break
         default:
-          contextTitle = 'Update school'
+          contextTitle = I18N.get('communities.btn.update.school')
           break
       }
 
       const footerModal = (
         <div>
           <Button onClick={onCreate} type="primary" className="ant-btn-ebp">{contextTitle}</Button>
-          <Button onClick={onDelete} type="danger">Delete</Button>
-          <Button onClick={onCancel}>Cancel</Button>
+          <Button onClick={onDelete} type="danger">{I18N.get('communities.btn.delete')}</Button>
+          <Button onClick={onCancel}>{I18N.get('communities.btn.cancel')}</Button>
         </div>
       )
 
@@ -55,12 +56,12 @@ export default Form.create()(
           <Form>
             <FormItem
               {...formItemLayout}
-              label="Country">
+              label={I18N.get('communities.form.country')}>
               {getFieldDecorator('country')(
                 <Select
                   disabled={true}
                   showSearch={true}
-                  placeholder="Please select a country"
+                  placeholder={I18N.get('communities.form.country.placeholder')}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {Object.keys(config.data.mappingCountryCodeToName).map((key, index) => {
@@ -76,22 +77,22 @@ export default Form.create()(
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="Name">
+              label={I18N.get('communities.form.name')}>
               {getFieldDecorator('name', {
-                rules: [{required: true, message: 'This field is required'}]
+                rules: [{required: true, message: `${I18N.get('communities.form.required')}`}]
               })(
                 <Input />
               )}
             </FormItem>
             <FormItem
               {...formItemLayout}
-              label="Organizer">
+              label={I18N.get('communitites.form.organizer')}>
               {getFieldDecorator('leader', {
-                rules: [{required: true, message: 'This field is required'}]
+                rules: [{required: true, message: `${I18N.get('communities.form.required')}`}]
               })(
                 <Select
                   showSearch={true}
-                  placeholder="Please select a member"
+                  placeholder={I18N.get('communities.form.leader.placeholder')}
                   filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                 >
                   {users.map((leader, index) => {

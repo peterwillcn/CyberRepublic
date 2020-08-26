@@ -7,7 +7,7 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
 import styled from 'styled-components'
-// import UploadBase64Image from '@/module/common/UploadBase64Image'
+import UploadBase64Image from '@/module/common/UploadBase64Image'
 import ToggleMarkdownPreview from '@/module/common/ToggleMarkdownPreview'
 
 class Component extends BaseComponent {
@@ -20,7 +20,7 @@ class Component extends BaseComponent {
     this.editor = null
   }
 
-  insertImage = base64 => {
+  insertImage = (base64) => {
     const doc = this.editor.getDoc()
     const cursor = doc.getCursor()
     doc.replaceRange(`\n![image](${base64})\n`, cursor)
@@ -36,18 +36,20 @@ class Component extends BaseComponent {
     if (callback) callback(activeKey)
   }
 
-  init = editor => {
+  init = (editor) => {
     const { activeKey } = this.props
     this.props.init && this.props.init(activeKey, editor)
   }
 
   ord_render() {
     const { show, value } = this.state
-    const { name, autofocus } = this.props
+    const { name, autofocus, upload } = this.props
     return (
       <Wrapper>
         <Toolbar>
-          {/* <UploadBase64Image insertImage={this.insertImage} name={name} /> */}
+          {upload === false ? null : (
+            <UploadBase64Image insertImage={this.insertImage} name={name} />
+          )}
           <ToggleMarkdownPreview togglePreview={this.togglePreview} />
         </Toolbar>
         {show === false ? (
@@ -62,7 +64,7 @@ class Component extends BaseComponent {
             onBeforeChange={(editor, data, value) => {
               this.setState({ value })
             }}
-            editorDidMount={editor => {
+            editorDidMount={(editor) => {
               this.editor = editor
               this.init(editor)
             }}
@@ -80,7 +82,8 @@ class Component extends BaseComponent {
 
 Component.propTypes = {
   name: PropTypes.string.isRequired,
-  autofocus: PropTypes.bool
+  autofocus: PropTypes.bool,
+  upload: PropTypes.bool
 }
 
 export default Component

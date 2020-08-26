@@ -601,33 +601,7 @@ export default class extends Base {
     }
     // createBy
     if (param.author && param.author.length) {
-      let search = param.author
-      const db_user = this.getDBModel('User')
-      let pattern = search.split(' ')
-      let users
-      if (pattern.length > 1){
-        users = await db_user
-        .getDBInstance()
-        .find({
-            // { username: { $regex: search, $options: 'i' } },
-            'profile.firstName': { $regex: pattern[0], $options: 'i'},
-            'profile.lastName': { $regex: pattern[1], $options: 'i' } 
-        })
-        .select('_id')
-      } else {
-        users = await db_user
-          .getDBInstance()
-          .find({
-            $or: [
-              // { username: { $regex: search, $options: 'i' } },
-              { 'profile.firstName': { $regex: pattern[0], $options: 'i' } },
-              { 'profile.lastName': { $regex: pattern[0], $options: 'i' } }
-            ]
-          })
-          .select('_id')
-      }
-      const userIds = _.map(users, (el: { _id: string }) => el._id)
-      query.createdBy = { $in: userIds }
+      query.proposer = param.author
     }
     // cvoteType
     if (
@@ -1544,9 +1518,12 @@ export default class extends Base {
       'vid',
       'title',
       'status',
+      'type',
       'createdAt',
       'proposer',
-      'proposalHash'
+      'proposalHash',
+      'rejectAmount',
+      'rejectThroughAmount',
     ]
 
     const cursor = db_cvote
@@ -1574,9 +1551,31 @@ export default class extends Base {
 
     // filter return data，add proposalHash to CVoteSchema
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['_id', 'proposer'])
+      let temp = _.omit(o._doc, [
+        '_id',
+        'proposer',
+        'type',
+        'rejectAmount',
+        'rejectThroughAmount'
+      ])
       temp.proposedBy = _.get(o, 'proposer.did.didName')
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
+      if (
+        [constant.CVOTE_STATUS.NOTIFICATION].includes(o.status) &&
+        o.rejectAmount >= 0 &&
+        o.rejectThroughAmount > 0
+      ) {
+        temp.rejectAmount = `${o.rejectAmount}`
+        temp.rejectThroughAmount = `${parseFloat(
+          _.toNumber(o.rejectThroughAmount).toFixed(8)
+        )}`
+        temp.rejectRatio = _.toNumber(
+          (
+            _.toNumber(o.rejectAmount) / _.toNumber(o.rejectThroughAmount)
+          ).toFixed(4)
+        )
+      }
+      temp.type = constant.CVOTE_TYPE_API[o.type]
       temp.createdAt = timestamp.second(temp.createdAt)
       return _.mapKeys(temp, function (value, key) {
         if (key == 'vid') {
@@ -1597,6 +1596,7 @@ export default class extends Base {
     const fields = [
       'vid',
       'status',
+      'type',
       'abstract',
       'voteResult',
       'createdAt',
@@ -1711,11 +1711,13 @@ export default class extends Base {
       {
         id: proposal.vid,
         status: CVOTE_STATUS_TO_WALLET_STATUS[proposal.status],
+        type: constant.CVOTE_TYPE_API[proposal.type],
         abs: proposal.abstract,
         address,
         ..._.omit(proposal._doc, [
           'vid',
           'abstract',
+          'type',
           'rejectAmount',
           'rejectThroughAmount',
           'status',
@@ -2156,5 +2158,90 @@ export default class extends Base {
       recVariables
     }
     mail.send(mailObj)
+  }
+
+  public async getAllAuthor(param: any) {
+    if (_.isEmpty(param.data)) return
+    const db_cvote = this.getDBModel('CVote')
+    let searchAuthor = ''
+    _.forEach(param.data, (o: any) => (searchAuthor += o))
+    const authorList = await db_cvote
+      .getDBInstance()
+      .find(
+        {
+          old: {
+            $exists: param.old
+          }
+        },
+        ['proposer']
+      )
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+
+    const authorArr = []
+    _.forEach(authorList, (o: any) => {
+      if (
+        o.proposer &&
+        o.proposer.profile &&
+        !_.find(authorArr, { _id: o.proposer._id })
+      ) {
+        authorArr.push({
+          _id: o.proposer._id,
+          firstName: o.proposer.profile.firstName,
+          lastName: o.proposer.profile.lastName,
+          username: o.proposer.username
+        })
+      }
+    })
+    const sp = searchAuthor.split(' ')
+    const rs = []
+    _.forEach(authorArr, (o) => {
+      const firstName = o.firstName && o.firstName.toLowerCase()
+      const lastName = o.lastName && o.lastName.toLowerCase()
+      const username = o.username && o.username.toLowerCase()
+      if (firstName && lastName) {
+        if (sp.length > 1) {
+          if (
+            firstName.search(sp[0].toLowerCase()) !== -1 &&
+            lastName.search(sp[1].toLowerCase()) !== -1
+          ) {
+            rs.push(o)
+          } else if (lastName.search(sp[1].toLowerCase()) !== -1) {
+            rs.push(o)
+          } 
+        } else {
+          if (
+            firstName.search(sp[0].toLowerCase()) !== -1 ||
+            lastName.search(sp[0].toLowerCase()) !== -1
+          ) {
+            rs.push(o)
+          }
+          if (username && username.search(sp[0].toLowerCase()) !== -1) {
+            rs.push(o)
+          }
+        }
+      }
+    })
+
+    _.forEach(authorArr, (o) => {
+      const username = o.username && o.username.toLowerCase()
+      if (
+        username &&
+        !_.find(rs, { _id: o._id }) &&
+        sp.length > 1 &&
+        (username.search(sp[0].toLowerCase()) !== -1 ||
+          username.search(sp[1].toLowerCase()) !== -1)
+      ) {
+        rs.push(o)
+      }
+      if (
+        username && sp.length == 1 &&
+        !_.find(rs, { _id: o._id }) &&
+        username.search(sp[0].toLowerCase()) !== -1
+      ) {
+        rs.push(o)
+      }
+    })
+
+    return _.uniqWith(rs, _.isEqual);
   }
 }
