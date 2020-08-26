@@ -11,7 +11,8 @@ const { getDidPublicKey } = require('../dist/src/utility')
   const db_user = DB.getModel('User')
   try {
     const query = {
-      'did.id': { $exists: true }
+      'did.id': { $exists: true },
+      'did.compressedPublicKey': {$exists: false}
     }
     let users = await db_user.find(query)
     console.log('users.length', users.length)
