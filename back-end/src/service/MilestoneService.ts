@@ -9,7 +9,6 @@ import {
   user as userUtil,
   utilCrypto,
   getPemPublicKey,
-  getUtxosByAmount,
   permissions
 } from '../utility'
 const Big = require('big.js')
@@ -507,13 +506,6 @@ export default class extends Base {
       } catch (err) {
         return { success: false, message: 'Can not get total payment amount.' }
       }
-      const rs: any = await getUtxosByAmount(sum)
-      if (!rs) {
-        return { success: false }
-      }
-      if (!rs.success && rs.utxos === null) {
-        return { success: false, url: null }
-      }
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
       // generate jwt url
@@ -528,8 +520,7 @@ export default class extends Base {
           proposalhash: proposal.proposalHash,
           amount: Big(`${sum}e+8`).toString(),
           recipient: proposal.elaAddress,
-          ownerpublickey: proposal.ownerPublicKey,
-          utxos: rs.utxos
+          ownerpublickey: proposal.ownerPublicKey
         }
       }
       const jwtToken = jwt.sign(
