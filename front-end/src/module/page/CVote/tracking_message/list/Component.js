@@ -16,12 +16,7 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    const title = this.renderTitle()
-    return <Container>{title}</Container>
-  }
-
-  renderTitle() {
-    return <div id="tracking">{I18N.get('proposal.fields.tracking')}</div>
+    return <div>list</div>
   }
 
   getQuery = () => {
