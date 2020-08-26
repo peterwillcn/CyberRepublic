@@ -1316,7 +1316,7 @@ export default class extends Base {
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
-      let fields: any
+      let fields: any = {}
       const draftHash = this.getDraftHash(suggestion)
       fields.draftHash = draftHash
       let ownerPublicKey: string
