@@ -45,14 +45,16 @@ export default class extends BaseComponent {
       />
     )
     return (
-      <StyledCollapse defaultActiveKey={['1']} expandIconPosition="right">
-        <Panel
-          header={I18N.get('proposal.text.tracking.reviewDetails')}
-          key="1"
-        >
-          {body}
-        </Panel>
-      </StyledCollapse>
+      <Wrapper>
+        <StyledCollapse defaultActiveKey={['1']} expandIconPosition="right">
+          <Panel
+            header={I18N.get('proposal.text.tracking.reviewDetails')}
+            key="1"
+          >
+            {body}
+          </Panel>
+        </StyledCollapse>
+      </Wrapper>
     )
   }
 

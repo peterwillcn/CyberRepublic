@@ -4,6 +4,7 @@ import { api_request, logger } from '@/util'
 export default class extends BaseService {
   constructor() {
     super()
+    this.selfRedux = this.store.getRedux('trackingMessage')
     this.prefixPath = '/api/tracking_message'
   }
 
@@ -23,6 +24,7 @@ export default class extends BaseService {
   }
 
   async list(param) {
+    this.dispatch(this.selfRedux.actions.loading_update(true))
     let result
     try {
       result = await api_request({
@@ -30,6 +32,8 @@ export default class extends BaseService {
         method: 'get',
         data: param
       })
+      this.dispatch(this.selfRedux.actions.all_public_update(result.list))
+      this.dispatch(this.selfRedux.actions.loading_update(false))
       return result
     } catch (error) {
       logger.error(error)

@@ -3,7 +3,7 @@ import Component from './Component'
 import TrackingMessageService from '@/service/TrackingMessageService'
 
 const mapState = (state) => ({
-  messages: [{ content: 'xxx' }]
+  messages: state.trackingMessage.all_public
 })
 
 const mapDispatch = () => {
