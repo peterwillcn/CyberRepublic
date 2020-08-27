@@ -1017,7 +1017,10 @@ export default class extends Base {
     }
     const res = {...rs._doc}
     _.forEach(rs._doc.voteResult, (o: any) => {
-      if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
+      if (
+        o.status === constant.CVOTE_CHAIN_STATUS.CHAINED &&
+        !_.find(voteHistory, { txid: o.txid })
+      ) {
         voteHistory.push({
           ...o._doc,
           isCurrentVote: true
