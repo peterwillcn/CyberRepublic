@@ -61,7 +61,7 @@ class ImplementationAndBudget extends BaseComponent {
     })
 
     return getFieldDecorator('plan', {
-      rules,
+      // rules,
       initialValue: initialValues.plan
     })(
       <ImplementationPlan
