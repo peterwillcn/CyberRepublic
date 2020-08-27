@@ -2,7 +2,9 @@ import { createContainer } from '@/util'
 import Component from './Component'
 import TrackingMessageService from '@/service/TrackingMessageService'
 
-const mapState = (state) => ({})
+const mapState = (state) => ({
+  messages: [{ content: 'xxx' }]
+})
 
 const mapDispatch = () => {
   const service = new TrackingMessageService()
