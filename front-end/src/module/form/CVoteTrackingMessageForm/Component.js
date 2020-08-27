@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import { Form, Button, Row, message } from 'antd'
 import I18N from '@/I18N'
+import styled from 'styled-components'
 import _ from 'lodash'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
-import { Container, Title, Note } from './style'
 const FormItem = Form.Item
 
 class TrackingMessage extends Component {
@@ -95,3 +95,8 @@ class TrackingMessage extends Component {
 }
 
 export default Form.create()(TrackingMessage)
+
+const Title = styled.div`
+  text-align: center;
+  font-size: 20px;
+`
