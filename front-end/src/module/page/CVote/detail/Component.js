@@ -428,10 +428,17 @@ class C extends StandardPage {
     const tracking = isShowFollowingUp && (
       <Anchor.Link href="#tracking" title={trackingTitle} key="tracking" />
     )
+    const trackingMessage = isShowFollowingUp && (
+      <Anchor.Link
+        href="#tracking-message"
+        title={I18N.get('proposal.fields.trackingMessage')}
+        key="tracking-message"
+      />
+    )
     const summary = isShowFollowingUp && (
       <Anchor.Link href="#summary" title={summaryTitle} key="summary" />
     )
-    const commonLinks = [tracking, summary]
+    const commonLinks = [tracking, trackingMessage, summary]
     return isElip
       ? this.renderElipLinks(commonLinks)
       : this.renderSuggestionLinks(commonLinks)
