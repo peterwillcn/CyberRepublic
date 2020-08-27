@@ -3,9 +3,10 @@ import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
 import moment from 'moment/moment'
 import styled from 'styled-components'
-import { Row, List, Collapse } from 'antd'
+import { List, Collapse } from 'antd'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
 import { DATE_FORMAT } from '@/constant'
+import userUtil from '@/util/user'
 const { Panel } = Collapse
 
 export default class extends BaseComponent {
@@ -21,7 +22,8 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    const { messages } = this.props
+    const { messages, proposal } = this.props
+    const name = proposal && userUtil.formatUsername(proposal.proposer)
     const body = (
       <List
         itemLayout="horizontal"
@@ -29,18 +31,15 @@ export default class extends BaseComponent {
         split={false}
         dataSource={messages}
         renderItem={(item) => (
-          <div actions={[]}>
-            <StyledRow gutter={16}>
-              <div span={24}>
-                <div>
-                  <MarkdownPreview content={item.content} />
-                </div>
-                <StyledFooter>
-                  {moment(item.createdAt).format(DATE_FORMAT)}
-                </StyledFooter>
-              </div>
-            </StyledRow>
-          </div>
+          <StyledRow>
+            <StyledContent>
+              <MarkdownPreview content={item.content} />
+            </StyledContent>
+            <StyledFooter>
+              {`${name}, `}
+              {moment(item.createdAt).format('hh:mm MMM D, YYYY')}
+            </StyledFooter>
+          </StyledRow>
         )}
       />
     )
@@ -74,13 +73,14 @@ export default class extends BaseComponent {
   }
 }
 
-export const Wrapper = styled.div`
+const Wrapper = styled.div`
   margin-top: 32px;
+  margin-bottom: 32px;
 `
 
-export const StyledCollapse = styled(Collapse)`
+const StyledCollapse = styled(Collapse)`
   border: none !important;
-  margin-top: 30px;
+  margin-bottom: 40px;
   .ant-collapse-content-box {
     padding: 0 !important;
   }
@@ -101,12 +101,19 @@ export const StyledCollapse = styled(Collapse)`
   }
 `
 
-export const StyledRow = styled(Row)`
-  margin: 0 !important;
+const StyledRow = styled.div`
+  padding: 8px 16px 24px;
+  border-bottom: 1px solid #e5e5e5;
 `
 
-export const StyledFooter = styled.div`
+const StyledContent = styled.div`
+  color: #000000;
+  opacity: 0.8;
+`
+
+const StyledFooter = styled.div`
   font-size: 12px;
   color: rgba(3, 30, 40, 0.4);
-  padding: 10px 20px;
+  line-height: 17px;
+  padding-left: 4px;
 `
