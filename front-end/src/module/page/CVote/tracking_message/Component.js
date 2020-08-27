@@ -10,11 +10,11 @@ import CreateForm from './create/Container'
 export default class extends BaseComponent {
   ord_render() {
     return (
-      <Container>
+      <Wrapper>
         {this.renderTitle()}
-        <button>Add tracking message</button>
+        {this.renderForm()}
         {this.renderTracking()}
-      </Container>
+      </Wrapper>
     )
   }
 
@@ -40,8 +40,9 @@ export default class extends BaseComponent {
   }
 }
 
-const Container = styled.div``
+const Wrapper = styled.div``
 
 const Title = styled.div`
   font-size: 20px;
+  margin-bottom: 32px;
 `

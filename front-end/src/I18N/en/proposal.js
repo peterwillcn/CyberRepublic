@@ -49,7 +49,8 @@ export default {
       approve: 'Approve & Publish'
     },
     viewOldData: 'View old data',
-    viewNewData: 'View new data'
+    viewNewData: 'View new data',
+    addTrackingMessage: 'Add Tracking Message'
   },
   text: {
     tracking: {

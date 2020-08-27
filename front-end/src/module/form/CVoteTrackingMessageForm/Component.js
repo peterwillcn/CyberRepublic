@@ -1,16 +1,14 @@
-import React from 'react'
-import BaseComponent from '@/model/BaseComponent'
+import React, { Component } from 'react'
 import { Form, Button, Row, message } from 'antd'
 import I18N from '@/I18N'
 import _ from 'lodash'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
-
+import { Container, Title, Note } from './style'
 const FormItem = Form.Item
 
-class C extends BaseComponent {
+class TrackingMessage extends Component {
   constructor(props) {
     super(props)
-
     this.state = {
       loading: false
     }
@@ -46,48 +44,31 @@ class C extends BaseComponent {
     })
   }
 
-  getInputProps() {
-    const { getFieldDecorator } = this.props.form
-    const rules = [
-      {
-        required: true,
-        transform,
-        message: I18N.get('proposal.form.error.required')
-      }
-    ]
-    const content_fn = getFieldDecorator('content', {
-      rules,
-      validateTrigger: 'onSubmit',
-      initialValue: ''
-    })
-    const content_el = <CodeMirrorEditor />
-    return {
-      content: content_fn(content_el)
-    }
-  }
-
-  ord_render() {
+  render() {
     const { proposal, currentUserId } = this.props
+    const { getFieldDecorator } = this.props.form
     if (proposal.proposer._id !== currentUserId) {
       return null
     }
-    const formProps = this.getInputProps()
-
     return (
-      <Container>
+      <div>
         <Form onSubmit={this.onSubmit}>
-          <Title>
-            {this.props.header || I18N.get('proposal.form.tracking.add')}
-          </Title>
-          <StyledFormItem>
-            <Note>{I18N.get('proposal.form.note.tracking')}</Note>
-            <FormItem>{formProps.content}</FormItem>
-          </StyledFormItem>
+          <Title>{I18N.get('proposal.btn.addTrackingMessage')}</Title>
+          <FormItem>
+            {getFieldDecorator('content', {
+              rules: [
+                {
+                  required: true,
+                  message: I18N.get('proposal.form.error.required')
+                }
+              ]
+            })(<CodeMirrorEditor name="tracking-message" upload={false} />)}
+          </FormItem>
           <Row gutter={8} type="flex" justify="center">
             {this.renderSaveBtn()}
           </Row>
         </Form>
-      </Container>
+      </div>
     )
   }
 
@@ -107,4 +88,4 @@ class C extends BaseComponent {
   }
 }
 
-export default Form.create()(C)
+export default Form.create()(TrackingMessage)

@@ -16,7 +16,7 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    return <div>list</div>
+    return <Wrapper>list</Wrapper>
   }
 
   getQuery = () => {
@@ -35,4 +35,6 @@ export default class extends BaseComponent {
   }
 }
 
-export const Container = styled.div``
+export const Wrapper = styled.div`
+  margin-top: 32px;
+`

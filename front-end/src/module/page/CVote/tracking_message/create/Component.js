@@ -2,6 +2,8 @@ import React from 'react'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import CVoteTrackingMessageForm from '@/module/form/CVoteTrackingMessageForm/Container'
+import { Button, Icon } from 'antd'
+import I18N from '@/I18N'
 import styled from 'styled-components'
 
 export default class extends BaseComponent {
@@ -14,7 +16,15 @@ export default class extends BaseComponent {
 
   ord_render() {
     const form = this.renderForm()
-    return <Container>{form}</Container>
+    return (
+      <Wrapper>
+        <Button className="cr-btn cr-btn-primary" type="primary">
+          <Text>{I18N.get('proposal.btn.addTrackingMessage')}</Text>
+          <Icon type="plus-circle" />
+        </Button>
+        {form}
+      </Wrapper>
+    )
   }
 
   renderForm() {
@@ -46,4 +56,7 @@ export default class extends BaseComponent {
   }
 }
 
-export const Container = styled.div``
+const Wrapper = styled.div``
+const Text = styled.span`
+  vertical-align: top;
+`
