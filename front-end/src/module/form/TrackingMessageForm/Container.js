@@ -1,6 +1,6 @@
 import { createContainer } from '@/util'
 import Component from './Component'
-import CVoteTrackingMessageService from '@/service/CVoteTrackingMessageService'
+import TrackingMessageService from '@/service/TrackingMessageService'
 
 const mapState = (state) => ({
   user: state.user,
@@ -9,7 +9,7 @@ const mapState = (state) => ({
 })
 
 const mapDispatch = () => {
-  const service = new CVoteTrackingMessageService()
+  const service = new TrackingMessageService()
   return {
     async create(param) {
       return service.create(param)

@@ -6,7 +6,7 @@ import _ from 'lodash'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
 const FormItem = Form.Item
 
-class TrackingMessage extends Component {
+class TrackingMessageForm extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -94,7 +94,7 @@ class TrackingMessage extends Component {
   }
 }
 
-export default Form.create()(TrackingMessage)
+export default Form.create()(TrackingMessageForm)
 
 const Title = styled.div`
   text-align: center;

@@ -1,7 +1,7 @@
 import React from 'react'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
-import CVoteTrackingMessageForm from '@/module/form/CVoteTrackingMessageForm/Container'
+import TrackingMessageForm from '@/module/form/TrackingMessageForm/Container'
 import { Button, Icon, Modal } from 'antd'
 import I18N from '@/I18N'
 import styled from 'styled-components'
@@ -53,7 +53,7 @@ export default class extends BaseComponent {
       onCreated: this.onCreated,
       onCancel: this.hideModal
     }
-    return <CVoteTrackingMessageForm {...props} />
+    return <TrackingMessageForm {...props} />
   }
 
   getQuery = () => {
