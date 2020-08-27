@@ -3,9 +3,8 @@ import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
 import moment from 'moment/moment'
 import styled from 'styled-components'
-import { List, Collapse } from 'antd'
+import { List, Collapse, Empty } from 'antd'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
-import { DATE_FORMAT } from '@/constant'
 import userUtil from '@/util/user'
 const { Panel } = Collapse
 
@@ -23,6 +22,14 @@ export default class extends BaseComponent {
 
   ord_render() {
     const { messages, proposal } = this.props
+    if (!messages || messages.length === 0) {
+      return (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description={<span>{I18N.get('proposal.text.noData')}</span>}
+        />
+      )
+    }
     const name = proposal && userUtil.formatUsername(proposal.proposer)
     const body = (
       <List
