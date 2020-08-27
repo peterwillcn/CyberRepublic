@@ -1024,6 +1024,10 @@ const zh = {
   'profile.forms.show': '显示已存档',
   'profile.forms.search': '搜索',
 
+  'profile.form.headline': '标题',
+  'profile.form.headline.error': '请输入标题！',
+  
+
   // Validate Form
   'ambassadors.form.required': '必填项目',
   'ambassadors.form.reason.max': '原因太长',

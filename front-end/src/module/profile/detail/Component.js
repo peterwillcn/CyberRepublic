@@ -230,27 +230,25 @@ export default class extends BaseComponent {
         }`}
       >
         <div className="profile-avatar">
-          {member.did.avatar || avatarName[0] == 'undefined' ? (
-          <Avatar
-            size={64}
-            src={member.did.avatar || USER_AVATAR_DEFAULT}
-            alt="voter avatar"
-          />
-        ) : (
-          <Avatar
-            className="comment-avatar pull-left"
-            style={{
-              backgroundColor: '#000',
-              fontSize: 24
-            }}
-            shape="circle"
-            size={64}
-          >
-            {`${avatarName[0] &&
-              avatarName[0].toUpperCase().substr(0, 1)}${avatarName[1] &&
-              avatarName[1].toUpperCase().substr(0, 1)}`}
-          </Avatar>
-        )}
+          {!_.isEmpty(member.did) && member.did.avatar || avatarName[0] == 'undefined' ? (
+            <img
+              src={member.did.avatar || USER_AVATAR_DEFAULT}
+            />
+          ) : (
+              <Avatar
+                className="comment-avatar"
+                style={{
+                  backgroundColor: '#000',
+                  fontSize: 24
+                }}
+                shape="circle"
+                size={64}
+              >
+                {`${avatarName[0] &&
+                  avatarName[0].toUpperCase().substr(0, 1)}${avatarName[1] &&
+                  avatarName[1].toUpperCase().substr(0, 1)}`}
+              </Avatar>
+            )}
         </div>
       </div>
     )

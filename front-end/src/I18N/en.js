@@ -1056,6 +1056,9 @@ const en = {
   'profile.forms.show': 'Show Archived',
   'profile.forms.search': 'Search',
 
+  'profile.form.headline': 'Headline',
+  'profile.form.headline.error': 'Please input headline!',
+
   // Validate Form
   'ambassadors.form.required': 'This must be filled out',
   'ambassadors.form.reason.max': 'Reason too long',
