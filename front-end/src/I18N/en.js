@@ -1385,9 +1385,9 @@ const en = {
   'from.UserProfileForm.text.slogan': 'Bio',
   'from.UserProfileForm.text.motto': 'Profile Motto',
 
-  'from.SuggestionForm.title': 'Relevance detail',
-  'from.SuggestionForm.proposal': 'proposal #',
-  'from.SuggestionForm.detail': 'Relevance detail',
+  'from.SuggestionForm.title': 'Relevance Detail',
+  'from.SuggestionForm.proposal': 'Proposal #',
+  'from.SuggestionForm.detail': 'Relevance Detail',
   
   'btn.CopyHash': 'Copy successful',
 
