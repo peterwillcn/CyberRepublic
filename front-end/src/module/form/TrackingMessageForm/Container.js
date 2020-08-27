@@ -3,9 +3,7 @@ import Component from './Component'
 import TrackingMessageService from '@/service/TrackingMessageService'
 
 const mapState = (state) => ({
-  user: state.user,
-  currentUserId: state.user.current_user_id,
-  isLogin: state.user.is_login
+  currentUserId: state.user.current_user_id
 })
 
 const mapDispatch = () => {

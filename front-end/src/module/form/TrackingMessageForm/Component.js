@@ -12,7 +12,6 @@ class TrackingMessageForm extends Component {
     this.state = {
       loading: false
     }
-    this.user = this.props.user
   }
 
   ord_loading(f = false) {
@@ -21,7 +20,7 @@ class TrackingMessageForm extends Component {
 
   onSubmit = async (e) => {
     e.preventDefault()
-    const { form, create, onCreated, proposal } = this.props
+    const { form, create, onCreated, proposal, onCancel } = this.props
 
     form.validateFields(async (err, values) => {
       if (err) return
@@ -33,10 +32,10 @@ class TrackingMessageForm extends Component {
       this.ord_loading(true)
       try {
         await create(param)
+        message.success(I18N.get('proposal.msg.created'))
+        onCancel()
         this.ord_loading(false)
         await onCreated()
-        message.success(I18N.get('from.CVoteForm.message.updated.success'))
-        form.resetFields()
       } catch (error) {
         message.error(error.message)
         this.ord_loading(false)

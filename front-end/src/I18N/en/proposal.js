@@ -149,6 +149,7 @@ export default {
     approved: 'Approved and published successfully',
     draftSaved:
       'Saved as draft successfully, you can check it in proposal list page',
-    proposalPublished: 'Proposal published successfully'
+    proposalPublished: 'Proposal published successfully',
+    created: 'Created successfully'
   }
 }
