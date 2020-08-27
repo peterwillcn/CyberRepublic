@@ -50,7 +50,9 @@ export default {
     },
     viewOldData: 'View old data',
     viewNewData: 'View new data',
-    addTrackingMessage: 'Add Tracking Message'
+    addTrackingMessage: 'Add Tracking Message',
+    create: 'Create',
+    cancel: 'Cancel'
   },
   text: {
     tracking: {

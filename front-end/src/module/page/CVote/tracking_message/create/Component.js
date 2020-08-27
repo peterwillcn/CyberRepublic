@@ -2,7 +2,7 @@ import React from 'react'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import CVoteTrackingMessageForm from '@/module/form/CVoteTrackingMessageForm/Container'
-import { Button, Icon } from 'antd'
+import { Button, Icon, Modal } from 'antd'
 import I18N from '@/I18N'
 import styled from 'styled-components'
 
@@ -10,19 +10,39 @@ export default class extends BaseComponent {
   constructor(props) {
     super(props)
     this.state = {
-      creating: false
+      visible: false
     }
   }
 
+  showModal = () => {
+    this.setState({ visible: true })
+  }
+
+  hideModal = () => {
+    this.setState({ visible: false })
+  }
+
   ord_render() {
-    const form = this.renderForm()
+    const { visible } = this.state
     return (
       <Wrapper>
-        <Button className="cr-btn cr-btn-primary" type="primary">
+        <Button
+          className="cr-btn cr-btn-primary"
+          type="primary"
+          onClick={this.showModal}
+        >
           <Text>{I18N.get('proposal.btn.addTrackingMessage')}</Text>
           <Icon type="plus-circle" />
         </Button>
-        {form}
+        <Modal
+          maskClosable={false}
+          visible={visible}
+          onCancel={this.hideModal}
+          footer={null}
+          width={600}
+        >
+          {this.renderForm()}
+        </Modal>
       </Wrapper>
     )
   }
@@ -30,8 +50,8 @@ export default class extends BaseComponent {
   renderForm() {
     const props = {
       ...this.props,
-      onCreated: this.onCreated
-      // onCancel: this.onCancel,
+      onCreated: this.onCreated,
+      onCancel: this.hideModal
     }
     return <CVoteTrackingMessageForm {...props} />
   }

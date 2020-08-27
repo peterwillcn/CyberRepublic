@@ -50,7 +50,9 @@ export default {
     },
     viewOldData: '查看老数据',
     viewNewData: '查看新数据',
-    addTrackingMessage: '添加跟踪信息'
+    addTrackingMessage: '添加跟踪信息',
+    create: '创建',
+    cancel: '取消'
   },
   text: {
     tracking: {

@@ -45,7 +45,7 @@ class TrackingMessage extends Component {
   }
 
   render() {
-    const { proposal, currentUserId } = this.props
+    const { proposal, currentUserId, onCancel } = this.props
     const { getFieldDecorator } = this.props.form
     if (proposal.proposer._id !== currentUserId) {
       return null
@@ -62,28 +62,34 @@ class TrackingMessage extends Component {
                   message: I18N.get('proposal.form.error.required')
                 }
               ]
-            })(<CodeMirrorEditor name="tracking-message" upload={false} />)}
+            })(
+              <CodeMirrorEditor
+                name="tracking-message"
+                upload={false}
+                autofocus={false}
+              />
+            )}
           </FormItem>
-          <Row gutter={8} type="flex" justify="center">
-            {this.renderSaveBtn()}
+          <Row gutter={16} type="flex" justify="center">
+            <FormItem>
+              <Button
+                className="cr-btn cr-btn-default"
+                onClick={onCancel}
+                style={{ marginRight: 16 }}
+              >
+                {I18N.get('proposal.btn.cancel')}
+              </Button>
+              <Button
+                loading={this.state.loading}
+                className="cr-btn cr-btn-primary"
+                htmlType="submit"
+              >
+                {I18N.get('proposal.btn.create')}
+              </Button>
+            </FormItem>
           </Row>
         </Form>
       </div>
-    )
-  }
-
-  renderSaveBtn() {
-    const btnText = I18N.get('proposal.form.tracking.btn.submit')
-    return (
-      <FormItem>
-        <Button
-          loading={this.state.loading}
-          className="cr-btn cr-btn-primary"
-          htmlType="submit"
-        >
-          {btnText}
-        </Button>
-      </FormItem>
     )
   }
 }
