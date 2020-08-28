@@ -194,6 +194,7 @@ class BudgetForm extends Component {
                 content={item && item.criteria ? item.criteria : ''}
                 name="criteria"
                 autofocus={false}
+                upload={false}
               />
             )}
           </FormItem>
