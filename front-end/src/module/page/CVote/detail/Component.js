@@ -827,6 +827,11 @@ class C extends StandardPage {
 
   renderTrackingMessage() {
     const { data } = this.props
+    let isShowFollowingUp = _.includes(
+      [CVOTE_STATUS.ACTIVE, CVOTE_STATUS.INCOMPLETED, CVOTE_STATUS.FINAL],
+      data.status
+    )
+    if (!isShowFollowingUp) return null
     return <TrackingMessage proposal={data} />
   }
 
