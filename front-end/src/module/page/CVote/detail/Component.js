@@ -38,7 +38,7 @@ import {
   removeImageFromMarkdown,
   getPlanHtml,
   getBudgetHtml,
-  getRelevanceHtml,
+  getRelevanceHtml
 } from '@/util/markdown-it'
 import PaymentList from './PaymentList'
 import TeamInfoList from '@/module/form/SuggestionForm/TeamInfoList'
@@ -114,10 +114,14 @@ const renderRichContent = (data, key, title, user, actions) => {
         ) : null}
       </div>
     )
-  } else if (key === 'relevance' && data.relevance && typeof data.relevance !== 'string') {
+  } else if (
+    key === 'relevance' &&
+    data.relevance &&
+    typeof data.relevance !== 'string'
+  ) {
     rc = (
-      <div key='relevance'>
-        <Subtitle id='relevance'> </Subtitle>
+      <div key="relevance">
+        <Subtitle id="relevance"> </Subtitle>
         {data.relevance.map((item, index) => {
           return (
             item && (
@@ -126,12 +130,11 @@ const renderRichContent = (data, key, title, user, actions) => {
                   {I18N.get('from.SuggestionForm.proposal') + `:`}
                   <a href={`/proposals/${item.proposal}`}>{item.title}</a>
                 </p>
-                <p>
-                  {I18N.get('from.SuggestionForm.detail') + `:`}
-                </p>
+                <p>{I18N.get('from.SuggestionForm.detail') + `:`}</p>
                 <MarkdownPreview content={item.relevanceDetail} />
               </StyledRow>
-            ))
+            )
+          )
         })}
       </div>
     )
@@ -863,7 +866,12 @@ class C extends StandardPage {
   renderTrackingMessage() {
     const { data } = this.props
     let isShowFollowingUp = _.includes(
-      [CVOTE_STATUS.ACTIVE, CVOTE_STATUS.INCOMPLETED, CVOTE_STATUS.FINAL],
+      [
+        CVOTE_STATUS.ACTIVE,
+        CVOTE_STATUS.INCOMPLETED,
+        CVOTE_STATUS.FINAL,
+        CVOTE_STATUS.TERMINATED
+      ],
       data.status
     )
     if (!isShowFollowingUp) return null
