@@ -128,7 +128,7 @@ const zh = {
 
   'meta.postedBy': '发布者',
   'image.upload.type.error': '上传的文件不是图片',
-  'image.upload.size.error': '上传的文件大小不能超过500KB',
+  'image.upload.size.error': '上传的文件大小不能超过10M',
 
   comments: '评论',
   'comments.posts': '动态',
