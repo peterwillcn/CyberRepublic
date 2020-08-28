@@ -323,12 +323,6 @@ export default class extends Base {
 
     const currDraft = await this.draftModel.getDBInstance().findById(id)
     if (currDraft) {
-      if (_.isEmpty(doc.budgetIntro)) {
-        doc.budgetIntro = _.get(currDoc, 'budgetIntro')
-      }
-      if (_.isEmpty(doc.planIntro)) {
-        doc.planIntro = _.get(currDoc, 'planIntro')
-      }
       await this.draftModel.remove({ _id: ObjectId(id) })
     }
 
@@ -974,7 +968,7 @@ export default class extends Base {
         for (const thread of comment) {
           await model.getDBInstance().populate(thread, {
             path: 'createdBy',
-            select: `${constant.DB_SELECTED_FIELDS.USER.NAME} profile.avatar`
+            select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
           })
         }
       }
@@ -1393,7 +1387,14 @@ export default class extends Base {
    * Wallet Api
    */
   public async getSuggestion(id): Promise<any> {
-    const fileds = ['_id', 'displayId', 'title', 'abstract', 'createdAt']
+    const fileds = [
+      '_id',
+      'displayId',
+      'title',
+      'abstract',
+      'createdAt',
+      'type'
+    ]
 
     const suggestion = await this.model
       .getDBInstance()
@@ -1423,6 +1424,7 @@ export default class extends Base {
 
     return {
       ...result,
+      type: constant.CVOTE_TYPE_API[suggestion.type],
       createdAt: timestamp.second(result.createdAt),
       id: suggestion.displayId,
       abs: suggestion.abstract,
@@ -1698,7 +1700,6 @@ export default class extends Base {
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
-
       let fields: any = {}
       const draftHash = this.getDraftHash(suggestion)
       fields.draftHash = draftHash
