@@ -30,6 +30,7 @@ import Tracking from '../tracking/Container'
 import Summary from '../summary/Container'
 import Meta from '@/module/common/Meta'
 import SocialShareButtons from '@/module/common/SocialShareButtons'
+import TrackingMessage from '../tracking_message/Container'
 import { logger } from '@/util'
 
 import {
@@ -197,6 +198,7 @@ class C extends StandardPage {
     const voteActionsNode = this.renderVoteActions()
     const voteDetailNode = this.renderVoteResults()
     const trackingNode = this.renderTracking()
+    const trackingMessageNode = this.renderTrackingMessage()
     const summaryNode = this.renderSummary()
 
     // get the first line pure text of abstract
@@ -221,6 +223,7 @@ class C extends StandardPage {
               {isVote ? voteActionsNode : null}
               {voteDetailNode}
               {trackingNode}
+              {trackingMessageNode}
               {summaryNode}
             </Body>
             <SocialShareButtons
@@ -341,7 +344,9 @@ class C extends StandardPage {
             <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
             <p>${getBudgetHtml(data.budget)}</p>
-            <h2 translate="no">${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(
+              `suggestion.budget.introduction`
+            )}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(data.budgetIntro)
             )}</p>
@@ -423,10 +428,17 @@ class C extends StandardPage {
     const tracking = isShowFollowingUp && (
       <Anchor.Link href="#tracking" title={trackingTitle} key="tracking" />
     )
+    const trackingMessage = isShowFollowingUp && (
+      <Anchor.Link
+        href="#tracking-message"
+        title={I18N.get('proposal.fields.trackingMessage')}
+        key="tracking-message"
+      />
+    )
     const summary = isShowFollowingUp && (
       <Anchor.Link href="#summary" title={summaryTitle} key="summary" />
     )
-    const commonLinks = [tracking, summary]
+    const commonLinks = [tracking, trackingMessage, summary]
     return isElip
       ? this.renderElipLinks(commonLinks)
       : this.renderSuggestionLinks(commonLinks)
@@ -813,6 +825,16 @@ class C extends StandardPage {
     return <Tracking proposal={data} />
   }
 
+  renderTrackingMessage() {
+    const { data } = this.props
+    let isShowFollowingUp = _.includes(
+      [CVOTE_STATUS.ACTIVE, CVOTE_STATUS.INCOMPLETED, CVOTE_STATUS.FINAL],
+      data.status
+    )
+    if (!isShowFollowingUp) return null
+    return <TrackingMessage proposal={data} />
+  }
+
   renderSummary() {
     const { data, currentUserId } = this.props
     let isShowFollowingUp = _.includes(
@@ -898,7 +920,8 @@ class C extends StandardPage {
               'votedBy.profile.lastName'
             )} `,
             didName: _.get(cur, 'votedBy.did.didName'),
-            avatar: _.get(cur, 'votedBy.profile.avatar') || 
+            avatar:
+              _.get(cur, 'votedBy.profile.avatar') ||
               _.get(cur, 'votedBy.did.avatar'),
             reason: cur.reason,
             votedBy,
@@ -990,7 +1013,7 @@ class C extends StandardPage {
         isCouncil,
         currentUserId,
         ownerVote,
-        voteHistory,
+        voteHistory
       }
       return <VoteResultComponent {...props} key={key} />
     })
