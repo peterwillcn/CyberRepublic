@@ -11,11 +11,16 @@ import { Switch,Form, message } from 'antd'
 class ImplementationAndBudget extends BaseComponent {
   constructor(props) {
     super(props)
-    const { budget, budgetIntro, elaAddress} = this.props.initialValues
     this.timer = -1
+    this.count = 0
+    const { budget, budgetIntro, elaAddress} = this.props.initialValues
     this.state = {
       budgetVisable: !_.isEmpty(budget) || budgetIntro || elaAddress ? true : false,
       disabled: !_.isEmpty(budget) || budgetIntro || elaAddress ? true : false,
+    }
+    if (this.count == 0 && !_.isEmpty(budget) || budgetIntro || elaAddress) {
+      this.props.budgetValidator.setBudgetValidator(true)
+      this.count = 1
     }
   }
 
@@ -134,6 +139,7 @@ class ImplementationAndBudget extends BaseComponent {
     this.setState({
       budgetVisable: !this.state.budgetVisable
     })
+    this.props.budgetValidator.setBudgetValidator(!this.state.budgetVisable)
     this.toggle()
   }
 

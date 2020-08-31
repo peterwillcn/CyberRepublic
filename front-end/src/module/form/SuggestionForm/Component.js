@@ -272,13 +272,17 @@ class C extends BaseComponent {
   }
 
   validateBudget = (rule, value, cb) => {
-    const address = _.get(value, 'elaAddress')
-    const pItems = _.get(value, 'paymentItems')
+    const values = this.props.form.getFieldValue('budget')
+    if (
+      !this.state.budgetValidator &&
+      (_.isEmpty(values.elaAddress) ||
+        _.isEmpty(values.paymentItems))
+    ) { return cb() }
 
-    if (!this.validateAddress(address)) {
+    if (!this.validateAddress(values.elaAddress)) {
       return cb(I18N.get('suggestion.form.error.elaAddress'))
     }
-    if (_.isEmpty(pItems)) {
+    if (_.isEmpty(values.paymentItems)) {
       return cb(I18N.get('suggestion.form.error.schedule'))
     }
     return cb()
@@ -286,6 +290,10 @@ class C extends BaseComponent {
 
   validateType = (rule, value, cb) => {
     return value.hasErr ? cb(false) : cb()
+  }
+
+  setBudgetValidator = (x) => {
+    this.setState({budgetValidator: x})
   }
 
   getTextarea(id) {
@@ -352,15 +360,22 @@ class C extends BaseComponent {
       ((initialValues.plan && typeof initialValues.plan !== 'string') ||
         !initialValues.plan)
     ) {
-      rules.push({
-        validator: this.validatePlan
-      })
-      return <ImplementationAndBudget 
+      const rules = []
+      if (this.state.budgetValidator){
+        rules.push({
+          validator: this.validateBudget
+        })
+      }
+      return (getFieldDecorator('planBudget', {
+        rules
+      })(
+      <ImplementationAndBudget 
         getFieldDecorator={getFieldDecorator}
         initialValues={initialValues}
+        budgetValidator={this}
         form={this.props.form}
         callback={this.onTextareaChange}
-      />
+      />))
     }
 
     if (id === 'teamInfo') {

@@ -29,7 +29,7 @@ class ImplementationPlan extends Component {
     const { callback, getFieldDecorator } = this.props
     return (
       <div>
-        <Title> * {I18N.get('suggestion.plan.milestones')}</Title>
+        <Title>{I18N.get('suggestion.plan.milestones')}</Title>
         <Milestones onChange={this.changeValue} initialValue={plan.milestone} />
         <Section>
           <Label>{`${I18N.get('suggestion.plan.introduction')}`}</Label>
