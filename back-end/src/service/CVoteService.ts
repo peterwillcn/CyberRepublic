@@ -1550,6 +1550,7 @@ export default class extends Base {
    */
   public async allOrSearch(param): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
+    const db_config = this.getDBModel('Config')
     const query: any = {}
 
     if (
@@ -1596,6 +1597,8 @@ export default class extends Base {
       'type',
       'createdAt',
       'proposer',
+      'proposedEndsHeight',
+      'notificationEndsHeight',
       'proposalHash',
       'rejectAmount',
       'rejectThroughAmount'
@@ -1621,9 +1624,9 @@ export default class extends Base {
 
     const rs = await Promise.all([
       cursor,
-      db_cvote.getDBInstance().find(query).count()
+      db_cvote.getDBInstance().find(query).count(),
+      db_config.getDBInstance().findOne()
     ])
-
     // filter return data，add proposalHash to CVoteSchema
     const list = _.map(rs[0], function (o) {
       let temp = _.omit(o._doc, [
@@ -1631,15 +1634,27 @@ export default class extends Base {
         'proposer',
         'type',
         'rejectAmount',
+        'proposedEndsHeight',
+        'notificationEndsHeight',
         'rejectThroughAmount'
       ])
       temp.proposedBy = _.get(o, 'proposer.did.didName')
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
+      if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
+        temp.voteEndsIn = _.toNumber(
+            new Date().getTime()/ 1000 + 
+            (o.proposedEndsHeight - rs[2].currentHeight) * 2 * 60
+        ).toFixed()
+      }
       if (
         [constant.CVOTE_STATUS.NOTIFICATION].includes(o.status) &&
         o.rejectAmount >= 0 &&
         o.rejectThroughAmount > 0
       ) {
+        temp.voteEndsIn = _.toNumber(
+          new Date().getTime() / 1000 +
+            (o.notificationEndsHeight - rs[2].currentHeight) * 2 * 60
+        ).toFixed()
         temp.rejectAmount = `${o.rejectAmount}`
         temp.rejectThroughAmount = `${parseFloat(
           _.toNumber(o.rejectThroughAmount).toFixed(8)
@@ -1679,7 +1694,12 @@ export default class extends Base {
       'rejectAmount',
       'rejectThroughAmount',
       'proposedEndsHeight',
-      'notificationEndsHeight'
+      'notificationEndsHeight',
+      'targetProposalNum',
+      'newOwnerDID',
+      'newAddress',
+      'newSecretaryDID',
+      'closeProposalNum'
     ]
     const isNumber = /^\d*$/.test(id)
     let query: any
