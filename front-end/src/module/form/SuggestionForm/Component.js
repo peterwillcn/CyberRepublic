@@ -367,7 +367,7 @@ class C extends BaseComponent {
         })
       }
       return (getFieldDecorator('planBudget', {
-        rules
+        // rules
       })(
       <ImplementationAndBudget 
         getFieldDecorator={getFieldDecorator}

@@ -17,6 +17,8 @@ class ImplementationAndBudget extends BaseComponent {
     this.state = {
       budgetVisable: !_.isEmpty(budget) || budgetIntro || elaAddress ? true : false,
       disabled: !_.isEmpty(budget) || budgetIntro || elaAddress ? true : false,
+      addressErr: '',
+      itemErr: '',
     }
     if (this.count == 0 && !_.isEmpty(budget) || budgetIntro || elaAddress) {
       this.props.budgetValidator.setBudgetValidator(true)
@@ -41,9 +43,15 @@ class ImplementationAndBudget extends BaseComponent {
     const pItems = _.get(value, 'paymentItems')
 
     if (!this.validateAddress(address)) {
+      this.setState({
+        addressErr: I18N.get('suggestion.form.error.elaAddress')
+      })
       return cb(I18N.get('suggestion.form.error.elaAddress'))
     }
     if (_.isEmpty(pItems)) {
+      this.setState({
+        addressErr: I18N.get('suggestion.form.error.schedule')
+      })
       return cb(I18N.get('suggestion.form.error.schedule'))
     }
     return cb()
@@ -128,7 +136,7 @@ class ImplementationAndBudget extends BaseComponent {
   componentDidMount() {
     this.timer = setInterval(() => {
       this.toggle()
-    }, 5000)
+    }, 2000)
   }
 
   componentWillUnmount() {
@@ -140,12 +148,16 @@ class ImplementationAndBudget extends BaseComponent {
       budgetVisable: !this.state.budgetVisable
     })
     this.props.budgetValidator.setBudgetValidator(!this.state.budgetVisable)
+    console.log(..._.omit(this.props.budgetValidator.state.errorKeys,['budget','planBudget']))
+    this.props.budgetValidator.setState({
+      errorKeys: {..._.omit(this.props.budgetValidator.state.errorKeys,['budget','planBudget'])}
+    },() => console.log(this.props.budgetValidator.state))
     this.toggle()
   }
 
   toggle = () => {
     const data = this.props.form.getFieldValue("budget")
-    const temp = localStorage.getItem("draft-suggestion")
+    const temp = JSON.parse(localStorage.getItem("draft-suggestion"))
     if (!_.isEmpty(temp.budgetIntro)
       || !_.isEmpty(data.elaAddress)
       || data.paymentItems.length > 0
@@ -163,6 +175,7 @@ class ImplementationAndBudget extends BaseComponent {
   ord_render() {
     const implementation = this.getImplementation()
     const budget = this.getBudget()
+    const errorTxt = this.state.addressErr || this.state.itemErr
     return (
       <div>
         <div>{implementation}</div>
@@ -175,6 +188,7 @@ class ImplementationAndBudget extends BaseComponent {
           style={{ display: this.state.budgetVisable ? 'block' : 'none' }}
         >
           {budget}
+          <ErrorLab>{errorTxt}</ErrorLab>
         </BudgetBlock>
       </div>
     )
@@ -198,4 +212,8 @@ const Label = styled.div`
   font-size: 17px;
   line-height: 24px;
   color: #000000;
+`
+
+const ErrorLab = styled.div`
+  color: red;
 `
