@@ -82,7 +82,7 @@ const renderRichContent = (data, key, title, user, actions) => {
         <div className="budget-payment-list">
           <PaymentList
             list={data.budget}
-            milestone={data.plan.milestone}
+            milestone={data.plan && data.plan.milestone}
             withdrawalHistory={data.withdrawalHistory}
             user={user}
             proposer={data.proposer}
