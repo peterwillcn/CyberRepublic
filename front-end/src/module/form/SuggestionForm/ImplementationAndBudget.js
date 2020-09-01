@@ -148,10 +148,9 @@ class ImplementationAndBudget extends BaseComponent {
       budgetVisable: !this.state.budgetVisable
     })
     this.props.budgetValidator.setBudgetValidator(!this.state.budgetVisable)
-    console.log(..._.omit(this.props.budgetValidator.state.errorKeys,['budget','planBudget']))
     this.props.budgetValidator.setState({
       errorKeys: {..._.omit(this.props.budgetValidator.state.errorKeys,['budget','planBudget'])}
-    },() => console.log(this.props.budgetValidator.state))
+    })
     this.toggle()
   }
 
