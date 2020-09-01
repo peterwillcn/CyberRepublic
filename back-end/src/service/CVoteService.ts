@@ -76,17 +76,19 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
 }
 
 const EMAIL_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION]: 'Passed',
-  [constant.CVOTE_STATUS.ACTIVE]: 'Passed',
-  [constant.CVOTE_STATUS.REJECT]: 'Rejected',
-  [constant.CVOTE_STATUS.VETOED]: 'Rejected'
+  [constant.CVOTE_STATUS.NOTIFICATION] : 'Passed',
+  [constant.CVOTE_STATUS.ACTIVE] : 'Passed',
+  [constant.CVOTE_STATUS.FINAL] : 'Passed',
+  [constant.CVOTE_STATUS.REJECT] : 'Rejected',
+  [constant.CVOTE_STATUS.VETOED] : 'Rejected',
 }
 
 const EMAIL_TITLE_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.NOTIFICATION,
-  [constant.CVOTE_STATUS.ACTIVE]: 'PASSED',
-  [constant.CVOTE_STATUS.REJECT]: 'REJECTED',
-  [constant.CVOTE_STATUS.VETOED]: 'VETOED'
+  [constant.CVOTE_STATUS.NOTIFICATION] : constant.CVOTE_STATUS.NOTIFICATION,
+  [constant.CVOTE_STATUS.ACTIVE] : 'PASSED',
+  [constant.CVOTE_STATUS.REJECT] : 'REJECTED',
+  [constant.CVOTE_STATUS.VETOED] : 'VETOED',
+  [constant.CVOTE_STATUS.FINAL] : 'FINAL'
 }
 
 const { DID_PREFIX } = constant
