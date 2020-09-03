@@ -17,9 +17,9 @@ class Signature extends Component {
   handleSubmit = (e) => {
     e.stopPropagation() // prevent event bubbling
     e.preventDefault()
-    const { isSecretary } = this.props
+    const { isSecretary, opinion } = this.props
     {
-      isSecretary ? this.reviewApplication() : this.applyPayment()
+      isSecretary && opinion ? this.reviewApplication() : this.applyPayment()
     }
   }
 
@@ -69,10 +69,7 @@ class Signature extends Component {
     if (!this._isMounted) {
       return
     }
-    const {
-      proposalId,
-      getPaymentSignature
-    } = this.props
+    const { proposalId, getPaymentSignature } = this.props
     const { messageHash } = this.state
     const rs = await getPaymentSignature({ proposalId, messageHash })
     if (rs && rs.success) {
@@ -120,10 +117,10 @@ class Signature extends Component {
 
   renderTextare = () => {
     const { getFieldDecorator } = this.props.form
-    const { isSecretary, application, isCompletion } = this.props
+    const { isSecretary, application, isCompletion, opinion } = this.props
     return (
       <Form onSubmit={this.handleSubmit}>
-        {isSecretary && <Msg>{application.message}</Msg>}
+        {isSecretary && opinion && <Msg>{application.message}</Msg>}
         <Label>
           <span>*</span>
           {isCompletion
@@ -176,7 +173,7 @@ class Signature extends Component {
         footer={null}
       >
         <Wrapper>
-          {isSecretary ? (
+          {isSecretary && opinion ? (
             <Title>
               {flag ? 'Reject' : 'Approve'} Payment #{parseInt(stage) + 1}
             </Title>
