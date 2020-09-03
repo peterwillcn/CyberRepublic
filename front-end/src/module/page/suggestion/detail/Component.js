@@ -26,7 +26,7 @@ import {
   removeImageFromMarkdown,
   getPlanHtml,
   getBudgetHtml,
-  getRelevanceHtml,
+  getRelevanceHtml
 } from '@/util/markdown-it'
 import { logger } from '@/util'
 import URI from 'urijs'
@@ -60,7 +60,7 @@ import {
   CreateProposalText,
   Paragraph,
   CopyButton,
-  StyledRow,
+  StyledRow
 } from './style'
 
 import './style.scss'
@@ -300,32 +300,33 @@ export default class extends StandardPage {
             )
           }
 
-          if (section === 'relevance' &&
+          if (
+            section === 'relevance' &&
             detail.relevance &&
             typeof detail.relevance !== 'sting'
           ) {
             return (
-              <div key='relevance'>
-                <DescLabel id='relevance'>
+              <div key="relevance">
+                <DescLabel id="relevance">
                   {I18N.get(`suggestion.fields.relevance`)}
                 </DescLabel>
                 {detail.relevance.map((item, index) => {
-                    return (
-                      item && (
-                        <StyledRow key={index}>
-                          <p>
-                            {I18N.get('from.SuggestionForm.proposal') + `:`}
-                            <a href={`/proposals/${item.proposal}`}>{item.title}</a>
-                          </p>
-                          <p>
-                            {I18N.get('from.SuggestionForm.detail') + `:` }
-                          </p>
-                          <MarkdownPreview content={item.relevanceDetail} />
-                        </StyledRow>
-                      )
+                  return (
+                    item && (
+                      <StyledRow key={index}>
+                        <p>
+                          {I18N.get('from.SuggestionForm.proposal') + `:`}
+                          <a href={`/proposals/${item.proposal}`}>
+                            {item.title}
+                          </a>
+                        </p>
+                        <p>{I18N.get('from.SuggestionForm.detail') + `:`}</p>
+                        <MarkdownPreview content={item.relevanceDetail} />
+                      </StyledRow>
                     )
-                  })}
-            </div>
+                  )
+                })}
+              </div>
             )
           }
 
@@ -507,7 +508,9 @@ export default class extends StandardPage {
             <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${detail.elaAddress}</p>
             <p>${getBudgetHtml(detail.budget)}</p>
-            <h2 translate="no">${I18N.get(`suggestion.budget.introduction`)}</h2>
+            <h2 translate="no">${I18N.get(
+              `suggestion.budget.introduction`
+            )}</h2>
             <p>${convertMarkdownToHtml(
               removeImageFromMarkdown(detail.budgetIntro)
             )}</p>
@@ -606,8 +609,8 @@ export default class extends StandardPage {
     if (newOwnerSig) {
       return
     }
-    const currDID = _.get(user, 'did.id')
-    if (!currDID) {
+    const currUser = _.get(user, 'did.compressedPublicKey')
+    if (!currUser) {
       return
     }
     const type = _.get(detail, 'type')
@@ -615,8 +618,8 @@ export default class extends StandardPage {
       return
     }
     const signature = _.get(detail, 'signature.data')
-    const newOwnerDID = _.get(detail, 'newOwnerDID')
-    const isNewOwner = newOwnerDID && currDID === 'did:elastos:' + newOwnerDID
+    const newOwner = _.get(detail, 'newOwnerPublicKey')
+    const isNewOwner = newOwner && currUser === newOwner
     const isSignable = signature && isNewOwner
 
     return (
