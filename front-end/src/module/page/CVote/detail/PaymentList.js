@@ -22,7 +22,7 @@ const {
 } = MILESTONE_STATUS
 
 const { COMPLETION } = SUGGESTION_BUDGET_TYPE
-const { FINAL, ACTIVE } = CVOTE_STATUS
+const { FINAL, ACTIVE, TERMINATED } = CVOTE_STATUS
 
 class PaymentList extends Component {
   constructor(props) {
@@ -61,13 +61,18 @@ class PaymentList extends Component {
 
   isOwner() {
     const { user, proposer } = this.props
-    return user.current_user_id === proposer._id
+    if (user && proposer) {
+      return user.current_user_id === proposer._id
+    } else {
+      return false
+    }
   }
 
   isVisible() {
     const { user, status } = this.props
     return (
-      (this.isOwner() || user.is_secretary) && [ACTIVE, FINAL].includes(status)
+      (this.isOwner() || user.is_secretary) &&
+      [ACTIVE, FINAL, TERMINATED].includes(status)
     )
   }
 
@@ -100,7 +105,7 @@ class PaymentList extends Component {
       return null
     }
     if (
-      !user.is_secretary &&
+      this.isOwner() &&
       item.status === WAITING_FOR_REQUEST &&
       status !== FINAL
     ) {
@@ -115,7 +120,7 @@ class PaymentList extends Component {
         </div>
       )
     }
-    if (!user.is_secretary && item.status === REJECTED && status !== FINAL) {
+    if (this.isOwner() && item.status === REJECTED && status !== FINAL) {
       return (
         <div
           className="action"
@@ -150,7 +155,7 @@ class PaymentList extends Component {
       )
     }
     if (
-      !user.is_secretary &&
+      this.isOwner() &&
       item.status === WAITING_FOR_WITHDRAWAL &&
       Number(item.amount) !== 0
     ) {
