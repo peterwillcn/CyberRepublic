@@ -18,9 +18,7 @@ class Signature extends Component {
     e.stopPropagation() // prevent event bubbling
     e.preventDefault()
     const { isSecretary, opinion } = this.props
-    {
-      isSecretary && opinion ? this.reviewApplication() : this.applyPayment()
-    }
+    isSecretary && opinion ? this.reviewApplication() : this.applyPayment()
   }
 
   applyPayment = () => {
