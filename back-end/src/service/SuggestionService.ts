@@ -182,7 +182,7 @@ export default class extends Base {
     return result
   }
 
-  public async notifyPeopleToSign(suggestion, receiverDID) {
+  public async notifyPeopleToSign(suggestion, receiverPublicKey) {
     const subject = `【Signature required】Suggestion <${suggestion.displayId}> is ready for you to sign`
     const body = `
       <p>Suggestion <${suggestion.displayId}> <${suggestion.title}> is ready for you to sign</p>
@@ -196,7 +196,7 @@ export default class extends Base {
       <p>Cyber Republic</p>
     `
     const receiver = await this.getDBModel('User').findOne({
-      'did.id': receiverDID
+      'did.compressedPublicKey': receiverPublicKey
     })
     mail.send({
       to: receiver.email,
@@ -1922,11 +1922,17 @@ export default class extends Base {
               )
               // notify new owner to sign
               if (suggestion.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
-                this.notifyPeopleToSign(suggestion, suggestion.newOwnerDID)
+                this.notifyPeopleToSign(
+                  suggestion,
+                  suggestion.newOwnerPublicKey
+                )
               }
               // notify new secretary general to sign
               if (suggestion.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
-                this.notifyPeopleToSign(suggestion, suggestion.newSecretaryDID)
+                this.notifyPeopleToSign(
+                  suggestion,
+                  suggestion.newSecretaryPublicKey
+                )
               }
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
