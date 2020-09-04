@@ -107,7 +107,7 @@
     "less-loader": "^5.0.0",
     "mini-css-extract-plugin": "^0.8.2",
     "moment-timezone-data-webpack-plugin": "^1.1.0",
-    "node-sass": "^4.10.0",
+    "node-sass": "^4.13.1",
     "open-browser-webpack-plugin": "0.0.5",
     "optimize-css-assets-webpack-plugin": "^4.0.1",
     "postcss-flexbugs-fixes": "^3.3.1",
