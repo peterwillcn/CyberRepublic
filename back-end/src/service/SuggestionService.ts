@@ -1527,7 +1527,8 @@ export default class extends Base {
       if (!did) {
         return { success: false, message: 'Your DID not bound.' }
       }
-      if (did !== DID_PREFIX + suggestion.newOwnerDID) {
+      const publicKey = _.get(this.currentUser, 'did.compressedPublicKey')
+      if (publicKey !== suggestion.newOwnerPublicKey) {
         return { success: false, message: 'You are not the new owner' }
       }
       const now = Math.floor(Date.now() / 1000)
@@ -1611,8 +1612,9 @@ export default class extends Base {
           message: 'This suggestion had been signed.'
         }
       }
-      const newOwnerDID = DID_PREFIX + suggestion.newOwnerDID
-      const isNewOwner = userDID === claims.iss && claims.iss === newOwnerDID
+      const compressedKey = _.get(suggestion, 'newOwnerPublicKey')
+      const publicKey = _.get(payload, 'data.newownerpublickey')
+      const isNewOwner = userDID === claims.iss && publicKey === compressedKey
       if (!isNewOwner) {
         await this.model.update(
           { _id: payload.sid },
@@ -1628,7 +1630,6 @@ export default class extends Base {
           message: 'The ELA wallet not bound with your CR account.'
         }
       }
-      const compressedKey = _.get(suggestion, 'newOwnerPublicKey')
       const pemPublicKey = compressedKey && getPemPublicKey(compressedKey)
       if (!pemPublicKey) {
         return {
