@@ -107,7 +107,7 @@ class PaymentList extends Component {
     if (
       this.isOwner() &&
       item.status === WAITING_FOR_REQUEST &&
-      status !== FINAL
+      status === ACTIVE
     ) {
       return (
         <div
@@ -120,7 +120,7 @@ class PaymentList extends Component {
         </div>
       )
     }
-    if (this.isOwner() && item.status === REJECTED && status !== FINAL) {
+    if (this.isOwner() && item.status === REJECTED && status === ACTIVE) {
       return (
         <div
           className="action"
@@ -132,7 +132,11 @@ class PaymentList extends Component {
         </div>
       )
     }
-    if (item.status === WAITING_FOR_APPROVAL && user.is_secretary) {
+    if (
+      item.status === WAITING_FOR_APPROVAL &&
+      user.is_secretary &&
+      status === ACTIVE
+    ) {
       return (
         <div className="review">
           <div
