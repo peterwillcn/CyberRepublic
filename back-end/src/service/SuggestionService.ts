@@ -1817,7 +1817,9 @@ export default class extends Base {
   public async signatureCallback(param: any) {
     try {
       const jwtToken = param.jwt
+      console.log('signature callback jwt token...', jwtToken)
       const claims: any = jwt.decode(jwtToken)
+      console.log('signature callback claims', claims)
       if (!_.get(claims, 'req')) {
         return {
           code: 400,
@@ -1830,6 +1832,7 @@ export default class extends Base {
         claims.req.slice('elastos://crproposal/'.length)
       )
       const userDID = _.get(payload, 'data.userdid')
+      console.log('signature cb userDID...', userDID)
       if (!userDID) {
         return {
           code: 400,
@@ -1869,6 +1872,7 @@ export default class extends Base {
       }
       const ownerDID = _.get(suggestion, 'createdBy.did.id')
       const isOwner = userDID === claims.iss && ownerDID === claims.iss
+      console.log('signature cb isOwner...', isOwner)
       if (!isOwner) {
         await this.model.update(
           { _id: payload.sid },
@@ -1896,12 +1900,14 @@ export default class extends Base {
           message: `Can not get your DID's public key.`
         }
       }
+      console.log('singature callback pem public key', pemPublicKey)
       // verify response data from ela wallet
       return jwt.verify(
         jwtToken,
         pemPublicKey,
         async (err: any, decoded: any) => {
           if (err) {
+            console.log('signature callback verify err...', err)
             await this.model.update(
               { _id: payload.sid },
               {
