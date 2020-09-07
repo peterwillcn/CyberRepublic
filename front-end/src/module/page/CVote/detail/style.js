@@ -50,6 +50,7 @@ export const Title = styled.h2`
     margin: 0;
     font-size: 24px;
   `}
+  word-break: break-all;
 `
 
 export const ContentTitle = styled.h4`
