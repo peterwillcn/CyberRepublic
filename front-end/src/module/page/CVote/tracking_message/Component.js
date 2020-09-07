@@ -34,7 +34,9 @@ export default class extends BaseComponent {
   renderForm() {
     const { proposal, currentUserId } = this.props
     const isOwner = _.get(proposal, 'proposer._id') === currentUserId
-    const isActive = proposal.status === CVOTE_STATUS.ACTIVE
+    const isActive = [CVOTE_STATUS.ACTIVE, CVOTE_STATUS.FINAL].includes(
+      proposal.status
+    )
 
     return isOwner && isActive && <CreateForm proposal={proposal} />
   }
