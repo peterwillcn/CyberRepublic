@@ -239,10 +239,10 @@ export default class extends BaseComponent {
                 className="comment-avatar"
                 style={{
                   backgroundColor: '#000',
-                  fontSize: 24
+                  fontSize: 50
                 }}
                 shape="circle"
-                size={64}
+                size={150}
               >
                 {`${avatarName[0] &&
                   avatarName[0].toUpperCase().substr(0, 1)}${avatarName[1] &&
