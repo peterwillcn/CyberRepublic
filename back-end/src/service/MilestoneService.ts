@@ -18,7 +18,7 @@ const {
   WAITING_FOR_WITHDRAWAL,
   WITHDRAWN
 } = constant.MILESTONE_STATUS
-const { ACTIVE, FINAL } = constant.CVOTE_STATUS
+const { ACTIVE, FINAL, TERMINATED } = constant.CVOTE_STATUS
 const { PROGRESS, FINALIZED } = constant.PROPOSAL_TRACKING_TYPE
 const { APPROVED, REJECTED } = constant.REVIEW_OPINION
 
@@ -467,7 +467,7 @@ export default class extends Base {
       if (!proposal.proposer.equals(this.currentUser._id)) {
         return { success: false, message: 'You are not the proposal owner.' }
       }
-      if (![ACTIVE, FINAL].includes(proposal.status)) {
+      if (![ACTIVE, FINAL, TERMINATED].includes(proposal.status)) {
         return { success: false, message: 'The proposal is not active.' }
       }
       const last: any = _.last(proposal.budget)
