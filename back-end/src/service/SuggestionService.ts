@@ -1393,7 +1393,12 @@ export default class extends Base {
       'title',
       'abstract',
       'createdAt',
-      'type'
+      'type',
+      'closeProposalNum',
+      'newSecretaryDID',
+      'newAddress',
+      'newOwnerDID',
+      'targetProposalNum'
     ]
 
     const suggestion = await this.model
