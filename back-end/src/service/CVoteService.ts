@@ -1671,7 +1671,7 @@ export default class extends Base {
   public async getProposalById(data: any): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
-    const { info, id } = data
+    const { id } = data
 
     const fields = [
       'vid',
@@ -1700,20 +1700,6 @@ export default class extends Base {
       query = { proposalHash: id, old: { $exists: false } }
     }
 
-    if (info == 'true') {
-      const proposal = await db_cvote.getDBInstance().findOne(query)
-      if (!proposal) {
-        return {
-          code: 400,
-          message: 'Invalid request parameters',
-          // tslint:disable-next-line:no-null-keyword
-          data: null
-        }
-      }
-      console.log(proposal._doc)
-      return { title: proposal._doc.title }
-    }
-
     const proposal = await db_cvote
       .getDBInstance()
       .findOne(query, fields.join(' '))
@@ -1734,6 +1720,11 @@ export default class extends Base {
     const address = `${process.env.SERVER_URL}/proposals/${proposal.id}`
 
     const proposalId = proposal._id
+    const targetNum = proposal.targetProposalNum
+    let targetProposal:any
+    if (targetNum){
+      targetProposal = await db_cvote.getDBInstance().findOne({vid: parseInt(targetNum), old: { $exists: false }})
+    }
 
     const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
     const cvoteHistory = await db_cvote_history
@@ -1817,6 +1808,7 @@ export default class extends Base {
         type: constant.CVOTE_TYPE_API[proposal.type],
         abs: proposal.abstract,
         address,
+        targetProposalTitle: targetProposal && targetProposal.title,
         ..._.omit(proposal._doc, [
           'vid',
           'abstract',
