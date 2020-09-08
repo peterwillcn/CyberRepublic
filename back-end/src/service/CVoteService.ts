@@ -2352,7 +2352,7 @@ export default class extends Base {
     const db_cvote = this.getDBModel('CVote')
     const db_council = this.getDBModel('Council')
 
-    const rs: any = jwt.verify(param.params, process.env.PUBLIC_KEY, {
+    const rs: any = jwt.verify(param.params, process.env.WALLET_VOTE_PUBLIC_KEY, {
       algorithms: ['ES256']
     })
     if (rs.exp < (new Date().getTime() / 1000).toFixed()) {
