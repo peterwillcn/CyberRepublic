@@ -1411,9 +1411,7 @@ export default class extends Base {
   public async updateProposalOnNotification(data: any) {
     const {
       WAITING_FOR_WITHDRAWAL,
-      WAITING_FOR_REQUEST,
-      WAITING_FOR_APPROVAL,
-      REJECTED
+      WAITING_FOR_REQUEST
     } = constant.MILESTONE_STATUS
     const db_cvote = this.getDBModel('CVote')
     const { rs, _id } = data
@@ -1426,27 +1424,13 @@ export default class extends Base {
     const proposalStatus = CHAIN_STATUS_TO_PROPOSAL_STATUS[chainStatus]
     const proposal = await db_cvote.findById(_id)
     if (proposal.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
-      const target = await db_cvote.findOne({
-        vid: proposal.closeProposalNum,
-        old: { $exists: false }
-      })
-      if (target.budget) {
-        const newBudget = target.budget.map((item: any) => {
-          if (
-            [WAITING_FOR_REQUEST, REJECTED, WAITING_FOR_APPROVAL].includes(
-              item.type
-            )
-          ) {
-            return { ...item, status: '' }
-          } else {
-            return { ...item }
-          }
-        })
-        target.budget = newBudget
-      }
-      target.status = constant.CVOTE_STATUS.TERMINATED
-      target.terminatedBy = proposal.vid
-      await target.save()
+      await db_cvote.update(
+        {
+          vid: proposal.closeProposalNum,
+          old: { $exists: false }
+        },
+        { status: constant.CVOTE_STATUS.TERMINATED, terminatedBy: proposal.vid }
+      )
     }
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
       const db_user = this.getDBModel('User')

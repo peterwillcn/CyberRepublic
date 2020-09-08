@@ -34,15 +34,17 @@ export default class extends BaseComponent {
           <Text>{I18N.get('proposal.btn.addTrackingMessage')}</Text>
           <Icon type="plus-circle" />
         </Button>
-        <Modal
-          maskClosable={false}
-          visible={visible}
-          onCancel={this.hideModal}
-          footer={null}
-          width={600}
-        >
-          {this.renderForm()}
-        </Modal>
+        {visible && (
+          <Modal
+            maskClosable={false}
+            visible={visible}
+            onCancel={this.hideModal}
+            footer={null}
+            width={600}
+          >
+            {this.renderForm()}
+          </Modal>
+        )}
       </Wrapper>
     )
   }

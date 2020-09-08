@@ -34,7 +34,6 @@ class SelectSuggType extends Component {
       value: el.vid,
       text: `#${el.vid} ${el.title}`
     }))
-    console.log('proposals', proposals)
     this.setState({ proposals })
   }
 
