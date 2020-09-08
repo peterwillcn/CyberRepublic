@@ -186,11 +186,8 @@ export default class extends Base {
     const subject = `【Signature required】Suggestion <${suggestion.displayId}> is ready for you to sign`
     const body = `
       <p>Suggestion <${suggestion.displayId}> <${suggestion.title}> is ready for you to sign</p>
-      <br />
       <p>Click here to sign now:</p>
-      <br />
       <p><a href="${process.env.SERVER_URL}/suggestion/${suggestion._id}">${process.env.SERVER_URL}/suggestion/${suggestion._id}</a></p>
-      <br />
       <br />
       <p>Thanks</p>
       <p>Cyber Republic</p>
@@ -1822,9 +1819,7 @@ export default class extends Base {
   public async signatureCallback(param: any) {
     try {
       const jwtToken = param.jwt
-      console.log('signature callback jwt token...', jwtToken)
       const claims: any = jwt.decode(jwtToken)
-      console.log('signature callback claims', claims)
       if (!_.get(claims, 'req')) {
         return {
           code: 400,
@@ -1837,7 +1832,6 @@ export default class extends Base {
         claims.req.slice('elastos://crproposal/'.length)
       )
       const userDID = _.get(payload, 'data.userdid')
-      console.log('signature cb userDID...', userDID)
       if (!userDID) {
         return {
           code: 400,
