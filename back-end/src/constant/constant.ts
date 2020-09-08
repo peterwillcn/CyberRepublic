@@ -394,4 +394,9 @@ export const TRANSACTION_TYPE = {
   COUNCIL_VOTE: 38
 }
 
+export const API_VOTE_TYPE = {
+  PROPOSAL: "proposalvote",
+  SUGGESTION: "suggestionvote"
+}
+
 export const DID_PREFIX = 'did:elastos:'

@@ -91,7 +91,7 @@ const EMAIL_TITLE_PROPOSAL_STATUS = {
   [constant.CVOTE_STATUS.FINAL] : 'FINAL'
 }
 
-const { DID_PREFIX } = constant
+const { DID_PREFIX, API_VOTE_TYPE } = constant
 const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720
 
 export default class extends Base {
@@ -1106,9 +1106,11 @@ export default class extends Base {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
 
-    const { _id, value, reason } = param
+    const { _id, value, reason, reasonHash, votedByWallet } = param
     const cur = await db_cvote.findOne({ _id })
-    const votedBy = _.get(this.currentUser, '_id')
+    const votedBy = _.isEmpty(votedByWallet)
+      ? _.get(this.currentUser, '_id')
+      : votedByWallet
     if (!cur) {
       throw 'invalid proposal id'
     }
@@ -1124,7 +1126,7 @@ export default class extends Base {
           'voteResult.$.value': value,
           'voteResult.$.reason': reason || '',
           'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.UNCHAIN,
-          'voteResult.$.reasonHash': utilCrypto.sha256D(
+          'voteResult.$.reasonHash': reasonHash || utilCrypto.sha256D(
             reason + timestamp.second(reasonCreateDate)
           ),
           'voteResult.$.reasonCreatedAt': reasonCreateDate
@@ -2352,11 +2354,65 @@ export default class extends Base {
     _.forEach(param, (v: any) => {
       value += v
     })
-    const proposalList = await db_cvote
-      .getDBInstance()
-      .find({
-        'title': { $regex: value, $options: 'i'},
-      },['_id', 'title'])
+    const proposalList = await db_cvote.getDBInstance().find(
+      {
+        title: { $regex: value, $options: 'i' }
+      },
+      ['_id', 'title']
+    )
     return proposalList
+  }
+
+  public async walletVote(param: any) {
+    const db_user = this.getDBModel('User')
+    const db_cvote = this.getDBModel('CVote')
+    const db_council = this.getDBModel('Council')
+
+    const rs: any = jwt.verify(param.params, process.env.PUBLIC_KEY, {
+      algorithms: ['ES256']
+    })
+    if (rs.exp < (new Date().getTime() / 1000).toFixed()) {
+      throw 'Request expired'
+    }
+
+    if (rs.command !== API_VOTE_TYPE.PROPOSAL) {
+      throw 'Invalid command'
+    }
+    const { status, reason, reasonHash, proposalHash, did } = rs.data
+    const voteDid = DID_PREFIX + did
+    const user = await db_user.getDBInstance().findOne({ 'did.id': voteDid })
+    if (!user) {
+      throw 'This user doesn‘t exist'
+    }
+    if (user.role !== constant.USER_ROLE.COUNCIL) {
+      throw 'This user not a coumcil'
+    }
+    const currentCouncil = await db_council.getDBInstance().findOne({
+      status: constant.TERM_COUNCIL_STATUS.CURRENT
+    })
+    if (!_.find(currentCouncil.councilMembers, { did })) {
+      throw 'This user not a coumcil'
+    }
+    const proposal = await db_cvote
+      .getDBInstance()
+      .findOne({ proposalHash: proposalHash })
+    if (!proposal) {
+      throw 'Invalid proposal hash'
+    }
+    const votedRs: any = _.find(proposal.voteResult, { votedBy: user._id })
+    if (!votedRs) {
+      throw 'This vote undefined'
+    }
+    if (votedRs.status == constant.CVOTE_CHAIN_STATUS.UNCHAIN && votedRs.value != 'undecided') {
+      throw 'The voting status has not been updated'
+    }
+    const data = {
+      _id: proposal._id,
+      value: status,
+      reason,
+      reasonHash,
+      votedByWallet: user._id
+    }
+    this.vote(data)
   }
 }
