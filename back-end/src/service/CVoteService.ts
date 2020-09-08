@@ -1668,11 +1668,14 @@ export default class extends Base {
     return { list, total }
   }
 
-  public async getProposalById(id): Promise<any> {
+  public async getProposalById(data: any): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
+    const { info, id } = data
+
     const fields = [
       'vid',
+      'title',
       'status',
       'type',
       'abstract',
@@ -1695,6 +1698,20 @@ export default class extends Base {
       query = { vid: parseInt(id), old: { $exists: false } }
     } else {
       query = { proposalHash: id, old: { $exists: false } }
+    }
+
+    if (info == 'true') {
+      const proposal = await db_cvote.getDBInstance().findOne(query)
+      if (!proposal) {
+        return {
+          code: 400,
+          message: 'Invalid request parameters',
+          // tslint:disable-next-line:no-null-keyword
+          data: null
+        }
+      }
+      console.log(proposal._doc)
+      return { title: proposal._doc.title }
     }
 
     const proposal = await db_cvote
@@ -1795,6 +1812,7 @@ export default class extends Base {
     return _.omit(
       {
         id: proposal.vid,
+        title: proposal.title,
         status: CVOTE_STATUS_TO_WALLET_STATUS[proposal.status],
         type: constant.CVOTE_TYPE_API[proposal.type],
         abs: proposal.abstract,
