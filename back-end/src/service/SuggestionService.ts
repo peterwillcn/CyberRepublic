@@ -16,6 +16,12 @@ import {
 } from '../utility'
 const Big = require('big.js')
 const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX } = constant
+const {
+  NEW_MOTION,
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -339,6 +345,7 @@ export default class extends Base {
   private unsetTypeDoc(param: any) {
     const { type, newOwnerDID, newAddress } = param
     let unsetDoc = {}
+    const { NEW_MOTION, MOTION_AGAINST, ANYTHING_ELSE } = SUGGESTION_TYPE
     if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
       if (newOwnerDID && !newAddress) {
         unsetDoc = {
@@ -384,6 +391,19 @@ export default class extends Base {
         targetProposalNum: true,
         newSecretaryDID: true,
         newSecretaryPublicKey: true
+      }
+    }
+    if (type && _.includes([NEW_MOTION, MOTION_AGAINST, ANYTHING_ELSE], type)) {
+      unsetDoc = {
+        newOwnerDID: true,
+        newOwnerPublicKey: true,
+        newAddress: true,
+        newRecipient: true,
+        targetProposalNum: true,
+        newSecretaryDID: true,
+        newSecretaryPublicKey: true,
+        closeProposalNum: true,
+        targetProposalHash: true
       }
     }
     return unsetDoc
