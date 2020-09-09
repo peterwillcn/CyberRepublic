@@ -68,7 +68,6 @@ import SignSuggestionModal from './SignSuggestionModal'
 import Preamble from './Preamble'
 import { SUGGESTION_TYPE } from '@/constant'
 const {
-  NEW_MOTION,
   CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
   TERMINATE_PROPOSAL
@@ -111,7 +110,11 @@ export default class extends StandardPage {
       'budget'
     ]
     const newFields = ['preamble', 'abstract', 'motivation']
-    const sections = type === NEW_MOTION ? fields : newFields
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
+    const sections = isNewType ? newFields : fields
     return (
       <StyledAnchor offsetTop={420}>
         {sections.map((section) => {
@@ -222,7 +225,7 @@ export default class extends StandardPage {
 
   renderDetail(detail) {
     if (!detail) return
-    const section = [
+    const fields = [
       'abstract',
       'motivation',
       'goal',
@@ -230,9 +233,13 @@ export default class extends StandardPage {
       'relevance',
       'budget'
     ]
-    const newSection = ['abstract', 'motivation']
-    const type = _.get(detail, 'type')
-    const sections = type === NEW_MOTION ? section : newSection
+    const newFields = ['abstract', 'motivation']
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
+    const sections = isNewType ? newFields : fields
+
     const metaNode = this.renderMetaNode()
     const titleNode = this.renderTitleNode()
     const labelNode = this.renderLabelNode()
