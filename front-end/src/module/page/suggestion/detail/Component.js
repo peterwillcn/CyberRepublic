@@ -67,7 +67,12 @@ import './style.scss'
 import SignSuggestionModal from './SignSuggestionModal'
 import Preamble from './Preamble'
 import { SUGGESTION_TYPE } from '@/constant'
-
+const {
+  NEW_MOTION,
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 const { TextArea } = Input
 
 export default class extends StandardPage {
@@ -95,7 +100,8 @@ export default class extends StandardPage {
   }
 
   renderAnchors() {
-    const sections = [
+    const type = _.get(this.props, 'detail.type')
+    const fields = [
       'preamble',
       'abstract',
       'motivation',
@@ -104,6 +110,8 @@ export default class extends StandardPage {
       'relevance',
       'budget'
     ]
+    const newFields = ['preamble', 'abstract', 'motivation']
+    const sections = type === NEW_MOTION ? fields : newFields
     return (
       <StyledAnchor offsetTop={420}>
         {sections.map((section) => {
@@ -214,7 +222,7 @@ export default class extends StandardPage {
 
   renderDetail(detail) {
     if (!detail) return
-    const sections = [
+    const section = [
       'abstract',
       'motivation',
       'goal',
@@ -222,7 +230,9 @@ export default class extends StandardPage {
       'relevance',
       'budget'
     ]
-
+    const newSection = ['abstract', 'motivation']
+    const type = _.get(detail, 'type')
+    const sections = type === NEW_MOTION ? section : newSection
     const metaNode = this.renderMetaNode()
     const titleNode = this.renderTitleNode()
     const labelNode = this.renderLabelNode()
