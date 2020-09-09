@@ -31,13 +31,17 @@ class C extends BaseComponent {
   constructor(props) {
     super(props)
     const type = _.get(props, 'initialValues.type')
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
     this.timer = -1
     this.state = {
       loading: false,
-      activeKey: type && type === NEW_MOTION ? TAB_KEYS[0] : NEW_TAB_KEYS[0],
+      activeKey: !isNewType ? TAB_KEYS[0] : NEW_TAB_KEYS[0],
       errorKeys: {},
       type: type ? type : NEW_MOTION,
-      tabs: type && type === NEW_MOTION ? TAB_KEYS : NEW_TAB_KEYS
+      tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS
     }
     const sugg = props.initialValues
     if (
@@ -297,7 +301,11 @@ class C extends BaseComponent {
   }
 
   changeType = (type) => {
-    const tabs = type === NEW_MOTION ? TAB_KEYS : NEW_TAB_KEYS
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
+    const tabs = !isNewType ? TAB_KEYS : NEW_TAB_KEYS
     this.setState({ type, tabs, errorKeys: {} })
   }
 

@@ -233,6 +233,7 @@ export default class extends StandardPage {
       'relevance',
       'budget'
     ]
+    const type = _.get(detail, 'type')
     const newFields = ['abstract', 'motivation']
     const isNewType = _.includes(
       [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
