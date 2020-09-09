@@ -1384,6 +1384,7 @@ export default class extends Base {
    * Wallet Api
    */
   public async getSuggestion(id): Promise<any> {
+    const db_cvote = this.getDBModel('CVote')
     const fileds = [
       '_id',
       'displayId',
@@ -1412,6 +1413,12 @@ export default class extends Base {
       }
     }
 
+    const targetNum = suggestion.closeProposalNum || suggestion.targetProposalNum
+    let targetProposal:any
+    if(targetNum) {
+      targetProposal = await db_cvote.getDBInstance().findOne({vid: targetNum})
+    }
+
     const createdBy = suggestion.createdBy
     const address = `${process.env.SERVER_URL}/suggestion/${suggestion._id}`
     const did = _.get(createdBy, 'did.id')
@@ -1427,6 +1434,7 @@ export default class extends Base {
     return {
       ...result,
       type: constant.CVOTE_TYPE_API[suggestion.type],
+      targetProposalTitle: targetProposal && targetProposal.title,
       createdAt: timestamp.second(result.createdAt),
       id: suggestion.displayId,
       abs: suggestion.abstract,
