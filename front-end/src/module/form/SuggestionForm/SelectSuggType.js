@@ -110,6 +110,9 @@ class SelectSuggType extends Component {
 
   handleChange = (e, field) => {
     const error = `${field}Err`
+    if (field === 'type') {
+      this.props.changeType(e.target.value)
+    }
     this.setState({ [field]: e.target.value, [error]: !e.target.value }, () => {
       this.changeValue()
     })

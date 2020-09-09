@@ -28,10 +28,12 @@ const TAB_KEYS = [
   'goal',
   'planBudget',
   'teamInfo',
-  'relevance',
+  'relevance'
 ]
+const NEW_TAB_KEYS = ['type', 'abstract', 'motivation']
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
 const {
+  NEW_MOTION,
   CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
   TERMINATE_PROPOSAL
@@ -45,7 +47,9 @@ class C extends BaseComponent {
     this.state = {
       loading: false,
       activeKey: TAB_KEYS[0],
-      errorKeys: {}
+      errorKeys: {},
+      type: NEW_MOTION,
+      tabs: TAB_KEYS
     }
     const sugg = props.initialValues
     if (
@@ -73,7 +77,8 @@ class C extends BaseComponent {
   }
 
   getActiveKey(key) {
-    if (!TAB_KEYS.includes(key)) return this.state.activeKey
+    const { tabs } = this.state
+    if (!tabs.includes(key)) return this.state.activeKey
     return key
   }
 
@@ -93,19 +98,24 @@ class C extends BaseComponent {
       const milestone = _.get(values, 'plan.milestone')
       const pItems = _.get(values, 'budget.paymentItems')
 
-      const initiation = !_.isEmpty(pItems) && pItems.filter(
-        (item) => item.type === ADVANCE && item.milestoneKey === '0'
-      )
-      const completion = !_.isEmpty(pItems) && pItems.filter((item) => {
-        return (
-          item.type === COMPLETION &&
-          item.milestoneKey === (milestone.length - 1).toString()
+      const initiation =
+        !_.isEmpty(pItems) &&
+        pItems.filter(
+          (item) => item.type === ADVANCE && item.milestoneKey === '0'
         )
-      })
-      if ( !_.isEmpty(pItems) && (
-        milestone.length !== pItems.length ||
-        initiation.length > 1 ||
-        completion.length !== 1)
+      const completion =
+        !_.isEmpty(pItems) &&
+        pItems.filter((item) => {
+          return (
+            item.type === COMPLETION &&
+            item.milestoneKey === (milestone.length - 1).toString()
+          )
+        })
+      if (
+        !_.isEmpty(pItems) &&
+        (milestone.length !== pItems.length ||
+          initiation.length > 1 ||
+          completion.length !== 1)
       ) {
         this.setState({ loading: false })
         message.error(I18N.get('suggestion.form.error.payment'))
@@ -209,9 +219,10 @@ class C extends BaseComponent {
         })
         return
       }
-      const index = TAB_KEYS.findIndex((item) => item === this.state.activeKey)
-      if (index !== TAB_KEYS.length - 1) {
-        this.setState({ activeKey: TAB_KEYS[index + 1] })
+      const { tabs } = this.state
+      const index = tabs.findIndex((item) => item === this.state.activeKey)
+      if (index !== tabs.length - 1) {
+        this.setState({ activeKey: tabs[index + 1] })
       }
     })
   }
@@ -275,9 +286,10 @@ class C extends BaseComponent {
     const values = this.props.form.getFieldValue('budget')
     if (
       !this.state.budgetValidator &&
-      (_.isEmpty(values.elaAddress) ||
-        _.isEmpty(values.paymentItems))
-    ) { return cb() }
+      (_.isEmpty(values.elaAddress) || _.isEmpty(values.paymentItems))
+    ) {
+      return cb()
+    }
 
     if (!this.validateAddress(values.elaAddress)) {
       return cb(I18N.get('suggestion.form.error.elaAddress'))
@@ -293,7 +305,12 @@ class C extends BaseComponent {
   }
 
   setBudgetValidator = (x) => {
-    this.setState({budgetValidator: x})
+    this.setState({ budgetValidator: x })
+  }
+
+  changeType = (type) => {
+    const tabs = type === NEW_MOTION ? TAB_KEYS : NEW_TAB_KEYS
+    this.setState({ type, tabs })
   }
 
   getTextarea(id) {
@@ -344,6 +361,7 @@ class C extends BaseComponent {
           initialValue={data}
           callback={this.onTextareaChange}
           getActiveProposals={this.props.getActiveProposals}
+          changeType={this.changeType}
         />
       )
     }
@@ -361,21 +379,22 @@ class C extends BaseComponent {
         !initialValues.plan)
     ) {
       const rules = []
-      if (this.state.budgetValidator){
+      if (this.state.budgetValidator) {
         rules.push({
           validator: this.validateBudget
         })
       }
-      return (getFieldDecorator('planBudget', {
+      return getFieldDecorator('planBudget', {
         // rules
       })(
-      <ImplementationAndBudget 
-        getFieldDecorator={getFieldDecorator}
-        initialValues={initialValues}
-        budgetValidator={this}
-        form={this.props.form}
-        callback={this.onTextareaChange}
-      />))
+        <ImplementationAndBudget
+          getFieldDecorator={getFieldDecorator}
+          initialValues={initialValues}
+          budgetValidator={this}
+          form={this.props.form}
+          callback={this.onTextareaChange}
+        />
+      )
     }
 
     if (id === 'teamInfo') {
@@ -386,7 +405,7 @@ class C extends BaseComponent {
       rules.push({
         validator: this.validateTeamInfo
       })
-      return (getFieldDecorator('teamInfo', {
+      return getFieldDecorator('teamInfo', {
         initialValue: teamInfo
       })(
         <TeamInfoSection
@@ -394,7 +413,6 @@ class C extends BaseComponent {
           callback={this.onTextareaChange}
           initialValue={teamInfo}
         />
-        )
       )
     }
 
@@ -406,7 +424,7 @@ class C extends BaseComponent {
       return getFieldDecorator('relevance', {
         initialValue: initialValues[id]
       })(
-        <RelevanceSection 
+        <RelevanceSection
           callback={this.onTextareaChange}
           initialValue={relevance}
         />
@@ -429,8 +447,7 @@ class C extends BaseComponent {
 
   renderTabText(id) {
     const hasError = _.has(this.state.errorKeys, id)
-    if (['relevance','planBudget','teamInfo'].includes(id)
-    ) {
+    if (['relevance', 'planBudget', 'teamInfo'].includes(id)) {
       return (
         <TabText hasErr={hasError}>
           {I18N.get(`suggestion.fields.${id}`)}
@@ -460,9 +477,9 @@ class C extends BaseComponent {
   }
 
   hideContinue = () => {
-    const { activeKey, errorKeys } = this.state
-    const index = TAB_KEYS.findIndex((item) => item === activeKey)
-    return _.isEmpty(errorKeys) && index === TAB_KEYS.length - 1
+    const { activeKey, errorKeys, tabs } = this.state
+    const index = tabs.findIndex((item) => item === activeKey)
+    return _.isEmpty(errorKeys) && index === tabs.length - 1
   }
 
   ord_render() {
@@ -508,7 +525,7 @@ class C extends BaseComponent {
             activeKey={this.state.activeKey}
             onChange={this.onTabChange}
           >
-            {TAB_KEYS.map((item) => (
+            {this.state.tabs.map((item) => (
               <TabPane tab={this.renderTabText(item)} key={item}>
                 <TabPaneInner>
                   <Note>{I18N.get(`suggestion.form.note.${item}`)}</Note>
