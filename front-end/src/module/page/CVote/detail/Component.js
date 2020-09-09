@@ -14,7 +14,12 @@ import { Link } from 'react-router-dom'
 import I18N from '@/I18N'
 import _ from 'lodash'
 import StandardPage from '@/module/page/StandardPage'
-import { CVOTE_RESULT, CVOTE_STATUS, CVOTE_CHAIN_STATUS } from '@/constant'
+import {
+  CVOTE_RESULT,
+  CVOTE_STATUS,
+  CVOTE_CHAIN_STATUS,
+  SUGGESTION_TYPE
+} from '@/constant'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
 import CRPopover from '@/module/shared/Popover/Component'
@@ -68,6 +73,11 @@ import './style.scss'
 import { ItemText } from '../../suggestion/detail/style'
 
 const { TextArea } = Input
+const {
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 
 const renderRichContent = (data, key, title, user, actions) => {
   let rc
@@ -530,6 +540,11 @@ class C extends StandardPage {
   }
 
   renderSuggestionLinks(commonLinks) {
+    const type = _.get(this.props, 'data.type')
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
     return (
       <StyledAnchor offsetTop={300}>
         <Anchor.Link
@@ -545,20 +560,31 @@ class C extends StandardPage {
           href="#motivation"
           title={I18N.get('proposal.fields.motivation')}
         />
-        <LinkGroup>
-          <Anchor.Link href="#goal" title={I18N.get('proposal.fields.goal')} />
-        </LinkGroup>
-        <Anchor.Link href="#plan" title={I18N.get('proposal.fields.plan')} />
-        <Anchor.Link
-          href="#relevance"
-          title={I18N.get('proposal.fields.relevance')}
-        />
-        <LinkGroup marginTop={48}>
+        {!isNewType && (
+          <LinkGroup>
+            <Anchor.Link
+              href="#goal"
+              title={I18N.get('proposal.fields.goal')}
+            />
+          </LinkGroup>
+        )}
+        {!isNewType && (
+          <Anchor.Link href="#plan" title={I18N.get('proposal.fields.plan')} />
+        )}
+        {!isNewType && (
           <Anchor.Link
-            href="#budget"
-            title={I18N.get('proposal.fields.budget')}
+            href="#relevance"
+            title={I18N.get('proposal.fields.relevance')}
           />
-        </LinkGroup>
+        )}
+        {!isNewType && (
+          <LinkGroup marginTop={48}>
+            <Anchor.Link
+              href="#budget"
+              title={I18N.get('proposal.fields.budget')}
+            />
+          </LinkGroup>
+        )}
         <LinkGroup marginTop={48}>
           <Anchor.Link href="#vote" title={I18N.get('proposal.fields.vote')} />
         </LinkGroup>
