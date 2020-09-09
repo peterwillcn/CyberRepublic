@@ -42,14 +42,14 @@ const {
 class C extends BaseComponent {
   constructor(props) {
     super(props)
-
+    const type = _.get(props, 'initialValues.type')
     this.timer = -1
     this.state = {
       loading: false,
-      activeKey: TAB_KEYS[0],
+      activeKey: type && type === NEW_MOTION ? TAB_KEYS[0] : NEW_TAB_KEYS[0],
       errorKeys: {},
-      type: NEW_MOTION,
-      tabs: TAB_KEYS
+      type: type ? type : NEW_MOTION,
+      tabs: type && type === NEW_MOTION ? TAB_KEYS : NEW_TAB_KEYS
     }
     const sugg = props.initialValues
     if (
@@ -210,6 +210,7 @@ class C extends BaseComponent {
   handleContinue = (e) => {
     e.preventDefault()
     const { form } = this.props
+    const { tabs } = this.state
     form.validateFields((err, values) => {
       if (err) {
         this.setState({
@@ -219,7 +220,6 @@ class C extends BaseComponent {
         })
         return
       }
-      const { tabs } = this.state
       const index = tabs.findIndex((item) => item === this.state.activeKey)
       if (index !== tabs.length - 1) {
         this.setState({ activeKey: tabs[index + 1] })
@@ -310,7 +310,7 @@ class C extends BaseComponent {
 
   changeType = (type) => {
     const tabs = type === NEW_MOTION ? TAB_KEYS : NEW_TAB_KEYS
-    this.setState({ type, tabs })
+    this.setState({ type, tabs, errorKeys: {} })
   }
 
   getTextarea(id) {
