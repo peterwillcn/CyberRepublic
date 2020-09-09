@@ -1720,7 +1720,7 @@ export default class extends Base {
     const address = `${process.env.SERVER_URL}/proposals/${proposal.id}`
 
     const proposalId = proposal._id
-    const targetNum = proposal.targetProposalNum
+    const targetNum = proposal.targetProposalNum || proposal.closeProposalNum
     let targetProposal:any
     if (targetNum){
       targetProposal = await db_cvote.getDBInstance().findOne({vid: parseInt(targetNum), old: { $exists: false }})
