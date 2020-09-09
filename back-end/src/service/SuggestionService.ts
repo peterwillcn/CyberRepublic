@@ -1391,6 +1391,7 @@ export default class extends Base {
       'title',
       'abstract',
       'createdAt',
+      'draftHash',
       'type',
       'closeProposalNum',
       'newSecretaryDID',
