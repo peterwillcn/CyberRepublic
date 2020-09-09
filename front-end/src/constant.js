@@ -461,3 +461,13 @@ export const SUGGESTION_TYPE = {
   CHANGE_SECRETARY: 'CHANGE_SECRETARY',
   TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
 }
+export const TAB_KEYS = [
+  'type',
+  'abstract',
+  'motivation',
+  'goal',
+  'planBudget',
+  'teamInfo',
+  'relevance'
+]
+export const NEW_TAB_KEYS = ['type', 'abstract', 'motivation']

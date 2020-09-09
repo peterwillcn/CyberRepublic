@@ -3,7 +3,7 @@ import { Form, Input, Button, Row, Tabs, message } from 'antd'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
-import { ABSTRACT_MAX_WORDS } from '@/constant'
+import { ABSTRACT_MAX_WORDS, TAB_KEYS, NEW_TAB_KEYS } from '@/constant'
 import CircularProgressbar from '@/module/common/CircularProgressbar'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
 import RelevanceSection from './RelevanceSection'
@@ -19,16 +19,6 @@ const { TabPane } = Tabs
 
 const WORD_LIMIT = ABSTRACT_MAX_WORDS
 
-const TAB_KEYS = [
-  'type',
-  'abstract',
-  'motivation',
-  'goal',
-  'planBudget',
-  'teamInfo',
-  'relevance'
-]
-const NEW_TAB_KEYS = ['type', 'abstract', 'motivation']
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
 const {
   NEW_MOTION,
