@@ -700,6 +700,11 @@ class C extends StandardPage {
     }
     // legacy data structure has content field
     if (_.has(data, 'content')) return renderRichContent(data, 'content')
+    const type = _.get(this.props, 'data.type')
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
     return (
       <div>
         <Preamble {...data} user={user} copyFun={this.copyToClip} />
@@ -713,25 +718,29 @@ class C extends StandardPage {
           'motivation',
           I18N.get('proposal.fields.motivation')
         )}
-        {renderRichContent(data, 'goal', I18N.get('proposal.fields.goal'))}
-        {renderRichContent(data, 'plan', I18N.get('proposal.fields.plan'))}
-        {renderRichContent(
-          data,
-          'relevance',
-          I18N.get('proposal.fields.relevance')
-        )}
-        {renderRichContent(
-          data,
-          'budget',
-          I18N.get('proposal.fields.budget'),
-          user,
-          {
-            applyPayment: this.props.applyPayment,
-            getPaymentSignature: this.props.getPaymentSignature,
-            reviewApplication: this.props.reviewApplication,
-            withdraw: this.props.withdraw
-          }
-        )}
+        {!isNewType &&
+          renderRichContent(data, 'goal', I18N.get('proposal.fields.goal'))}
+        {!isNewType &&
+          renderRichContent(data, 'plan', I18N.get('proposal.fields.plan'))}
+        {!isNewType &&
+          renderRichContent(
+            data,
+            'relevance',
+            I18N.get('proposal.fields.relevance')
+          )}
+        {!isNewType &&
+          renderRichContent(
+            data,
+            'budget',
+            I18N.get('proposal.fields.budget'),
+            user,
+            {
+              applyPayment: this.props.applyPayment,
+              getPaymentSignature: this.props.getPaymentSignature,
+              reviewApplication: this.props.reviewApplication,
+              withdraw: this.props.withdraw
+            }
+          )}
       </div>
     )
   }
