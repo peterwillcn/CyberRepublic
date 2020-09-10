@@ -1437,16 +1437,19 @@ export default class extends Base {
       }
     }
 
+    // prettier-ignore
     const targetNum = suggestion.closeProposalNum || suggestion.targetProposalNum
-    let targetProposal:any
-    if(targetNum) {
-      targetProposal = await db_cvote.getDBInstance().findOne({vid: targetNum})
+    let targetProposal: any
+    if (targetNum) {
+      targetProposal = await db_cvote
+        .getDBInstance()
+        .findOne({ vid: targetNum })
     }
     const budget = suggestion.budget
     let fund = []
     if (budget) {
-      _.forEach(budget,(o) => {
-        fund.push(_.omit(o,['criteria','milestoneKey']))
+      _.forEach(budget, (o) => {
+        fund.push(_.omit(o, ['criteria', 'milestoneKey']))
       })
     }
 
@@ -1471,7 +1474,7 @@ export default class extends Base {
       targetProposalTitle: targetProposal && targetProposal.title,
       targetProposalHash: targetProposal && targetProposal.proposalHash,
       createdAt: timestamp.second(result.createdAt),
-      receipts:suggestion.elaAddress,
+      receipts: suggestion.elaAddress,
       fund,
       fundAmount: suggestion.budgetAmount,
       id: suggestion.displayId,
@@ -1516,13 +1519,7 @@ export default class extends Base {
   }
 
   private getDraftHash(suggestion: any) {
-    const fields = [
-      '_id',
-      'title',
-      'type',
-      'abstract',
-      'motivation'
-    ]
+    const fields = ['_id', 'title', 'type', 'abstract', 'motivation']
     const temp = [
       'goal',
       'plan',
