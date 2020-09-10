@@ -1521,24 +1521,26 @@ export default class extends Base {
       'title',
       'type',
       'abstract',
-      'motivation',
+      'motivation'
+    ]
+    const temp = [
       'goal',
       'plan',
       'relevance',
       'budget',
       'budgetAmount',
-      'elaAddress'
+      'elaAddress',
+      'planIntro',
+      'budgetIntro'
     ]
-    if (suggestion.planIntro) {
-      fields.push('planIntro')
-    }
-    if (suggestion.budgetIntro) {
-      fields.push('budgetIntro')
+    for (const field of temp) {
+      if (suggestion[field]) {
+        fields.push(field)
+      }
     }
     const content = {}
     const sortedFields = _.sortBy(fields)
-    for (let index in sortedFields) {
-      const field = sortedFields[index]
+    for (const field of sortedFields) {
       content[field] = suggestion[field]
     }
     return utilCrypto.sha256D(JSON.stringify(content))
