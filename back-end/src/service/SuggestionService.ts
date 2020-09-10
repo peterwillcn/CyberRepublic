@@ -1413,6 +1413,9 @@ export default class extends Base {
       'createdAt',
       'draftHash',
       'type',
+      'budgetAmount',
+      'elaAddress',
+      'budget',
       'closeProposalNum',
       'newSecretaryDID',
       'newAddress',
@@ -1439,6 +1442,13 @@ export default class extends Base {
     if(targetNum) {
       targetProposal = await db_cvote.getDBInstance().findOne({vid: targetNum})
     }
+    const budget = suggestion.budget
+    let fund = []
+    if (budget) {
+      _.forEach(budget,(o) => {
+        fund.push(_.omit(o,['criteria','milestoneKey']))
+      })
+    }
 
     const createdBy = suggestion.createdBy
     const address = `${process.env.SERVER_URL}/suggestion/${suggestion._id}`
@@ -1447,6 +1457,9 @@ export default class extends Base {
     const result = _.omit(suggestion._doc, [
       '_id',
       'id',
+      'budget',
+      'budgetAmount',
+      'elaAddress',
       'displayId',
       'createdBy',
       'abstract'
@@ -1456,7 +1469,11 @@ export default class extends Base {
       ...result,
       type: constant.CVOTE_TYPE_API[suggestion.type],
       targetProposalTitle: targetProposal && targetProposal.title,
+      targetProposalHash: targetProposal && targetProposal.proposalHash,
       createdAt: timestamp.second(result.createdAt),
+      receipts:suggestion.elaAddress,
+      fund,
+      fundAmount: suggestion.budgetAmount,
       id: suggestion.displayId,
       abs: suggestion.abstract,
       address,
