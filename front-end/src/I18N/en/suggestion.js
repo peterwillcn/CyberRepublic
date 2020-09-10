@@ -101,7 +101,13 @@ export default {
       proposalNewAddress: 'Proposal New ELA Address',
       newSecretary: 'New Secretary',
       ownerInfo: `Please input the new owner's DID`,
-      secretaryInfo: `Please input the new secretary's DID`
+      secretaryInfo: `Please input the new secretary's DID`,
+      desc: {
+        [SUGGESTION_TYPE.NEW_MOTION]: `Topic regarding CR or Elastos technology development`,
+        [SUGGESTION_TYPE.CHANGE_PROPOSAL]: `Topic regarding changing proposal owner or ELA receive address`,
+        [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: `Topic regarding terminating proposals unable or should not be executed`,
+        [SUGGESTION_TYPE.CHANGE_SECRETARY]: `Topic regarding changing the secretary general`
+      }
     },
     note: {
       type: 'Select a suggestion type.',

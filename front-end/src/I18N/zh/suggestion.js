@@ -101,7 +101,13 @@ export default {
       proposalNewAddress: '提案新 ELA 接收地址',
       newSecretary: '新秘书长',
       ownerInfo: `请输入提案新负责人的 DID`,
-      secretaryInfo: `请输入新秘书长的 DID`
+      secretaryInfo: `请输入新秘书长的 DID`,
+      desc: {
+        [SUGGESTION_TYPE.NEW_MOTION]: `关于 CR 或亦来云技术发展相关的议题`,
+        [SUGGESTION_TYPE.CHANGE_PROPOSAL]: `更换提案负责人或提案经费接收地址的议题`,
+        [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: `关于终止无法执行或不应执行提案的议题`,
+        [SUGGESTION_TYPE.CHANGE_SECRETARY]: `更换 CR 秘书长人选的议题`
+      }
     },
     note: {
       type: '选择一个建议类型。',

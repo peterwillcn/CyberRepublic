@@ -164,9 +164,12 @@ class SelectSuggType extends Component {
             TERMINATE_PROPOSAL,
             CHANGE_SECRETARY
           ].map((item) => (
-            <Radio value={item} key={item}>
-              {I18N.get(`suggestion.form.type.${item}`)}
-            </Radio>
+            <div>
+              <Radio value={item} key={item}>
+                {I18N.get(`suggestion.form.type.${item}`)} -{' '}
+                {I18N.get(`suggestion.form.type.desc.${item}`)}
+              </Radio>
+            </div>
           ))}
         </Radio.Group>
         {type === CHANGE_PROPOSAL && (
