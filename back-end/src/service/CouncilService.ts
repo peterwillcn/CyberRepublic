@@ -282,6 +282,9 @@ export default class extends Base {
       let term = []
       let impeachmentObj = {}
       if (councilList.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
+        const currentCouncil =  await ela.currentCouncil()
+        const thisDidInfo = _.find(currentCouncil.crmembersinfo,{did})
+        impeachmentObj['dpospublickey'] = thisDidInfo.dpospublickey
         // update impeachment
         const circulatingSupply = councilList.circulatingSupply
           ? councilList.circulatingSupply
