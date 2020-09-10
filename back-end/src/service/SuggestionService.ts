@@ -1840,11 +1840,15 @@ export default class extends Base {
           }
           break
         default:
+          const budget = _.get(suggestion, 'budget')
+          const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'normal',
-            budgets: this.convertBudget(suggestion.budget),
-            recipient: suggestion.elaAddress
+            budgets: hasBudget ? this.convertBudget(budget) : 0,
+            recipient: hasBudget
+              ? suggestion.elaAddress
+              : process.env.ELA_BURN_ADDRESS
           }
           break
       }
@@ -2145,11 +2149,15 @@ export default class extends Base {
           }
           break
         default:
+          const budget = _.get(suggestion, 'budget')
+          const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'normal',
-            budgets: this.convertBudget(suggestion.budget),
-            recipient: suggestion.elaAddress
+            budgets: hasBudget ? this.convertBudget(budget) : 0,
+            recipient: hasBudget
+              ? suggestion.elaAddress
+              : process.env.ELA_BURN_ADDRESS
           }
           break
       }
