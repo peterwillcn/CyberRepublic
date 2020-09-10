@@ -16,12 +16,6 @@ import {
 } from '../utility'
 const Big = require('big.js')
 const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX } = constant
-const {
-  NEW_MOTION,
-  CHANGE_PROPOSAL,
-  CHANGE_SECRETARY,
-  TERMINATE_PROPOSAL
-} = SUGGESTION_TYPE
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
