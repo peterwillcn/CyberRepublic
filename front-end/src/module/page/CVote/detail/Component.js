@@ -8,7 +8,8 @@ import {
   Anchor,
   Row,
   Col,
-  Popconfirm
+  Popconfirm,
+  Tabs
 } from 'antd'
 import { Link } from 'react-router-dom'
 import I18N from '@/I18N'
@@ -73,6 +74,7 @@ import './style.scss'
 import { ItemText } from '../../suggestion/detail/style'
 
 const { TextArea } = Input
+const { TabPane } = Tabs
 const {
   CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
@@ -170,7 +172,8 @@ class C extends StandardPage {
       visibleOppose: false,
       visibleAbstain: false,
       editing: false,
-      smallSpace: false
+      smallSpace: false,
+      activeKey: 'budget'
     }
 
     this.isLogin = this.props.isLogin
@@ -233,8 +236,7 @@ class C extends StandardPage {
     const notesNode = this.renderNotes()
     const voteActionsNode = this.renderVoteActions()
     const voteDetailNode = this.renderVoteResults()
-    const trackingNode = this.renderTracking()
-    const trackingMessageNode = this.renderTrackingMessage()
+    const trackingTabsNode = this.renderTrackingTabs()
     const summaryNode = this.renderSummary()
 
     // get the first line pure text of abstract
@@ -258,8 +260,7 @@ class C extends StandardPage {
               {notesNode}
               {isVote ? voteActionsNode : null}
               {voteDetailNode}
-              {trackingNode}
-              {trackingMessageNode}
+              {trackingTabsNode}
               {summaryNode}
             </Body>
             <SocialShareButtons
@@ -452,17 +453,6 @@ class C extends StandardPage {
     ) {
       isShowFollowingUp = true
     }
-
-    const trackingTitle = trackingStatus ? (
-      <span>
-        {I18N.get('proposal.fields.tracking')}{' '}
-        <span style={{ fontSize: 10, color: '#aaa' }}>
-          ({I18N.get(`proposal.status.trackingRaw.${trackingStatus}`)})
-        </span>
-      </span>
-    ) : (
-      I18N.get('proposal.fields.tracking')
-    )
     const summaryTitle = summaryStatus ? (
       <span>
         {I18N.get('proposal.fields.summary')}{' '}
@@ -472,9 +462,6 @@ class C extends StandardPage {
       </span>
     ) : (
       I18N.get('proposal.fields.summary')
-    )
-    const tracking = isShowFollowingUp && (
-      <Anchor.Link href="#tracking" title={trackingTitle} key="tracking" />
     )
     const trackingMessage = isShowFollowingUp && (
       <Anchor.Link
@@ -486,7 +473,7 @@ class C extends StandardPage {
     const summary = isShowFollowingUp && (
       <Anchor.Link href="#summary" title={summaryTitle} key="summary" />
     )
-    const commonLinks = [tracking, trackingMessage, summary]
+    const commonLinks = [trackingMessage, summary]
     return isElip
       ? this.renderElipLinks(commonLinks)
       : this.renderSuggestionLinks(commonLinks)
@@ -877,6 +864,30 @@ class C extends StandardPage {
         {editProposalBtn}
         {publishProposalBtn}
         {deleteDraftProposalBtn}
+      </div>
+    )
+  }
+
+  onTabChange = (activeKey) => {
+    this.setState({ activeKey })
+  }
+
+  renderTrackingTabs() {
+    return (
+      <div id="tracking-message">
+        <Tabs
+          animated={false}
+          tabBarGutter={5}
+          activeKey={this.state.activeKey}
+          onChange={this.onTabChange}
+        >
+          <TabPane tab="Budget tracking" key="budget">
+            {this.renderTracking()}
+          </TabPane>
+          <TabPane tab="Status tracking" key="status">
+            {this.renderTrackingMessage()}
+          </TabPane>
+        </Tabs>
       </div>
     )
   }

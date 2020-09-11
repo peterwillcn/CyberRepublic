@@ -39,11 +39,7 @@ export default class extends BaseComponent {
   }
 
   renderTitle() {
-    return (
-      <ContentTitle id="tracking">
-        {I18N.get('proposal.fields.tracking')}
-      </ContentTitle>
-    )
+    return <ContentTitle>{I18N.get('proposal.fields.tracking')}</ContentTitle>
   }
 
   renderPrivateList() {

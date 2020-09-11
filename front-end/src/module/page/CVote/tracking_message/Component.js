@@ -19,11 +19,7 @@ export default class extends BaseComponent {
   }
 
   renderTitle() {
-    return (
-      <Title id="tracking-message">
-        {I18N.get('proposal.fields.trackingMessage')}
-      </Title>
-    )
+    return <Title>{I18N.get('proposal.fields.trackingMessage')}</Title>
   }
 
   renderTracking() {
