@@ -56,7 +56,6 @@ import {
   ContentTitle,
   StyledAnchor,
   FixedHeader,
-  FixedHeaderQrCode,
   Body,
   SubTitleHeading,
   SubTitleContainer,
@@ -68,10 +67,11 @@ import {
   PartContent,
   Subtitle,
   Paragraph,
-  StyledRow
+  StyledRow,
+  StyledTab,
+  StyledTabs
 } from './style'
 import './style.scss'
-import { ItemText } from '../../suggestion/detail/style'
 
 const { TextArea } = Input
 const { TabPane } = Tabs
@@ -874,22 +874,26 @@ class C extends StandardPage {
 
   renderTrackingTabs() {
     return (
-      <div id="tracking-message">
+      <StyledTabs id="tracking-message">
         <Tabs
           animated={false}
           tabBarGutter={5}
           activeKey={this.state.activeKey}
           onChange={this.onTabChange}
         >
-          <TabPane tab="Budget tracking" key="budget">
+          <TabPane tab={this.renderTabTitle('budget')} key="budget">
             {this.renderTracking()}
           </TabPane>
-          <TabPane tab="Status tracking" key="status">
+          <TabPane tab={this.renderTabTitle('status')} key="status">
             {this.renderTrackingMessage()}
           </TabPane>
         </Tabs>
-      </div>
+      </StyledTabs>
     )
+  }
+
+  renderTabTitle(item) {
+    return <StyledTab>{I18N.get(`proposal.text.tracking.${item}`)}</StyledTab>
   }
 
   renderTracking() {

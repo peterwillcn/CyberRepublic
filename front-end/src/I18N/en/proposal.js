@@ -66,7 +66,9 @@ export default {
       notice: {
         header: '',
         footer: ''
-      }
+      },
+      budget: 'Budget tracking',
+      status: 'Status tracking'
     },
     summary: {
       reviewDetails: 'Review Details',

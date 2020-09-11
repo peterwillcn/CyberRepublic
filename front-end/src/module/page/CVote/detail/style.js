@@ -178,3 +178,24 @@ export const StyledRow = styled.div`
     margin-top:5px;
   }
 `
+export const StyledTab = styled.div`
+  font-size: 18px;
+`
+export const StyledTabs = styled.div`
+  .ant-tabs-nav {
+    color: #afb6c3;
+  }
+  .ant-tabs-nav .ant-tabs-tab:hover {
+    color: #333333;
+  }
+  .ant-tabs-nav .ant-tabs-tab-active {
+    color: #333333;
+  }
+  .ant-tabs-nav .ant-tabs-tab-active:hover {
+    color: #333333;
+  }
+  .ant-tabs-ink-bar {
+    background-color: #1de9b6;
+    height: 4px;
+  }
+`

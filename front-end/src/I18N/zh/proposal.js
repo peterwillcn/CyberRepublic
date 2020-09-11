@@ -66,7 +66,9 @@ export default {
       notice: {
         header: '',
         footer: ''
-      }
+      },
+      budget: '预算跟踪',
+      status: '状态跟踪'
     },
     summary: {
       reviewDetails: '审阅详情',
