@@ -524,7 +524,7 @@ class C extends BaseComponent {
             {this.state.tabs.map((item) => (
               <TabPane tab={this.renderTabText(item)} key={item}>
                 <TabPaneInner>
-                  <Note>{I18N.get(`suggestion.form.note.${item}`)}</Note>
+                  {item === 'teamInfo' ? null : <Note>{I18N.get(`suggestion.form.note.${item}`)}</Note>}
                   <FormItem>{this.getTextarea(item)}</FormItem>
                   {item === 'abstract' ? this.renderWordLimit() : null}
                 </TabPaneInner>
