@@ -81,11 +81,13 @@ export const CVote = {
   motivation: {
     type: String
   },
-  relevance: [{
-    proposal: Schema.Types.ObjectId,
-    title: String,
-    relevanceDetail: String,
-  }],
+  relevance: [
+    {
+      proposal: Schema.Types.ObjectId,
+      title: String,
+      relevanceDetail: String
+    }
+  ],
   budgetAmount: {
     type: Schema.Types.Mixed
   },
@@ -233,5 +235,10 @@ export const CVote = {
   newOwnerDID: String,
   newAddress: String,
   terminatedBy: Number,
-  changedBy: Number
+  changedBy: [
+    {
+      vid: Number,
+      id: { type: Schema.Types.ObjectId, ref: 'cvote' }
+    }
+  ]
 }

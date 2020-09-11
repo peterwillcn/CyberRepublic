@@ -1434,7 +1434,7 @@ export default class extends Base {
     }
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
       const db_user = this.getDBModel('User')
-      const setDoc: any = { changedBy: proposal.vid }
+      const setDoc: any = {}
       if (proposal.newOwnerDID) {
         const newOwner = await db_user.findOne({
           'did.id': DID_PREFIX + proposal.newOwnerDID
@@ -1451,7 +1451,10 @@ export default class extends Base {
           vid: proposal.targetProposalNum,
           old: { $exists: false }
         },
-        setDoc
+        {
+          $set: setDoc,
+          $push: { changedBy: { vid: proposal.vid, id: proposal._id } }
+        }
       )
     }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
