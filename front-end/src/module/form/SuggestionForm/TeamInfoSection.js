@@ -80,7 +80,6 @@ class TeamInfoSection extends Component {
     return (
       <Wrapper>
         <Header>
-          <Label>{title}</Label>
           <Button onClick={this.showModal}>
             {I18N.get('suggestion.plan.createTeamInfo')}
           </Button>
@@ -124,6 +123,7 @@ const Wrapper = styled.div`
   margin-bottom: 24px;
 `
 const Header = styled.div`
+  margin-top: 20px;
   margin-bottom: 4px;
   display: flex;
   justify-content: space-between;
