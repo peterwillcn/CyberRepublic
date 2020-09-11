@@ -1,8 +1,6 @@
 import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
-import I18N from '@/I18N'
 import _ from 'lodash'
-import styled from 'styled-components'
 import { CVOTE_STATUS } from '@/constant'
 import Tracking from './list/Container'
 import CreateForm from './create/Container'
@@ -10,16 +8,11 @@ import CreateForm from './create/Container'
 export default class extends BaseComponent {
   ord_render() {
     return (
-      <Wrapper>
-        {this.renderTitle()}
+      <div>
         {this.renderForm()}
         {this.renderTracking()}
-      </Wrapper>
+      </div>
     )
-  }
-
-  renderTitle() {
-    return <Title>{I18N.get('proposal.fields.trackingMessage')}</Title>
   }
 
   renderTracking() {
@@ -33,14 +26,6 @@ export default class extends BaseComponent {
     const isActive = [CVOTE_STATUS.ACTIVE, CVOTE_STATUS.FINAL].includes(
       proposal.status
     )
-
     return isOwner && isActive && <CreateForm proposal={proposal} />
   }
 }
-
-const Wrapper = styled.div``
-
-const Title = styled.div`
-  font-size: 20px;
-  margin-bottom: 32px;
-`

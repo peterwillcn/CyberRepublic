@@ -26,13 +26,11 @@ export default class extends BaseComponent {
     const { visible } = this.state
     return (
       <Wrapper>
-        <Button
-          className="cr-btn cr-btn-primary"
-          type="primary"
-          onClick={this.showModal}
-        >
-          <Text>{I18N.get('proposal.btn.addTrackingMessage')}</Text>
-          <Icon type="plus-circle" />
+        <Button className="cr-btn cr-btn-gray" onClick={this.showModal}>
+          <Inside>
+            <span>{I18N.get('proposal.btn.addTrackingMessage')}</span>
+            <Icon type="plus-circle" style={{ fontSize: 22, paddingLeft: 8 }} />
+          </Inside>
         </Button>
         {visible && (
           <Modal
@@ -78,7 +76,9 @@ export default class extends BaseComponent {
   }
 }
 
-const Wrapper = styled.div``
-const Text = styled.span`
-  vertical-align: top;
+const Wrapper = styled.div`
+  margin-top: 48px;
+`
+const Inside = styled.div`
+  display: flex;
 `

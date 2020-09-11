@@ -81,7 +81,6 @@ export default class extends BaseComponent {
 }
 
 const Wrapper = styled.div`
-  margin-top: 32px;
   margin-bottom: 32px;
 `
 
