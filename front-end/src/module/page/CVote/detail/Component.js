@@ -877,7 +877,7 @@ class C extends StandardPage {
       <StyledTabs id="tracking-message">
         <Tabs
           animated={false}
-          tabBarGutter={5}
+          tabBarGutter={38}
           activeKey={this.state.activeKey}
           onChange={this.onTabChange}
         >
