@@ -76,19 +76,19 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
 }
 
 const EMAIL_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION] : 'Passed',
-  [constant.CVOTE_STATUS.ACTIVE] : 'Passed',
-  [constant.CVOTE_STATUS.FINAL] : 'Passed',
-  [constant.CVOTE_STATUS.REJECT] : 'Rejected',
-  [constant.CVOTE_STATUS.VETOED] : 'Rejected',
+  [constant.CVOTE_STATUS.NOTIFICATION]: 'Passed',
+  [constant.CVOTE_STATUS.ACTIVE]: 'Passed',
+  [constant.CVOTE_STATUS.FINAL]: 'Passed',
+  [constant.CVOTE_STATUS.REJECT]: 'Rejected',
+  [constant.CVOTE_STATUS.VETOED]: 'Rejected'
 }
 
 const EMAIL_TITLE_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION] : constant.CVOTE_STATUS.NOTIFICATION,
-  [constant.CVOTE_STATUS.ACTIVE] : 'PASSED',
-  [constant.CVOTE_STATUS.REJECT] : 'REJECTED',
-  [constant.CVOTE_STATUS.VETOED] : 'VETOED',
-  [constant.CVOTE_STATUS.FINAL] : 'FINAL'
+  [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.NOTIFICATION,
+  [constant.CVOTE_STATUS.ACTIVE]: 'PASSED',
+  [constant.CVOTE_STATUS.REJECT]: 'REJECTED',
+  [constant.CVOTE_STATUS.VETOED]: 'VETOED',
+  [constant.CVOTE_STATUS.FINAL]: 'FINAL'
 }
 
 const { DID_PREFIX, API_VOTE_TYPE } = constant
@@ -1126,9 +1126,9 @@ export default class extends Base {
           'voteResult.$.value': value,
           'voteResult.$.reason': reason || '',
           'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.UNCHAIN,
-          'voteResult.$.reasonHash': reasonHash || utilCrypto.sha256D(
-            reason + timestamp.second(reasonCreateDate)
-          ),
+          'voteResult.$.reasonHash':
+            reasonHash ||
+            utilCrypto.sha256D(reason + timestamp.second(reasonCreateDate)),
           'voteResult.$.reasonCreatedAt': reasonCreateDate
         },
         $inc: {
@@ -1429,7 +1429,10 @@ export default class extends Base {
           vid: proposal.closeProposalNum,
           old: { $exists: false }
         },
-        { status: constant.CVOTE_STATUS.TERMINATED, terminatedBy: proposal.vid }
+        {
+          status: constant.CVOTE_STATUS.TERMINATED,
+          terminatedBy: { vid: proposal.vid, id: proposal._id }
+        }
       )
     }
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
@@ -1633,7 +1636,7 @@ export default class extends Base {
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
       if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
         temp.voteEndsIn = _.toNumber(
-            new Date().getTime()/ 1000 + 
+          new Date().getTime() / 1000 +
             (o.proposedEndsHeight - rs[2].currentHeight) * 2 * 60
         ).toFixed()
       }
@@ -1724,9 +1727,11 @@ export default class extends Base {
 
     const proposalId = proposal._id
     const targetNum = proposal.targetProposalNum || proposal.closeProposalNum
-    let targetProposal:any
-    if (targetNum){
-      targetProposal = await db_cvote.getDBInstance().findOne({vid: parseInt(targetNum), old: { $exists: false }})
+    let targetProposal: any
+    if (targetNum) {
+      targetProposal = await db_cvote
+        .getDBInstance()
+        .findOne({ vid: parseInt(targetNum), old: { $exists: false } })
     }
 
     const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
@@ -2345,9 +2350,9 @@ export default class extends Base {
   }
 
   public async getProposalTitle(param: any) {
-    const db_cvote = this.getDBModel("CVote")
+    const db_cvote = this.getDBModel('CVote')
     if (_.isEmpty(param)) return
-    let value = ""
+    let value = ''
     _.forEach(param, (v: any) => {
       value += v
     })
@@ -2365,9 +2370,13 @@ export default class extends Base {
     const db_cvote = this.getDBModel('CVote')
     const db_council = this.getDBModel('Council')
 
-    const rs: any = jwt.verify(param.params, process.env.WALLET_VOTE_PUBLIC_KEY, {
-      algorithms: ['ES256']
-    })
+    const rs: any = jwt.verify(
+      param.params,
+      process.env.WALLET_VOTE_PUBLIC_KEY,
+      {
+        algorithms: ['ES256']
+      }
+    )
     if (rs.exp < (new Date().getTime() / 1000).toFixed()) {
       throw 'Request expired'
     }
@@ -2400,7 +2409,10 @@ export default class extends Base {
     if (!votedRs) {
       throw 'This vote undefined'
     }
-    if (votedRs.status == constant.CVOTE_CHAIN_STATUS.UNCHAIN && votedRs.value != 'undecided') {
+    if (
+      votedRs.status == constant.CVOTE_CHAIN_STATUS.UNCHAIN &&
+      votedRs.value != 'undecided'
+    ) {
       throw 'The voting status has not been updated'
     }
     const data = {

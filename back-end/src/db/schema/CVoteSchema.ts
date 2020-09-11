@@ -234,7 +234,10 @@ export const CVote = {
   newSecretaryDID: String,
   newOwnerDID: String,
   newAddress: String,
-  terminatedBy: Number,
+  terminatedBy: {
+    vid: Number,
+    id: { type: Schema.Types.ObjectId, ref: 'cvote' }
+  },
   changedBy: [
     {
       vid: Number,
