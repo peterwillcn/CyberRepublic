@@ -153,7 +153,7 @@ class SelectSuggType extends Component {
       newSecretaryDIDErr
     } = this.state
     return (
-      <div>
+      <Wrapper>
         <Radio.Group
           onChange={(e) => this.handleChange(e, 'type')}
           value={type}
@@ -164,14 +164,15 @@ class SelectSuggType extends Component {
             TERMINATE_PROPOSAL,
             CHANGE_SECRETARY
           ].map((item) => (
-            <div>
-              <Radio value={item} key={item}>
-                {I18N.get(`suggestion.form.type.${item}`)} -{' '}
-                {I18N.get(`suggestion.form.type.desc.${item}`)}
+            <div key={item} className="radio-item">
+              <Radio value={item}>
+                {I18N.get(`suggestion.form.type.${item}`)}
               </Radio>
+              <Desc>{I18N.get(`suggestion.form.type.desc.${item}`)}</Desc>
             </div>
           ))}
         </Radio.Group>
+
         {type === CHANGE_PROPOSAL && (
           <Section>
             <div className="number">
@@ -261,17 +262,44 @@ class SelectSuggType extends Component {
             )}
           </Section>
         )}
-      </div>
+      </Wrapper>
     )
   }
 }
 
 export default SelectSuggType
 
+const Wrapper = styled.div`
+  .ant-radio-group {
+    display: flex;
+    flex-direction: row;
+    @media (max-width: 768px) {
+      flex-direction: column;
+    }
+    flex-wrap: wrap;
+    .radio-item {
+      width: 50%;
+      @media (max-width: 768px) {
+        width: unset;
+      }
+    }
+  }
+  .ant-radio-wrapper,
+  .ant-checkbox-wrapper {
+    color: #686868;
+  }
+  .ant-checkbox-wrapper + .ant-checkbox-wrapper {
+    @media (max-width: 768px) {
+      margin-left: 0;
+    }
+  }
+`
+
 const Label = styled.div`
   font-size: 14px;
   line-height: 24px;
   margin-bottom: 6px;
+  color: #686868;
 `
 const Section = styled.div`
   margin-top: 24px;
@@ -287,4 +315,11 @@ const Error = styled.div`
   color: red;
   font-size: 14px;
   line-height: 1;
+`
+const Desc = styled.div`
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 17px;
+  color: #919191;
+  padding-left: 24px;
 `
