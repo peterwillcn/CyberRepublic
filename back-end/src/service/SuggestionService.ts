@@ -46,6 +46,8 @@ interface BudgetItem {
   criteria: string
 }
 
+const defaultBudgets = [{ type: 'finalpayment', stage: 1, amount: '0' }]
+
 export default class extends Base {
   private model: any
   private draftModel: any
@@ -1496,9 +1498,9 @@ export default class extends Base {
 
   private convertBudget(budget: [BudgetItem]) {
     const chainBudgetType = {
-      ADVANCE: 'Imprest',
-      CONDITIONED: 'NormalPayment',
-      COMPLETION: 'FinalPayment'
+      ADVANCE: 'imprest',
+      CONDITIONED: 'normalpayment',
+      COMPLETION: 'finalpayment'
     }
     const initiation = _.find(budget, ['type', 'ADVANCE'])
     const budgets = budget.map((item: BudgetItem) => {
@@ -1838,7 +1840,7 @@ export default class extends Base {
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'normal',
-            budgets: hasBudget ? this.convertBudget(budget) : 0,
+            budgets: hasBudget ? this.convertBudget(budget) : defaultBudgets,
             recipient: hasBudget
               ? suggestion.elaAddress
               : process.env.ELA_BURN_ADDRESS
@@ -2147,7 +2149,7 @@ export default class extends Base {
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'normal',
-            budgets: hasBudget ? this.convertBudget(budget) : 0,
+            budgets: hasBudget ? this.convertBudget(budget) : defaultBudgets,
             recipient: hasBudget
               ? suggestion.elaAddress
               : process.env.ELA_BURN_ADDRESS
