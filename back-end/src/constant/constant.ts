@@ -32,9 +32,9 @@ export const CVOTE_TYPE = {
 
 export const CVOTE_TYPE_API = {
   CHANGE_PROPOSAL: 'changeproposalowner',
-  CHANGE_SECRETARY:'secretarygeneral',
-  TERMINATE_PROPOSAL:'closeproposal',
-  1:'normal'
+  CHANGE_SECRETARY: 'secretarygeneral',
+  TERMINATE_PROPOSAL: 'closeproposal',
+  1: 'normal'
 }
 
 export const USER_ROLE = {
@@ -395,8 +395,9 @@ export const TRANSACTION_TYPE = {
 }
 
 export const API_VOTE_TYPE = {
-  PROPOSAL: "proposalvote",
-  SUGGESTION: "suggestionvote"
+  PROPOSAL: 'proposalvote',
+  SUGGESTION: 'suggestionvote'
 }
 
 export const DID_PREFIX = 'did:elastos:'
+export const ELA_BURN_ADDRESS = 'ELANULLXXXXXXXXXXXXXXXXXXXXXYvs3rr'

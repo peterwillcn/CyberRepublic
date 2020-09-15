@@ -15,7 +15,7 @@ import {
   getPemPublicKey
 } from '../utility'
 const Big = require('big.js')
-const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX } = constant
+const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX, ELA_BURN_ADDRESS } = constant
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -1841,9 +1841,7 @@ export default class extends Base {
             ...jwtClaims.data,
             proposaltype: 'normal',
             budgets: hasBudget ? this.convertBudget(budget) : defaultBudgets,
-            recipient: hasBudget
-              ? suggestion.elaAddress
-              : process.env.ELA_BURN_ADDRESS
+            recipient: hasBudget ? suggestion.elaAddress : ELA_BURN_ADDRESS
           }
           break
       }
@@ -2150,9 +2148,7 @@ export default class extends Base {
             ...jwtClaims.data,
             proposaltype: 'normal',
             budgets: hasBudget ? this.convertBudget(budget) : defaultBudgets,
-            recipient: hasBudget
-              ? suggestion.elaAddress
-              : process.env.ELA_BURN_ADDRESS
+            recipient: hasBudget ? suggestion.elaAddress : ELA_BURN_ADDRESS
           }
           break
       }
