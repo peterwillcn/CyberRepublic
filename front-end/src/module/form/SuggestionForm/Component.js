@@ -172,9 +172,17 @@ class C extends BaseComponent {
           values.targetProposalNum = type.proposalNum
           break
         case CHANGE_SECRETARY:
+          if (!saveDraft && !type.newSecretaryDID) {
+            message.error(I18N.get('suggestion.form.error.secretary'))
+            return
+          }
           values.newSecretaryDID = type.newSecretaryDID
           break
         case TERMINATE_PROPOSAL:
+          if (!saveDraft && !type.termination) {
+            message.error(I18N.get('suggestion.form.error.proposalNum'))
+            return
+          }
           values.closeProposalNum = type.termination
           break
         default:
