@@ -250,15 +250,23 @@ class PaymentList extends Component {
       <StyledTable>
         <StyledHead>
           <StyledRow>
-            <th>{I18N.get('suggestion.budget.payment')}#</th>
+            <th style={{ width: 100 }}>
+              {I18N.get('suggestion.budget.payment')}#
+            </th>
             <th>{I18N.get('suggestion.budget.type')}</th>
             <th>
               {I18N.get('suggestion.budget.amount')}
               (ELA)
             </th>
-            {isOld ? <th>{I18N.get('suggestion.budget.reasons')}</th> : null}
+            {isOld ? (
+              <th style={{ width: '20%' }}>
+                {I18N.get('suggestion.budget.reasons')}
+              </th>
+            ) : null}
             <th>{I18N.get('suggestion.budget.goal')}</th>
-            <th>{I18N.get('suggestion.budget.criteria')}</th>
+            <th style={{ width: '18%' }}>
+              {I18N.get('suggestion.budget.criteria')}
+            </th>
             {visible && <th>{I18N.get('milestone.status')}</th>}
             {visible && <th>{I18N.get('suggestion.budget.action')}</th>}
           </StyledRow>
@@ -302,7 +310,7 @@ const StyledTable = styled.table`
   margin-top: 16px;
   width: 100%;
   font-size: 13px;
-  table-layout: auto;
+  table-layout: fixed;
 `
 const StyledHead = styled.thead`
   > tr {
