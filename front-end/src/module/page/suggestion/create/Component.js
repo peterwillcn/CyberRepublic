@@ -38,7 +38,12 @@ export default class extends StandardPage {
   }
 
   historyBack = (id) => {
-    this.props.history.push(`/suggestion/${id}?new=true`)
+    if (id) {
+      this.props.history.push(`/suggestion/${id}?new=true`)
+    } else {
+      localStorage.removeItem(LOCALSTORAGE_DRAFT)
+      this.props.history.push('/suggestion')
+    }
   }
 
   onSubmit = async (model) => {
