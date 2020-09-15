@@ -237,7 +237,6 @@ class C extends StandardPage {
     const voteActionsNode = this.renderVoteActions()
     const voteDetailNode = this.renderVoteResults()
     const trackingTabsNode = this.renderTrackingTabs()
-    const summaryNode = this.renderSummary()
 
     // get the first line pure text of abstract
     const abstract = data.abstract && data.abstract.trim().split('\n')[0]
@@ -261,7 +260,6 @@ class C extends StandardPage {
               {isVote ? voteActionsNode : null}
               {voteDetailNode}
               {trackingTabsNode}
-              {summaryNode}
             </Body>
             <SocialShareButtons
               shareQuote={`${data.title} - Proposal Detail - Cyber Republic`}
@@ -873,6 +871,12 @@ class C extends StandardPage {
   }
 
   renderTrackingTabs() {
+    const { withdrawalHistory, budget } = this.props.data
+    const completion = _.filter(budget, { type: 'COMPLETION' })
+    // prettier-ignore
+    const dataList = completion[0] && _.filter(withdrawalHistory, {
+      milestoneKey:  completion[0].milestoneKey
+    })
     return (
       <StyledTabs id="tracking-message">
         <Tabs
@@ -887,6 +891,11 @@ class C extends StandardPage {
           <TabPane tab={this.renderTabTitle('status')} key="status">
             {this.renderTrackingMessage()}
           </TabPane>
+          {!_.isEmpty(dataList) ? 
+          <TabPane tab={this.renderTabTitle('summary')} key="summary">
+            {this.renderSummary()}
+          </TabPane> 
+          : null}
         </Tabs>
       </StyledTabs>
     )

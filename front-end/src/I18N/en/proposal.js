@@ -68,7 +68,8 @@ export default {
         footer: ''
       },
       budget: 'Budget tracking',
-      status: 'Status tracking'
+      status: 'Status tracking',
+      summary: 'Summary'
     },
     summary: {
       reviewDetails: 'Review Details',

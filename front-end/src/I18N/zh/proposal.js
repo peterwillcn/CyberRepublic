@@ -68,7 +68,8 @@ export default {
         footer: ''
       },
       budget: '预算跟踪',
-      status: '状态跟踪'
+      status: '状态跟踪',
+      summary: '总结'
     },
     summary: {
       reviewDetails: '审阅详情',
