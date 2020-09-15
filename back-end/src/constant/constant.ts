@@ -401,3 +401,4 @@ export const API_VOTE_TYPE = {
 
 export const DID_PREFIX = 'did:elastos:'
 export const ELA_BURN_ADDRESS = 'ELANULLXXXXXXXXXXXXXXXXXXXXXYvs3rr'
+export const DEFAULT_BUDGET = [{ type: 'finalpayment', stage: 1, amount: '0' }]
