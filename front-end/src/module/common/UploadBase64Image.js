@@ -53,6 +53,7 @@ class UploadBase64Image extends BaseComponent {
 
     if (file.size > 10 * 1024 * 1024) {
       message.error(I18N.get('image.upload.size.error'))
+      e.target.value = null
       return
     }
 
