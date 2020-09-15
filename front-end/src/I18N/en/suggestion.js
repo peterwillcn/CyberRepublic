@@ -30,7 +30,7 @@ export default {
       targetProposalNum: 'Proposal Number',
       closeProposalNum: 'Terminate Proposal',
       newOwnerSignature: 'New Owner Signature',
-      newSecretarySignature: 'New Secretary General Signature',
+      newSecretarySignature: 'New Secretary General Signature'
     },
     abstract: 'Abstract',
     goal: 'Goal',
@@ -149,7 +149,7 @@ export default {
       proposalNum: 'The proposal number is emtpy.',
       secretary: 'The new secretary general DID is emtpy.',
       newOwner: 'The new owner DID is empty.',
-      changeWhat: 'Please select a item to change'
+      changeWhat: `Please fill in the info of the change proposal`
     }
   },
   modal: {

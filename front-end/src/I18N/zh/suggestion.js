@@ -150,7 +150,7 @@ export default {
       proposalNum: '提案编号为空',
       secretary: '新秘书长 DID 为空',
       newOwner: '新负责人 DID 为空',
-      changeWhat: '请选择变更的内容'
+      changeWhat: '请填写变更提案的信息'
     }
   },
   modal: {

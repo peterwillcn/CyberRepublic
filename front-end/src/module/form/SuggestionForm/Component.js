@@ -132,8 +132,10 @@ class C extends BaseComponent {
       if (values.plan && values.teamInfo) {
         values.plan[`teamInfo`] = values.teamInfo
       }
-      const rs = this.formatType(values)
-      await callback(rs)
+      const rs = this.formatType(values, false)
+      if (rs) {
+        await callback(rs)
+      }
       this.setState({ loading: false })
     })
   }
@@ -148,12 +150,19 @@ class C extends BaseComponent {
     this.handleSave(e, onSaveDraft)
   }
 
-  formatType = (values) => {
+  formatType = (values, saveDraft) => {
     const type = _.get(values, 'type')
     if (type && typeof type !== 'string') {
       values.type = type.type
       switch (type.type) {
         case CHANGE_PROPOSAL:
+          if (
+            !saveDraft &&
+            (!type.proposalNum || (!type.newOwnerDID && !type.newAddress))
+          ) {
+            message.error(I18N.get('suggestion.form.error.changeWhat'))
+            return
+          }
           if (type.newAddress) {
             values.newAddress = type.newAddress
           }
@@ -194,7 +203,7 @@ class C extends BaseComponent {
       if (planIntro) {
         values.planIntro = planIntro
       }
-      const rs = this.formatType(values)
+      const rs = this.formatType(values, true)
       this.props.onSaveDraft(rs)
     }
   }
