@@ -212,6 +212,8 @@ export default class extends Base {
         return item
       })
       doc.elaAddress = constant.ELA_BURN_ADDRESS
+      doc.budgetAmount = constant.DEFAULT_BUDGET[0].amount
+      doc.status = constant.MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL
     }
     const councilMembers = await db_user.find({
       role: constant.USER_ROLE.COUNCIL
