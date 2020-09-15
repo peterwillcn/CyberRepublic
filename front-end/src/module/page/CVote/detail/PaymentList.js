@@ -170,8 +170,25 @@ class PaymentList extends Component {
     }
   }
 
+  renderGoal(item) {
+    const { milestone } = this.props
+    if (milestone && milestone.length > 0 && item.milestoneKey) {
+      return (
+        <Popover content={this.renderMilestone(milestone[item.milestoneKey])}>
+          <a>
+            {`${I18N.get('suggestion.budget.milestone')} #${Number(
+              item.milestoneKey
+            ) + 1}`}
+          </a>
+        </Popover>
+      )
+    } else {
+      return null
+    }
+  }
+
   renderPaymentItem(item, index) {
-    const { milestone, list } = this.props
+    const { list } = this.props
     const visible = this.isVisible()
     const isOld = list && list.find((item) => item.reasons)
     return (
@@ -187,19 +204,7 @@ class PaymentList extends Component {
             />
           </td>
         ) : null}
-        <td>
-          {item.milestoneKey ? (
-            <Popover
-              content={this.renderMilestone(milestone[item.milestoneKey])}
-            >
-              <a>
-                {`${I18N.get('suggestion.budget.milestone')} #${Number(
-                  item.milestoneKey
-                ) + 1}`}
-              </a>
-            </Popover>
-          ) : null}
-        </td>
+        <td>{this.renderGoal(item)}</td>
         <td>
           <ShowLongText
             text={item.criteria}
