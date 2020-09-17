@@ -1630,7 +1630,7 @@ export default class extends Base {
     const rs = await Promise.all([
       cursor,
       db_cvote.getDBInstance().find(query).count(),
-      db_config.getDBInstance().findOne()
+      ela.height()
     ])
     // filter return data，add proposalHash to CVoteSchema
     const list = _.map(rs[0], function (o) {
@@ -1647,7 +1647,7 @@ export default class extends Base {
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
       if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
         temp.voteEndsIn = _.toNumber(
-            (o.proposedEndsHeight - rs[2].currentHeight) * 2 * 60
+            (o.proposedEndsHeight - rs[2]) * 2 * 60
         ).toFixed()
       }
       if (
@@ -1656,7 +1656,7 @@ export default class extends Base {
         o.rejectThroughAmount > 0
       ) {
         temp.voteEndsIn = _.toNumber(
-            (o.notificationEndsHeight - rs[2].currentHeight) * 2 * 60
+            (o.notificationEndsHeight - rs[2]) * 2 * 60
         ).toFixed()
         temp.rejectAmount = `${o.rejectAmount}`
         temp.rejectThroughAmount = `${parseFloat(
