@@ -15,7 +15,13 @@ import {
   getPemPublicKey
 } from '../utility'
 const Big = require('big.js')
-const { SUGGESTION_TYPE, CVOTE_STATUS, DID_PREFIX, ELA_BURN_ADDRESS } = constant
+const {
+  SUGGESTION_TYPE,
+  CVOTE_STATUS,
+  DID_PREFIX,
+  ELA_BURN_ADDRESS,
+  DEFAULT_BUDGET
+} = constant
 const ObjectId = Types.ObjectId
 const BASE_FIELDS = [
   'title',
@@ -45,8 +51,6 @@ interface BudgetItem {
   reasons: string
   criteria: string
 }
-
-const defaultBudgets = [{ type: 'finalpayment', stage: 1, amount: '0' }]
 
 export default class extends Base {
   private model: any
@@ -1840,7 +1844,7 @@ export default class extends Base {
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'normal',
-            budgets: hasBudget ? this.convertBudget(budget) : defaultBudgets,
+            budgets: hasBudget ? this.convertBudget(budget) : DEFAULT_BUDGET,
             recipient: hasBudget ? suggestion.elaAddress : ELA_BURN_ADDRESS
           }
           break
@@ -2147,7 +2151,7 @@ export default class extends Base {
           jwtClaims.data = {
             ...jwtClaims.data,
             proposaltype: 'normal',
-            budgets: hasBudget ? this.convertBudget(budget) : defaultBudgets,
+            budgets: hasBudget ? this.convertBudget(budget) : DEFAULT_BUDGET,
             recipient: hasBudget ? suggestion.elaAddress : ELA_BURN_ADDRESS
           }
           break

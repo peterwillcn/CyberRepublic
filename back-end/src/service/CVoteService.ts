@@ -204,7 +204,18 @@ export default class extends Base {
     }
 
     Object.assign(doc, _.pick(suggestion, BASE_FIELDS))
-
+    const budget = _.get(suggestion, 'budget')
+    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+    if (suggestion.type === constant.CVOTE_TYPE.NEW_MOTION && !hasBudget) {
+      doc.budget = constant.DEFAULT_BUDGET.map((item: any) => ({
+        amount: item.amount,
+        milestoneKey: item.stage.toString(),
+        type: constant.SUGGESTION_BUDGET_TYPE.COMPLETION,
+        status: constant.MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL
+      }))
+      doc.elaAddress = constant.ELA_BURN_ADDRESS
+      doc.budgetAmount = constant.DEFAULT_BUDGET[0].amount
+    }
     const councilMembers = await db_user.find({
       role: constant.USER_ROLE.COUNCIL
     })

@@ -158,11 +158,7 @@ class PaymentList extends Component {
         </div>
       )
     }
-    if (
-      this.isOwner() &&
-      item.status === WAITING_FOR_WITHDRAWAL &&
-      Number(item.amount) !== 0
-    ) {
+    if (this.isOwner() && item.status === WAITING_FOR_WITHDRAWAL) {
       return (
         <div
           className="action"
@@ -174,8 +170,25 @@ class PaymentList extends Component {
     }
   }
 
+  renderGoal(item) {
+    const { milestone } = this.props
+    if (milestone && milestone.length > 0 && item.milestoneKey) {
+      return (
+        <Popover content={this.renderMilestone(milestone[item.milestoneKey])}>
+          <a>
+            {`${I18N.get('suggestion.budget.milestone')} #${Number(
+              item.milestoneKey
+            ) + 1}`}
+          </a>
+        </Popover>
+      )
+    } else {
+      return null
+    }
+  }
+
   renderPaymentItem(item, index) {
-    const { milestone, list } = this.props
+    const { list } = this.props
     const visible = this.isVisible()
     const isOld = list && list.find((item) => item.reasons)
     return (
@@ -191,19 +204,7 @@ class PaymentList extends Component {
             />
           </td>
         ) : null}
-        <td>
-          {item.milestoneKey ? (
-            <Popover
-              content={this.renderMilestone(milestone[item.milestoneKey])}
-            >
-              <a>
-                {`${I18N.get('suggestion.budget.milestone')} #${Number(
-                  item.milestoneKey
-                ) + 1}`}
-              </a>
-            </Popover>
-          ) : null}
-        </td>
+        <td>{this.renderGoal(item)}</td>
         <td>
           <ShowLongText
             text={item.criteria}
@@ -249,15 +250,23 @@ class PaymentList extends Component {
       <StyledTable>
         <StyledHead>
           <StyledRow>
-            <th>{I18N.get('suggestion.budget.payment')}#</th>
+            <th style={{ width: 100 }}>
+              {I18N.get('suggestion.budget.payment')}#
+            </th>
             <th>{I18N.get('suggestion.budget.type')}</th>
             <th>
               {I18N.get('suggestion.budget.amount')}
               (ELA)
             </th>
-            {isOld ? <th>{I18N.get('suggestion.budget.reasons')}</th> : null}
+            {isOld ? (
+              <th style={{ width: '20%' }}>
+                {I18N.get('suggestion.budget.reasons')}
+              </th>
+            ) : null}
             <th>{I18N.get('suggestion.budget.goal')}</th>
-            <th>{I18N.get('suggestion.budget.criteria')}</th>
+            <th style={{ width: '18%' }}>
+              {I18N.get('suggestion.budget.criteria')}
+            </th>
             {visible && <th>{I18N.get('milestone.status')}</th>}
             {visible && <th>{I18N.get('suggestion.budget.action')}</th>}
           </StyledRow>
@@ -301,7 +310,7 @@ const StyledTable = styled.table`
   margin-top: 16px;
   width: 100%;
   font-size: 13px;
-  table-layout: auto;
+  table-layout: fixed;
 `
 const StyledHead = styled.thead`
   > tr {
