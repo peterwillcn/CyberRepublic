@@ -120,6 +120,14 @@ class Milestones extends Component {
         <span>{`#${index + 1}`}</span>
       </div>
     )
+    const arr = !!item.version ? item.version.split('\n') : []
+    const content = isBigSquare ? (
+      <div>
+        {arr.map((item, index) => (item ? <p key={index}>{item}</p> : null))}
+      </div>
+    ) : (
+      <p>{arr[0]}</p>
+    )
     const date = (
       <div className="square-date">
         {moment(item.date).format('MMM D, YYYY')}
@@ -134,7 +142,7 @@ class Milestones extends Component {
             }}
           />
         ) : (
-          <p>{item.version}</p>
+          content
         )}
       </div>
     )
