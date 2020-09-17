@@ -43,22 +43,25 @@ export default class extends Base {
     if (invoting) {
       votingStart = await ela.getTimestampByHeight(votingstartheight)
     }
-
+    let blockMinute = 2 * 60
+    if (process.env.NODE_ENV !== 'production'){
+      blockMinute = 252 * 60
+    }
     return _.map(result, (o: any) => {
       let dateObj = {}
       if (o.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
         // staging one block time
-        // const difference = (ondutyendheight - currentHeight) * 252 * 60
+        const difference = (ondutyendheight - currentHeight) * blockMinute
         // pro one block time
-        const difference = (ondutyendheight - currentHeight) * 2 * 60
+        // const difference = (ondutyendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = o.startDate && moment(o.startDate).unix()
         dateObj['endDate'] = difference + (o.startDate && moment(o.startDate).unix())
       }
       if (o.status == constant.TERM_COUNCIL_STATUS.VOTING && invoting) {
         // staging one block time
-        // const difference = (votingendheight - currentHeight) * 252 * 60
+        const difference = (votingendheight - currentHeight) * blockMinute
         // pro one block time
-        const difference = (votingendheight - currentHeight) * 2 * 60
+        // const difference = (votingendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = votingStart
         dateObj['endDate'] = difference + votingStart
       }
