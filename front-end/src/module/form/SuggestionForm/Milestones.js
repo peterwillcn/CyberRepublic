@@ -122,9 +122,9 @@ class Milestones extends Component {
     )
     const arr = !!item.version ? item.version.split('\n') : []
     const content = isBigSquare ? (
-      <div>
+      <Fragment>
         {arr.map((item, index) => (item ? <p key={index}>{item}</p> : null))}
-      </div>
+      </Fragment>
     ) : (
       <p>{arr[0]}</p>
     )
@@ -394,6 +394,8 @@ const Square = styled.div`
       &.square-content > p {
         overflow-wrap: break-word;
         white-space: normal;
+        text-align: left;
+        padding-bottom: 16px;
       }
     }
   }
