@@ -210,8 +210,7 @@ export default class extends Base {
       doc.budget = constant.DEFAULT_BUDGET.map((item: any) => ({
         amount: item.amount,
         milestoneKey: item.stage.toString(),
-        type: constant.SUGGESTION_BUDGET_TYPE.COMPLETION,
-        status: constant.MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL
+        type: constant.SUGGESTION_BUDGET_TYPE.COMPLETION
       }))
       doc.elaAddress = constant.ELA_BURN_ADDRESS
       doc.budgetAmount = constant.DEFAULT_BUDGET[0].amount

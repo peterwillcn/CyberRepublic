@@ -29,7 +29,8 @@ const budgetSchema = {
   amount: String,
   reasons: String,
   criteria: String,
-  milestoneKey: String
+  milestoneKey: String,
+  status: _.values(constant.MILESTONE_STATUS)
 }
 
 export const SuggestionCore = {
