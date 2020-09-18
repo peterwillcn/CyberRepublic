@@ -157,8 +157,8 @@ class ImplementationAndBudget extends BaseComponent {
 
   toggle = () => {
     const data = this.props.form.getFieldValue("budget")
-    const temp = JSON.parse(localStorage.getItem("draft-suggestion"))
-    if (!_.isEmpty(temp.budgetIntro)
+    const budgetIntro = this.props.form.getFieldValue("budgetIntro")
+    if (!_.isEmpty(budgetIntro)
       || !_.isEmpty(data.elaAddress)
       || data.paymentItems.length > 0
     ) {
