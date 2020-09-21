@@ -1,7 +1,6 @@
 import axios from 'axios'
 import base64url from 'base64url'
 import * as bs58 from 'bs58'
-import * as moment from 'moment'
 import utilCrypto from './crypto'
 import mail from './mail'
 import validate from './validate'
