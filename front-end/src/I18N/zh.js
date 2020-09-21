@@ -1508,6 +1508,9 @@ const zh = {
   'user.skillset.FINANCIAL_CONSULTING': '金融咨询',
   'user.skillset.PRESENTATION': '商务演示',
 
+  'user.update.council.secretariat.role': '更新用户权限',
+  'user.update.council.secretariat.success': '更新成功',
+
   // Council & Secretariat
   cs: {
     candidates: '候选人',

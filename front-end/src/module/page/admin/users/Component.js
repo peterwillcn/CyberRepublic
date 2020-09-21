@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-  Col, Row, Icon, Input,
+  Col, Row, Icon, Input, Button
 } from 'antd'
 import AdminPage from '../BaseAdmin'
 
@@ -9,6 +9,8 @@ import './style.scss'
 
 import ListUsers from './ListUsers/Component'
 import Navigator from '../../shared/HomeNavigator/Container'
+
+import I18N from '@/I18N'
 
 export default class extends AdminPage {
     state = {
@@ -49,6 +51,7 @@ export default class extends AdminPage {
                   <Navigator selectedItem="users" />
                 </Col>
                 <Col span={20} className="admin-right-column wrap-box-user">
+                  <Button className="ant-btn-ebp" onClick={this.props.updateCouncilAndSecretariatRole} type="primary">{I18N.get('user.update.council.secretariat.role')}</Button>
                   <div className="pull-right">
                     <Input.Search
                       onSearch={this.handleSearchUser.bind(this)}

@@ -1559,6 +1559,9 @@ const en = {
   'user.skillset.FINANCIAL_CONSULTING': 'Financial Consulting',
   'user.skillset.PRESENTATION': 'Business Presentations',
 
+  'user.update.council.secretariat.role': 'Update Role',
+  'user.update.council.secretariat.success': 'Update Success',
+
   // Council & Secretariat
   cs: {
     candidates: 'CANDIDATES',
