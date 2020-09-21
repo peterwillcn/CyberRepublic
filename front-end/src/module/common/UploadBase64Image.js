@@ -68,6 +68,7 @@ class UploadBase64Image extends BaseComponent {
       URL.revokeObjectURL(blobURL)
       this.props.insertImage(base64)
     }
+    e.target.value = null
   }
 
   ord_render() {
