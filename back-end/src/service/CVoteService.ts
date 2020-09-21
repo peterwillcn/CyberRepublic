@@ -208,12 +208,12 @@ export default class extends Base {
     const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
     if (suggestion.type === constant.CVOTE_TYPE.NEW_MOTION && !hasBudget) {
       doc.budget = constant.DEFAULT_BUDGET.map((item: any) => ({
-        amount: item.amount,
-        milestoneKey: item.stage.toString(),
+        amount: '0',
+        milestoneKey: '0',
         type: constant.SUGGESTION_BUDGET_TYPE.COMPLETION
       }))
       doc.elaAddress = constant.ELA_BURN_ADDRESS
-      doc.budgetAmount = constant.DEFAULT_BUDGET[0].amount
+      doc.budgetAmount = '0'
     }
     const councilMembers = await db_user.find({
       role: constant.USER_ROLE.COUNCIL
