@@ -1471,13 +1471,13 @@ export default class extends Base {
       )
     }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
-      const budget = proposal.budget.map((item: any) => {
+      const budget = !_.isEmpty(proposal.budget) ? proposal.budget.map((item: any) => {
         if (item.type === 'ADVANCE') {
           return { ...item, status: WAITING_FOR_WITHDRAWAL }
         } else {
           return { ...item, status: WAITING_FOR_REQUEST }
         }
-      })
+      }) : null
       const updateStatus = await db_cvote.update(
         {
           _id
