@@ -158,7 +158,11 @@ class PaymentList extends Component {
         </div>
       )
     }
-    if (this.isOwner() && item.status === WAITING_FOR_WITHDRAWAL) {
+    if (
+      this.isOwner() &&
+      item.status === WAITING_FOR_WITHDRAWAL &&
+      Number(item.amount) !== 0
+    ) {
       return (
         <div
           className="action"
