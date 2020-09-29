@@ -1,6 +1,6 @@
 import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
-import { Layout, Menu, Icon, Modal, Dropdown } from 'antd'
+import { Layout, Menu, Icon, Modal, Dropdown, Button } from 'antd'
 import _ from 'lodash'
 import I18N from '@/I18N'
 import MediaQuery from 'react-responsive'
@@ -41,7 +41,8 @@ export default class extends BaseComponent {
     this.state = {
       affixed: false,
       popover: false,
-      completing: false
+      completing: false,
+      showDidModal: false
     }
   }
 
@@ -76,6 +77,39 @@ export default class extends BaseComponent {
     this.setState({
       completing: false
     })
+  }
+
+  renderDidModal = () => {
+    const { history } = this.props
+    return (
+      <Modal
+        className="project-detail-nobar"
+        maskClosable={false}
+        visible={this.state.showDidModal}
+        onCancel={this.hideDidModal}
+        footer={null}
+        width={500}
+      >
+        <div style={{ textAlign: 'center', padding: 16 }}>
+          <div style={{ marginBottom: 24, fontSize: 16, color: '#000' }}>
+            {I18N.get('suggestion.msg.associateDidFirst')}
+          </div>
+          <Button
+            className="cr-btn cr-btn-primary"
+            onClick={() => {
+              history.push('/profile/info')
+              this.setState({ showDidModal: false })
+            }}
+          >
+            {I18N.get('suggestion.btn.associateDid')}
+          </Button>
+        </div>
+      </Modal>
+    )
+  }
+
+  hideDidModal = () => {
+    this.setState({ showDidModal: false })
   }
 
   buildAcctDropdown() {
@@ -339,6 +373,7 @@ export default class extends BaseComponent {
           <div className="clearfix" />
           {this.renderProfileToast()}
           {this.renderCompleteProfileModal()}
+          {this.renderDidModal()}
         </Header>
       </Headroom>
     )
@@ -407,7 +442,7 @@ export default class extends BaseComponent {
 
   clickItem = (e) => {
     const { key } = e
-    const { isLogin } = this.props
+    const { isLogin, user } = this.props
 
     if (
       _.includes(
@@ -465,6 +500,10 @@ export default class extends BaseComponent {
       if (!isLogin) {
         this.props.history.push('/login?MSG_CODE=1')
       } else {
+        if (isLogin && !_.get(user, 'did.id')) {
+          this.setState({ showDidModal: true })
+          return
+        }
         const forumLink = `${process.env.FORUM_URL}/login`
         window.open(forumLink, '_blank')
       }
