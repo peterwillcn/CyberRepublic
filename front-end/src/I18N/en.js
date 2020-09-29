@@ -120,6 +120,7 @@ const en = {
   2306: 'Communities',
   'profile.suggestion': 'My Suggestions',
 
+  'login.access.forum': 'Please login or create a Cyber Republic account to access the forum',
   'login.success': 'Welcome back',
   'logout.success': 'logout success',
   'login.noBindingDID': 'Please register an account or log in with an existing account',

@@ -120,6 +120,7 @@ const zh = {
   2306: '社区',
   'profile.suggestion': '我的建议',
 
+  'login.access.forum': '请先登录或注册 Cyber Republic 账号后访问论坛',
   'login.success': '欢迎回来',
   'logout.success': '登出成功',
   'login.noBindingDID': '请注册账号或用已有账号登陆',
