@@ -69,6 +69,7 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
   VoterAgreed: constant.CVOTE_STATUS.ACTIVE,
   VoterCanceled: constant.CVOTE_STATUS.VETOED,
   Finished: constant.CVOTE_STATUS.FINAL,
+  Terminated: constant.CVOTE_STATUS.TERMINATED,
   Aborted: {
     [constant.CVOTE_STATUS.PROPOSED]: constant.CVOTE_STATUS.REJECT,
     [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.VETOED
@@ -1341,7 +1342,8 @@ export default class extends Base {
       status: {
         $in: [
           constant.CVOTE_STATUS.PROPOSED,
-          constant.CVOTE_STATUS.NOTIFICATION
+          constant.CVOTE_STATUS.NOTIFICATION,
+          constant.CVOTE_STATUS.ACTIVE
         ]
       }
     })
@@ -1365,6 +1367,13 @@ export default class extends Base {
       }
       switch (status) {
         case constant.CVOTE_STATUS.PROPOSED:
+          heightProposed = await this.updateProposalOnProposed({
+            rs,
+            _id: o._id,
+            status
+          })
+          break
+        case constant.CVOTE_STATUS.ACTIVE:
           heightProposed = await this.updateProposalOnProposed({
             rs,
             _id: o._id,
