@@ -56,7 +56,7 @@ class ViewVoteHistoryButton extends Component {
 
 
     const valueNode = (
-      <ItemStatus key={KeyframeEffect}>
+      <ItemStatus key={key}>
         <div className="vote-value">
           <span style={{ background: colorStyle[data.value], padding: '3px' }}>
             {I18N.get(`council.voting.type.${data.value}`)}
