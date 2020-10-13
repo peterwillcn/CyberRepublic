@@ -223,7 +223,8 @@ export default class extends Base {
           status: {
             $in: [
               constant.COUNCIL_STATUS.ELECTED,
-              constant.COUNCIL_STATUS.IMPEACHED
+              constant.COUNCIL_STATUS.IMPEACHED,
+              constant.COUNCIL_STATUS.INACTIVE
             ]
           }
         }

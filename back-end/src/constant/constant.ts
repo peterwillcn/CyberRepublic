@@ -169,7 +169,8 @@ export const COUNCIL_STATUS = {
   ELECTED: 'Elected',
   IMPEACHED: 'Impeached',
   RETURNED: 'Returned',
-  TERMINATED: 'Terminated'
+  TERMINATED: 'Terminated',
+  INACTIVE: 'Inactive'
 }
 
 export const SECRETARIAT_STATUS = create(['CURRENT', 'NON_CURRENT'])
