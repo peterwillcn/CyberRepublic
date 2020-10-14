@@ -557,7 +557,7 @@ export default class extends Base {
           const { title, _id } = cvote
           const subject = `Proposal Vote Reminder: ${title}`
           const body = `
-            <p>You only got ${promptTime} to vote this proposal:</p>
+            <p>You have ${promptTime} to vote this proposal:</p>
             <br />
             <p>${title}</p>
             <br />
