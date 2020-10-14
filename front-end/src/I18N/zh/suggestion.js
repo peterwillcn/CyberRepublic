@@ -55,7 +55,7 @@ export default {
     needAdvisory: '需要咨询',
     signSuggetion: '签名建议',
     associateDid: '绑定 DID',
-    viewOldData: '查看老数据',
+    viewOldData: '查看旧数据',
     viewNewData: '查看新数据',
     copyHash: '复制'
   },
