@@ -12,6 +12,7 @@ import {
   timestamp,
   logger
 } from '../utility'
+import { CVOTE_STATUS } from 'src/constant/constant'
 
 const util = require('util')
 const request = require('request')
@@ -922,18 +923,26 @@ export default class extends Base {
   }
 
   public async updateProposalBudget() {
-    const { MILESTONE_STATUS, SUGGESTION_BUDGET_TYPE } = constant
+    const { MILESTONE_STATUS, SUGGESTION_BUDGET_TYPE, CVOTE_STATUS } = constant
     const db_cvote = this.getDBModel('CVote')
     const query = {
       old: { $exists: false },
       $or: [
-        { status: 'ACTIVE' },
+        { status: CVOTE_STATUS.ACTIVE },
         {
-          status: 'FINAL',
+          status: CVOTE_STATUS.FINAL,
           budget: {
             $elemMatch: {
               type: SUGGESTION_BUDGET_TYPE.COMPLETION,
               status: { $ne: MILESTONE_STATUS.WITHDRAWN }
+            }
+          }
+        },
+        {
+          status: CVOTE_STATUS.TERMINATED,
+          budget: {
+            $elemMatch: {
+              status: MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL
             }
           }
         }
