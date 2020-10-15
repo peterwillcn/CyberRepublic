@@ -29,7 +29,8 @@ const budgetSchema = {
   amount: String,
   reasons: String,
   criteria: String,
-  milestoneKey: String
+  milestoneKey: String,
+  status: _.values(constant.MILESTONE_STATUS)
 }
 
 export const SuggestionCore = {
@@ -72,9 +73,11 @@ export const SuggestionCore = {
   motivation: {
     type: String
   },
-  relevance: {
-    type: String
-  },
+  relevance: [{
+    proposal: Schema.Types.ObjectId,
+    title: String,
+    relevanceDetail: String,
+  }],
   budgetAmount: {
     type: Schema.Types.Mixed
   },

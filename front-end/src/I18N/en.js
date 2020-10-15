@@ -120,6 +120,7 @@ const en = {
   2306: 'Communities',
   'profile.suggestion': 'My Suggestions',
 
+  'login.access.forum': 'Please login or create a Cyber Republic account to access the forum',
   'login.success': 'Welcome back',
   'logout.success': 'logout success',
   'login.noBindingDID': 'Please register an account or log in with an existing account',
@@ -128,7 +129,7 @@ const en = {
 
   'meta.postedBy': 'Posted By',
   'image.upload.type.error': 'The upload file is not an image.',
-  'image.upload.size.error': 'The maximum upload file size is less than 500KB.',
+  'image.upload.size.error': 'The maximum upload file size is less than 10M.',
 
   comments: 'Comments',
   'comments.posts': 'Posts',
@@ -838,13 +839,6 @@ const en = {
   'council.voting.chainStatus.unchain':'UnChain',
   'council.voting.chainStatus.failed':'Failed',
 
-
-  'council.voting.type.newMotion': 'New Motion',
-  'council.voting.type.motionAgainst': 'Motion Against',
-  'council.voting.type.anythingElse': 'Anything Else',
-  'council.voting.type.standardTrack': 'Standards Tracking ELIP',
-  'council.voting.type.information': 'Information ELIP',
-  'council.voting.type.process': 'Process ELIP',
   'council.voting.type.support': 'Yes',
   'council.voting.type.reject': 'No',
   'council.voting.type.abstention': 'Abstained',
@@ -1055,6 +1049,9 @@ const en = {
   'profile.forms.table.header.created': 'CreatedAt',
   'profile.forms.show': 'Show Archived',
   'profile.forms.search': 'Search',
+
+  'profile.form.headline': 'Headline',
+  'profile.form.headline.error': 'Please input headline!',
 
   // Validate Form
   'ambassadors.form.required': 'This must be filled out',
@@ -1392,6 +1389,10 @@ const en = {
   'from.UserProfileForm.text.slogan': 'Bio',
   'from.UserProfileForm.text.motto': 'Profile Motto',
 
+  'from.SuggestionForm.title': 'Relevance Detail',
+  'from.SuggestionForm.proposal': 'Proposal #',
+  'from.SuggestionForm.detail': 'Relevance Detail',
+  
   'btn.CopyHash': 'Copy successful',
 
   // CR Video / Earn ELA page
@@ -1559,6 +1560,9 @@ const en = {
   'user.skillset.FINANCIAL_CONSULTING': 'Financial Consulting',
   'user.skillset.PRESENTATION': 'Business Presentations',
 
+  'user.update.council.secretariat.role': 'Update Role',
+  'user.update.council.secretariat.success': 'Update Success',
+
   // Council & Secretariat
   cs: {
     candidates: 'CANDIDATES',
@@ -1673,5 +1677,6 @@ en[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = 'INCOMPLETED'
 en[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = 'DEFERRED'
 en[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = 'NOTIFICATION'
 en[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = 'VETOED'
+en[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = 'TERMINATED'
 
 export default en

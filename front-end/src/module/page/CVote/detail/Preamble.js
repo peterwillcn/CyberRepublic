@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment/moment'
-import { Row, Col, Button } from 'antd'
+import { Row, Col } from 'antd'
 import I18N from '@/I18N'
 import PopoverProfile from '@/module/common/PopoverProfile'
 import styled from 'styled-components'
@@ -18,18 +18,18 @@ const Component = ({
   user,
   proposalHash,
   txHash,
-  copyFun
+  copyFun,
+  closeProposalNum,
+  newSecretaryDID,
+  targetProposalNum,
+  newOwnerDID,
+  newAddress
 }) => {
   // header
   const headerNode = (
     <Header id="preamble">{I18N.get('proposal.fields.preamble')}</Header>
   )
 
-  const typeMap = {
-    1: I18N.get('council.voting.type.newMotion'),
-    2: I18N.get('council.voting.type.motionAgainst'),
-    3: I18N.get('council.voting.type.anythingElse')
-  }
   // type
   const typeNode = (
     <Item>
@@ -37,7 +37,7 @@ const Component = ({
         <ItemTitle>{I18N.get('proposal.fields.type')}</ItemTitle>
       </Col>
       <Col span={18}>
-        <ItemText>{typeMap[type]}</ItemText>
+        <ItemText>{I18N.get(`proposal.type.${type}`)}</ItemText>
       </Col>
     </Item>
   )
@@ -51,6 +51,66 @@ const Component = ({
       </Col>
       <Col span={18}>
         <ItemText>{`#${vid}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const closeProposalNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.closeProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`#${closeProposalNum}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const targetProposalNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.targetProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`#${targetProposalNum}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newSecretaryNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.secretary')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newSecretaryDID}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newOwnerNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.owner')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newOwnerDID}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newAddressNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.address')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newAddress}`}</ItemText>
       </Col>
     </Item>
   )
@@ -148,6 +208,11 @@ const Component = ({
       {proposerNode}
       {reference && reference.displayId ? refereeNode : null}
       {typeNode}
+      {closeProposalNum ? closeProposalNode : null}
+      {targetProposalNum? targetProposalNode: null}
+      {newSecretaryDID ? newSecretaryNode : null}
+      {newOwnerDID ? newOwnerNode: null}
+      {newAddress ? newAddressNode : null}
       {statusNode}
       {createdNode}
       {txHash ? txHashNode : null}

@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -21,7 +22,15 @@ export default {
       updated: '更新日期',
       signature: '签名',
       txHash: 'TxID',
-      proposalHash: 'Hash'
+      proposalHash: 'Hash',
+      type: '类型',
+      owner: '变更提案新负责人',
+      address: '变更提案新 ELA 地址',
+      secretary: '新秘书长',
+      targetProposalNum: '变更提案编号',
+      closeProposalNum: '终止提案',
+      newOwnerSignature: '变更提案新负责人签名',
+      newSecretarySignature: '新秘书长签名'
     },
     abstract: '摘要',
     goal: '目标',
@@ -29,7 +38,9 @@ export default {
     relevance: '关联性',
     budget: '预算',
     type: '类型',
-    plan: '实施计划',
+    planBudget: '实施 & 预算计划',
+    plan: '实施',
+    teamInfo: '实施团队',
     vote: '投票',
     tracking: '跟踪',
     summary: '总结',
@@ -44,7 +55,7 @@ export default {
     needAdvisory: '需要咨询',
     signSuggetion: '签名建议',
     associateDid: '绑定 DID',
-    viewOldData: '查看老数据',
+    viewOldData: '查看旧数据',
     viewNewData: '查看新数据',
     copyHash: '复制'
   },
@@ -74,9 +85,29 @@ export default {
       title: '标题'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: '新动议',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: '反对动议',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: '其它事宜',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: '变更提案动议',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: '变更秘书长动议',
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: '终止提案动议',
       newMotion: '新动议',
       motionAgainst: '反对动议',
-      anythingElse: '其它事宜'
+      anythingElse: '其它事宜',
+      changeProposalOwner: '变更提案负责人',
+      changeProposalAddress: '变更提案 ELA 接收地址',
+      proposalNum: '提案编号',
+      proposalNewOwner: '提案新负责人',
+      proposalNewAddress: '提案新 ELA 接收地址',
+      newSecretary: '新秘书长',
+      ownerInfo: `请输入提案新负责人的 DID`,
+      secretaryInfo: `请输入新秘书长的 DID`,
+      desc: {
+        [SUGGESTION_TYPE.NEW_MOTION]: `关于 CR 或亦来云技术发展相关的议题`,
+        [SUGGESTION_TYPE.CHANGE_PROPOSAL]: `更换提案负责人或提案经费接收地址的议题`,
+        [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: `关于终止无法执行或不应执行提案的议题`,
+        [SUGGESTION_TYPE.CHANGE_SECRETARY]: `更换 CR 秘书长人选的议题`
+      }
     },
     note: {
       type: '选择一个建议类型。',
@@ -88,6 +119,8 @@ export default {
       budget: `如果执行提案需要CRC的经费支持，这里应该说明总的预算以及支出计划。这是一个和执行计划配套的财务计划。`,
       type: '选择一个提案类型。',
       plan: `这里应该说明通过什么方法和过程达成目标，对执行人或者团队应该有一个简单的介绍。如果提案的执行周期比较长，应该设立一些执行过程中的检查点，两个检查点之间不超过3个月。和提案目标一样，检查点也应该是清晰且可度量的。`,
+      planBudget: `这里应该说明通过什么方法和过程达成目标，对执行人或者团队应该有一个简单的介绍。如果提案的执行周期比较长，应该设立一些执行过程中的检查点，两个检查点之间不超过3个月。和提案目标一样，检查点也应该是清晰且可度量的。`,
+      teamInfo: '团队信息',
       tracking: `当提案完成的时候，提案人应该在这里提交对提案执行状况的一个总结，包括目标达成状况和财务决算。CRC秘书处负责该部分内容的审核。`
     },
     error: {
@@ -102,6 +135,7 @@ export default {
       previousMilestoneDate: '日期必须晚于前一个里程碑',
       requirePayment: '在完成提案之前，需要填写项目的支付项。',
       elaAddress: 'ELA 地址无效',
+      elaAddressNull: '请填写新 ELA 地址',
       schedule: '支付计划为空',
       payment: '支付项和里程碑必须保持一致，必须有结项款，至多一项预付款',
       advance: '预付款只能用于项目第一阶段',
@@ -110,7 +144,14 @@ export default {
       isUsed: '该项目阶段已被其它支付项使用了',
       exception: '出错了',
       notEqual: '支付项款之和与项目总金额不一致',
-      introduction: '里程碑简介不能为空'
+      introduction: '里程碑简介不能为空',
+      noOwner: `提案新负责人账号不存在`,
+      noSecretary: `新的秘书长账号不存在`,
+      noProposal: `无效的提案编号`,
+      proposalNum: '提案编号为空',
+      secretary: '新秘书长 DID 为空',
+      newOwner: '新负责人 DID 为空',
+      changeWhat: '请填写变更提案的信息'
     }
   },
   modal: {
@@ -186,6 +227,8 @@ export default {
     responsibility: '职责',
     moreInfo: '更多信息',
     createTeamInfo: '添加团队成员',
+    createRelevance: '添加关联项目',
+    editRelevance: '编辑关联项目',
     action: '操作',
     teamInfo: '实施团队',
     milestones: '里程碑',

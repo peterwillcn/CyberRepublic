@@ -60,4 +60,14 @@ export default class extends BaseService {
     
     return rs
   }
+
+  async udateCouncilAndSecretariat() {
+    const path = '/api/council/scheduled_tasks'
+    const rs = await api_request({
+      path,
+      method: 'get'
+    })
+
+    return rs
+  }
 }

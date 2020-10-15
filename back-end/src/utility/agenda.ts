@@ -43,7 +43,7 @@ agenda.define(JOB_NAME.INTOPROPOSAL, async (job: any, done: any) => {
 
     const suggestions = await DB.getModel('Suggestion').find({
       'proposers.did': { $exists: true },
-      'proposalHash': { $exists: false }
+      proposalHash: { $exists: false }
     })
     console.log('suggestions', suggestions.length)
     if (!suggestions.length) {
@@ -139,7 +139,9 @@ agenda.define(JOB_NAME.TRANSACTIONJOB, async (job: any, done: any) => {
   console.log('------begin new append transaction------')
   try {
     const DB = await db.create()
-    const elaTransactionService = new ElaTransactionService(DB, { user: undefined })
+    const elaTransactionService = new ElaTransactionService(DB, {
+      user: undefined
+    })
     await elaTransactionService.appendAllTransaction()
     console.log(JOB_NAME.TRANSACTIONJOB, 'at working')
   } catch (err) {

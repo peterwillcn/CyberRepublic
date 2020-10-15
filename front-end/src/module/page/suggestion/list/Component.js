@@ -877,6 +877,7 @@ export default class extends StandardPage {
     }
 
     this.setState({ loadingMore: false })
+    window.scrollTo(0,0)
   }
 
   gotoDetail(id) {

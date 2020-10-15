@@ -13,7 +13,6 @@ import {
 } from 'antd'
 import { Link } from 'react-router-dom'
 import MediaQuery from 'react-responsive'
-import moment from 'moment/moment'
 import Comments from '@/module/common/comments/Container'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
@@ -26,7 +25,8 @@ import {
   convertMarkdownToHtml,
   removeImageFromMarkdown,
   getPlanHtml,
-  getBudgetHtml
+  getBudgetHtml,
+  getRelevanceHtml
 } from '@/util/markdown-it'
 import { logger } from '@/util'
 import URI from 'urijs'
@@ -38,14 +38,13 @@ import MetaContainer from '../common/meta/Container'
 import Meta from '@/module/common/Meta'
 import SocialShareButtons from '@/module/common/SocialShareButtons'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
-import TagsContainer from '../common/tags/Container'
-import PopoverProfile from '@/module/common/PopoverProfile'
 import PaymentList from '@/module/form/SuggestionForm/PaymentList'
 import TeamInfoList from '@/module/form/SuggestionForm/TeamInfoList'
 import Milestones from '@/module/form/SuggestionForm/Milestones'
 import MilestonesReadonly from '@/module/form/SuggestionForm/MilestonesReadonly'
 import SignSuggestionButton from './SignSuggetionButton'
 import CMSignSuggestionButton from './CMSignSuggestionButton'
+import NewRoleSignSuggBtn from './NewRoleSignSuggBtn'
 import {
   Container,
   Title,
@@ -56,19 +55,23 @@ import {
   StyledButton,
   CouncilComments,
   IconWrap,
-  Item,
-  ItemTitle,
-  ItemText,
   StyledAnchor,
   Subtitle,
   CreateProposalText,
   Paragraph,
-  CopyButton
+  CopyButton,
+  StyledRow
 } from './style'
 
 import './style.scss'
 import SignSuggestionModal from './SignSuggestionModal'
-
+import Preamble from './Preamble'
+import { SUGGESTION_TYPE } from '@/constant'
+const {
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 const { TextArea } = Input
 
 export default class extends StandardPage {
@@ -96,7 +99,8 @@ export default class extends StandardPage {
   }
 
   renderAnchors() {
-    const sections = [
+    const type = _.get(this.props, 'detail.type')
+    const fields = [
       'preamble',
       'abstract',
       'motivation',
@@ -105,6 +109,12 @@ export default class extends StandardPage {
       'relevance',
       'budget'
     ]
+    const newFields = ['preamble', 'abstract', 'motivation']
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
+    const sections = isNewType ? newFields : fields
     return (
       <StyledAnchor offsetTop={420}>
         {sections.map((section) => {
@@ -140,6 +150,8 @@ export default class extends StandardPage {
     const translationBtn = this.renderTranslationBtn()
     const actionsNode = this.renderActionsNode()
     const ownerActionsNode = this.renderOwnerActionsNode()
+    const newOwnerActionNode = this.renderNewOwnerActionNode()
+    const newSecretaryActionNode = this.renderNewSecretaryActionNode()
     const councilActionsNode = this.renderCouncilActionsNode()
     const editForm = this.renderEditForm()
     const commentNode = this.renderCommentNode()
@@ -171,6 +183,8 @@ export default class extends StandardPage {
               {socialShareButtonsNode}
               {actionsNode}
               {ownerActionsNode}
+              {newOwnerActionNode}
+              {newSecretaryActionNode}
               {councilActionsNode}
             </div>
             <div style={{ marginTop: 60 }}>{commentNode}</div>
@@ -188,6 +202,8 @@ export default class extends StandardPage {
                 {socialShareButtonsNode}
                 {actionsNode}
                 {ownerActionsNode}
+                {newOwnerActionNode}
+                {newSecretaryActionNode}
                 {councilActionsNode}
                 <div style={{ marginTop: 60 }}>{commentNode}</div>
               </Col>
@@ -208,54 +224,9 @@ export default class extends StandardPage {
     )
   }
 
-  renderPreambleItem(header, value, item) {
-    let text = <ItemText>{value}</ItemText>
-    let btn = null
-    const {
-      detail: { createdBy },
-      user
-    } = this.props
-    if (item === 'username') {
-      text = <PopoverProfile owner={createdBy} curUser={user} />
-    }
-    if (item === 'txHash') {
-      text = <a href={`https://blockchain.elastos.org/tx/${value}`}>{value}</a>
-    }
-    if (item === 'proposalHash') {
-      btn = (
-        <CopyButton onClick={() => this.copyToClip(value)}>
-          {I18N.get('suggestion.btn.copyHash')}
-        </CopyButton>
-      )
-    }
-    return (
-      <Item>
-        <Col span={6}>
-          <ItemTitle>{header}</ItemTitle>
-        </Col>
-        <Col span={18} style={{ wordBreak: 'break-all' }}>
-          {text}
-          {btn}
-        </Col>
-      </Item>
-    )
-  }
-
-  copyToClip(content) {
-    var aux = document.createElement('input')
-    aux.setAttribute('value', content)
-    document.body.appendChild(aux)
-    aux.select()
-    const err = document.execCommand('copy')
-    document.body.removeChild(aux)
-    if (err) {
-      message.success(I18N.get('btn.CopyHash'))
-    }
-  }
-
   renderDetail(detail) {
     if (!detail) return
-    const sections = [
+    const fields = [
       'abstract',
       'motivation',
       'goal',
@@ -263,22 +234,18 @@ export default class extends StandardPage {
       'relevance',
       'budget'
     ]
+    const type = _.get(detail, 'type')
+    const newFields = ['abstract', 'motivation']
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
+    const sections = isNewType ? newFields : fields
 
     const metaNode = this.renderMetaNode()
     const titleNode = this.renderTitleNode()
     const labelNode = this.renderLabelNode()
     const tagsNode = this.renderTagsNode()
-
-    let status = I18N.get('suggestion.status.posted')
-    if (_.get(detail, 'reference.0.vid')) {
-      status = <TagsContainer data={detail} />
-    } else if (_.some(detail.tags, (tag) => tag.type === 'INFO_NEEDED')) {
-      status = I18N.get('suggestion.status.moreInfoRequired')
-    } else if (
-      _.some(detail.tags, (tag) => tag.type === 'UNDER_CONSIDERATION')
-    ) {
-      status = I18N.get('suggestion.status.underConsideration')
-    }
 
     return (
       <div>
@@ -286,52 +253,10 @@ export default class extends StandardPage {
         {titleNode}
         <div style={{ margin: '14px 0' }}>{labelNode}</div>
         <div>{tagsNode}</div>
-
         <DescLabel id="preamble">
           {I18N.get('suggestion.fields.preamble')}
         </DescLabel>
-        {detail.displayId &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.suggestion'),
-            `#${detail.displayId}`
-          )}
-        {this.renderPreambleItem(
-          I18N.get('suggestion.fields.preambleSub.title'),
-          detail.title
-        )}
-        {detail.createdBy &&
-          detail.createdBy.username &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.creator'),
-            detail.createdBy.username,
-            'username'
-          )}
-        {this.renderPreambleItem(
-          I18N.get('suggestion.fields.preambleSub.status'),
-          status
-        )}
-        {this.renderPreambleItem(
-          I18N.get('suggestion.fields.preambleSub.created'),
-          moment(detail.createdAt).format('MMM D, YYYY')
-        )}
-        {_.get(detail, 'signature.data') &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.signature'),
-            detail.signature.data,
-            'signature'
-          )}
-        {_.get(detail, 'reference.0.txHash') &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.txHash'),
-            _.get(detail, 'reference.0.txHash'),
-            'txHash'
-          )}
-        {_.get(detail, 'reference.0.proposalHash') &&
-          this.renderPreambleItem(
-            I18N.get('suggestion.fields.preambleSub.proposalHash'),
-            _.get(detail, 'reference.0.proposalHash'),
-            'proposalHash'
-          )}
+        <Preamble detail={detail} user={this.props.user} />
         {sections.map((section) => {
           if (
             section === 'plan' &&
@@ -368,6 +293,7 @@ export default class extends StandardPage {
             detail.budget &&
             typeof detail.budget !== 'string'
           ) {
+            if (_.isEmpty(detail.budget)) return null
             return (
               <div key="budget">
                 <DescLabel id="budget">
@@ -389,6 +315,36 @@ export default class extends StandardPage {
                   {I18N.get('suggestion.budget.introduction')}
                 </Subtitle>
                 <MarkdownPreview content={detail.budgetIntro} />
+              </div>
+            )
+          }
+
+          if (
+            section === 'relevance' &&
+            detail.relevance &&
+            typeof detail.relevance !== 'sting'
+          ) {
+            return (
+              <div key="relevance">
+                <DescLabel id="relevance">
+                  {I18N.get(`suggestion.fields.relevance`)}
+                </DescLabel>
+                {detail.relevance.map((item, index) => {
+                  return (
+                    item && (
+                      <StyledRow key={index}>
+                        <p>
+                          {I18N.get('from.SuggestionForm.proposal') + `:`}
+                          <a href={`/proposals/${item.proposal}`}>
+                            {item.title}
+                          </a>
+                        </p>
+                        <p>{I18N.get('from.SuggestionForm.detail') + `:`}</p>
+                        <MarkdownPreview content={item.relevanceDetail} />
+                      </StyledRow>
+                    )
+                  )
+                })}
               </div>
             )
           }
@@ -579,6 +535,17 @@ export default class extends StandardPage {
             )}</p>
           `
         }
+        if (
+          section === 'relevance' &&
+          detail.relevance &&
+          typeof detail.relevance !== 'string'
+        ) {
+          return `
+          <h2 translate="no">${I18N.get('suggestion.fields.relevance')}</h2>
+          <p>${getRelevanceHtml(detail.relevance)}</p>
+          `
+        }
+
         return `
           <h2 translate="no">${I18N.get(`suggestion.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
@@ -655,6 +622,67 @@ export default class extends StandardPage {
     )
   }
 
+  renderNewOwnerActionNode() {
+    const { detail, user, getOwnerSignatureUrl, getSignature } = this.props
+    const newOwnerSig = _.get(detail, 'newOwnerSignature')
+    if (newOwnerSig) {
+      return
+    }
+    const currUser = _.get(user, 'did.compressedPublicKey')
+    if (!currUser) {
+      return
+    }
+    const type = _.get(detail, 'type')
+    if (type !== SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      return
+    }
+    const signature = _.get(detail, 'signature.data')
+    const newOwner = _.get(detail, 'newOwnerPublicKey')
+    const isNewOwner = newOwner && currUser === newOwner
+    const isSignable = signature && isNewOwner
+
+    return (
+      isSignable && (
+        <NewRoleSignSuggBtn
+          getSignatureUrl={getOwnerSignatureUrl}
+          getSignature={getSignature}
+          id={detail._id}
+          type={SUGGESTION_TYPE.CHANGE_PROPOSAL}
+        />
+      )
+    )
+  }
+
+  renderNewSecretaryActionNode() {
+    const { detail, user, getSecretarySignatureUrl, getSignature } = this.props
+    const newSecSig = _.get(detail, 'newSecretarySignature')
+    if (newSecSig) {
+      return
+    }
+    const currDID = _.get(user, 'did.id')
+    if (!currDID) {
+      return
+    }
+    const type = _.get(detail, 'type')
+    if (type !== SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      return
+    }
+    const signature = _.get(detail, 'signature.data')
+    const did = _.get(detail, 'newSecretaryDID')
+    const isSignable = signature && did && currDID === 'did:elastos:' + did
+
+    return (
+      isSignable && (
+        <NewRoleSignSuggBtn
+          getSignatureUrl={getSecretarySignatureUrl}
+          getSignature={getSignature}
+          id={detail._id}
+          type={SUGGESTION_TYPE.CHANGE_SECRETARY}
+        />
+      )
+    )
+  }
+
   renderCouncilActionsNode() {
     const {
       isCouncil,
@@ -693,7 +721,15 @@ export default class extends StandardPage {
         </StyledButton>
       </Col>
     )
-    const makeIntoProposalBtn = signature &&
+    const type = _.get(detail, 'type')
+    let isSignable = signature
+    if (type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      isSignable = signature && _.get(detail, 'newOwnerSignature')
+    }
+    if (type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      isSignable = signature && _.get(detail, 'newSecretarySignature')
+    }
+    const makeIntoProposalBtn = isSignable &&
       isCouncil &&
       !isReference && (
         <Col xs={24} sm={8}>

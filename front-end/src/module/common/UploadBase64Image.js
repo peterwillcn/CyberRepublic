@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import PropTypes from 'prop-types'
 
 const IMAGE_SIZE = {
-  MAX_WIDTH: 720,
+  MAX_WIDTH: 1080,
   MAX_HEIGHT: 720
 }
 
@@ -51,8 +51,9 @@ class UploadBase64Image extends BaseComponent {
       return
     }
 
-    if (file.size > 502400) {
+    if (file.size > 10 * 1024 * 1024) {
       message.error(I18N.get('image.upload.size.error'))
+      e.target.value = null
       return
     }
 
@@ -67,6 +68,7 @@ class UploadBase64Image extends BaseComponent {
       URL.revokeObjectURL(blobURL)
       this.props.insertImage(base64)
     }
+    e.target.value = null
   }
 
   ord_render() {

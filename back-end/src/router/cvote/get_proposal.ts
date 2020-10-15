@@ -8,8 +8,8 @@ export default class extends Base {
         const param = this.getParam()
         const service = this.buildService(CVoteService)
 
-        const id = param.id
-        const rs = await service.getProposalById(id)
+        // const id = param.id
+        const rs = await service.getProposalById(param)
         return this.result(1, rs)
     }
 }

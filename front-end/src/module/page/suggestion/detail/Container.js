@@ -15,6 +15,7 @@ export default createContainer(
     } else if (/^\/profile/.test(state.router.location.pathname)) {
       page = 'LEADER'
     }
+    const reference = _.get(state, 'suggestion.detail.reference')
     return {
       ...state.suggestion,
       page,
@@ -22,9 +23,7 @@ export default createContainer(
       currentUserId: state.user.current_user_id,
       isCouncil: state.user.is_council,
       isAdmin: state.user.is_admin,
-      isReference: !_.isEmpty(
-        state.suggestion.detail && state.suggestion.detail.reference
-      ) || state.suggestion.reference_status
+      isReference: !_.isEmpty(reference) || state.suggestion.reference_status
     }
   },
   () => {
@@ -71,11 +70,17 @@ export default createContainer(
       async getSignatureUrl(id) {
         return service.getSignatureUrl(id)
       },
-      async getSignature(id) {
-        return service.getSignature(id)
+      async getSignature(id, type) {
+        return service.getSignature(id, type)
       },
       async getCMSignatureUrl(id) {
         return service.getCMSignatureUrl(id)
+      },
+      async getOwnerSignatureUrl(id) {
+        return service.getOwnerSignatureUrl(id)
+      },
+      async getSecretarySignatureUrl(id) {
+        return service.getSecretarySignatureUrl(id)
       }
     }
   }

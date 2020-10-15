@@ -1,10 +1,8 @@
-import {
-  createContainer,
-} from '@/util'
+import { createContainer } from '@/util'
 import Component from './Component'
 import SuggestionService from '@/service/SuggestionService'
 
-const mapState = state => ({
+const mapState = (state) => ({
   loading: state.suggestion.loading
 })
 

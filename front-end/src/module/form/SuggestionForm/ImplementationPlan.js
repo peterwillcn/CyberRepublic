@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
 import I18N from '@/I18N'
-import TeamInfoSection from './TeamInfoSection'
 import Milestones from './Milestones'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
 
@@ -25,15 +24,6 @@ class ImplementationPlan extends Component {
     })
   }
 
-  changeValueIntro = value => {
-    const { onChange, callback } = this.props
-    const { planIntro } = this.state
-    this.setState({planIntro: value}, () => {
-      onChange(this.state.planIntro)
-      callback('planIntro')
-    })
-  }
-
   render() {
     const { plan, planIntro } = this.state
     const { callback, getFieldDecorator } = this.props
@@ -41,11 +31,6 @@ class ImplementationPlan extends Component {
       <div>
         <Title>{I18N.get('suggestion.plan.milestones')}</Title>
         <Milestones onChange={this.changeValue} initialValue={plan.milestone} />
-        <TeamInfoSection
-          title={I18N.get('suggestion.plan.teamInfo')}
-          onChange={this.changeValue}
-          initialValue={plan.teamInfo}
-        />
         <Section>
           <Label>{`${I18N.get('suggestion.plan.introduction')}`}</Label>
           {getFieldDecorator('planIntro',{

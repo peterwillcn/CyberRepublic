@@ -24,7 +24,7 @@ import VoteStats from '../stats/Component'
 import userUtil from '@/util/user'
 import { ReactComponent as UpIcon } from '@/assets/images/icon-up.svg'
 import { ReactComponent as DownIcon } from '@/assets/images/icon-down.svg'
-
+import { PROPOSAL_TYPE } from '@/constant'
 // style
 import {
   Container,
@@ -196,14 +196,6 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
-    }
     const { canManage, isSecretary, isCouncil } = this.props
     const canCreateProposal = !isCouncil && !isSecretary
     const { isVisitableFilter } = this.state
@@ -237,7 +229,7 @@ export default class extends BaseComponent {
       {
         title: I18N.get('council.voting.type'),
         dataIndex: 'type',
-        render: (type, item) => PROPOSAL_TYPE[type]
+        render: (type, item) => I18N.get(`proposal.type.${type}`)
       },
       {
         title: I18N.get('council.voting.author'),
@@ -357,7 +349,7 @@ export default class extends BaseComponent {
          const itemsCSV = _.map(list, v => [
          v.vid,
          v.title,
-         PROPOSAL_TYPE[v.type],
+         I18N.get(`proposal.type.${v.type}`),
          v.proposedBy,
          this.renderEndsInForCSV(v),
          this.voteDataByUserForCSV(v),
@@ -549,14 +541,6 @@ export default class extends BaseComponent {
 
   refetch = async () => {
     this.ord_loading(true)
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
-    }
     const { listData, canManage, getCurrentheight, getAllAuthor } = this.props
     const param = this.getQuery()
     const page = 1
@@ -581,7 +565,7 @@ export default class extends BaseComponent {
         dataCSV.push([
           v.vid,
           v.title,
-          PROPOSAL_TYPE[v.type],
+          I18N.get(`proposal.type.${v.type}`),
           v.proposedBy,
           this.renderEndsInForCSV(v),
           this.renderCommunityEndsInForCSV(v),
@@ -923,11 +907,19 @@ export default class extends BaseComponent {
                   value={type}
                   onChange={this.handleTypeChange}
                 >
-                  {_.map(PROPOSAL_TYPE, (value, key) => (
-                    <Select.Option key={key} value={key}>
-                      {value}
-                    </Select.Option>
-                  ))}
+                  {_.map(PROPOSAL_TYPE, (value, key) => {
+                    const rs = _.includes([
+                      PROPOSAL_TYPE.MOTION_AGAINST,
+                      PROPOSAL_TYPE.ANYTHING_ELSE
+                    ], value)
+                    return (
+                      !rs && (
+                        <Select.Option key={key} value={value}>
+                          {I18N.get(`proposal.type.${value}`)}
+                        </Select.Option>
+                      )
+                    )
+                  })}
                 </Select>
               </FilterItem>
               <FilterItem>

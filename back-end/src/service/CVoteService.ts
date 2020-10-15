@@ -2,15 +2,7 @@ import Base from './Base'
 import { Document } from 'mongoose'
 import * as _ from 'lodash'
 import { constant } from '../constant'
-import {
-  permissions,
-  getDidPublicKey,
-  getProposalState,
-  getProposalData,
-  getDidName,
-  ela,
-  getVoteResultByTxid
-} from '../utility'
+import { permissions, getProposalData, ela } from '../utility'
 import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 import {
@@ -20,7 +12,7 @@ import {
   timestamp,
   logger
 } from '../utility'
-import { use } from 'chai'
+import { CVOTE_STATUS } from 'src/constant/constant'
 
 const util = require('util')
 const request = require('request')
@@ -78,6 +70,7 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
   VoterAgreed: constant.CVOTE_STATUS.ACTIVE,
   VoterCanceled: constant.CVOTE_STATUS.VETOED,
   Finished: constant.CVOTE_STATUS.FINAL,
+  Terminated: constant.CVOTE_STATUS.TERMINATED,
   Aborted: {
     [constant.CVOTE_STATUS.PROPOSED]: constant.CVOTE_STATUS.REJECT,
     [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.VETOED
@@ -85,20 +78,22 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
 }
 
 const EMAIL_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION] : 'Passed',
-  [constant.CVOTE_STATUS.ACTIVE] : 'Passed',
-  [constant.CVOTE_STATUS.REJECT] : 'Rejected',
-  [constant.CVOTE_STATUS.VETOED] : 'Rejected',
+  [constant.CVOTE_STATUS.NOTIFICATION]: 'Passed',
+  [constant.CVOTE_STATUS.ACTIVE]: 'Passed',
+  [constant.CVOTE_STATUS.FINAL]: 'Passed',
+  [constant.CVOTE_STATUS.REJECT]: 'Rejected',
+  [constant.CVOTE_STATUS.VETOED]: 'Rejected'
 }
 
 const EMAIL_TITLE_PROPOSAL_STATUS = {
-  [constant.CVOTE_STATUS.NOTIFICATION] : constant.CVOTE_STATUS.NOTIFICATION,
-  [constant.CVOTE_STATUS.ACTIVE] : 'PASSED',
-  [constant.CVOTE_STATUS.REJECT] : 'REJECTED',
-  [constant.CVOTE_STATUS.VETOED] : 'VETOED',
+  [constant.CVOTE_STATUS.NOTIFICATION]: constant.CVOTE_STATUS.NOTIFICATION,
+  [constant.CVOTE_STATUS.ACTIVE]: 'PASSED',
+  [constant.CVOTE_STATUS.REJECT]: 'REJECTED',
+  [constant.CVOTE_STATUS.VETOED]: 'VETOED',
+  [constant.CVOTE_STATUS.FINAL]: 'FINAL'
 }
 
-const DID_PREFIX = 'did:elastos:'
+const { DID_PREFIX, API_VOTE_TYPE } = constant
 const STAGE_BLOCKS = process.env.NODE_ENV == 'staging' ? 40 : 7 * 720
 
 export default class extends Base {
@@ -139,6 +134,18 @@ export default class extends Base {
       logger.error(error)
       return
     }
+  }
+
+  public async getActiveProposals() {
+    const db_cvote = this.getDBModel('CVote')
+    const docs = await db_cvote.find(
+      {
+        status: constant.CVOTE_STATUS.ACTIVE,
+        old: { $exists: false }
+      },
+      'vid title'
+    )
+    return docs
   }
 
   public async makeSuggIntoProposal(param: any) {
@@ -182,8 +189,34 @@ export default class extends Base {
       txHash
     }
 
-    Object.assign(doc, _.pick(suggestion, BASE_FIELDS))
+    if (suggestion.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      doc.closeProposalNum = suggestion.closeProposalNum
+    }
+    if (suggestion.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      doc.newSecretaryDID = suggestion.newSecretaryDID
+    }
+    if (suggestion.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
+      doc.targetProposalNum = suggestion.targetProposalNum
+      if (suggestion.newOwnerDID) {
+        doc.newOwnerDID = suggestion.newOwnerDID
+      }
+      if (suggestion.newAddress) {
+        doc.newAddress = suggestion.newAddress
+      }
+    }
 
+    Object.assign(doc, _.pick(suggestion, BASE_FIELDS))
+    const budget = _.get(suggestion, 'budget')
+    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+    if (suggestion.type === constant.CVOTE_TYPE.NEW_MOTION && !hasBudget) {
+      doc.budget = constant.DEFAULT_BUDGET.map((item: any) => ({
+        amount: '0',
+        milestoneKey: '0',
+        type: constant.SUGGESTION_BUDGET_TYPE.COMPLETION
+      }))
+      doc.elaAddress = constant.ELA_BURN_ADDRESS
+      doc.budgetAmount = '0'
+    }
     const councilMembers = await db_user.find({
       role: constant.USER_ROLE.COUNCIL
     })
@@ -525,7 +558,7 @@ export default class extends Base {
           const { title, _id } = cvote
           const subject = `Proposal Vote Reminder: ${title}`
           const body = `
-            <p>You only got ${promptTime} to vote this proposal:</p>
+            <p>You have ${promptTime} to vote this proposal:</p>
             <br />
             <p>${title}</p>
             <br />
@@ -549,12 +582,12 @@ export default class extends Base {
     })
     if (isOneDay) {
       await db_cvote.update(
-        { _id: {$in:cvoteIds} },
+        { _id: { $in: cvoteIds } },
         { $set: { notifiedOneDay: true } }
       )
     } else {
       await db_cvote.update(
-        { _id: {$in:cvoteIds} },
+        { _id: { $in: cvoteIds } },
         { $set: { notified: true } }
       )
     }
@@ -709,7 +742,7 @@ export default class extends Base {
       'proposedEndsHeight',
       'notificationEndsHeight',
       'rejectAmount',
-      'rejectThroughAmount',
+      'rejectThroughAmount'
     ]
 
     // const list = await db_cvote.list(query, { vid: -1 }, 0, fields.join(' '))
@@ -717,10 +750,7 @@ export default class extends Base {
     const cursor = db_cvote
       .getDBInstance()
       .find(query, fields.join(' '))
-      .populate(
-        'proposer',
-        constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
-      )
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .sort({ vid: -1 })
 
     if (param.results) {
@@ -893,18 +923,26 @@ export default class extends Base {
   }
 
   public async updateProposalBudget() {
-    const { MILESTONE_STATUS, SUGGESTION_BUDGET_TYPE } = constant
+    const { MILESTONE_STATUS, SUGGESTION_BUDGET_TYPE, CVOTE_STATUS } = constant
     const db_cvote = this.getDBModel('CVote')
     const query = {
       old: { $exists: false },
       $or: [
-        { status: 'ACTIVE' },
+        { status: CVOTE_STATUS.ACTIVE },
         {
-          status: 'FINAL',
+          status: CVOTE_STATUS.FINAL,
           budget: {
             $elemMatch: {
               type: SUGGESTION_BUDGET_TYPE.COMPLETION,
               status: { $ne: MILESTONE_STATUS.WITHDRAWN }
+            }
+          }
+        },
+        {
+          status: CVOTE_STATUS.TERMINATED,
+          budget: {
+            $elemMatch: {
+              status: MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL
             }
           }
         }
@@ -1009,23 +1047,26 @@ export default class extends Base {
       .populate('referenceElip', 'vid')
     const voteHistory = await db_cvote_history
       .getDBInstance()
-      .find({proposalBy: rs._doc._id})
+      .find({ proposalBy: rs._doc._id })
       .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
     if (!rs) {
       return { success: true, empty: true }
     }
-    const res = {...rs._doc}
+    const res = { ...rs._doc }
     _.forEach(rs._doc.voteResult, (o: any) => {
-      if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
+      if (
+        o.status === constant.CVOTE_CHAIN_STATUS.CHAINED &&
+        !_.find(voteHistory, { txid: o.txid })
+      ) {
         voteHistory.push({
           ...o._doc,
           isCurrentVote: true
         })
       }
     })
-    res.voteHistory = _.sortBy(voteHistory, function(item) {
-      return -item.reasonCreatedAt;
+    res.voteHistory = _.sortBy(voteHistory, function (item) {
+      return -item.reasonCreatedAt
     })
     if (res.budgetAmount) {
       const doc = JSON.parse(JSON.stringify(res))
@@ -1085,9 +1126,11 @@ export default class extends Base {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
 
-    const { _id, value, reason } = param
+    const { _id, value, reason, reasonHash, votedByWallet } = param
     const cur = await db_cvote.findOne({ _id })
-    const votedBy = _.get(this.currentUser, '_id')
+    const votedBy = _.isEmpty(votedByWallet)
+      ? _.get(this.currentUser, '_id')
+      : votedByWallet
     if (!cur) {
       throw 'invalid proposal id'
     }
@@ -1103,9 +1146,9 @@ export default class extends Base {
           'voteResult.$.value': value,
           'voteResult.$.reason': reason || '',
           'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.UNCHAIN,
-          'voteResult.$.reasonHash': utilCrypto.sha256D(
-            reason + timestamp.second(reasonCreateDate)
-          ),
+          'voteResult.$.reasonHash':
+            reasonHash ||
+            utilCrypto.sha256D(reason + timestamp.second(reasonCreateDate)),
           'voteResult.$.reasonCreatedAt': reasonCreateDate
         },
         $inc: {
@@ -1114,8 +1157,13 @@ export default class extends Base {
       }
     )
 
-    if (!_.find(currentVoteResult,['value',constant.CVOTE_RESULT.UNDECIDED])) {
-      await db_cvote_history.save({..._.omit(currentVoteResult, ['_id']),proposalBy:_id})
+    if (
+      !_.find(currentVoteResult, ['value', constant.CVOTE_RESULT.UNDECIDED])
+    ) {
+      await db_cvote_history.save({
+        ..._.omit(currentVoteResult, ['_id']),
+        proposalBy: _id
+      })
     }
 
     return await this.getById(_id)
@@ -1184,8 +1232,7 @@ export default class extends Base {
     // url: 'http://54.223.244.60/api/dposnoderpc/check/listcrcandidates',
     const postPromise = util.promisify(request.post, { multiArgs: true })
     await postPromise({
-      url:
-        'https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates',
+      url: `https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates`,
       form: { pageNum, pageSize, state },
       encoding: 'utf8'
     }).then((value) => (ret = value.body))
@@ -1196,6 +1243,10 @@ export default class extends Base {
   // council vote onchain
   public async onchain(param) {
     try {
+      const did = _.get(this.currentUser, 'did.id')
+      if (!did) {
+        return { success: false, message: 'Your DID not bound.' }
+      }
       const db_cvote = this.getDBModel('CVote')
       const userId = _.get(this.currentUser, '_id')
       const { id } = param
@@ -1233,6 +1284,7 @@ export default class extends Base {
         iss: process.env.APP_DID,
         command: 'reviewproposal',
         data: {
+          userdid: did,
           proposalHash: cur.proposalHash,
           voteResult: voteResultOnChain[currentVoteResult.value],
           opinionHash: currentVoteResult.reasonHash,
@@ -1299,7 +1351,8 @@ export default class extends Base {
       status: {
         $in: [
           constant.CVOTE_STATUS.PROPOSED,
-          constant.CVOTE_STATUS.NOTIFICATION
+          constant.CVOTE_STATUS.NOTIFICATION,
+          constant.CVOTE_STATUS.ACTIVE
         ]
       }
     })
@@ -1313,8 +1366,8 @@ export default class extends Base {
         await callback(array[index], index, array)
       }
     }
-    const rejectThroughAmount: any =
-      (await ela.currentCirculatingSupply()) * 0.1
+    // prettier-ignore
+    const rejectThroughAmount: any = (await ela.currentCirculatingSupply()) * 0.1
     await asyncForEach(list, async (o: any) => {
       const { proposalHash, status } = o._doc
       const rs: any = await getProposalData(proposalHash)
@@ -1323,6 +1376,13 @@ export default class extends Base {
       }
       switch (status) {
         case constant.CVOTE_STATUS.PROPOSED:
+          heightProposed = await this.updateProposalOnProposed({
+            rs,
+            _id: o._id,
+            status
+          })
+          break
+        case constant.CVOTE_STATUS.ACTIVE:
           heightProposed = await this.updateProposalOnProposed({
             rs,
             _id: o._id,
@@ -1391,14 +1451,51 @@ export default class extends Base {
 
     const proposalStatus = CHAIN_STATUS_TO_PROPOSAL_STATUS[chainStatus]
     const proposal = await db_cvote.findById(_id)
+    if (proposal.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      await db_cvote.update(
+        {
+          vid: proposal.closeProposalNum,
+          old: { $exists: false }
+        },
+        {
+          status: constant.CVOTE_STATUS.TERMINATED,
+          terminatedBy: { vid: proposal.vid, id: proposal._id }
+        }
+      )
+    }
+    if (proposal.type === constant.CVOTE_TYPE.CHANGE_PROPOSAL) {
+      const db_user = this.getDBModel('User')
+      const setDoc: any = {}
+      if (proposal.newOwnerDID) {
+        const newOwner = await db_user.findOne({
+          'did.id': DID_PREFIX + proposal.newOwnerDID
+        })
+        setDoc.proposer = newOwner._id
+        setDoc.proposedBy = userUtil.formatUsername(newOwner)
+        setDoc.ownerPublicKey = _.get(newOwner, 'did.compressedPublicKey')
+      }
+      if (proposal.newAddress) {
+        setDoc.elaAddress = proposal.newAddress
+      }
+      await db_cvote.update(
+        {
+          vid: proposal.targetProposalNum,
+          old: { $exists: false }
+        },
+        {
+          $set: setDoc,
+          $push: { changedBy: { vid: proposal.vid, id: proposal._id } }
+        }
+      )
+    }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
-      const budget = proposal.budget.map((item: any) => {
+      const budget = !_.isEmpty(proposal.budget) ? proposal.budget.map((item: any) => {
         if (item.type === 'ADVANCE') {
           return { ...item, status: WAITING_FOR_WITHDRAWAL }
         } else {
           return { ...item, status: WAITING_FOR_REQUEST }
         }
-      })
+      }) : null
       const updateStatus = await db_cvote.update(
         {
           _id
@@ -1428,7 +1525,7 @@ export default class extends Base {
         rejectThroughAmount
       }
     )
-    if (proposalStatus !== proposal.status && updateStatus.nModified ==1) {
+    if (proposalStatus !== proposal.status && updateStatus.nModified == 1) {
       this.notifyProposer(proposal, proposalStatus, 'community')
       return rs.data.registerheight + STAGE_BLOCKS * 2
     }
@@ -1475,6 +1572,7 @@ export default class extends Base {
    */
   public async allOrSearch(param): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
+    const db_config = this.getDBModel('Config')
     const query: any = {}
 
     if (
@@ -1521,9 +1619,11 @@ export default class extends Base {
       'type',
       'createdAt',
       'proposer',
+      'proposedEndsHeight',
+      'notificationEndsHeight',
       'proposalHash',
       'rejectAmount',
-      'rejectThroughAmount',
+      'rejectThroughAmount'
     ]
 
     const cursor = db_cvote
@@ -1546,9 +1646,9 @@ export default class extends Base {
 
     const rs = await Promise.all([
       cursor,
-      db_cvote.getDBInstance().find(query).count()
+      db_cvote.getDBInstance().find(query).count(),
+      ela.height()
     ])
-
     // filter return data，add proposalHash to CVoteSchema
     const list = _.map(rs[0], function (o) {
       let temp = _.omit(o._doc, [
@@ -1556,15 +1656,25 @@ export default class extends Base {
         'proposer',
         'type',
         'rejectAmount',
+        'proposedEndsHeight',
+        'notificationEndsHeight',
         'rejectThroughAmount'
       ])
       temp.proposedBy = _.get(o, 'proposer.did.didName')
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
+      if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
+        temp.voteEndsIn = _.toNumber(
+            (o.proposedEndsHeight - rs[2]) * 2 * 60
+        ).toFixed()
+      }
       if (
         [constant.CVOTE_STATUS.NOTIFICATION].includes(o.status) &&
         o.rejectAmount >= 0 &&
         o.rejectThroughAmount > 0
       ) {
+        temp.voteEndsIn = _.toNumber(
+            (o.notificationEndsHeight - rs[2]) * 2 * 60
+        ).toFixed()
         temp.rejectAmount = `${o.rejectAmount}`
         temp.rejectThroughAmount = `${parseFloat(
           _.toNumber(o.rejectThroughAmount).toFixed(8)
@@ -1590,11 +1700,14 @@ export default class extends Base {
     return { list, total }
   }
 
-  public async getProposalById(id): Promise<any> {
+  public async getProposalById(data: any): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
+    const { id } = data
+
     const fields = [
       'vid',
+      'title',
       'status',
       'type',
       'abstract',
@@ -1604,7 +1717,12 @@ export default class extends Base {
       'rejectAmount',
       'rejectThroughAmount',
       'proposedEndsHeight',
-      'notificationEndsHeight'
+      'notificationEndsHeight',
+      'targetProposalNum',
+      'newOwnerDID',
+      'newAddress',
+      'newSecretaryDID',
+      'closeProposalNum'
     ]
     const isNumber = /^\d*$/.test(id)
     let query: any
@@ -1634,12 +1752,19 @@ export default class extends Base {
     const address = `${process.env.SERVER_URL}/proposals/${proposal.id}`
 
     const proposalId = proposal._id
+    const targetNum = proposal.targetProposalNum || proposal.closeProposalNum
+    let targetProposal: any
+    if (targetNum) {
+      targetProposal = await db_cvote
+        .getDBInstance()
+        .findOne({ vid: parseInt(targetNum), old: { $exists: false } })
+    }
 
     const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
     const cvoteHistory = await db_cvote_history
-        .getDBInstance()
-        .find({proposalBy:proposalId})
-        .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+      .getDBInstance()
+      .find({ proposalBy: proposalId })
+      .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
     const voteResultWithNull = _.map(proposal._doc.voteResult, (o: any) => {
       let result
       if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
@@ -1647,7 +1772,9 @@ export default class extends Base {
       } else {
         const historyList = _.filter(
           cvoteHistory,
-          (e: any) => e.status === constant.CVOTE_CHAIN_STATUS.CHAINED && o.votedBy._id.toString() == e.votedBy._id.toString()
+          (e: any) =>
+            e.status === constant.CVOTE_CHAIN_STATUS.CHAINED &&
+            o.votedBy._id.toString() == e.votedBy._id.toString()
         )
         if (!_.isEmpty(historyList)) {
           const history = _.sortBy(historyList, 'createdAt')
@@ -1710,10 +1837,12 @@ export default class extends Base {
     return _.omit(
       {
         id: proposal.vid,
+        title: proposal.title,
         status: CVOTE_STATUS_TO_WALLET_STATUS[proposal.status],
         type: constant.CVOTE_TYPE_API[proposal.type],
         abs: proposal.abstract,
         address,
+        targetProposalTitle: targetProposal && targetProposal.title,
         ..._.omit(proposal._doc, [
           'vid',
           'abstract',
@@ -2130,7 +2259,7 @@ export default class extends Base {
     })
     const toUsers = []
     const toMails = _.map(user, 'email')
-    const subject = `【${(EMAIL_TITLE_PROPOSAL_STATUS[status])}】Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]}`
+    const subject = `【${EMAIL_TITLE_PROPOSAL_STATUS[status]}】Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]}`
     const body = `
         <p>Your proposal #${cvote.vid} get ${EMAIL_PROPOSAL_STATUS[status]} by the ${by}.</p>
         <br />
@@ -2207,7 +2336,7 @@ export default class extends Base {
             rs.push(o)
           } else if (lastName.search(sp[1].toLowerCase()) !== -1) {
             rs.push(o)
-          } 
+          }
         } else {
           if (
             firstName.search(sp[0].toLowerCase()) !== -1 ||
@@ -2234,7 +2363,8 @@ export default class extends Base {
         rs.push(o)
       }
       if (
-        username && sp.length == 1 &&
+        username &&
+        sp.length == 1 &&
         !_.find(rs, { _id: o._id }) &&
         username.search(sp[0].toLowerCase()) !== -1
       ) {
@@ -2242,6 +2372,82 @@ export default class extends Base {
       }
     })
 
-    return _.uniqWith(rs, _.isEqual);
+    return _.uniqWith(rs, _.isEqual)
+  }
+
+  public async getProposalTitle(param: any) {
+    const db_cvote = this.getDBModel('CVote')
+    if (_.isEmpty(param)) return
+    let value = ''
+    _.forEach(param, (v: any) => {
+      value += v
+    })
+    const proposalList = await db_cvote.getDBInstance().find(
+      {
+        title: { $regex: value, $options: 'i' }
+      },
+      ['_id', 'title']
+    )
+    return proposalList
+  }
+
+  public async walletVote(param: any) {
+    const db_user = this.getDBModel('User')
+    const db_cvote = this.getDBModel('CVote')
+    const db_council = this.getDBModel('Council')
+
+    const rs: any = jwt.verify(
+      param.params,
+      process.env.WALLET_VOTE_PUBLIC_KEY,
+      {
+        algorithms: ['ES256']
+      }
+    )
+    if (rs.exp < (new Date().getTime() / 1000).toFixed()) {
+      throw 'Request expired'
+    }
+
+    if (rs.command !== API_VOTE_TYPE.PROPOSAL) {
+      throw 'Invalid command'
+    }
+    const { status, reason, reasonHash, proposalHash, did } = rs.data
+    const voteDid = DID_PREFIX + did
+    const user = await db_user.getDBInstance().findOne({ 'did.id': voteDid })
+    if (!user) {
+      throw 'This user doesn‘t exist'
+    }
+    if (user.role !== constant.USER_ROLE.COUNCIL) {
+      throw 'This user not a coumcil'
+    }
+    const currentCouncil = await db_council.getDBInstance().findOne({
+      status: constant.TERM_COUNCIL_STATUS.CURRENT
+    })
+    if (!_.find(currentCouncil.councilMembers, { did })) {
+      throw 'This user not a coumcil'
+    }
+    const proposal = await db_cvote
+      .getDBInstance()
+      .findOne({ proposalHash: proposalHash })
+    if (!proposal) {
+      throw 'Invalid proposal hash'
+    }
+    const votedRs: any = _.find(proposal.voteResult, { votedBy: user._id })
+    if (!votedRs) {
+      throw 'This vote undefined'
+    }
+    if (
+      votedRs.status == constant.CVOTE_CHAIN_STATUS.UNCHAIN &&
+      votedRs.value != 'undecided'
+    ) {
+      throw 'The voting status has not been updated'
+    }
+    const data = {
+      _id: proposal._id,
+      value: status,
+      reason,
+      reasonHash,
+      votedByWallet: user._id
+    }
+    this.vote(data)
   }
 }

@@ -26,23 +26,13 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    const title = this.renderTitle()
-    const privateListNode = this.renderPrivateList()
+    // const privateListNode = this.renderPrivateList()
     const withdrawalListNode = this.renderWithdrawalList()
     return (
       <Container>
-        {title}
         {/* {privateListNode} */}
         {withdrawalListNode}
       </Container>
-    )
-  }
-
-  renderTitle() {
-    return (
-      <ContentTitle id="tracking">
-        {I18N.get('proposal.fields.tracking')}
-      </ContentTitle>
     )
   }
 

@@ -120,6 +120,7 @@ const zh = {
   2306: '社区',
   'profile.suggestion': '我的建议',
 
+  'login.access.forum': '请先登录或注册 Cyber Republic 账号后访问论坛',
   'login.success': '欢迎回来',
   'logout.success': '登出成功',
   'login.noBindingDID': '请注册账号或用已有账号登陆',
@@ -128,7 +129,7 @@ const zh = {
 
   'meta.postedBy': '发布者',
   'image.upload.type.error': '上传的文件不是图片',
-  'image.upload.size.error': '上传的文件大小不能超过500KB',
+  'image.upload.size.error': '上传的文件大小不能超过10M',
 
   comments: '评论',
   'comments.posts': '动态',
@@ -815,12 +816,6 @@ const zh = {
   'council.voting.chainStatus.unchain':'未上链',
   'council.voting.chainStatus.failed':'上链失败',
 
-  'council.voting.type.newMotion': '新动议',
-  'council.voting.type.motionAgainst': '反对动议',
-  'council.voting.type.anythingElse': '其它事宜',
-  'council.voting.type.standardTrack': '标准跟踪 ELIP',
-  'council.voting.type.information': '信息 ELIP',
-  'council.voting.type.process': '流程 ELIP',
   'council.voting.type.support': '赞成',
   'council.voting.type.reject': '否决',
   'council.voting.type.abstention': '弃权',
@@ -1023,6 +1018,10 @@ const zh = {
   'profile.forms.table.header.created': '创建时间',
   'profile.forms.show': '显示已存档',
   'profile.forms.search': '搜索',
+
+  'profile.form.headline': '标题',
+  'profile.form.headline.error': '请输入标题！',
+  
 
   // Validate Form
   'ambassadors.form.required': '必填项目',
@@ -1344,6 +1343,10 @@ const zh = {
   'from.UserProfileForm.text.slogan': '个人标语',
   'from.UserProfileForm.text.motto': '个人座右铭',
 
+  'from.SuggestionForm.title': '相关细节',
+  'from.SuggestionForm.proposal': '提案 #',
+  'from.SuggestionForm.detail': '相关细节',
+
   'btn.CopyHash': '复制成功',
 
   // CR Video / Earn ELA page
@@ -1506,6 +1509,9 @@ const zh = {
   'user.skillset.FINANCIAL_CONSULTING': '金融咨询',
   'user.skillset.PRESENTATION': '商务演示',
 
+  'user.update.council.secretariat.role': '更新用户权限',
+  'user.update.council.secretariat.success': '更新成功',
+
   // Council & Secretariat
   cs: {
     candidates: '候选人',
@@ -1614,6 +1620,7 @@ zh[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = '未完成'
 zh[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = '已过期'
 zh[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = '公示期'
 zh[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = '社区否决'
+zh[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = '已终止'
 
 
 export default zh

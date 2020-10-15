@@ -106,8 +106,8 @@ export const getPlanHtml = (plan) => {
   `
 }
 
-export const getBudgetHtml = (budget) => {
-  if (!budget) {
+export const getBudgetHtml = budget => {
+  if (!budget || _.isEmpty(budget)) {
     return
   }
   const lists = budget
@@ -137,6 +137,29 @@ export const getBudgetHtml = (budget) => {
         <span translate="no">${I18N.get('suggestion.budget.goal')}</span>
         <span translate="no">${I18N.get('suggestion.budget.criteria')}</span>
       </p>
+      ${lists}
+    </div>
+  `
+}
+
+export const getRelevanceHtml = relevance => {
+  if (!relevance) return
+  const lists = relevance
+    .map((item, index) => {
+      return `
+        <p>
+          <p>
+          <span translate="no">${I18N.get('from.SuggestionForm.proposal')} : </span>
+          <span>${item.title}</span>
+          </p>
+          <p translate="no">${I18N.get('from.SuggestionForm.detail')} : </p>
+          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.relevanceDetail))}</span>
+        </p>
+      `
+    })
+    .join('')
+  return `
+    <div>
       ${lists}
     </div>
   `

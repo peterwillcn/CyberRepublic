@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -21,7 +22,15 @@ export default {
       updated: 'Updated',
       signature: 'Signature',
       txHash: 'TxID',
-      proposalHash: 'Hash'
+      proposalHash: 'Hash',
+      type: 'Type',
+      owner: 'New Proposal Owner',
+      address: 'New Proposal ELA Address',
+      secretary: 'New Secretary General',
+      targetProposalNum: 'Proposal Number',
+      closeProposalNum: 'Terminate Proposal',
+      newOwnerSignature: 'New Owner Signature',
+      newSecretarySignature: 'New Secretary General Signature'
     },
     abstract: 'Abstract',
     goal: 'Goal',
@@ -29,7 +38,9 @@ export default {
     relevance: 'Relevance',
     budget: 'Budget',
     type: 'Type',
-    plan: 'Implementation Plan',
+    plan: 'Implementation',
+    planBudget: 'Implementation & budget plan',
+    teamInfo: 'Implementation team',
     vote: 'Vote',
     tracking: 'Tracking',
     summary: 'Summary',
@@ -74,9 +85,29 @@ export default {
       title: 'Title'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: 'New Motion',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: 'Motion Against',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: 'Anything Else',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: 'Motion to change a proposal',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: `Motion for new CR Council Secretary General`,
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: 'Motion to terminate a proposal',
       newMotion: 'New Motion',
       motionAgainst: 'Motion Against',
-      anythingElse: 'Anything Else'
+      anythingElse: 'Anything Else',
+      changeProposalOwner: 'Change the Proposal Owner',
+      changeProposalAddress: 'Change the Proposal ELA Address',
+      proposalNum: 'Proposal Number',
+      proposalNewOwner: 'Proposal New Owner',
+      proposalNewAddress: 'Proposal New ELA Address',
+      newSecretary: 'New Secretary',
+      ownerInfo: `Please input the new owner's DID`,
+      secretaryInfo: `Please input the new secretary's DID`,
+      desc: {
+        [SUGGESTION_TYPE.NEW_MOTION]: `Topic regarding CR or Elastos technology development`,
+        [SUGGESTION_TYPE.CHANGE_PROPOSAL]: `Topic regarding changing proposal owner or ELA receive address`,
+        [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: `Topic regarding terminating proposals unable or should not be executed`,
+        [SUGGESTION_TYPE.CHANGE_SECRETARY]: `Topic regarding changing the secretary general`
+      }
     },
     note: {
       type: 'Select a suggestion type.',
@@ -88,6 +119,8 @@ export default {
       budget: `If the implementation of the proposal requires financial support from the CRC, describe the overall budget and expenditure plan. This financial plan should be aligned with the implementation plan.`,
       type: 'Select a proposal type.',
       plan: `Describe what methods and processes will be used to achieve goals, and a brief introduction of the executing person or team should be listed here as well. If proposal has a long implementation timeline, it should set some checkpoints in the implementation process. The interval between two checkpoints should be no more than 3 months. The checkpoints should be clear and measurable as the proposed goals.`,
+      planBudget: `Describe what methods and processes will be used to achieve goals, and a brief introduction of the executing person or team should be listed here as well. If proposal has a long implementation timeline, it should set some checkpoints in the implementation process. The interval between two checkpoints should be no more than 3 months. The checkpoints should be clear and measurable as the proposed goals.`,
+      teamInfo: 'Team information',
       tracking: `This part is updated by the proposer according to the progress of the proposal, including the achievement of goal and budget usage. It is used to present the implementation status of proposal according to the checkpoints in the implementation plan or the goals of the proposal. The CRC Secretariat is responsible to review and verify this part.`,
       summary: `When proposal is completed, its proposer should submit a summary of the proposal implementation, including the achievement of goals and financial report. The CRC Secretariat is responsible for the review of this part.`
     },
@@ -102,6 +135,7 @@ export default {
       previousMilestoneDate: `The date must be later than the previous milestone.`,
       requirePayment: `Project Completion Payment is required before completing a proposal.`,
       elaAddress: 'Invalid ELA address',
+      elaAddressNull: 'The new ELA address is emtpy.',
       schedule: 'Payment schedule is empty',
       payment: `Project Completion Payment is required, at most one Project Initiation Payment, and each payment must match one milestone.`,
       advance: 'Project initiation payment only apply to the first milestone.',
@@ -109,7 +143,14 @@ export default {
       conditioned: 'Project milestone payment can not apply to this milestone.',
       isUsed: 'This milestone has been used.',
       exception: 'Something went wrong',
-      notEqual: `The toal budget is not equal to the sum of each payment amount.`
+      notEqual: `The toal budget is not equal to the sum of each payment amount.`,
+      noOwner: `The new owner does not exist.`,
+      noSecretary: `The new secretary general does not exist.`,
+      noProposal: `The proposal number is invalid.`,
+      proposalNum: 'The proposal number is emtpy.',
+      secretary: 'The new secretary general DID is emtpy.',
+      newOwner: 'The new owner DID is empty.',
+      changeWhat: `Please fill in the info of the change proposal`
     }
   },
   modal: {
@@ -185,6 +226,8 @@ export default {
     responsibility: 'Responsibility',
     moreInfo: 'More Info',
     createTeamInfo: 'Add Team Member',
+    createRelevance: 'Add Relevance Item',
+    editRelevance: 'Edit Relevance Item',
     action: 'Action',
     teamInfo: 'Implementation Team',
     milestones: 'Milestones',

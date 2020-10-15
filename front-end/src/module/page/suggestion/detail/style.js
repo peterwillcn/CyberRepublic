@@ -194,3 +194,16 @@ export const CopyButton = styled.span`
   cursor:pointer;
   color: #fff;
 `
+
+export const StyledRow = styled.div`
+  width: 100%;
+  border-bottom: 1px solid #edf1f5;
+  margin-bottom: 10px;
+  > button {
+    margin: 0 4px;
+  }
+  p {
+    padding: 0px;
+    margin-top:5px;
+  }
+`

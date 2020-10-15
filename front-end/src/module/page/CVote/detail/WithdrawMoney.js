@@ -20,10 +20,8 @@ class WithdrawMoney extends Component {
   componentDidMount = async () => {
     const { proposalId, withdraw, stage } = this.props
     const rs = await withdraw(proposalId, stage)
-    if (rs && !rs.success && rs.url === null) {
-      this.setState({
-        message: I18N.get('milestone.noUtxos')
-      })
+    if (rs && !rs.success) {
+      this.setState({ message: rs.message })
     }
     if (rs && rs.success) {
       this.setState({ url: rs.url, message: '' })

@@ -1,42 +1,51 @@
 import React from 'react'
-import { Form, Input, Button, Row, Tabs, Radio, message } from 'antd'
+import { Form, Input, Button, Row, Tabs, message } from 'antd'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
-import { ABSTRACT_MAX_WORDS } from '@/constant'
+import { ABSTRACT_MAX_WORDS, TAB_KEYS, NEW_TAB_KEYS } from '@/constant'
 import CircularProgressbar from '@/module/common/CircularProgressbar'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
-import PaymentSchedule from './PaymentSchedule'
-import ImplementationPlan from './ImplementationPlan'
+import RelevanceSection from './RelevanceSection'
 import { wordCounter } from '@/util'
-import { SUGGESTION_BUDGET_TYPE } from '@/constant'
+import { SUGGESTION_BUDGET_TYPE, SUGGESTION_TYPE } from '@/constant'
 import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
+import SelectSuggType from './SelectSuggType'
+import ImplementationAndBudget from './ImplementationAndBudget'
+import TeamInfoSection from './TeamInfoSection'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
 
 const WORD_LIMIT = ABSTRACT_MAX_WORDS
 
-const TAB_KEYS = [
-  'type',
-  'abstract',
-  'motivation',
-  'goal',
-  'plan',
-  'relevance',
-  'budget'
-]
 const { ADVANCE, COMPLETION } = SUGGESTION_BUDGET_TYPE
+const {
+  NEW_MOTION,
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 
 class C extends BaseComponent {
   constructor(props) {
     super(props)
-
+    const type = _.get(props, 'initialValues.type')
+    const newAddress = _.get(props, 'initialValues.newAddress')
+    const newOwnerDID = _.get(props, 'initialValues.newOwnerDID')
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
     this.timer = -1
     this.state = {
       loading: false,
-      activeKey: TAB_KEYS[0],
-      errorKeys: {}
+      activeKey: !isNewType ? TAB_KEYS[0] : NEW_TAB_KEYS[0],
+      errorKeys: {},
+      type: type ? type : NEW_MOTION,
+      tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS,
+      changeAddress: newAddress ? true : false,
+      changeOwner: newOwnerDID ? true : false
     }
     const sugg = props.initialValues
     if (
@@ -64,7 +73,8 @@ class C extends BaseComponent {
   }
 
   getActiveKey(key) {
-    if (!TAB_KEYS.includes(key)) return this.state.activeKey
+    const { tabs } = this.state
+    if (!tabs.includes(key)) return this.state.activeKey
     return key
   }
 
@@ -81,23 +91,27 @@ class C extends BaseComponent {
         })
         return
       }
-
       const milestone = _.get(values, 'plan.milestone')
       const pItems = _.get(values, 'budget.paymentItems')
 
-      const initiation = pItems.filter(
-        (item) => item.type === ADVANCE && item.milestoneKey === '0'
-      )
-      const completion = pItems.filter((item) => {
-        return (
-          item.type === COMPLETION &&
-          item.milestoneKey === (milestone.length - 1).toString()
+      const initiation =
+        !_.isEmpty(pItems) &&
+        pItems.filter(
+          (item) => item.type === ADVANCE && item.milestoneKey === '0'
         )
-      })
+      const completion =
+        !_.isEmpty(pItems) &&
+        pItems.filter((item) => {
+          return (
+            item.type === COMPLETION &&
+            item.milestoneKey === (milestone.length - 1).toString()
+          )
+        })
       if (
-        milestone.length !== pItems.length ||
-        initiation.length > 1 ||
-        completion.length !== 1
+        !_.isEmpty(pItems) &&
+        (milestone.length !== pItems.length ||
+          initiation.length > 1 ||
+          completion.length !== 1)
       ) {
         this.setState({ loading: false })
         message.error(I18N.get('suggestion.form.error.payment'))
@@ -105,14 +119,27 @@ class C extends BaseComponent {
       }
 
       const budget = _.get(values, 'budget')
+      const budgetIntro = _.get(values, 'budgetIntro')
+      const planIntro = _.get(values, 'planIntro')
       // exclude old suggestion data
       if (budget && typeof budget !== 'string') {
         values.budget = budget.paymentItems
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
-
-      await callback(values)
+      if (budgetIntro) {
+        values.budgetIntro = budgetIntro
+      }
+      if (planIntro) {
+        values.planIntro = planIntro
+      }
+      if (values.plan && values.teamInfo) {
+        values.plan[`teamInfo`] = values.teamInfo
+      }
+      const rs = this.formatType(values, false)
+      if (rs) {
+        await callback(rs)
+      }
       this.setState({ loading: false })
     })
   }
@@ -127,23 +154,85 @@ class C extends BaseComponent {
     this.handleSave(e, onSaveDraft)
   }
 
+  formatType = (values, saveDraft) => {
+    const type = _.get(values, 'type')
+    const {changeAddress, changeOwner} = this.state
+    if (type && typeof type !== 'string') {
+      values.type = type.type
+      switch (type.type) {
+        case CHANGE_PROPOSAL:
+          if (
+            !saveDraft &&
+            (!type.proposalNum || (changeOwner && !type.newOwnerDID) || (changeAddress && !type.newAddress))
+          ) {
+            if (changeOwner && !type.newOwnerDID) {
+              message.error(I18N.get('suggestion.form.error.newOwner'))
+              return
+            }
+            if (changeAddress && !type.newAddress) {
+              message.error(I18N.get('suggestion.form.error.elaAddressNull'))
+              return
+            }
+            message.error(I18N.get('suggestion.form.error.changeWhat'))
+            return
+          }
+          if (type.newAddress) {
+            values.newAddress = type.newAddress
+          }
+          if (type.newOwnerDID) {
+            values.newOwnerDID = type.newOwnerDID
+          }
+          values.targetProposalNum = type.proposalNum
+          break
+        case CHANGE_SECRETARY:
+          if (!saveDraft && !type.newSecretaryDID) {
+            message.error(I18N.get('suggestion.form.error.secretary'))
+            return
+          }
+          values.newSecretaryDID = type.newSecretaryDID
+          break
+        case TERMINATE_PROPOSAL:
+          if (!saveDraft && !type.termination) {
+            message.error(I18N.get('suggestion.form.error.proposalNum'))
+            return
+          }
+          values.closeProposalNum = type.termination
+          break
+        default:
+          break
+      }
+    }
+    return values
+  }
+
   handleSaveDraft = () => {
     const { isEditMode, form } = this.props
     if (!isEditMode && this.props.onSaveDraft) {
       const values = form.getFieldsValue()
       const budget = form.getFieldValue('budget')
+      const planIntro = form.getFieldValue('planIntro')
+      const budgetIntro = form.getFieldValue('budgetIntro')
+      if (values.plan && values.teamInfo) {
+        values.plan[`teamInfo`] = values.teamInfo
+      }
       if (budget) {
         values.budget = budget.paymentItems
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
+        values.budgetIntro = budgetIntro
       }
-      this.props.onSaveDraft(values)
+      if (planIntro) {
+        values.planIntro = planIntro
+      }
+      const rs = this.formatType(values, true)
+      this.props.onSaveDraft(rs)
     }
   }
 
   handleContinue = (e) => {
     e.preventDefault()
     const { form } = this.props
+    const { tabs } = this.state
     form.validateFields((err, values) => {
       if (err) {
         this.setState({
@@ -153,9 +242,9 @@ class C extends BaseComponent {
         })
         return
       }
-      const index = TAB_KEYS.findIndex((item) => item === this.state.activeKey)
-      if (index !== TAB_KEYS.length - 1) {
-        this.setState({ activeKey: TAB_KEYS[index + 1] })
+      const index = tabs.findIndex((item) => item === this.state.activeKey)
+      if (index !== tabs.length - 1) {
+        this.setState({ activeKey: tabs[index + 1] })
       }
     })
   }
@@ -197,11 +286,15 @@ class C extends BaseComponent {
   }
 
   validatePlan = (rule, value, cb) => {
-    if (value && _.isEmpty(value.teamInfo)) {
-      return cb(I18N.get('suggestion.form.error.team'))
-    }
     if (value && _.isEmpty(value.milestone)) {
       return cb(I18N.get('suggestion.form.error.milestones'))
+    }
+    return cb()
+  }
+
+  validateTeamInfo = (rule, value, cb) => {
+    if (_.isEmpty(value)) {
+      return cb(I18N.get('suggestion.form.error.team'))
     }
     return cb()
   }
@@ -212,16 +305,50 @@ class C extends BaseComponent {
   }
 
   validateBudget = (rule, value, cb) => {
-    const address = _.get(value, 'elaAddress')
-    const pItems = _.get(value, 'paymentItems')
+    const values = this.props.form.getFieldValue('budget')
+    if (
+      !this.state.budgetValidator &&
+      (_.isEmpty(values.elaAddress) || _.isEmpty(values.paymentItems))
+    ) {
+      return cb()
+    }
 
-    if (!this.validateAddress(address)) {
+    if (!this.validateAddress(values.elaAddress)) {
       return cb(I18N.get('suggestion.form.error.elaAddress'))
     }
-    if (_.isEmpty(pItems)) {
+    if (_.isEmpty(values.paymentItems)) {
       return cb(I18N.get('suggestion.form.error.schedule'))
     }
     return cb()
+  }
+
+  validateType = (rule, value, cb) => {
+    return value.hasErr ? cb(false) : cb()
+  }
+
+  setBudgetValidator = (x) => {
+    this.setState({ budgetValidator: x })
+  }
+
+  changeType = (type) => {
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
+    const tabs = !isNewType ? TAB_KEYS : NEW_TAB_KEYS
+    this.setState({ type, tabs, errorKeys: {} })
+  }
+
+  setChangeOnwerOrAddress = (data, type) => {
+    if (type === 'changeOwner') {
+      this.setState({
+        changeOwner: data
+      })
+    } else {
+      this.setState({
+        changeAddress: data
+      })
+    }
   }
 
   getTextarea(id) {
@@ -237,19 +364,44 @@ class C extends BaseComponent {
       }
     ]
     if (id === 'type') {
+      rules.push({ validator: this.validateType })
+      let data
+      switch (initialValues.type) {
+        case CHANGE_PROPOSAL:
+          data = {
+            type: initialValues.type,
+            proposalNum: initialValues.targetProposalNum,
+            newOwnerDID: initialValues.newOwnerDID,
+            newAddress: initialValues.newAddress
+          }
+          break
+        case CHANGE_SECRETARY:
+          data = {
+            type: initialValues.type,
+            newSecretaryDID: initialValues.newSecretaryDID
+          }
+          break
+        case TERMINATE_PROPOSAL:
+          data = {
+            type: initialValues.type,
+            termination: initialValues.closeProposalNum
+          }
+          break
+        default:
+          data = { type: initialValues.type }
+          break
+      }
       return getFieldDecorator(id, {
         rules,
-        initialValue: initialValues[id]
+        initialValue: data
       })(
-        <Radio.Group>
-          <Radio value="1">{I18N.get('suggestion.form.type.newMotion')}</Radio>
-          <Radio value="2">
-            {I18N.get('suggestion.form.type.motionAgainst')}
-          </Radio>
-          <Radio value="3">
-            {I18N.get('suggestion.form.type.anythingElse')}
-          </Radio>
-        </Radio.Group>
+        <SelectSuggType
+          initialValue={data}
+          callback={this.onTextareaChange}
+          getActiveProposals={this.props.getActiveProposals}
+          changeType={this.changeType}
+          changeOwnerOrAdd={this.setChangeOnwerOrAddress}
+        />
       )
     }
 
@@ -261,56 +413,59 @@ class C extends BaseComponent {
     }
 
     if (
-      id === 'plan' &&
+      id === 'planBudget' &&
       ((initialValues.plan && typeof initialValues.plan !== 'string') ||
         !initialValues.plan)
     ) {
-      rules.push({
-        validator: this.validatePlan
-      })
-
-      return getFieldDecorator('plan', {
-        rules,
-        initialValue: initialValues.plan
+      const rules = []
+      if (this.state.budgetValidator) {
+        rules.push({
+          validator: this.validateBudget
+        })
+      }
+      return getFieldDecorator('planBudget', {
+        // rules
       })(
-        <ImplementationPlan
-          initialValue={initialValues}
+        <ImplementationAndBudget
           getFieldDecorator={getFieldDecorator}
+          initialValues={initialValues}
+          budgetValidator={this}
+          form={this.props.form}
           callback={this.onTextareaChange}
         />
       )
     }
 
-    if (id === 'budget') {
-      let initialBudget = {}
-      if (initialValues.budget && typeof initialValues.budget !== 'string') {
-        initialBudget = initialValues.budget && {
-          budgetAmount: initialValues.budgetAmount,
-          elaAddress: initialValues.elaAddress,
-          paymentItems: initialValues.budget,
-          budgetIntro: initialValues.budgetIntro
-        }
-      } else {
-        initialBudget = {
-          budgetAmount: initialValues.budget,
-          elaAddress: '',
-          paymentItems: [],
-          budgetIntro: ''
-        }
+    if (id === 'teamInfo') {
+      let teamInfo = []
+      if (initialValues && initialValues.plan) {
+        teamInfo = initialValues.plan.teamInfo
       }
-
       rules.push({
-        validator: this.validateBudget
+        validator: this.validateTeamInfo
       })
-
-      return getFieldDecorator('budget', {
-        rules,
-        initialValue: initialBudget
+      return getFieldDecorator('teamInfo', {
+        initialValue: teamInfo
       })(
-        <PaymentSchedule
-          initialValue={initialBudget}
-          getFieldDecorator={getFieldDecorator}
+        <TeamInfoSection
+          title={I18N.get('suggestion.plan.teamInfo')}
           callback={this.onTextareaChange}
+          initialValue={teamInfo}
+        />
+      )
+    }
+
+    if (id === 'relevance') {
+      let relevance = []
+      if (initialValues.relevance) {
+        relevance = initialValues.relevance
+      }
+      return getFieldDecorator('relevance', {
+        initialValue: initialValues[id]
+      })(
+        <RelevanceSection
+          callback={this.onTextareaChange}
+          initialValue={relevance}
         />
       )
     }
@@ -331,6 +486,13 @@ class C extends BaseComponent {
 
   renderTabText(id) {
     const hasError = _.has(this.state.errorKeys, id)
+    if (['relevance', 'planBudget', 'teamInfo'].includes(id)) {
+      return (
+        <TabText hasErr={hasError}>
+          {I18N.get(`suggestion.fields.${id}`)}
+        </TabText>
+      )
+    }
     return (
       <TabText hasErr={hasError}>
         {I18N.get(`suggestion.fields.${id}`)}*
@@ -354,9 +516,9 @@ class C extends BaseComponent {
   }
 
   hideContinue = () => {
-    const { activeKey, errorKeys } = this.state
-    const index = TAB_KEYS.findIndex((item) => item === activeKey)
-    return _.isEmpty(errorKeys) && index === TAB_KEYS.length - 1
+    const { activeKey, errorKeys, tabs } = this.state
+    const index = tabs.findIndex((item) => item === activeKey)
+    return _.isEmpty(errorKeys) && index === tabs.length - 1
   }
 
   ord_render() {
@@ -376,7 +538,7 @@ class C extends BaseComponent {
       : I18N.get('suggestion.form.button.cancel')
     const cancelBtn = (
       <Button
-        onClick={this.props.onCancel}
+        onClick={() => this.props.onCancel()}
         className="cr-btn cr-btn-default"
         htmlType="button"
         style={{ marginRight: 10 }}
@@ -402,10 +564,12 @@ class C extends BaseComponent {
             activeKey={this.state.activeKey}
             onChange={this.onTabChange}
           >
-            {TAB_KEYS.map((item) => (
+            {this.state.tabs.map((item) => (
               <TabPane tab={this.renderTabText(item)} key={item}>
                 <TabPaneInner>
-                  <Note>{I18N.get(`suggestion.form.note.${item}`)}</Note>
+                  {item === 'teamInfo' ? null : (
+                    <Note>{I18N.get(`suggestion.form.note.${item}`)}</Note>
+                  )}
                   <FormItem>{this.getTextarea(item)}</FormItem>
                   {item === 'abstract' ? this.renderWordLimit() : null}
                 </TabPaneInner>
