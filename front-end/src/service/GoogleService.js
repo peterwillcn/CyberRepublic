@@ -1,5 +1,6 @@
 import BaseService from '../model/BaseService'
 import { api_request } from '@/util'
+import { Base64 } from 'js-base64'
 
 export default class extends BaseService {
   constructor() {
@@ -10,13 +11,12 @@ export default class extends BaseService {
 
   async translate(param) {
     const path = `${this.prefixPath}/translate`
-
+    const {target, text} = param
     const res = await api_request({
       path,
       method: 'post',
-      data: param,
+      data: { text: Base64.encode(text), target },
     })
-
     return res
   }
 }
