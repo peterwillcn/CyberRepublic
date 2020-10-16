@@ -46,6 +46,7 @@
     "google-translate-api": "^2.3.0",
     "helmet": "3.9.0",
     "http-status": "1.0.1",
+    "js-base64": "^3.5.2",
     "json2csv": "3",
     "jsonwebtoken": "^8.5.1",
     "jwk-to-pem": "^2.0.3",
