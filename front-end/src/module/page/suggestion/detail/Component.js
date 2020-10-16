@@ -171,7 +171,7 @@ export default class extends StandardPage {
           <MediaQuery maxWidth={LG_WIDTH}>
             <div>
               <BackLink
-                link="/suggestion"
+                link={{pathname:"/suggestion", query: detail.old ? detail.old : false}}
                 style={{ position: 'relative', left: 0, marginBottom: 15 }}
               />
               {this.renderAnchors()}
@@ -190,7 +190,7 @@ export default class extends StandardPage {
           </MediaQuery>
           <MediaQuery minWidth={LG_WIDTH + 1}>
             <BackLink
-              link="/suggestion"
+              link={{pathname:"/suggestion", query: detail.old ? detail.old : false}}
               style={{ position: 'fixed', left: '27px', top: '189px' }}
             />
             {this.renderAnchors()}

@@ -251,7 +251,7 @@ class C extends StandardPage {
         {anchorNode}
         <Container className="p_CVoteDetail">
           <StickyContainer>
-            <BackLink link="/proposals" />
+            <BackLink link={{pathname:"/proposals", query: data.old ? data.old : false}} />
             {this.renderStickyHeader()}
             <Body>
               {contentNode}

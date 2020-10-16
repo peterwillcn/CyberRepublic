@@ -97,18 +97,36 @@ export default class extends StandardPage {
       creationDate,
       author,
       type,
-      isVisitableFilter
+      isVisitableFilter,
+      isChangeNext: false
     }
     this.debouncedRefetch = _.debounce(this.refetch.bind(this), 300)
   }
 
   componentDidMount() {
     super.componentDidMount()
+    const initPage = localStorage.getItem('suggestion-page')
+    if (!initPage) {
+      localStorage.setItem('suggestion-page', 1)
+    }
+    if (this.props.location.query) {
+      this.viewOldData()
+      this.onPageChanged(localStorage.getItem('suggestion-page'))
+    }
     this.refetch()
   }
 
   componentWillUnmount() {
     this.props.resetAll()
+  }
+
+  componentDidUpdate() {
+    const {isChangeNext} = this.state
+    if (isChangeNext) {
+      window.scrollTo(0, 0)
+    } else {
+      window.scrollTo(0,localStorage.getItem('suggestion-scrollY') || 0)
+    }
   }
 
   handleFilter = () => {
@@ -698,11 +716,19 @@ export default class extends StandardPage {
     )
   }
 
+  openPage(href) {
+    window.open(href, '_blank')
+    this.setState({
+      isChangeNext: false
+    })
+    localStorage.setItem('suggestion-scrollY',window.scrollY)
+  }
+
   renderItem = (data) => {
     const href = `/suggestion/${data._id}`
     const actionsNode = this.renderActionsNode(data, this.refetch)
     const metaNode = this.renderMetaNode(data)
-    const title = <ItemTitle to={href} target={`_blank`}>{data.title}</ItemTitle>
+    const title = <ItemTitle onClick={() => this.openPage(href)}>{data.title}</ItemTitle>
     const tagsNode = this.renderTagsNode(data)
     return (
       <div key={data._id} className="item-container">
@@ -731,6 +757,10 @@ export default class extends StandardPage {
   onPageChanged = (page) => {
     const { changePage } = this.props
     changePage(page)
+    localStorage.setItem('suggestion-page', page)
+    this.setState({
+      isChangeNext: true
+    })
     this.loadPage(page)
   }
 
@@ -898,7 +928,19 @@ const HeaderDiagramContainer = styled.div`
   }
 `
 
-const ItemTitle = styled(Link)`
+// const ItemTitle = styled(Link)`
+//   font-size: 20px;
+//   color: black;
+//   transition: all 0.3s;
+//   font-weight: 400;
+//   text-decoration: none;
+//   margin: 8px 0;
+//   display: block;
+//   &:hover {
+//     color: $link_color;
+//   }
+// `
+const ItemTitle = styled.a`
   font-size: 20px;
   color: black;
   transition: all 0.3s;
