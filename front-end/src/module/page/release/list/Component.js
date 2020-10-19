@@ -78,6 +78,8 @@ export default class extends StandardPage {
           title={I18N.get('release.modal.delete')}
           onConfirm={() => this.handleDelete(detail)}
           okType="danger"
+          okText={I18N.get('release.modal.okText')}
+          cancelText={I18N.get('release.modal.cancelText')}
         >
           <StyledButton
             loading={this.props.loading}
