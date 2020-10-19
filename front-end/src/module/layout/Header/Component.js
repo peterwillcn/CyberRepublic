@@ -484,6 +484,8 @@ export default class extends BaseComponent {
     ) {
       if (key === 'landing') {
         this.props.history.push('/')
+      } else if (key === 'login') {
+        window.location = "/login"
       } else {
         this.props.history.push(`/${e.key}`)
       }
