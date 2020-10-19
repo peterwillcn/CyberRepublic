@@ -816,10 +816,6 @@ export default class extends StandardPage {
     }
     let included = ''
 
-    if (this.state.showArchived) {
-      query.status = SUGGESTION_STATUS.ARCHIVED
-    }
-
     if (this.state.showOldData) {
       query.old = true
     }
@@ -844,6 +840,10 @@ export default class extends StandardPage {
 
     if (!_.isEmpty(status)) {
       query.status = status
+    }
+
+    if (this.state.showArchived) {
+      query.status = SUGGESTION_STATUS.ARCHIVED
     }
 
     if (!_.isEmpty(budgetRequested) && budgetRequested > 0) {
