@@ -60,7 +60,8 @@ const BUDGET_REQUESTED_OPTIONS = {
 export default class extends StandardPage {
   constructor(props) {
     super(props)
-
+    console.log(props)
+    console.log(this.props)
     const { isVisitableFilter } = this.props
     const {
       referenceStatus,
@@ -111,7 +112,6 @@ export default class extends StandardPage {
     }
     if (this.props.location.query) {
       this.viewOldData()
-      this.onPageChanged(localStorage.getItem('suggestion-page'))
     }
     this.refetch()
   }
@@ -124,8 +124,11 @@ export default class extends StandardPage {
     const {isChangeNext} = this.state
     if (isChangeNext) {
       window.scrollTo(0, 0)
-    } else {
+    }
+    if (this.props.location.state === 'return') {
       window.scrollTo(0,localStorage.getItem('suggestion-scrollY') || 0)
+    } else {
+      window.scrollTo(0, 0)
     }
   }
 
@@ -888,6 +891,8 @@ export default class extends StandardPage {
    */
   refetch = () => {
     const query = this.getQuery()
+    const initPage = localStorage.getItem('suggestion-page') || 1
+    query.page = initPage
     this.props.getList(query)
   }
 
@@ -908,7 +913,6 @@ export default class extends StandardPage {
     }
 
     this.setState({ loadingMore: false })
-    window.scrollTo(0,0)
   }
 
   gotoDetail(id) {

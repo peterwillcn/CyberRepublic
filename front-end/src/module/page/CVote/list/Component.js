@@ -98,7 +98,8 @@ export default class extends BaseComponent {
       endsDate,
       showOldData: false,
       fetching: false,
-      isChangeNext: false
+      isChangeNext: true,
+      initNum: 0
     }
 
     this.authorSearch = _.debounce(this.authorSearch.bind(this), 800)
@@ -114,17 +115,22 @@ export default class extends BaseComponent {
     if (this.props.location.query) {
       this.viewOldData()
     }
-    this.loadPage(localStorage.getItem('proposal-page'), 10)
+    this.loadPage(localStorage.getItem('proposal-page') || 1, 10)
     this.refetch()
   }
 
   componentDidUpdate() {
-    const {isChangeNext} = this.state
-    console.log(isChangeNext)
-    if (isChangeNext) {
+    const {isChangeNext, initNum} = this.state
+    if (isChangeNext || initNum == 0) {
+      if (initNum ==0) {
+        this.setState({initNum: initNum+1})
+      }
       window.scrollTo(0, 0)
-    } else {
+    }
+    if (this.props.location.sate === 'return') {
       window.scrollTo(0,localStorage.getItem('proposal-scrollY') || 0)
+    } else {
+      window.scrollTo(0, 0)
     }
   }
 
