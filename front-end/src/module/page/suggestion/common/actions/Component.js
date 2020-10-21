@@ -102,12 +102,12 @@ export default class extends BaseComponent {
 
     const commentNode = (
       <div className="cr-icon-group">
-        <Link to={`/suggestion/${_id}/#comments`}>
+        <a href='#comments'>
           <IconText
             component={!!CommentIcon && <CommentIcon />}
             text={commentsNum}
           />
-        </Link>
+        </a>
       </div>
     )
 
