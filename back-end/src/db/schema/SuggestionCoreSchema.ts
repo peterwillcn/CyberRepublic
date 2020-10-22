@@ -73,11 +73,11 @@ export const SuggestionCore = {
   motivation: {
     type: String
   },
-  relevance: [{
+  relevance: {
     proposal: Schema.Types.ObjectId,
     title: String,
     relevanceDetail: String,
-  }],
+  },
   budgetAmount: {
     type: Schema.Types.Mixed
   },

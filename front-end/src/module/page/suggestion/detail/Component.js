@@ -321,7 +321,7 @@ export default class extends StandardPage {
           if (
             section === 'relevance' &&
             detail.relevance &&
-            typeof detail.relevance !== 'sting'
+            typeof detail.relevance !== 'string'
           ) {
             return (
               <div key="relevance">
