@@ -1068,6 +1068,20 @@ export default class extends Base {
     res.voteHistory = _.sortBy(voteHistory, function (item) {
       return -item.reasonCreatedAt
     })
+    if (res.relevance) {
+      let relevanceStr = ''
+      _.forEach(res.relevance[0]._doc, (v, k) => {
+        if (k === '0') {
+          _.forEach(res.relevance[0]._doc, (v) => {
+            relevanceStr += v
+          })
+        }
+        return
+      })
+      if (!_.isEmpty(relevanceStr)) {
+        res.relevance = relevanceStr
+      }
+    }
     if (res.budgetAmount) {
       const doc = JSON.parse(JSON.stringify(res))
       // deal with 7e-08
