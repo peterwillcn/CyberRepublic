@@ -60,8 +60,6 @@ const BUDGET_REQUESTED_OPTIONS = {
 export default class extends StandardPage {
   constructor(props) {
     super(props)
-    console.log(props)
-    console.log(this.props)
     const { isVisitableFilter } = this.props
     const {
       referenceStatus,
