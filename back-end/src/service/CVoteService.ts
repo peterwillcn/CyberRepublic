@@ -1068,9 +1068,9 @@ export default class extends Base {
     res.voteHistory = _.sortBy(voteHistory, function (item) {
       return -item.reasonCreatedAt
     })
-    if (res.relevance) {
+    if (!_.isEmpty(res.relevance)) {
       let relevanceStr = ''
-      _.forEach(res.relevance[0]._doc, (v, k) => {
+      _.forEach(res.relevance[0] && res.relevance[0]._doc, (v, k) => {
         if (k === '0') {
           _.forEach(res.relevance[0]._doc, (v) => {
             relevanceStr += v
