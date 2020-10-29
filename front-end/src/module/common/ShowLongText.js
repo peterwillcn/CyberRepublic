@@ -84,6 +84,7 @@ class ShowLongText extends Component {
 export default ShowLongText
 
 const Wrapper = styled.div`
+  font-weight: 300;
   .container {
     max-height: 125px;
     overflow: hidden;
