@@ -238,6 +238,10 @@ export default class extends BaseService {
       sessionStorage.clear()
       localStorage.removeItem('api-token', '')
       localStorage.removeItem('draft-suggestion', '')
+      localStorage.removeItem('proposal-page', '')
+      localStorage.removeItem('proposal-scrollY', '')
+      localStorage.removeItem('suggestion-page', '')
+      localStorage.removeItem('suggestion-scrollY', '')
       resolve(true)
     })
   }
