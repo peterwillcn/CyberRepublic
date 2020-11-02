@@ -31,8 +31,6 @@ class C extends BaseComponent {
   constructor(props) {
     super(props)
     const type = _.get(props, 'initialValues.type')
-    const newAddress = _.get(props, 'initialValues.newAddress')
-    const newOwnerDID = _.get(props, 'initialValues.newOwnerDID')
     const isNewType = _.includes(
       [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
       type
@@ -43,9 +41,7 @@ class C extends BaseComponent {
       activeKey: !isNewType ? TAB_KEYS[0] : NEW_TAB_KEYS[0],
       errorKeys: {},
       type: type ? type : NEW_MOTION,
-      tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS,
-      changeAddress: newAddress ? true : false,
-      changeOwner: newOwnerDID ? true : false
+      tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS
     }
     const sugg = props.initialValues
     if (
@@ -156,23 +152,14 @@ class C extends BaseComponent {
 
   formatType = (values, saveDraft) => {
     const type = _.get(values, 'type')
-    const {changeAddress, changeOwner} = this.state
     if (type && typeof type !== 'string') {
       values.type = type.type
       switch (type.type) {
         case CHANGE_PROPOSAL:
           if (
             !saveDraft &&
-            (!type.proposalNum || (changeOwner && !type.newOwnerDID) || (changeAddress && !type.newAddress))
+            (!type.proposalNum || (!type.newOwnerDID && !type.newAddress))
           ) {
-            if (changeOwner && !type.newOwnerDID) {
-              message.error(I18N.get('suggestion.form.error.newOwner'))
-              return
-            }
-            if (changeAddress && !type.newAddress) {
-              message.error(I18N.get('suggestion.form.error.elaAddressNull'))
-              return
-            }
             message.error(I18N.get('suggestion.form.error.changeWhat'))
             return
           }
@@ -339,18 +326,6 @@ class C extends BaseComponent {
     this.setState({ type, tabs, errorKeys: {} })
   }
 
-  setChangeOnwerOrAddress = (data, type) => {
-    if (type === 'changeOwner') {
-      this.setState({
-        changeOwner: data
-      })
-    } else {
-      this.setState({
-        changeAddress: data
-      })
-    }
-  }
-
   getTextarea(id) {
     const initialValues = _.isEmpty(this.props.initialValues)
       ? { type: '1' }
@@ -400,7 +375,6 @@ class C extends BaseComponent {
           callback={this.onTextareaChange}
           getActiveProposals={this.props.getActiveProposals}
           changeType={this.changeType}
-          changeOwnerOrAdd={this.setChangeOnwerOrAddress}
         />
       )
     }

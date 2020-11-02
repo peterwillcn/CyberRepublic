@@ -201,19 +201,13 @@ class SelectSuggType extends Component {
             </div>
             <Checkbox
               checked={changeOwner}
-              onChange={(e) => {
-                this.handleCheckboxChange(e, 'changeOwner')
-                this.props.changeOwnerOrAdd(!changeOwner, 'changeOwner')
-              }}
+              onChange={(e) => this.handleCheckboxChange(e, 'changeOwner')}
             >
               {I18N.get('suggestion.form.type.changeProposalOwner')}
             </Checkbox>
             <Checkbox
               checked={changeAddress}
-              onChange={(e) => {
-                this.handleCheckboxChange(e, 'changeAddress')
-                this.props.changeOwnerOrAdd(!changeAddress, 'changeAddress')
-            }}
+              onChange={(e) => this.handleCheckboxChange(e, 'changeAddress')}
             >
               {I18N.get('suggestion.form.type.changeProposalAddress')}
             </Checkbox>

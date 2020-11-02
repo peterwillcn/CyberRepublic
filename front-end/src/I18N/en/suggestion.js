@@ -135,7 +135,6 @@ export default {
       previousMilestoneDate: `The date must be later than the previous milestone.`,
       requirePayment: `Project Completion Payment is required before completing a proposal.`,
       elaAddress: 'Invalid ELA address',
-      elaAddressNull: 'The new ELA address is emtpy.',
       schedule: 'Payment schedule is empty',
       payment: `Project Completion Payment is required, at most one Project Initiation Payment, and each payment must match one milestone.`,
       advance: 'Project initiation payment only apply to the first milestone.',
