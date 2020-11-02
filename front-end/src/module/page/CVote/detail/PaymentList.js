@@ -178,8 +178,7 @@ class PaymentList extends Component {
     const { milestone } = this.props
     if (milestone && milestone.length > 0 && item.milestoneKey) {
       return (
-        // <Popover content={this.renderMilestone(milestone[item.milestoneKey])}>
-        <Popover>
+        <Popover content={this.renderMilestone(milestone[item.milestoneKey])}>
           <a>
             {`${I18N.get('suggestion.budget.milestone')} #${Number(
               item.milestoneKey
