@@ -156,12 +156,19 @@ class C extends BaseComponent {
       values.type = type.type
       switch (type.type) {
         case CHANGE_PROPOSAL:
-          if (
-            !saveDraft &&
-            (!type.proposalNum || (!type.newOwnerDID && !type.newAddress))
-          ) {
-            message.error(I18N.get('suggestion.form.error.changeWhat'))
-            return
+          if (!saveDraft) {
+            if (!type.proposalNum || (!type.newAddress && !type.newOwnerDID)) {
+              message.error(I18N.get('suggestion.form.error.changeWhat'))
+              return
+            }
+            if (type.changeAddress && !type.newAddress) {
+              message.error(I18N.get('suggestion.form.error.elaAddress'))
+              return
+            }
+            if (type.changeOwner && !type.newOwnerDID) {
+              message.error(I18N.get('suggestion.form.error.newOwner'))
+              return
+            }
           }
           if (type.newAddress) {
             values.newAddress = type.newAddress
