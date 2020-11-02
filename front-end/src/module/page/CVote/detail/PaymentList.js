@@ -133,7 +133,7 @@ class PaymentList extends Component {
       )
     }
     if (
-      this.isOwner() &&
+      this.isVisible() &&
       item.status === WAITING_FOR_REQUEST &&
       status === ACTIVE
     ) {
