@@ -188,6 +188,7 @@ class SelectSuggType extends Component {
               <Select
                 onChange={this.handleNumChange}
                 defaultValue={proposalNum}
+                className={proposalNumErr ? null : 'no-error'}
               >
                 {this.state.proposals.map((el) => (
                   <Option value={el.value} key={el.value}>
@@ -212,7 +213,7 @@ class SelectSuggType extends Component {
               {I18N.get('suggestion.form.type.changeProposalAddress')}
             </Checkbox>
             {changeOwner && (
-              <div className="sub">
+              <div className={`sub ${newOwnerDIDErr ? null : 'no-error'}`}>
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewOwner')}
                 </Label>
@@ -227,7 +228,7 @@ class SelectSuggType extends Component {
               </div>
             )}
             {changeAddress && (
-              <div className="sub">
+              <div className={`sub ${newAddressErr ? null : 'no-error'}`}>
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewAddress')}
                 </Label>
@@ -314,9 +315,30 @@ const Section = styled.div`
   max-width: 520px;
   .number {
     margin-bottom: 16px;
+    .no-error .ant-select-selection {
+      border-color: #d9d9d9;
+      &:active {
+        border-color: #d9d9d9;
+      }
+      &:focus {
+        box-shadow: unset;
+      }
+    }
+    .no-error .ant-select-arrow {
+      color: #d9d9d9;
+    }
   }
   .sub {
     margin-top: 16px;
+  }
+  .sub.no-error .ant-input {
+    border-color: #d9d9d9;
+    &:not([disabled]):hover {
+      border-color: #d9d9d9;
+    }
+    &:focus {
+      box-shadow: unset;
+    }
   }
 `
 const Error = styled.div`
