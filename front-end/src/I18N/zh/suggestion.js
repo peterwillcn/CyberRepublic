@@ -57,7 +57,8 @@ export default {
     associateDid: '绑定 DID',
     viewOldData: '查看旧数据',
     viewNewData: '查看新数据',
-    copyHash: '复制'
+    copyHash: '复制',
+    cancel: '撤销'
   },
   status: {
     posted: '发布',

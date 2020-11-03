@@ -171,7 +171,11 @@ export default class extends StandardPage {
           <MediaQuery maxWidth={LG_WIDTH}>
             <div>
               <BackLink
-                link={{pathname:"/suggestion", query: detail.old ? detail.old : false, state: 'return'}}
+                link={{
+                  pathname: '/suggestion',
+                  query: detail.old ? detail.old : false,
+                  state: 'return'
+                }}
                 style={{ position: 'relative', left: 0, marginBottom: 15 }}
               />
               {this.renderAnchors()}
@@ -190,7 +194,11 @@ export default class extends StandardPage {
           </MediaQuery>
           <MediaQuery minWidth={LG_WIDTH + 1}>
             <BackLink
-              link={{pathname:"/suggestion", query: detail.old ? detail.old : false, state: 'return'}}
+              link={{
+                pathname: '/suggestion',
+                query: detail.old ? detail.old : false,
+                state: 'return'
+              }}
               style={{ position: 'fixed', left: '27px', top: '189px' }}
             />
             {this.renderAnchors()}
@@ -576,6 +584,8 @@ export default class extends StandardPage {
     this.props.history.push('/proposals')
   }
 
+  cancelSuggestion = () => {}
+
   renderOwnerActionsNode() {
     const {
       detail,
@@ -593,7 +603,7 @@ export default class extends StandardPage {
       draft && draft.empty
         ? I18N.get('suggestion.btnText.edit')
         : I18N.get('suggestion.btnText.editDraft')
-    const EditButton = isEditable && (
+    const editButton = isEditable && (
       <div style={{ paddingRight: 16, display: 'inline-block' }}>
         <StyledButton
           type="ebp"
@@ -604,11 +614,25 @@ export default class extends StandardPage {
         </StyledButton>
       </div>
     )
+    const proposalHash = _.get(detail, 'proposalHash')
+    const isCancelable = (isOwner || isAdmin) && signature && !proposalHash
+    const cancelButton = isCancelable && (
+      <div style={{ display: 'inline-block' }}>
+        <StyledButton
+          type="ebp"
+          className="cr-btn cr-btn-default"
+          onClick={this.cancelSuggestion}
+        >
+          {I18N.get('suggestion.btn.cancel')}
+        </StyledButton>
+      </div>
+    )
     const isSignable = !signature && isOwner
     return (
       !oldData && (
         <div>
-          {EditButton}
+          {cancelButton}
+          {editButton}
           {isSignable && (
             <SignSuggestionButton
               getSignatureUrl={getSignatureUrl}

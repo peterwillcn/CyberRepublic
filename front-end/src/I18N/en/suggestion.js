@@ -57,7 +57,8 @@ export default {
     associateDid: 'Associate DID',
     viewOldData: 'View old data',
     viewNewData: 'View new data',
-    copyHash: 'Copy'
+    copyHash: 'Copy',
+    cancel: 'Cancel'
   },
   status: {
     posted: 'Posted',
