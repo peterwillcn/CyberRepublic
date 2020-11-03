@@ -60,6 +60,32 @@ export default class extends Base {
     this.draftModel = this.getDBModel('SuggestionDraft')
   }
 
+  public async cancel(param: { id: string }) {
+    try {
+      const { id } = param
+      const suggestion = await this.model.findById(id)
+      if (!suggestion) {
+        return { success: false, message: 'No this suggestion' }
+      }
+      // check if current user is the owner of this suggestion
+      if (!suggestion.createdBy.equals(this.currentUser._id)) {
+        return { success: false, message: 'You are not the owner' }
+      }
+      if (_.get(suggestion, 'proposalHash')) {
+        return {
+          success: false,
+          message: `You can not cancel this suggestion because it has been made into a proposal`
+        }
+      }
+      suggestion.status = constant.SUGGESTION_STATUS.CANCELLED
+      await suggestion.save()
+      return { success: true, status: constant.SUGGESTION_STATUS.CANCELLED }
+    } catch (err) {
+      console.log('cancel suggestion error...', err)
+      logger.error(err)
+    }
+  }
+
   private async getTypeDoc(param: any, doc: any, currDoc?: any) {
     if (param && param.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
       if (!param.targetProposalNum) {
