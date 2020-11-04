@@ -1002,6 +1002,14 @@ export default class extends Base {
             path: 'createdBy',
             select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
           })
+          if (thread.childComment.length > 0) {
+            for (const child of thread.childComment) {
+              await model.getDBInstance().populate(child, {
+                path: 'createdBy',
+                select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+              })
+            }
+          }
         }
       }
     }

@@ -27,12 +27,28 @@ export default class extends Base {
         comments: commentable.comments || [],
         subscribers: commentable.subscribers || []
       }
-      updateObj.comments.push({
-        comment,
-        headline,
-        createdBy: this.currentUser,
-        createdAt
-      })
+      const commentData = comment[0]
+      if (!commentData.commentId){
+        updateObj.comments.push({
+          comment: commentData.comment,
+          headline,
+          createdBy: this.currentUser,
+          createdAt
+        })
+      } else {
+        const index = _.findIndex(updateObj.comments, (item)=> {
+          if(item[0]._id == commentData.commentId) {
+            return item
+          }
+        })
+        updateObj.comments[index][0].childComment.push({
+          createdBy: this.currentUser,
+          commentTo: commentData.commtentTo,
+          comment: commentData.comment,
+          createdAt
+        })
+      }
+
       lastCommentId = updateObj.comments[updateObj.comments.length-1][0]._id
       // increase commentsNum if defined in its schema
       if (!_.isUndefined(commentable.commentsNum)) updateObj.commentsNum = updateObj.comments.length
@@ -40,10 +56,10 @@ export default class extends Base {
       // increase activeness if defined in its schema
       if (!_.isUndefined(commentable.activeness)) updateObj.activeness = commentable.activeness + 1
 
-      const mentions = comment.match(/@\w+/g)
-      if (mentions) {
-        this.sendMentionEmails(type, param, createdBy, mentions, returnUrl, commentable.name)
-      }
+      // const mentions = commentData.comment.match(/@\w+/g)
+      // if (mentions) {
+      //   this.sendMentionEmails(type, param, createdBy, mentions, returnUrl, commentable.name)
+      // }
 
       if (commentable.subscribers) {
         this.sendSubscriberEmails(type, param, createdBy, commentable.subscribers, returnUrl, commentable.name)
@@ -89,6 +105,25 @@ export default class extends Base {
 
       let retObj = await db_commentable.update({_id: id}, updateObj)
       retObj['commentId'] = lastCommentId
+
+      for (const comment of updateObj.comments) {
+        for (const thread of comment) {
+          await db_commentable.getDBInstance().populate(thread, {
+            path: 'createdBy',
+            select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+          })
+          if (thread.childComment.length > 0) {
+            for (const child of thread.childComment) {
+              await db_commentable.getDBInstance().populate(child, {
+                path: 'createdBy',
+                select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+              })
+            }
+          }
+        }
+      }
+      retObj['newDate'] = updateObj
+
       return retObj
     } else {
       throw 'commentable id is not valid'
