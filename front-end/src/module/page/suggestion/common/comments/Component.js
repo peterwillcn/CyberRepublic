@@ -117,8 +117,8 @@ class C extends BaseComponent {
   }
 
   renderCommentItem(item, key, isChild, parentId) {
-    const { firstName, lastName } = item.createdBy.profile
-    console.log(item)
+    const { firstName, lastName } = item.createdBy && item.createdBy.profile
+
     return (
       <Comments key={key}>
         <AvatarDiv>
@@ -139,7 +139,7 @@ class C extends BaseComponent {
             </CommentsFooterRight>
             <SubmmitBtn style={isChild ? {} : {paddingRight: 20}}>
               <img onClick={() => {
-                this.commentBtnClick(item._id, `${firstName + lastName}`, parentId).bind(this)
+                this.commentBtnClick(item._id, `${firstName + lastName}`, parentId)
               }} src={`${SUGGESTION_BUTTON_DEFAULT}`} />
             </SubmmitBtn>
           </CommentsFooter>
