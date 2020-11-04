@@ -186,7 +186,9 @@ export default {
     councilQRCode: `扫描上面二维码把建议转成提案，提案上链后请到网站提案列表页面查看`,
     toChain: '正在上链中',
     signQRCode: '扫描上面二维码签名建议',
-    associateDidFirst: '请先绑定您的 DID'
+    associateDidFirst: '请先绑定您的 DID',
+    cancelled: '撤销建议成功',
+    notCancelled: '撤销建议失败'
   },
   header: {
     suggestion: '建议',

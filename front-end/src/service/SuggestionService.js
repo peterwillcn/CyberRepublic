@@ -448,6 +448,18 @@ export default class extends BaseService {
       method: 'post',
       data: { id }
     })
-    return res
+    if (res && res.success) {
+      const curDetail = _.get(this.store.getState(), 'suggestion.detail')
+      this.dispatch(
+        this.selfRedux.actions.detail_update({
+          ...curDetail,
+          status: res.status
+        })
+      )
+      message.info(I18N.get('suggestion.msg.cancelled'))
+      return res
+    } else {
+      message.error(I18N.get('suggestion.msg.notCancelled'))
+    }
   }
 }
