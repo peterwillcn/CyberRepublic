@@ -13,7 +13,7 @@ import {
 } from 'antd'
 import { Link } from 'react-router-dom'
 import MediaQuery from 'react-responsive'
-import Comments from '@/module/common/comments/Container'
+import Comments from '../common/comments/Container'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
 import Translation from '@/module/common/Translation/Container'
