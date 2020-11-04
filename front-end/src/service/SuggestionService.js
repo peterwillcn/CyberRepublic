@@ -405,7 +405,13 @@ export default class extends BaseService {
       data: { id, type }
     })
     if (rs && rs.success && rs.data) {
-      this.dispatch(this.selfRedux.actions.detail_update(rs.data))
+      const curDetail = _.get(this.store.getState(), 'suggestion.detail')
+      this.dispatch(
+        this.selfRedux.actions.detail_update({
+          ...curDetail,
+          ...rs.data
+        })
+      )
     }
     return rs
   }
@@ -420,7 +426,7 @@ export default class extends BaseService {
     return res
   }
 
-  // signature
+  // new owner
   async getOwnerSignatureUrl(id) {
     const path = `${this.prefixPath}/owner-signature-url`
     const res = await api_request({

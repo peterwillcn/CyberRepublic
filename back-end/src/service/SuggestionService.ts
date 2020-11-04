@@ -2059,12 +2059,15 @@ export default class extends Base {
 
   public async checkSignature(param: any) {
     const { id, type } = param
-    const suggestion = await this.show({ id })
+    const suggestion = await this.model.findById(id)
     if (suggestion) {
       if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
         const signature = _.get(suggestion, 'newOwnerSignature.data')
         if (signature) {
-          return { success: true, data: suggestion }
+          return {
+            success: true,
+            data: { newOwnerSignature: suggestion.newOwnerSignature }
+          }
         }
         const message = _.get(suggestion, 'newOwnerSignature.message')
         if (message) {
@@ -2079,7 +2082,10 @@ export default class extends Base {
       if (type && type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
         const signature = _.get(suggestion, 'newSecretarySignature.data')
         if (signature) {
-          return { success: true, data: suggestion }
+          return {
+            success: true,
+            data: { newSecretarySignature: suggestion.newSecretarySignature }
+          }
         }
         const message = _.get(suggestion, 'newSecretarySignature.message')
         if (message) {
@@ -2093,7 +2099,7 @@ export default class extends Base {
       }
       const signature = _.get(suggestion, 'signature.data')
       if (signature) {
-        return { success: true, data: suggestion }
+        return { success: true, data: { signature: suggestion.signature } }
       }
       const message = _.get(suggestion, 'signature.message')
       if (message) {
