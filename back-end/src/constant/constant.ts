@@ -34,7 +34,9 @@ export const CVOTE_TYPE_API = {
   CHANGE_PROPOSAL: 'changeproposalowner',
   CHANGE_SECRETARY: 'secretarygeneral',
   TERMINATE_PROPOSAL: 'closeproposal',
-  1: 'normal'
+  1: 'normal',
+  2: 'motion_against',
+  3: 'anything_else',
 }
 
 export const USER_ROLE = {
