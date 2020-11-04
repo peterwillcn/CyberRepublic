@@ -618,8 +618,8 @@ export default class extends StandardPage {
       </div>
     )
     const proposalHash = _.get(detail, 'proposalHash')
-    const isCancelled = _.get(detail, 'status') !== SUGGESTION_STATUS.CANCELLED
-    const isCancelable = isCancelled && isOwner && signature && !proposalHash
+    const isCancelled = _.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED
+    const isCancelable = !isCancelled && isOwner && signature && !proposalHash
     const cancelButton = isCancelable && (
       <div style={{ display: 'inline-block' }}>
         <StyledButton
@@ -666,7 +666,8 @@ export default class extends StandardPage {
     const signature = _.get(detail, 'signature.data')
     const newOwner = _.get(detail, 'newOwnerPublicKey')
     const isNewOwner = newOwner && currUser === newOwner
-    const isSignable = signature && isNewOwner
+    const isCancelled = _.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED
+    const isSignable = !isCancelled && signature && isNewOwner
 
     return (
       isSignable && (
@@ -696,7 +697,9 @@ export default class extends StandardPage {
     }
     const signature = _.get(detail, 'signature.data')
     const did = _.get(detail, 'newSecretaryDID')
-    const isSignable = signature && did && currDID === 'did:elastos:' + did
+    const isCancelled = _.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED
+    const isNewSecretary = did && currDID === 'did:elastos:' + did
+    const isSignable = !isCancelled && signature && isNewSecretary
 
     return (
       isSignable && (
@@ -721,8 +724,9 @@ export default class extends StandardPage {
     const oldData = _.get(detail, 'old')
     const signature = _.get(detail, 'signature.data')
     const makeIntoProposalPanel = this.renderMakeIntoProposalPanel()
-
-    const considerBtn = (isCouncil || isAdmin) &&
+    const isCancelled = _.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED
+    const considerBtn = !isCancelled &&
+      (isCouncil || isAdmin) &&
       signature && (
         <Col xs={24} sm={8}>
           <Popconfirm
@@ -756,7 +760,8 @@ export default class extends StandardPage {
     if (type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
       isSignable = signature && _.get(detail, 'newSecretarySignature')
     }
-    const makeIntoProposalBtn = isSignable &&
+    const makeIntoProposalBtn = !isCancelled &&
+      isSignable &&
       isCouncil &&
       !isReference && (
         <Col xs={24} sm={8}>
