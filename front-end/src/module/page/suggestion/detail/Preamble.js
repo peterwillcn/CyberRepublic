@@ -71,7 +71,7 @@ class Preamble extends Component {
       _.some(detail.tags, (tag) => tag.type === 'UNDER_CONSIDERATION')
     ) {
       status = I18N.get('suggestion.status.underConsideration')
-    } else if (_.get(detail, status) === SUGGESTION_STATUS.CANCELLED) {
+    } else if (_.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED) {
       status = I18N.get(`suggestion.status.${SUGGESTION_STATUS.CANCELLED}`)
     }
     return (

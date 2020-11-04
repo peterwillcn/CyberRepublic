@@ -66,7 +66,7 @@ import {
 import './style.scss'
 import SignSuggestionModal from './SignSuggestionModal'
 import Preamble from './Preamble'
-import { SUGGESTION_TYPE } from '@/constant'
+import { SUGGESTION_TYPE, SUGGESTION_STATUS } from '@/constant'
 const {
   CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
@@ -618,7 +618,8 @@ export default class extends StandardPage {
       </div>
     )
     const proposalHash = _.get(detail, 'proposalHash')
-    const isCancelable = (isOwner || isAdmin) && signature && !proposalHash
+    const isCancelled = _.get(detail, 'status') !== SUGGESTION_STATUS.CANCELLED
+    const isCancelable = isCancelled && isOwner && signature && !proposalHash
     const cancelButton = isCancelable && (
       <div style={{ display: 'inline-block' }}>
         <StyledButton
