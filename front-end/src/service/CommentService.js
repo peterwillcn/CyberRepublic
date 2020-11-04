@@ -13,7 +13,7 @@ export default class extends BaseService {
       createdAt: new Date().toISOString(),
       returnUrl,
     }
-    this.dispatch(redux.actions.loading_update(true))
+    // this.dispatch(redux.actions.loading_update(true))
 
     const rs = await api_request({
       path: `/api/${type}/${id}/comment`,
@@ -31,7 +31,7 @@ export default class extends BaseService {
     }
 
     subDetail.comments = subDetail.comments || []
-    subDetail.comments.push([{...data, createdBy: {...data.createdBy, _id: data.createdBy.current_user_id}, _id: rs.commentId}])
+    // subDetail.comments.push([{...data, createdBy: {...data.createdBy, _id: data.createdBy.current_user_id}, _id: rs.commentId}])
 
     subDetail.subscribers = subDetail.subscribers || []
     subDetail.subscribers.push({
@@ -42,8 +42,8 @@ export default class extends BaseService {
       lastSeen: new Date(),
     })
 
-    this.dispatch(redux.actions.detail_update(curDetail))
-    this.dispatch(redux.actions.loading_update(false))
+    // this.dispatch(redux.actions.detail_update(curDetail))
+    // this.dispatch(redux.actions.loading_update(false))
 
     return rs
   }

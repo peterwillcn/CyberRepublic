@@ -222,6 +222,7 @@ export const TEAM_SUBCATEGORY = create([
 export const USER_AVATAR_DEFAULT = '/assets/images/default_avatar.png'
 export const TASK_AVATAR_DEFAULT = '/assets/images/Elastos_Logo.png'
 export const TEAM_AVATAR_DEFAULT = '/assets/images/team_blurred.svg'
+export const SUGGESTION_BUTTON_DEFAULT = '/assets/images/comment_btn.png'
 
 // council vote
 export const CVOTE_STATUS = create([
