@@ -4,7 +4,7 @@ import _ from 'lodash'
 import PopoverProfile from '@/module/common/PopoverProfile'
 import moment from 'moment/moment'
 import { Col, message } from 'antd'
-import { SUGGESTION_TYPE } from '@/constant'
+import { SUGGESTION_TYPE, SUGGESTION_STATUS } from '@/constant'
 const {
   CHANGE_PROPOSAL,
   CHANGE_SECRETARY,
@@ -71,6 +71,8 @@ class Preamble extends Component {
       _.some(detail.tags, (tag) => tag.type === 'UNDER_CONSIDERATION')
     ) {
       status = I18N.get('suggestion.status.underConsideration')
+    } else if (_.get(detail, status) === SUGGESTION_STATUS.CANCELLED) {
+      status = I18N.get(`suggestion.status.${SUGGESTION_STATUS.CANCELLED}`)
     }
     return (
       <div>

@@ -67,7 +67,8 @@ export default {
     referred: 'Referred in Proposal',
     [SUGGESTION_STATUS.ACTIVE]: 'Active',
     [SUGGESTION_STATUS.ABUSED]: 'Abused',
-    [SUGGESTION_STATUS.ARCHIVED]: 'Archived'
+    [SUGGESTION_STATUS.ARCHIVED]: 'Archived',
+    [SUGGESTION_STATUS.CANCELLED]: 'Cancelled'
   },
   form: {
     search: 'Search Suggestions',

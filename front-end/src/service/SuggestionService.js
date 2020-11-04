@@ -440,4 +440,14 @@ export default class extends BaseService {
     })
     return res
   }
+
+  async cancel(id) {
+    const path = `${this.prefixPath}/cancel`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
 }

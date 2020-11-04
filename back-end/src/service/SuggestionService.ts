@@ -60,9 +60,8 @@ export default class extends Base {
     this.draftModel = this.getDBModel('SuggestionDraft')
   }
 
-  public async cancel(param: { id: string }) {
+  public async cancel(id: string) {
     try {
-      const { id } = param
       const suggestion = await this.model.findById(id)
       if (!suggestion) {
         return { success: false, message: 'No this suggestion' }

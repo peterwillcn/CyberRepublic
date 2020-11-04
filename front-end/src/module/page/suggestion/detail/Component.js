@@ -584,7 +584,10 @@ export default class extends StandardPage {
     this.props.history.push('/proposals')
   }
 
-  cancelSuggestion = () => {}
+  cancelSuggestion = async () => {
+    const id = _.get(this.props, 'detail._id')
+    await this.props.cancel(id)
+  }
 
   renderOwnerActionsNode() {
     const {

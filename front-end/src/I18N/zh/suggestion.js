@@ -67,7 +67,8 @@ export default {
     referred: '相关提案',
     [SUGGESTION_STATUS.ACTIVE]: '活跃',
     [SUGGESTION_STATUS.ABUSED]: '已举报',
-    [SUGGESTION_STATUS.ARCHIVED]: '已归档'
+    [SUGGESTION_STATUS.ARCHIVED]: '已归档',
+    [SUGGESTION_STATUS.CANCELLED]: '已撤销'
   },
   form: {
     search: '搜索建议',
