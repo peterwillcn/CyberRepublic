@@ -13,6 +13,7 @@ import { ReactComponent as CommentIcon } from '@/assets/images/icon-comment.svg'
 import { ReactComponent as FollowIcon } from '@/assets/images/icon-follow.svg'
 import { ReactComponent as FlagIcon } from '@/assets/images/icon-flag.svg'
 import { ReactComponent as ArchiveIcon } from '@/assets/images/icon-archive.svg'
+import { ReactComponent as CopyIcon } from '@/assets/images/icon-copy.svg'
 
 import './style.scss'
 
@@ -159,6 +160,12 @@ export default class extends BaseComponent {
           onClick={this.handleClick('isArchived')}
           className="archive-icon"
         />
+        <IconText
+          component={!!CopyIcon && <CopyIcon />}
+          text={I18N.get('suggestion.duplicate')}
+          onClick={()=> this.handleClickCopy()}
+          className="archive-icon"
+        />
       </div>
     )
     return (
@@ -166,6 +173,29 @@ export default class extends BaseComponent {
         <Icon type="ellipsis" />
       </Popover>
     )
+  }
+
+  handleClickCopy() {
+    const { data } = this.props
+    const dataKey = [
+      "title", "type", "abstract", "motivation", 
+      "goal", "relevance", "plan", "budget", 
+      "planIntro", "budgetIntro", "budgetAmount", 
+      "elaAddress"]
+    const dataTemp = {}
+    _.each(dataKey, (item) => {
+      if (data[item] !== undefined){
+        if (item === "relevance" && typeof data[item] === "string") {
+          return
+        }
+        dataTemp[item] = data[item]
+      }
+    })
+    if (!_.isEmpty(dataTemp)) {
+      localStorage.removeItem("draft-suggestion")
+      localStorage.setItem("draft-suggestion",JSON.stringify(dataTemp))
+      window.location.href="http://localhost:3001/suggestion/create"
+    }
   }
 
   getActionParams(action) {

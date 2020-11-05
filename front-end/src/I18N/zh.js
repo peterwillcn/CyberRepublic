@@ -284,6 +284,7 @@ const zh = {
   'suggestion.archived': '归档的',
   'suggestion.archive': '归档',
   'suggestion.unarchive': '取消归档',
+  'suggestion.duplicate': '复制内容',
   'suggestion.search': '搜索',
   'suggestion.cancel': '取消',
   'suggestion.submit': '提交',
