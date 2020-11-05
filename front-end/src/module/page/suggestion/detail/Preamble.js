@@ -81,6 +81,11 @@ class Preamble extends Component {
             I18N.get('suggestion.fields.preambleSub.suggestion'),
             `#${detail.displayId}`
           )}
+        {_.get(detail, 'validPeriod') &&
+          this.renderPreambleItem(
+            I18N.get('suggestion.form.fields.validPeriod'),
+            `${detail.validPeriod}${I18N.get('suggestion.form.unit')}`
+          )}
         {detail.type &&
           this.renderPreambleItem(
             I18N.get('suggestion.fields.preambleSub.type'),
