@@ -65,7 +65,6 @@ class C extends BaseComponent {
   }
 
   linkUserDetail(user) {
-    console.log(user)
     this.setState({
       showUserInfo: user,
     })
@@ -118,17 +117,18 @@ class C extends BaseComponent {
   }
 
   renderCommentItem(item, key, isChild, parentId) {
-    const { firstName, lastName } = item.createdBy.profile
+    console.log(item)
+    const { firstName, lastName } = item.createdBy && item.createdBy.profile
 
     return (
       <Comments key={key}>
         <AvatarDiv>
-          {this.renderAvatarItem(item.createdBy)}
-          <UserName>{firstName + lastName}</UserName>
+          <div style={{margin:'0 auto'}}>{this.renderAvatarItem(item.createdBy)}</div>
+          <UserName>{firstName + " " + lastName}</UserName>
         </AvatarDiv>
         <CommentBody>
           <div>
-            {isChild ? `@${firstName + lastName}: ` : ''} 
+            {isChild ? `@${item.commentTo}: ` : ''} 
             <span style={isChild ? {fontWeight: 300} : {}}>
               {item.comment}
             </span>
@@ -173,9 +173,11 @@ class C extends BaseComponent {
     return (
       !_.isEmpty(childCommentsList) ? (<ChildComment>
         {childCommentsList}
-        <ViewButton onClick={()=> this.handleViewMore(item)}>
-          { !_.includes(viewMore, item._id) ? `View More(${item.childComment.length})` : `View Less` }
-          </ViewButton>
+        {
+          item.childComment.length > 2 ? (<ViewButton onClick={() => this.handleViewMore(item)}>
+            { !_.includes(viewMore, item._id) ? `View More(${item.childComment.length})` : `View Less`}
+          </ViewButton>) : null
+        }
       </ChildComment>) : null
     )
   }

@@ -43,7 +43,7 @@ export default class extends Base {
         })
         updateObj.comments[index][0].childComment.push({
           createdBy: this.currentUser,
-          commentTo: commentData.commtentTo,
+          commentTo: commentData.commentTo,
           comment: commentData.comment,
           createdAt
         })

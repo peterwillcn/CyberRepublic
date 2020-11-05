@@ -16,7 +16,10 @@ export const CommentSchema = {
       ref: 'users',
       required: true
     },
-    commentTo: String,
+    commentTo: {
+      type: String,
+      required: true
+    },
     comment: {
       type: String,
       required: true
