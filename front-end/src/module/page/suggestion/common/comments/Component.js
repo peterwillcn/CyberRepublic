@@ -117,7 +117,8 @@ class C extends BaseComponent {
   }
 
   renderCommentItem(item, key, isChild, parentId) {
-    console.log(item)
+    if(!item) return
+
     const { firstName, lastName } = item.createdBy && item.createdBy.profile
 
     return (
@@ -156,7 +157,7 @@ class C extends BaseComponent {
 
   renderChildCommentItem(item) {
     let childCommentsList = []
-    const {viewMore} = this.state
+    const { viewMore } = this.state
     const hasChild = _.isEmpty(item.childComment)
     if (!hasChild) {
       if (_.includes(viewMore, item._id)) {
@@ -164,9 +165,16 @@ class C extends BaseComponent {
           childCommentsList.push(this.renderCommentItem(child, key, true, item._id))
         })
       } else {
-        for(var i=0; i< 2; i++){
-          childCommentsList.push(this.renderCommentItem(item.childComment[i], i, true, item._id))
+        if (item.childComment.length > 2) {
+          for (var i = 0; i < 2; i++) {
+            childCommentsList.push(this.renderCommentItem(item.childComment[i], i, true, item._id))
+          }
+        } else {
+          for (var i = 0; i < item.childComment.length; i++) {
+            childCommentsList.push(this.renderCommentItem(item.childComment[i], i, true, item._id))
+          }
         }
+
       }
     }
 
