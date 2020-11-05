@@ -71,6 +71,7 @@ export default {
     [SUGGESTION_STATUS.CANCELLED]: '已撤销'
   },
   form: {
+    unit: '个月',
     search: '搜索建议',
     button: {
       continue: '继续',
@@ -84,7 +85,8 @@ export default {
       showVersion: '显示历史版本'
     },
     fields: {
-      title: '标题'
+      title: '标题',
+      validPeriod: '有效期'
     },
     type: {
       [SUGGESTION_TYPE.NEW_MOTION]: '新动议',

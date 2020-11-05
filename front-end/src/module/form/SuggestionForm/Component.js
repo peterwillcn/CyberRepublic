@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, Button, Row, Tabs, message } from 'antd'
+import { Form, Input, Button, Row, Tabs, message, Select } from 'antd'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
@@ -16,6 +16,7 @@ import TeamInfoSection from './TeamInfoSection'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
+const { Option } = Select
 
 const WORD_LIMIT = ABSTRACT_MAX_WORDS
 
@@ -253,6 +254,26 @@ class C extends BaseComponent {
       ],
       initialValue: initialValues.title
     })(<Input size="large" type="text" />)
+  }
+
+  getValidPeriodInput() {
+    const { initialValues = {} } = this.props
+    const { getFieldDecorator } = this.props.form
+
+    return getFieldDecorator('validPeriod', {
+      rules: [
+        { required: true, message: I18N.get('suggestion.form.error.required') }
+      ],
+      initialValue: initialValues.validPeriod ? initialValues.validPeriod : 3
+    })(
+      <Select>
+        {[1, 3, 6, 12].map((el) => (
+          <Option value={el} key={el}>
+            {el + I18N.get('suggestion.form.unit')}
+          </Option>
+        ))}
+      </Select>
+    )
   }
 
   onTextareaChange = (activeKey) => {
@@ -538,7 +559,14 @@ class C extends BaseComponent {
           >
             {this.getTitleInput()}
           </FormItem>
-
+          <FormItem
+            label={`${I18N.get('suggestion.form.fields.validPeriod')}*`}
+            labelCol={{ span: 2 }}
+            wrapperCol={{ span: 5 }}
+            colon={false}
+          >
+            {this.getValidPeriodInput()}
+          </FormItem>
           <Tabs
             animated={false}
             tabBarGutter={5}

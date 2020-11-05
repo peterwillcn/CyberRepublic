@@ -71,6 +71,7 @@ export default {
     [SUGGESTION_STATUS.CANCELLED]: 'Cancelled'
   },
   form: {
+    unit: ' months',
     search: 'Search Suggestions',
     button: {
       continue: 'Continue',
@@ -84,7 +85,8 @@ export default {
       showVersion: 'Show version history'
     },
     fields: {
-      title: 'Title'
+      title: 'Title',
+      validPeriod: 'Valid period'
     },
     type: {
       [SUGGESTION_TYPE.NEW_MOTION]: 'New Motion',
