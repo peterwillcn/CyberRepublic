@@ -59,7 +59,6 @@ import {
   Subtitle,
   CreateProposalText,
   Paragraph,
-  CopyButton,
   StyledRow
 } from './style'
 

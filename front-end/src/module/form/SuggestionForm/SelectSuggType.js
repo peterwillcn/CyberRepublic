@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Radio, InputNumber, Input, Checkbox, Select } from 'antd'
+import { Radio, Input, Checkbox, Select } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
