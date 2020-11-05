@@ -117,6 +117,7 @@ class C extends BaseComponent {
   }
 
   renderCommentItem(item, key, isChild, parentId) {
+    console.log(item)
     const { firstName, lastName } = item.createdBy && item.createdBy.profile
 
     return (
