@@ -562,7 +562,7 @@ class C extends BaseComponent {
           <FormItem
             label={`${I18N.get('suggestion.form.fields.validPeriod')}*`}
             labelCol={{ span: 2 }}
-            wrapperCol={{ span: 5 }}
+            wrapperCol={{ span: 4 }}
             colon={false}
           >
             {this.getValidPeriodInput()}

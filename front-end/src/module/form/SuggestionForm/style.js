@@ -4,7 +4,7 @@ import { Button } from 'antd'
 export const Container = styled.div`
   text-align: left;
   .ant-form-item-label {
-    text-align: left;
+    text-align: right;
   }
   .ant-form-item-required:before {
     display: none;
@@ -15,34 +15,11 @@ export const Container = styled.div`
   }
   .ant-form-item-label label {
     white-space: normal;
-    /* line-height: 1.4rem; */
     display: block;
   }
   .ant-tabs {
     overflow: initial;
   }
-  .md-RichEditor-root {
-    padding: 15px 40px;
-    margin-top: 0;
-    border: 1px solid #d9d9d9;
-    .md-RichEditor-editor {
-      padding: 8px 16px;
-    }
-    .md-add-button {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-    figure.md-block-image {
-      background: none;
-    }
-    figure.md-block-image figcaption .public-DraftStyleDefault-block {
-      text-align: left;
-    }
-  }
-`
-
-export const Title = styled.h2`
 `
 
 export const Btn = styled(Button)`
@@ -66,9 +43,7 @@ export const Text = styled.div`
 `
 
 export const TabText = styled.span`
-  ${props => props.hasErr && `
-    color: red;
-  `}
+  ${(props) => props.hasErr && 'color: red;'};
 `
 
 export const TabPaneInner = styled.div`
