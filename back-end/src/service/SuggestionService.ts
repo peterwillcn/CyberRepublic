@@ -40,7 +40,8 @@ const BASE_FIELDS = [
   'newOwnerDID',
   'newSecretaryDID',
   'closeProposalNum',
-  'newAddress'
+  'newAddress',
+  'validPeriod'
 ]
 
 interface BudgetItem {
