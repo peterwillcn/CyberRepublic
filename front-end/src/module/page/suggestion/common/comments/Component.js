@@ -10,7 +10,8 @@ import {
   Input,
   Mention,
   Modal,
-  Popconfirm
+  Popconfirm,
+  message
 } from 'antd'
 import _ from 'lodash'
 import moment from 'moment'
@@ -45,6 +46,7 @@ class C extends BaseComponent {
       parentId: null,
       isComment: false,
       viewMore: [],
+      bool: true,
       curDetail: this.props.detailReducer ? (this.props.detailReducer(curDetail) || {}) : this.props[this.props.reduxType || this.props.type]
     }
 
@@ -71,6 +73,17 @@ class C extends BaseComponent {
   }
 
   commentBtnClick(id, user, parentId) {
+    this.props.form.resetFields()
+    const {isComment} = this.state
+    if (isComment) {
+      this.setState({
+        commentId: '',
+        commentTo: '',
+        parentId: '',
+        isComment: !this.state.isComment
+      })
+      return 
+    }
     if (id && user) {
       this.setState({
         commentId: id,
@@ -183,7 +196,7 @@ class C extends BaseComponent {
         {childCommentsList}
         {
           item.childComment.length > 2 ? (<ViewButton onClick={() => this.handleViewMore(item)}>
-            { !_.includes(viewMore, item._id) ? `View More(${item.childComment.length})` : `View Less`}
+            { !_.includes(viewMore, item._id) ? `${I18N.get('suggestion.comments.viewMore')}(${item.childComment.length})` : I18N.get('suggestion.comments.viewLess')}
           </ViewButton>) : null
         }
       </ChildComment>) : null
@@ -466,209 +479,6 @@ class C extends BaseComponent {
     this.props.unsubscribe(this.props.type, this.getModelId())
   }
 
-  // renderComments() {
-  //   let curDetail = this.props[this.props.reduxType || this.props.type]
-
-  //   if (this.props.detailReducer) {
-  //     curDetail = this.props.detailReducer(curDetail) || {}
-  //   }
-
-  //   const comments = curDetail.comments || []
-  //   const dateFormatter = createdAt => (createdAt ? moment(createdAt).format('MMM D - h:mma') : '')
-
-  //   const footer = this.getFooter()
-
-  //   const enrichComment = (comment) => {
-  //     if (!comment) {
-  //       return
-  //     }
-
-  //     const mentions = Mention.getMentions(Mention.toContentState(comment))
-
-  //     /*
-  //       ** Format visuals
-  //       */
-  //     const spanCreator = (content, key) => <div key={key} className="non-mention" dangerouslySetInnerHTML={{ __html: sanitizeHtml(content) }} />
-  //     const mentionCreator = (mention, key) => (
-  //       <a key={key} onClick={() => this.showUserProfile(mention.replace('@', ''))}>
-  //         {mention}
-  //       </a>
-  //     )
-
-  //     /*
-  //       ** Recursive
-  //       ** Convert a comment into a lookup, split by mentions
-  //       */
-  //     const splitter = (mentionIndex, content) => {
-  //       if (mentionIndex >= mentions.length) {
-  //         return content
-  //       }
-
-  //       const mention = mentions[mentionIndex]
-  //       const splits = content.split(mention)
-  //       const innerSplits = _.map(splits, split => splitter(mentionIndex + 1, split))
-
-  //       return {
-  //         splits: innerSplits,
-  //         connector: mention,
-  //       }
-  //     }
-
-  //     /*
-  //       ** Recursive
-  //       ** Format the lookup into visual components
-  //       */
-  //     const formatSplit = (split, ind = 0) => {
-  //       if (_.isString(split)) {
-  //         return spanCreator(split, ind)
-  //       }
-
-  //       /*
-  //         ** Mentions go between the splits, so for an array of N splits,
-  //         ** we want to 'cross' it with an array of N-1 mentions.
-  //         ** [A,B,C] cross [X,Y] = [A,X,B,Y,C]
-  //         **
-  //         ** Note the React key magic, splits get keys equal to their indices,
-  //         ** whereas mentions indices are offset by the splits length for uniqueness
-  //         ** (though the result is not sequential)
-  //         */
-  //       const innerSplits = _.map(split.splits, formatSplit)
-  //       const keyedMentions = _.times(innerSplits.length - 1,
-  //         index => mentionCreator(split.connector, innerSplits.length + index))
-
-  //       return _.compact(_.flatten(_.zip(innerSplits, keyedMentions)))
-  //     }
-
-  //     // Build the lookup
-  //     const fragments = splitter(0, comment)
-
-  //     // Format the lookup
-  //     const formatted = formatSplit(fragments)
-
-  //     return (
-  //       <div>
-  //         {formatted}
-  //       </div>
-  //     )
-  //   }
-
-  //   const avatarItem = (info) => {
-  //     const profile = info && info.profile
-  //     const { avatar, firstName, lastName} = profile || {}
-  //     const { avatar:didAvatar} = !_.isEmpty(info.did) && info.did
-  //     if (avatar || didAvatar || (!firstName && !lastName)) {
-  //       return (
-  //         <Avatar
-  //           className="comment-avatar pull-left"
-  //           src={avatar || didAvatar || USER_AVATAR_DEFAULT}
-  //           shape="circle"
-  //           size={64}
-  //           onClick={() => this.linkUserDetail(info)}
-  //       />
-  //       )
-  //     }
-
-  //     if (firstName || lastName) {
-  //       return (
-  //         <Avatar
-  //           className="comment-avatar pull-left"
-  //           style={{
-  //             backgroundColor: '#000',
-  //             fontSize: 24
-  //           }}
-  //           shape="circle"
-  //           size={64}
-  //           onClick={() => this.linkUserDetail(info)}
-  //         >
-  //           {`${firstName && firstName.toUpperCase().substr(0, 1)}${lastName && lastName.toUpperCase().substr(0, 1)}`}
-  //         </Avatar>
-  //       )
-  //     }
-  //   }
-
-  //   const commentItems = _.map(comments, (comment, ind) => {
-  //     const thread = _.first(comment)
-  //     const createdByUsername = (thread.createdBy && thread.createdBy.username) || ''
-  //     const avatar = (thread.createdBy && thread.createdBy.profile && thread.createdBy.profile.avatar) || USER_AVATAR_DEFAULT
-  //     const createdById = (thread.createdBy && thread.createdBy._id)
-  //     const dateFormatted = dateFormatter(thread.createdAt)
-  //     const isDeletable = thread.createdBy && (thread.createdBy._id === this.props.currentUserId)
-  //     const linkifyComment = linkifyStr(thread.comment || '', LINKIFY_OPTION)
-  //     return {
-  //       comment: linkifyComment,
-  //       headline: thread.headline,
-  //       description: (
-  //         <div className="commenter-info">
-  //           <a onClick={() => this.linkUserDetail(thread.createdBy)}>
-  //             {createdByUsername}
-  //           </a>
-  //           {dateFormatted && (
-  //             <span>
-  //               <span className="date-colon">, </span>
-  //               <span className="date">{dateFormatted}</span>
-  //             </span>
-  //           )}
-  //         </div>
-  //       ),
-  //       avatar: avatarItem(thread.createdBy),
-  //       delete: isDeletable && (
-  //         <h5>
-  //           <Popconfirm
-  //             title={I18N.get('comments.delete.confirm')}
-  //             onConfirm={() => this.handleDelete(thread)}
-  //             okText={I18N.get('.yes')}
-  //             cancelText={I18N.get('.no')}
-  //           >
-  //             <Icon type="delete" />
-  //           </Popconfirm>
-  //         </h5>
-  //       )
-  //     }
-  //   })
-
-  //   // Show in reverse chronological order
-  //   if (commentItems) {
-  //     commentItems.reverse()
-  //   }
-  //   const emptyText = (
-  //     <div>
-  //       {I18N.get('comments.noComments')}
-  //       {this.props.currentUserId ? null : <a href="/login">{I18N.get('comments.signIn')}</a>}
-  //       {I18N.get('comments.firstToPost')}
-  //     </div>
-  //   )
-  //   return (
-  //     <List
-  //       size="large"
-  //       itemLayout="horizontal"
-  //       locale={{
-  //         emptyText
-  //       }}
-  //       dataSource={commentItems}
-  //       header={footer}
-  //       renderItem={(item, ind) => (
-  //         <List.Item key={ind}>
-  //           {item.avatar}
-  //           <div className="comment-content pull-left">
-  //             <Row>
-  //               <Col span={22}>
-  //                 {item.headline && <h4>{item.headline}</h4>}
-  //                 <h5>{enrichComment(item.comment)}</h5>
-  //               </Col>
-  //               <Col span={2}>
-  //                 {item.delete}
-  //               </Col>
-  //             </Row>
-  //             {this.renderTranslationBtn(item.comment)}
-  //             <hr />
-  //             {item.description}
-  //           </div>
-  //         </List.Item>
-  //       )}
-  //     />
-  //   )
-  // }
-
   renderTranslationBtn(text) {
     return (
       <TranslationBtn>
@@ -679,58 +489,65 @@ class C extends BaseComponent {
 
    handleSubmit = async e => {
     e.preventDefault()
-    const { commentId, commentTo, parentId, isComment } = this.state
-    this.props.form.validateFields( async (err, values) => {
-      if (!err) {
-        const {comment} = values
-        const commentPlainText = _.isFunction(comment.getPlainText)
-          ? comment.getPlainText()
-          : comment
-
-        if (_.isEmpty(commentPlainText)) {
-          this.props.form.setFields({
-            comment: {
-              errors: [new Error(I18N.get('suggestion.vote.error.empty'))],
-            },
-          })
-
-          return
-        }
-
-        if (commentPlainText.length > MAX_LENGTH_COMMENT) {
-          this.props.form.setFields({
-            comment: {
-              value: comment,
-              errors: [new Error(I18N.get('suggestion.vote.error.tooLong'))],
-            },
-          })
-          return
-        }
-
-        const commentData = [{
-          comment: commentPlainText,
-          commentId: parentId ? parentId : commentId,
-          commentTo: commentTo
-        }]
-
-        const rs = await this.props.postComment(this.props.type,
-          this.props.reduxType,
-          this.props.detailReducer,
-          this.props.returnUrl,
-          this.getModelId(),
-          commentData,
-          values.headline)
-        
-        if(rs.nModified === 1) {
-          this.setState({
-            curDetail: rs.newDate,
-            isComment: !isComment,
-          })
-        }
-
-        this.props.form.resetFields()
-      }
+    this.setState({
+      bool: false
     })
+    if (this.state.bool){
+      const { commentId, commentTo, parentId, isComment } = this.state
+      this.props.form.validateFields( async (err, values) => {
+        if (!err) {
+          const {comment} = values
+          const commentPlainText = _.isFunction(comment.getPlainText)
+            ? comment.getPlainText()
+            : comment
+  
+          if (_.isEmpty(commentPlainText)) {
+            this.props.form.setFields({
+              comment: {
+                errors: [new Error(I18N.get('suggestion.vote.error.empty'))],
+              },
+            })
+  
+            return
+          }
+  
+          if (commentPlainText.length > MAX_LENGTH_COMMENT) {
+            this.props.form.setFields({
+              comment: {
+                value: comment,
+                errors: [new Error(I18N.get('suggestion.vote.error.tooLong'))],
+              },
+            })
+            return
+          }
+  
+          const commentData = [{
+            comment: commentPlainText,
+            commentId: parentId ? parentId : commentId,
+            commentTo: commentTo
+          }]
+  
+          const rs = await this.props.postComment(this.props.type,
+            this.props.reduxType,
+            this.props.detailReducer,
+            this.props.returnUrl,
+            this.getModelId(),
+            commentData,
+            values.headline)
+          
+          if(rs.nModified === 1) {
+            this.setState({
+              curDetail: rs.newDate,
+              bool: true
+              // isComment: !isComment,
+            })
+            message.success(I18N.get('comments.posted.success'))
+          }
+  
+          this.props.form.resetFields()
+        }
+      })
+    }
   }
 
   handleDelete = comment => {

@@ -247,5 +247,9 @@ export default {
   },
   label: {
     hasMadeIntoProposal: 'has made it into'
+  },
+  comments: {
+    viewMore: 'View More',
+    viewLess: 'View Less'
   }
 }

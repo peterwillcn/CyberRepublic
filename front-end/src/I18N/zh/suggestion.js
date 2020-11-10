@@ -248,5 +248,9 @@ export default {
   },
   label: {
     hasMadeIntoProposal: '已经将此建议发布为'
+  },
+  comments: {
+    viewMore: '显示更多',
+    viewLess: '收起'
   }
 }

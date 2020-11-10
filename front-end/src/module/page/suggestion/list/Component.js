@@ -537,7 +537,10 @@ export default class extends StandardPage {
     const typeMap = {
       1: I18N.get('suggestion.form.type.newMotion'),
       2: I18N.get('suggestion.form.type.motionAgainst'),
-      3: I18N.get('suggestion.form.type.anythingElse')
+      3: I18N.get('suggestion.form.type.anythingElse'),
+      'CHANGE_PROPOSAL': I18N.get('suggestion.form.type.CHANGE_PROPOSAL'),
+      'CHANGE_SECRETARY': I18N.get('suggestion.form.type.CHANGE_SECRETARY'),
+      'TERMINATE_PROPOSAL': I18N.get('suggestion.form.type.TERMINATE_PROPOSAL')
     }
     const lang = localStorage.getItem('lang') || 'en'
     const rangePickerOptions = {}

@@ -286,6 +286,7 @@ const en = {
   'suggestion.archived': 'Archived',
   'suggestion.archive': 'Archive',
   'suggestion.unarchive': 'Unarchive',
+  'suggestion.duplicate': 'Duplicate',
   'suggestion.search': 'Search',
   'suggestion.cancel': 'Cancel',
   'suggestion.submit': 'Submit',
