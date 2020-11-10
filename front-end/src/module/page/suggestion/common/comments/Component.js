@@ -72,6 +72,16 @@ class C extends BaseComponent {
 
   commentBtnClick(id, user, parentId) {
     this.props.form.resetFields()
+    const {isComment} = this.state
+    if (isComment) {
+      this.setState({
+        commentId: '',
+        commentTo: '',
+        parentId: '',
+        isComment: !this.state.isComment
+      })
+      return 
+    }
     if (id && user) {
       this.setState({
         commentId: id,
