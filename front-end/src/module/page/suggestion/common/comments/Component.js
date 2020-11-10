@@ -10,7 +10,8 @@ import {
   Input,
   Mention,
   Modal,
-  Popconfirm
+  Popconfirm,
+  message
 } from 'antd'
 import _ from 'lodash'
 import moment from 'moment'
@@ -45,6 +46,7 @@ class C extends BaseComponent {
       parentId: null,
       isComment: false,
       viewMore: [],
+      bool: true,
       curDetail: this.props.detailReducer ? (this.props.detailReducer(curDetail) || {}) : this.props[this.props.reduxType || this.props.type]
     }
 
@@ -487,58 +489,65 @@ class C extends BaseComponent {
 
    handleSubmit = async e => {
     e.preventDefault()
-    const { commentId, commentTo, parentId, isComment } = this.state
-    this.props.form.validateFields( async (err, values) => {
-      if (!err) {
-        const {comment} = values
-        const commentPlainText = _.isFunction(comment.getPlainText)
-          ? comment.getPlainText()
-          : comment
-
-        if (_.isEmpty(commentPlainText)) {
-          this.props.form.setFields({
-            comment: {
-              errors: [new Error(I18N.get('suggestion.vote.error.empty'))],
-            },
-          })
-
-          return
-        }
-
-        if (commentPlainText.length > MAX_LENGTH_COMMENT) {
-          this.props.form.setFields({
-            comment: {
-              value: comment,
-              errors: [new Error(I18N.get('suggestion.vote.error.tooLong'))],
-            },
-          })
-          return
-        }
-
-        const commentData = [{
-          comment: commentPlainText,
-          commentId: parentId ? parentId : commentId,
-          commentTo: commentTo
-        }]
-
-        const rs = await this.props.postComment(this.props.type,
-          this.props.reduxType,
-          this.props.detailReducer,
-          this.props.returnUrl,
-          this.getModelId(),
-          commentData,
-          values.headline)
-        
-        if(rs.nModified === 1) {
-          this.setState({
-            curDetail: rs.newDate,
-            isComment: !isComment,
-          })
-        }
-
-        this.props.form.resetFields()
-      }
+    this.setState({
+      bool: false
     })
+    if (this.state.bool){
+      const { commentId, commentTo, parentId, isComment } = this.state
+      this.props.form.validateFields( async (err, values) => {
+        if (!err) {
+          const {comment} = values
+          const commentPlainText = _.isFunction(comment.getPlainText)
+            ? comment.getPlainText()
+            : comment
+  
+          if (_.isEmpty(commentPlainText)) {
+            this.props.form.setFields({
+              comment: {
+                errors: [new Error(I18N.get('suggestion.vote.error.empty'))],
+              },
+            })
+  
+            return
+          }
+  
+          if (commentPlainText.length > MAX_LENGTH_COMMENT) {
+            this.props.form.setFields({
+              comment: {
+                value: comment,
+                errors: [new Error(I18N.get('suggestion.vote.error.tooLong'))],
+              },
+            })
+            return
+          }
+  
+          const commentData = [{
+            comment: commentPlainText,
+            commentId: parentId ? parentId : commentId,
+            commentTo: commentTo
+          }]
+  
+          const rs = await this.props.postComment(this.props.type,
+            this.props.reduxType,
+            this.props.detailReducer,
+            this.props.returnUrl,
+            this.getModelId(),
+            commentData,
+            values.headline)
+          
+          if(rs.nModified === 1) {
+            this.setState({
+              curDetail: rs.newDate,
+              bool: true
+              // isComment: !isComment,
+            })
+            message.success(I18N.get('comments.posted.success'))
+          }
+  
+          this.props.form.resetFields()
+        }
+      })
+    }
   }
 
   handleDelete = comment => {
