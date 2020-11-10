@@ -42,9 +42,9 @@ export default class extends BaseComponent {
     const isLiked = _.includes(likes, currentUserId)
     const isDisliked = _.includes(dislikes, currentUserId)
     const isSubscribed = _.findIndex(
-        subscribers,
-        subscriber => subscriber.user === currentUserId
-      ) !== -1
+      subscribers,
+      subscriber => subscriber.user === currentUserId
+    ) !== -1
     const isAbused = abusedStatus === SUGGESTION_ABUSED_STATUS.REPORTED
     const isArchived = status === SUGGESTION_STATUS.ARCHIVED
 
@@ -163,7 +163,7 @@ export default class extends BaseComponent {
         <IconText
           component={!!CopyIcon && <CopyIcon />}
           text={I18N.get('suggestion.duplicate')}
-          onClick={()=> this.handleClickCopy()}
+          onClick={() => this.handleClickCopy()}
           className="archive-icon"
         />
       </div>
@@ -178,13 +178,17 @@ export default class extends BaseComponent {
   handleClickCopy() {
     const { data } = this.props
     const dataKey = [
-      "title", "type", "abstract", "motivation", 
-      "goal", "relevance", "plan", "budget", 
-      "planIntro", "budgetIntro", "budgetAmount", 
-      "elaAddress"]
+      "title", "type", "abstract", "motivation",
+      "goal", "relevance", "plan", "budget",
+      "planIntro", "budgetIntro", "budgetAmount",
+      "elaAddress", 'newSecretaryDID',
+      'targetProposalNum',
+      'newOwnerDID',
+      'newAddress',
+      'closeProposalNum']
     const dataTemp = {}
     _.each(dataKey, (item) => {
-      if (data[item] !== undefined){
+      if (data[item] !== undefined) {
         if (item === "relevance" && typeof data[item] === "string") {
           return
         }
@@ -193,8 +197,8 @@ export default class extends BaseComponent {
     })
     if (!_.isEmpty(dataTemp)) {
       localStorage.removeItem("draft-suggestion")
-      localStorage.setItem("draft-suggestion",JSON.stringify(dataTemp))
-      window.location.href="http://localhost:3001/suggestion/create"
+      localStorage.setItem("draft-suggestion", JSON.stringify(dataTemp))
+      window.location.href = "http://localhost:3001/suggestion/create"
     }
   }
 
