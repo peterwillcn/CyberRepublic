@@ -183,7 +183,7 @@ class C extends BaseComponent {
         {childCommentsList}
         {
           item.childComment.length > 2 ? (<ViewButton onClick={() => this.handleViewMore(item)}>
-            { !_.includes(viewMore, item._id) ? `View More(${item.childComment.length})` : `View Less`}
+            { !_.includes(viewMore, item._id) ? `${I18N.get('suggestion.comments.viewMore')}(${item.childComment.length})` : I18N.get('suggestion.comments.viewLess')}
           </ViewButton>) : null
         }
       </ChildComment>) : null
