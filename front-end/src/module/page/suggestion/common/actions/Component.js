@@ -198,7 +198,7 @@ export default class extends BaseComponent {
     if (!_.isEmpty(dataTemp)) {
       localStorage.removeItem("draft-suggestion")
       localStorage.setItem("draft-suggestion", JSON.stringify(dataTemp))
-      window.location.href = "http://localhost:3001/suggestion/create"
+      window.location.href = "/suggestion/create"
     }
   }
 
