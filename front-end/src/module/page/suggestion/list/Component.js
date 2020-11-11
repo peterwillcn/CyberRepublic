@@ -774,7 +774,7 @@ export default class extends StandardPage {
     const props = {
       pageSize: results,
       total,
-      current: page,
+      current: _.toNumber(page),
       onChange: this.onPageChanged
     }
     return <Pagination {...props} className="cr-pagination" />

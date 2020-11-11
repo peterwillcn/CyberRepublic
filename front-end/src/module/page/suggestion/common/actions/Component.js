@@ -132,6 +132,7 @@ export default class extends BaseComponent {
 
   renderPopover() {
     const { isSubscribed, isAbused, isArchived } = this.state
+    const { isLogin } = this.props
     const content = (
       <div className="popover-actions">
         <IconText
@@ -160,12 +161,12 @@ export default class extends BaseComponent {
           onClick={this.handleClick('isArchived')}
           className="archive-icon"
         />
-        <IconText
+        {isLogin ? <IconText
           component={!!CopyIcon && <CopyIcon />}
           text={I18N.get('suggestion.duplicate')}
           onClick={() => this.handleClickCopy()}
           className="archive-icon"
-        />
+        /> : null}
       </div>
     )
     return (
