@@ -215,6 +215,7 @@ export default class extends BaseService {
   async logout() {
     const userRedux = this.store.getRedux('user')
     const tasksRedux = this.store.getRedux('task')
+    const suggestionRedux = this.store.getRedux('suggestion')
     await api_request({ path: '/api/user/logout' })
     return new Promise((resolve) => {
       this.dispatch(userRedux.actions.is_login_update(false))
@@ -238,10 +239,11 @@ export default class extends BaseService {
       sessionStorage.clear()
       localStorage.removeItem('api-token', '')
       localStorage.removeItem('draft-suggestion', '')
-      localStorage.removeItem('proposal-page', '')
+      localStorage.setItem('proposal-page', '1')
       localStorage.removeItem('proposal-scrollY', '')
-      localStorage.removeItem('suggestion-page', '')
+      localStorage.setItem('suggestion-page', '1')
       localStorage.removeItem('suggestion-scrollY', '')
+      this.dispatch(suggestionRedux.actions.page_update(1))
       resolve(true)
     })
   }
