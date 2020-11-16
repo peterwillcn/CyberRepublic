@@ -106,12 +106,12 @@ class C extends BaseComponent {
       const pItems = _.get(values, 'budget.paymentItems')
 
       const initiation =
-        !_.isEmpty(pItems) &&
+        !_.isEmpty(pItems) && pItems instanceof Array  &&
         pItems.filter(
           (item) => item.type === ADVANCE && item.milestoneKey === '0'
         )
       const completion =
-        !_.isEmpty(pItems) &&
+        !_.isEmpty(pItems) && pItems instanceof Array && 
         pItems.filter((item) => {
           return (
             item.type === COMPLETION &&
@@ -119,7 +119,7 @@ class C extends BaseComponent {
           )
         })
       if (
-        !_.isEmpty(pItems) &&
+        !_.isEmpty(pItems) && pItems instanceof Array && 
         (milestone.length !== pItems.length ||
           initiation.length > 1 ||
           completion.length !== 1)
@@ -134,7 +134,7 @@ class C extends BaseComponent {
       const planIntro = _.get(values, 'planIntro')
       // exclude old suggestion data
       if (budget && typeof budget !== 'string') {
-        values.budget = budget.paymentItems
+        values.budget = pItems instanceof Array ? budget.paymentItems : []
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
@@ -225,7 +225,7 @@ class C extends BaseComponent {
         values.plan[`teamInfo`] = values.teamInfo
       }
       if (budget) {
-        values.budget = budget.paymentItems
+        values.budget = budget.paymentItems instanceof Array ? budget.paymentItems : []
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
         values.budgetIntro = budgetIntro

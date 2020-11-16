@@ -160,7 +160,7 @@ class ImplementationAndBudget extends BaseComponent {
     const budgetIntro = this.props.form.getFieldValue("budgetIntro")
     if (!_.isEmpty(budgetIntro)
       || !_.isEmpty(data.elaAddress)
-      || data.paymentItems.length > 0
+      || (data.paymentItems instanceof Array && data.paymentItems.length > 0)
     ) {
       this.setState({
         disabled: true
