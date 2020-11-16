@@ -32,6 +32,7 @@ import ownerSignatureCallback from './owner_signature_callback'
 import secSignatureUrl from './sec_signature_url'
 import secSignatureCallback from './sec_signature_callback'
 import cancel from './cancel'
+import getSuggestionByNumber from './get_suggestion_by_number'
 
 export default Base.setRouter([
   {
@@ -198,5 +199,10 @@ export default Base.setRouter([
     path: '/cancel',
     router: cancel,
     method: 'post'
+  },
+  {
+    path: '/get-suggestion-by-number',
+    router: getSuggestionByNumber,
+    method: 'get'
   }
 ])

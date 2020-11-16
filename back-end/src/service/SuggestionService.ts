@@ -2407,4 +2407,46 @@ export default class extends Base {
       }
     }
   }
+
+  public async getSuggestionByNumber(param: any) {
+    const fields = [
+      '_id',
+      'title',
+      'type',
+      'teamInfo',
+      'relevance',
+      'planIntro',
+      'plan',
+      'abstract',
+      'budget',
+      'budgetAmount',
+      'budgetIntro',
+      'elaAddress',
+      'goal',
+      'motivation',
+      'newSecretaryDID',
+      'targetProposalNum',
+      'newOwnerDID',
+      'newAddress',
+      'closeProposalNum'
+    ]
+    if (param.type === 'byNumber') {
+      const suggestion = await this.model.getDBInstance().find(
+        {
+          displayId: param.id
+        },
+        fields
+      )
+      console.log(suggestion)
+      return suggestion
+    }
+    if (param.type === 'lastSuggestion') {
+      const user = _.get(this.currentUser, '_id')
+      const suggestionList = await this.model.getDBInstance().find({
+        createdBy: user
+      }, fields).sort({$natural: -1}).limit(5)
+      return suggestionList
+    }
+  }
+
 }

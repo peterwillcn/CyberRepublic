@@ -198,6 +198,16 @@
     border-color: $cr_btn_primary;
   }
 }
+.cr-duplicate-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  margin-left: 40px;
+  background: #E7F5F2;
+  border: 1px solid #43AF92;
+  color: #43AF92;
+}
 .ant-btn.cr-btn-primary {
   background: $cr_btn_primary;
   border-color: $cr_btn_primary;

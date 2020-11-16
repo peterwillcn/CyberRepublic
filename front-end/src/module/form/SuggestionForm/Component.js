@@ -13,6 +13,7 @@ import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
 import SelectSuggType from './SelectSuggType'
 import ImplementationAndBudget from './ImplementationAndBudget'
 import TeamInfoSection from './TeamInfoSection'
+import DuplicateModal from '../DuplicateModalForm/Container'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
@@ -42,7 +43,8 @@ class C extends BaseComponent {
       activeKey: !isNewType ? TAB_KEYS[0] : NEW_TAB_KEYS[0],
       errorKeys: {},
       type: type ? type : NEW_MOTION,
-      tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS
+      tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS,
+      isChange: false
     }
     const sugg = props.initialValues
     if (
@@ -62,6 +64,18 @@ class C extends BaseComponent {
     this.timer = setInterval(() => {
       this.handleSaveDraft()
     }, 5000)
+  }
+
+  componentDidUpdate(prevProps) {
+    const {isChange} = this.state
+    // console.log(isChange)
+    if (isChange) {
+      // this.setState({isChange: false},()=>{
+      // })
+      // console.log(1)
+      // location.reload()
+      // this.forceUpdate()
+    }
   }
 
   componentWillUnmount() {
@@ -355,11 +369,18 @@ class C extends BaseComponent {
   }
 
   getTextarea(id) {
-    const initialValues = _.isEmpty(this.props.initialValues)
-      ? { type: '1' }
-      : this.props.initialValues
+    const { isChange } = this.state
+    const { getFieldDecorator, getFieldsValue } = this.props.form
 
-    const { getFieldDecorator } = this.props.form
+    let initialValues
+    if (isChange) {
+      initialValues = getFieldsValue()
+    } else {
+      initialValues = _.isEmpty(this.props.initialValues)
+        ? { type: '1' }
+        : this.props.initialValues
+    }
+
     const rules = [
       {
         required: true,
@@ -406,13 +427,6 @@ class C extends BaseComponent {
         />
       )
     }
-
-    // if (id === 'abstract') {
-    //   rules.push({
-    //     message: I18N.get(`suggestion.form.error.limit${WORD_LIMIT}`),
-    //     validator: this.validateAbstract
-    //   })
-    // }
 
     if (
       id === 'planBudget' &&
@@ -478,6 +492,7 @@ class C extends BaseComponent {
     })(
       <CodeMirrorEditor
         callback={this.onTextareaChange}
+        isChange={isChange}
         content={initialValues[id]}
         activeKey={id}
         name={id}
@@ -557,7 +572,10 @@ class C extends BaseComponent {
             wrapperCol={{ span: 18 }}
             colon={false}
           >
-            {this.getTitleInput()}
+            <div style={{ display: 'flex' }}>
+              {this.getTitleInput()}
+              <DuplicateModal form={this.props.form} changeData={this.changeData} />
+            </div>
           </FormItem>
           <FormItem
             label={`${I18N.get('suggestion.form.fields.validPeriod')}*`}
@@ -617,6 +635,10 @@ class C extends BaseComponent {
         </Form>
       </Container>
     )
+  }
+
+  changeData = (isChange) => {
+    this.setState({ isChange })
   }
 
   onTabChange = (activeKey) => {

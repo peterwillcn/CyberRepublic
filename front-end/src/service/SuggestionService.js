@@ -468,4 +468,14 @@ export default class extends BaseService {
       message.error(I18N.get('suggestion.msg.notCancelled'))
     }
   }
+
+  async getSuggestionByNumber(param) {
+    const path = `${this.prefixPath}/get-suggestion-by-number`
+    const res = await api_request({
+      path,
+      method: 'get',
+      data: { ...param }
+    })
+    return res
+  }
 }

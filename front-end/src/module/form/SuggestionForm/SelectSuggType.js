@@ -3,6 +3,7 @@ import { Radio, Input, Checkbox, Select } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
+import _ from 'lodash'
 const { Option } = Select
 const {
   NEW_MOTION,
@@ -24,7 +25,9 @@ class SelectSuggType extends Component {
       changeOwner: value && value.newOwnerDID ? true : false,
       changeAddress: value && value.newAddress ? true : false,
       newAddress: value && value.newAddress,
-      proposals: []
+      proposals: [],
+      isChange: false,
+      changeType: (value && value.type) || '1',
     }
   }
 
@@ -35,6 +38,27 @@ class SelectSuggType extends Component {
       text: `#${el.vid} ${el.title}`
     }))
     this.setState({ proposals })
+  }
+
+  componentDidUpdate() {
+    const value = this.props.initialValue
+    const { type, isChange, changeType } = this.state
+
+    if (typeof value.type === 'string'
+      && value.type !== type
+      && value.type !== changeType
+      && !isChange) {
+      if (typeof type === 'string') {
+        this.setState({
+          type: value.type,
+          changeType: value.type,
+          isChange: true
+        }, () => {
+          this.props.changeType(value.type)
+          this.changeValue()
+        })
+      }
+    }
   }
 
   changeValue() {
@@ -120,6 +144,7 @@ class SelectSuggType extends Component {
     const error = `${field}Err`
     if (field === 'type') {
       this.props.changeType(e.target.value)
+      this.setState({ isChange: false })
     }
     this.setState({ [field]: e.target.value, [error]: !e.target.value }, () => {
       this.changeValue()

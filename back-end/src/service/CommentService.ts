@@ -116,7 +116,7 @@ export default class extends Base {
             for (const child of thread.childComment) {
               await db_commentable.getDBInstance().populate(child, {
                 path: 'createdBy',
-                select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+                select: `profile.avatar profile.firstName profile.lastName`
               })
             }
           }

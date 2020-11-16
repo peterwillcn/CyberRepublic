@@ -306,6 +306,9 @@ const en = {
   'suggestion.form.fields.timeline': 'Expected Completion',
   'suggestion.form.fields.links': 'Links',
   'suggestion.form.fields.linksSplit': 'Links (Split By Comma)',
+  'suggestion.form.fields.duplicate': 'Duplicate existing suggestion',
+  'suggestion.form.fields.duplicate.number': 'Suggestion Number',
+  'suggestion.form.fields.duplicate.button': 'Duplicate existing suggestion',
 
   // social share
   'socialShare.wechat.desc': 'Scan QR code below using WeChat, then share this web page with your WeChat friends.',
