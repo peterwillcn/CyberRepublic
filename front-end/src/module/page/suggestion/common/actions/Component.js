@@ -186,7 +186,7 @@ export default class extends BaseComponent {
       'targetProposalNum',
       'newOwnerDID',
       'newAddress',
-      'closeProposalNum']
+      'closeProposalNum', 'validPeriod']
     const dataTemp = {}
     _.each(dataKey, (item) => {
       if (data[item] !== undefined) {

@@ -44,7 +44,8 @@ class C extends BaseComponent {
       errorKeys: {},
       type: type ? type : NEW_MOTION,
       tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS,
-      isChange: false
+      dupData: {},
+      controVar: 1
     }
     const sugg = props.initialValues
     if (
@@ -64,18 +65,6 @@ class C extends BaseComponent {
     this.timer = setInterval(() => {
       this.handleSaveDraft()
     }, 5000)
-  }
-
-  componentDidUpdate(prevProps) {
-    const {isChange} = this.state
-    // console.log(isChange)
-    if (isChange) {
-      // this.setState({isChange: false},()=>{
-      // })
-      // console.log(1)
-      // location.reload()
-      // this.forceUpdate()
-    }
   }
 
   componentWillUnmount() {
@@ -369,12 +358,12 @@ class C extends BaseComponent {
   }
 
   getTextarea(id) {
-    const { isChange } = this.state
+    const { dupData, controVar } = this.state
     const { getFieldDecorator, getFieldsValue } = this.props.form
 
     let initialValues
-    if (isChange) {
-      initialValues = getFieldsValue()
+    if (!_.isEmpty(dupData)) {
+      initialValues = dupData
     } else {
       initialValues = _.isEmpty(this.props.initialValues)
         ? { type: '1' }
@@ -421,6 +410,7 @@ class C extends BaseComponent {
       })(
         <SelectSuggType
           initialValue={data}
+          controVar={controVar}
           callback={this.onTextareaChange}
           getActiveProposals={this.props.getActiveProposals}
           changeType={this.changeType}
@@ -445,6 +435,7 @@ class C extends BaseComponent {
         <ImplementationAndBudget
           getFieldDecorator={getFieldDecorator}
           initialValues={initialValues}
+          controVar={controVar}
           budgetValidator={this}
           form={this.props.form}
           callback={this.onTextareaChange}
@@ -465,6 +456,7 @@ class C extends BaseComponent {
       })(
         <TeamInfoSection
           title={I18N.get('suggestion.plan.teamInfo')}
+          controVar={controVar}
           callback={this.onTextareaChange}
           initialValue={teamInfo}
         />
@@ -492,7 +484,7 @@ class C extends BaseComponent {
     })(
       <CodeMirrorEditor
         callback={this.onTextareaChange}
-        isChange={isChange}
+        controVar={controVar}
         content={initialValues[id]}
         activeKey={id}
         name={id}
@@ -637,8 +629,12 @@ class C extends BaseComponent {
     )
   }
 
-  changeData = (isChange) => {
-    this.setState({ isChange })
+  changeData = (data) => {
+    const { controVar } = this.state
+    this.setState({ 
+      dupData: data,
+      controVar: controVar+1
+     })
   }
 
   onTabChange = (activeKey) => {
