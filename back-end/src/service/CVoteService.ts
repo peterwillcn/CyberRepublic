@@ -2392,13 +2392,9 @@ export default class extends Base {
   public async getProposalTitle(param: any) {
     const db_cvote = this.getDBModel('CVote')
     if (_.isEmpty(param)) return
-    let value = ''
-    _.forEach(param, (v: any) => {
-      value += v
-    })
     const proposalList = await db_cvote.getDBInstance().find(
       {
-        title: { $regex: value, $options: 'i' }
+        title: { $regex: param.title, $options: 'i' }
       },
       ['_id', 'title']
     )
