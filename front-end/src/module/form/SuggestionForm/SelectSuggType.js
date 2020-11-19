@@ -28,6 +28,7 @@ class SelectSuggType extends Component {
       proposals: [],
       isChange: false,
       changeType: (value && value.type) || '1',
+      controVar: this.props.controVar
     }
   }
 
@@ -41,22 +42,75 @@ class SelectSuggType extends Component {
   }
 
   componentDidUpdate() {
-    const value = this.props.initialValue
-    const { type, isChange, changeType } = this.state
+    const {initialValue:value, controVar: preVar} = this.props
+    const { type,
+      newSecretaryDID,
+      termination,
+      proposalNum,
+      newAddress,
+      newOwnerDID,
+      controVar } = this.state
+    if (preVar !== controVar) {
 
-    if (typeof value.type === 'string'
-      && value.type !== type
-      && value.type !== changeType
-      && !isChange) {
-      if (typeof type === 'string') {
-        this.setState({
-          type: value.type,
-          changeType: value.type,
-          isChange: true
-        }, () => {
-          this.props.changeType(value.type)
-          this.changeValue()
-        })
+      if (value.type === CHANGE_SECRETARY) {
+        const data = { 
+          type,
+          newSecretaryDID:  newSecretaryDID == '' ? undefined : newSecretaryDID
+        }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+
+      if (value.type === TERMINATE_PROPOSAL) {
+        const data = { type, termination }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+
+      if (value.type === CHANGE_PROPOSAL) {
+        const data = {
+          type,
+          proposalNum,
+          newAddress,
+          newOwnerDID: newOwnerDID == '' ? undefined : newOwnerDID
+        }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+
+      if (value.type === NEW_MOTION) {
+        const data = {
+          type
+        }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+    }
+  }
+
+  dupOperating(value, preVar) {
+    this.setState({
+      ...value,
+      controVar: preVar
+    }, () => {
+      this.props.changeType(value.type)
+      if (value.type === CHANGE_PROPOSAL) {
+        this.changeProposal(value)
+      }
+    })
+  }
+
+  changeProposal(value) {
+    if (value) {
+      if (value.newAddress) {
+        this.handleCheckboxChange({target: {checked: true}}, 'changeAddress')
+      }
+      if (value.newOwnerDID) {
+        this.handleCheckboxChange({target: {checked: true}}, 'changeOwner')
       }
     }
   }

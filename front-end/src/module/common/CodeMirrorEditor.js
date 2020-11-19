@@ -16,16 +16,17 @@ class Component extends BaseComponent {
     this.state = {
       value: this.props.content ? this.props.content : '',
       propsContent: this.props.content ? this.props.content : '',
-      show: false
+      show: false,
+      changeNum: this.props.controVar
     }
     this.editor = null
   }
 
   componentDidUpdate() {
-    const { isChange, content } = this.props
-    const { propsContent } = this.state
-    if (isChange && propsContent !== content) {
-      this.setState({ value: content, propsContent: content })
+    const { controVar, content } = this.props
+    const { changeNum } = this.state
+    if (changeNum !== controVar) {
+      this.setState({ value: content, changeNum: controVar })
     }
   }
 

@@ -19,10 +19,21 @@ class ImplementationAndBudget extends BaseComponent {
       disabled: !_.isEmpty(budget) || budgetIntro || elaAddress ? true : false,
       addressErr: '',
       itemErr: '',
+      changeNum: this.props.controVar
     }
     if (this.count == 0 && !_.isEmpty(budget) || budgetIntro || elaAddress) {
       this.props.budgetValidator.setBudgetValidator(true)
       this.count = 1
+    }
+  }
+
+  componentDidUpdate() {
+    const { controVar } = this.props
+    const { changeNum } = this.state
+    if (controVar!== changeNum) {
+      this.setState({
+        changeNum: controVar
+      })
     }
   }
 
@@ -60,6 +71,7 @@ class ImplementationAndBudget extends BaseComponent {
 
   getImplementation() {
     const { getFieldDecorator } = this.props
+    const { changeNum } = this.state
     const rules = [
       {
         required: true,
@@ -80,6 +92,7 @@ class ImplementationAndBudget extends BaseComponent {
     })(
       <ImplementationPlan
         initialValue={initialValues}
+        controVar={changeNum}
         getFieldDecorator={getFieldDecorator}
         callback={this.props.callback}
       />
@@ -88,6 +101,7 @@ class ImplementationAndBudget extends BaseComponent {
 
   getBudget() {
     const { getFieldDecorator } = this.props
+    const { changeNum } = this.state
     const initialValues = _.isEmpty(this.props.initialValues)
       ? { type: '1' }
       : this.props.initialValues
@@ -128,6 +142,7 @@ class ImplementationAndBudget extends BaseComponent {
     return getFieldDecorator('budget', condition)(
       <PaymentSchedule
         initialValue={initialBudget}
+        controVar={changeNum}
         getFieldDecorator={getFieldDecorator}
         callback={this.props.callback}
       />

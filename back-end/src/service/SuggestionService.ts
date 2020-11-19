@@ -2428,7 +2428,8 @@ export default class extends Base {
       'targetProposalNum',
       'newOwnerDID',
       'newAddress',
-      'closeProposalNum'
+      'closeProposalNum',
+      'validPeriod'
     ]
     if (param.type === 'byNumber') {
       const suggestion = await this.model.getDBInstance().find(

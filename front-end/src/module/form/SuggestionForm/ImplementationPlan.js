@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import I18N from '@/I18N'
 import Milestones from './Milestones'
 import CodeMirrorEditor from '@/module/common/CodeMirrorEditor'
+import _ from 'lodash'
 
 class ImplementationPlan extends Component {
   constructor(props) {
@@ -11,7 +12,31 @@ class ImplementationPlan extends Component {
     this.state = {
       // plan: props.initialValue ? props.initialValue : {}
       plan: (value && value.plan) || {},
-      planIntro: (value && value.planIntro) || ''
+      planIntro: (value && value.planIntro) || '',
+      changeNum: this.props.controVar
+    }
+    sessionStorage.setItem(
+      'plan-milestone',
+      JSON.stringify((value && _.get(value, 'plan.milestone')) || [])
+    )
+  }
+
+  componentDidUpdate(preProps) {
+    const init = preProps.initialValue
+    const controVar = this.props
+    const { milestone, changeNum } = this.state
+    if (changeNum !== controVar){
+      this.setState({
+        plan: (init && _.get(init,'plan')) || {},
+        planIntro: (init && _.get(init,'planIntro')) || '',
+        changeNum: controVar
+      })
+      if (!_.isEmpty(_.get(init,'plan.milestone')) && init.plan.milestone !== milestone){
+        sessionStorage.setItem(
+          'plan-milestone',
+          JSON.stringify(init.plan.milestone)
+        )
+      }
     }
   }
 
@@ -25,7 +50,7 @@ class ImplementationPlan extends Component {
   }
 
   render() {
-    const { plan, planIntro } = this.state
+    const { plan, planIntro, changeNum } = this.state
     const { callback, getFieldDecorator } = this.props
     return (
       <div>
@@ -39,6 +64,7 @@ class ImplementationPlan extends Component {
             <CodeMirrorEditor
               callback={callback}
               content={planIntro}
+              controVar={changeNum}
               activeKey='planIntro'
               name='planIntro'
             />
