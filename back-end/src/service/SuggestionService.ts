@@ -977,6 +977,21 @@ export default class extends Base {
     if (doc.budgetAmount) {
       doc.budgetAmount = Big(doc.budgetAmount).toFixed()
     }
+    // compatible with old relevance
+    if (doc.relevance) {
+      let relevanceStr = ''
+      _.forEach(doc.relevance[0], (v, k) => {
+        if (k === '0') {
+          _.forEach(doc.relevance[0], (v) => {
+            relevanceStr += v
+          })
+        }
+        return
+      })
+      if (!_.isEmpty(relevanceStr)) {
+        doc.relevance = relevanceStr
+      }
+    }
 
     if (doc && _.isEmpty(doc.comments)) return doc
 
@@ -987,6 +1002,14 @@ export default class extends Base {
             path: 'createdBy',
             select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
           })
+          if (thread.childComment.length > 0) {
+            for (const child of thread.childComment) {
+              await model.getDBInstance().populate(child, {
+                path: 'createdBy',
+                select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+              })
+            }
+          }
         }
       }
     }

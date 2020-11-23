@@ -60,7 +60,6 @@ const BUDGET_REQUESTED_OPTIONS = {
 export default class extends StandardPage {
   constructor(props) {
     super(props)
-
     const { isVisitableFilter } = this.props
     const {
       referenceStatus,
@@ -97,18 +96,38 @@ export default class extends StandardPage {
       creationDate,
       author,
       type,
-      isVisitableFilter
+      isVisitableFilter,
+      isChangeNext: false
     }
     this.debouncedRefetch = _.debounce(this.refetch.bind(this), 300)
   }
 
   componentDidMount() {
     super.componentDidMount()
+    const initPage = localStorage.getItem('suggestion-page')
+    if (!initPage) {
+      localStorage.setItem('suggestion-page', 1)
+    }
+    if (this.props.location.query) {
+      this.viewOldData()
+    }
     this.refetch()
   }
 
   componentWillUnmount() {
     this.props.resetAll()
+  }
+
+  componentDidUpdate() {
+    const {isChangeNext} = this.state
+    if (isChangeNext) {
+      window.scrollTo(0, 0)
+    }
+    if (this.props.location.state === 'return') {
+      window.scrollTo(0,localStorage.getItem('suggestion-scrollY') || 0)
+    } else {
+      window.scrollTo(0, 0)
+    }
   }
 
   handleFilter = () => {
@@ -518,7 +537,10 @@ export default class extends StandardPage {
     const typeMap = {
       1: I18N.get('suggestion.form.type.newMotion'),
       2: I18N.get('suggestion.form.type.motionAgainst'),
-      3: I18N.get('suggestion.form.type.anythingElse')
+      3: I18N.get('suggestion.form.type.anythingElse'),
+      'CHANGE_PROPOSAL': I18N.get('suggestion.form.type.CHANGE_PROPOSAL'),
+      'CHANGE_SECRETARY': I18N.get('suggestion.form.type.CHANGE_SECRETARY'),
+      'TERMINATE_PROPOSAL': I18N.get('suggestion.form.type.TERMINATE_PROPOSAL')
     }
     const lang = localStorage.getItem('lang') || 'en'
     const rangePickerOptions = {}
@@ -698,11 +720,19 @@ export default class extends StandardPage {
     )
   }
 
+  openPage(href) {
+    window.open(href, '_blank')
+    this.setState({
+      isChangeNext: false
+    })
+    localStorage.setItem('suggestion-scrollY',window.scrollY)
+  }
+
   renderItem = (data) => {
     const href = `/suggestion/${data._id}`
     const actionsNode = this.renderActionsNode(data, this.refetch)
     const metaNode = this.renderMetaNode(data)
-    const title = <ItemTitle to={href} target={`_blank`}>{data.title}</ItemTitle>
+    const title = <ItemTitle onClick={() => this.openPage(href)}>{data.title}</ItemTitle>
     const tagsNode = this.renderTagsNode(data)
     return (
       <div key={data._id} className="item-container">
@@ -731,6 +761,10 @@ export default class extends StandardPage {
   onPageChanged = (page) => {
     const { changePage } = this.props
     changePage(page)
+    localStorage.setItem('suggestion-page', page)
+    this.setState({
+      isChangeNext: true
+    })
     this.loadPage(page)
   }
 
@@ -740,7 +774,7 @@ export default class extends StandardPage {
     const props = {
       pageSize: results,
       total,
-      current: page,
+      current: _.toNumber(page),
       onChange: this.onPageChanged
     }
     return <Pagination {...props} className="cr-pagination" />
@@ -786,10 +820,6 @@ export default class extends StandardPage {
     }
     let included = ''
 
-    if (this.state.showArchived) {
-      query.status = SUGGESTION_STATUS.ARCHIVED
-    }
-
     if (this.state.showOldData) {
       query.old = true
     }
@@ -814,6 +844,10 @@ export default class extends StandardPage {
 
     if (!_.isEmpty(status)) {
       query.status = status
+    }
+
+    if (this.state.showArchived) {
+      query.status = SUGGESTION_STATUS.ARCHIVED
     }
 
     if (!_.isEmpty(budgetRequested) && budgetRequested > 0) {
@@ -858,6 +892,8 @@ export default class extends StandardPage {
    */
   refetch = () => {
     const query = this.getQuery()
+    const initPage = localStorage.getItem('suggestion-page') || 1
+    query.page = initPage
     this.props.getList(query)
   }
 
@@ -878,7 +914,6 @@ export default class extends StandardPage {
     }
 
     this.setState({ loadingMore: false })
-    window.scrollTo(0,0)
   }
 
   gotoDetail(id) {
@@ -898,7 +933,19 @@ const HeaderDiagramContainer = styled.div`
   }
 `
 
-const ItemTitle = styled(Link)`
+// const ItemTitle = styled(Link)`
+//   font-size: 20px;
+//   color: black;
+//   transition: all 0.3s;
+//   font-weight: 400;
+//   text-decoration: none;
+//   margin: 8px 0;
+//   display: block;
+//   &:hover {
+//     color: $link_color;
+//   }
+// `
+const ItemTitle = styled.a`
   font-size: 20px;
   color: black;
   transition: all 0.3s;

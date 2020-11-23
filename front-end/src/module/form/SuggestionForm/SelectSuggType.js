@@ -57,23 +57,31 @@ class SelectSuggType extends Component {
     let data = { type }
     switch (type) {
       case CHANGE_PROPOSAL:
+        if (proposalNumErr) {
+          data.hasErr = true
+        }
         data.proposalNum = proposalNum
         data.changeOwner = changeOwner
         data.changeAddress = changeAddress
         if (changeOwner && !changeAddress) {
+          if (newOwnerDIDErr) {
+            data.hasErr = true
+          }
           data.newOwnerDID = newOwnerDID
         }
         if (changeAddress && !changeOwner) {
+          if (newAddressErr) {
+            data.hasErr = true
+          }
           data.newAddress = newAddress
         }
         if (changeAddress && changeOwner) {
+          if (newOwnerDIDErr || newAddressErr) {
+            data.hasErr = true
+          }
           data.newOwnerDID = newOwnerDID
           data.newAddress = newAddress
         }
-        if (proposalNumErr || newOwnerDIDErr || newAddressErr) {
-          data.hasErr = true
-        }
-        break
       case CHANGE_SECRETARY:
         data.newSecretaryDID = newSecretaryDID
         if (newSecretaryDIDErr) {

@@ -13,7 +13,7 @@ import {
 } from 'antd'
 import { Link } from 'react-router-dom'
 import MediaQuery from 'react-responsive'
-import Comments from '@/module/common/comments/Container'
+import Comments from '../common/comments/Container'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
 import Translation from '@/module/common/Translation/Container'
@@ -171,7 +171,7 @@ export default class extends StandardPage {
           <MediaQuery maxWidth={LG_WIDTH}>
             <div>
               <BackLink
-                link="/suggestion"
+                link={{pathname:"/suggestion", query: detail.old ? detail.old : false, state: 'return'}}
                 style={{ position: 'relative', left: 0, marginBottom: 15 }}
               />
               {this.renderAnchors()}
@@ -190,7 +190,7 @@ export default class extends StandardPage {
           </MediaQuery>
           <MediaQuery minWidth={LG_WIDTH + 1}>
             <BackLink
-              link="/suggestion"
+              link={{pathname:"/suggestion", query: detail.old ? detail.old : false, state: 'return'}}
               style={{ position: 'fixed', left: '27px', top: '189px' }}
             />
             {this.renderAnchors()}
@@ -321,7 +321,7 @@ export default class extends StandardPage {
           if (
             section === 'relevance' &&
             detail.relevance &&
-            typeof detail.relevance !== 'sting'
+            typeof detail.relevance !== 'string'
           ) {
             return (
               <div key="relevance">
