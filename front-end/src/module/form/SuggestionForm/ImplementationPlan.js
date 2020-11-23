@@ -51,11 +51,11 @@ class ImplementationPlan extends Component {
 
   render() {
     const { plan, planIntro, changeNum } = this.state
-    const { callback, getFieldDecorator } = this.props
+    const { callback, getFieldDecorator, controVar } = this.props
     return (
       <div>
         <Title>{I18N.get('suggestion.plan.milestones')}</Title>
-        <Milestones onChange={this.changeValue} initialValue={plan.milestone} />
+        <Milestones onChange={this.changeValue} initialValue={plan.milestone} controVar={controVar} />
         <Section>
           <Label>{`${I18N.get('suggestion.plan.introduction')}`}</Label>
           {getFieldDecorator('planIntro',{
