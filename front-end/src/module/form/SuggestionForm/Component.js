@@ -354,7 +354,7 @@ class C extends BaseComponent {
       type
     )
     const tabs = !isNewType ? TAB_KEYS : NEW_TAB_KEYS
-    this.setState({ type, tabs, errorKeys: {} })
+    this.setState({ type, tabs, errorKeys: {}, activeKey: 'type' })
   }
 
   getTextarea(id) {
