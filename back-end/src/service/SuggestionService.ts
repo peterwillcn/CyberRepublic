@@ -2438,7 +2438,6 @@ export default class extends Base {
         },
         fields
       )
-      console.log(suggestion)
       return suggestion
     }
     if (param.type === 'lastSuggestion') {
