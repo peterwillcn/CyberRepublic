@@ -1026,13 +1026,13 @@ export default class extends Base {
         for (const thread of comment) {
           await model.getDBInstance().populate(thread, {
             path: 'createdBy',
-            select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+            select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID}`
           })
           if (thread.childComment.length > 0) {
             for (const child of thread.childComment) {
               await model.getDBInstance().populate(child, {
                 path: 'createdBy',
-                select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+                select: `profile.avatar profile.firstName profile.lastName`
               })
             }
           }
