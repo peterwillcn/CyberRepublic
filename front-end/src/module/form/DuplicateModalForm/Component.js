@@ -234,9 +234,13 @@ const FooterButton = styled.div`
 `
 const radioStyle = {
   display: 'block',
+  width: '600px',
   height: '30px',
   lineHeight: '30px',
-  margin: '10px 0px'
+  margin: '10px 0px',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap'
 }
 const cancelButton = {
   backgroundColor: '#FFF',
