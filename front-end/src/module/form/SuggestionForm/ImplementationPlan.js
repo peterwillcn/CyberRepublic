@@ -23,7 +23,7 @@ class ImplementationPlan extends Component {
 
   componentDidUpdate(preProps) {
     const init = preProps.initialValue
-    const controVar = this.props
+    const { controVar } = this.props
     const { milestone, changeNum } = this.state
     if (changeNum !== controVar){
       this.setState({
