@@ -58,7 +58,7 @@ class C extends BaseComponent {
     if (hash && hash === '#comments') {
       document.getElementById('comments').scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest'
+        block: 'start'
       })
     }
   }
@@ -243,7 +243,7 @@ class C extends BaseComponent {
 
   renderHeader() {
     return (
-      <h3 className="no-margin with-gizmo">{this.props.header || I18N.get('comments')}</h3>
+      <h3 id="comments" className="no-margin with-gizmo">{this.props.header || I18N.get('comments')}</h3>
     )
   }
 

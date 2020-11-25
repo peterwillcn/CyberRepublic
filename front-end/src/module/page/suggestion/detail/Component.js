@@ -189,7 +189,7 @@ export default class extends StandardPage {
               {newSecretaryActionNode}
               {councilActionsNode}
             </div>
-            <div style={{ marginTop: 60 }}>{commentNode}</div>
+            <div id='comments' name='comments' style={{ marginTop: 60 }}>{commentNode}</div>
           </MediaQuery>
           <MediaQuery minWidth={LG_WIDTH + 1}>
             <BackLink
