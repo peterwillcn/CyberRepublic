@@ -569,14 +569,14 @@ class C extends BaseComponent {
               <DuplicateModal form={this.props.form} changeData={this.changeData} />
             </div>
           </FormItem>
-          <FormItem
+          {/* <FormItem
             label={`${I18N.get('suggestion.form.fields.validPeriod')}*`}
             labelCol={{ span: 2 }}
             wrapperCol={{ span: 4 }}
             colon={false}
           >
             {this.getValidPeriodInput()}
-          </FormItem>
+          </FormItem> */}
           <Tabs
             animated={false}
             tabBarGutter={5}

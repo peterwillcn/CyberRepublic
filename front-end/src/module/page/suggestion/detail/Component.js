@@ -634,7 +634,7 @@ export default class extends StandardPage {
     return (
       !oldData && (
         <div>
-          {cancelButton}
+          {/* {cancelButton} */}
           {editButton}
           {isSignable && (
             <SignSuggestionButton
