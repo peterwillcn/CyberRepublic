@@ -2431,19 +2431,21 @@ export default class extends Base {
       'closeProposalNum',
       'validPeriod'
     ]
+    const user = _.get(this.currentUser, '_id')
     if (param.type === 'byNumber') {
       const suggestion = await this.model.getDBInstance().find(
         {
-          displayId: param.id
+          displayId: param.id,
+          old: { $exists: false }
         },
         fields
       )
       return suggestion
     }
     if (param.type === 'lastSuggestion') {
-      const user = _.get(this.currentUser, '_id')
       const suggestionList = await this.model.getDBInstance().find({
-        createdBy: user
+        createdBy: user,
+        old: { $exists: false }
       }, fields).sort({$natural: -1}).limit(5)
       return suggestionList
     }
