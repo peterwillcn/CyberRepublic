@@ -3,7 +3,18 @@ import PropTypes from 'prop-types'
 import styled from 'styled-components'
 import { Button, Modal, Select, Icon, Radio, Row, Col, Form } from 'antd'
 import I18N from '@/I18N'
-
+import { SUGGESTION_TYPE } from '@/constant'
+import _ from 'lodash'
+const {
+  NEW_MOTION,
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
+const suggestion_type = [NEW_MOTION,
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL]
 class DuplicateModal extends Component {
   constructor(props) {
     super(props)
@@ -130,8 +141,8 @@ class DuplicateModal extends Component {
         changedata = _.omit(radio, 'relevance')
       }
     }
-    this.props.changeData(changedata)
-      this.hideModal()
+    this.props.changeData({...changedata,  type: _.includes(suggestion_type, radio.type) ? radio.type : '1'})
+    this.hideModal()
   }
 
   render() {
