@@ -26,9 +26,9 @@ class RelevanceForm extends BaseComponent {
     const { form, onSubmit } = this.props
     form.validateFields((err, values) => {
       if (!err) {
-        const proposal = _.find(this.state.data, { "proposal": values.proposal }) ||
+        const data = _.find(this.state.data, { "proposal": values.proposal }) ||
           this.state.item
-        onSubmit({...values,title: proposal.title})
+        onSubmit({...values,title: data.title, proposal: data.proposal})
       }
     })
   }
@@ -56,7 +56,7 @@ class RelevanceForm extends BaseComponent {
   }
 
   handleChange = value => {
-    this.setState({ value });
+    this.setState({ value })
   }
 
   ord_render() {

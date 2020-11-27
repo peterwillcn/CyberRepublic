@@ -110,26 +110,26 @@ class PaymentList extends Component {
       status === ACTIVE
     ) {
       return (
-        <div
+        <StylePaymentActionBtn action="true"
           className="action"
           onClick={() => {
             this.showModal(item)
           }}
         >
           {I18N.get('milestone.request')}
-        </div>
+        </StylePaymentActionBtn>
       )
     }
     if (this.isOwner() && item.status === REJECTED && status === ACTIVE) {
       return (
-        <div
+        <StylePaymentActionBtn action="true"
           className="action"
           onClick={() => {
             this.showModal(item)
           }}
         >
           {I18N.get('milestone.rerequest')}
-        </div>
+        </StylePaymentActionBtn>
       )
     }
     if (
@@ -139,22 +139,22 @@ class PaymentList extends Component {
     ) {
       return (
         <div className="review">
-          <div
+          <StylePaymentActionBtn action="true" approve="true"
             className="action approve"
             onClick={() => {
               this.showModal(item, 'APPROVED')
             }}
           >
             {I18N.get('milestone.approve')}
-          </div>
-          <div
+          </StylePaymentActionBtn>
+          <StylePaymentActionBtn
             className="action reject"
             onClick={() => {
               this.showModal(item, 'REJECTED')
             }}
           >
             {I18N.get('milestone.reject')}
-          </div>
+          </StylePaymentActionBtn>
         </div>
       )
     }
@@ -164,12 +164,12 @@ class PaymentList extends Component {
       Number(item.amount) !== 0
     ) {
       return (
-        <div
+        <StylePaymentActionBtn action="true"
           className="action"
           onClick={() => this.showWithdrawalModal(item.milestoneKey)}
         >
           {I18N.get('milestone.withdraw')}
-        </div>
+        </StylePaymentActionBtn>
       )
     }
   }
@@ -223,6 +223,49 @@ class PaymentList extends Component {
     )
   }
 
+  renderNewPaymentItem(item, index) {
+    const { list } = this.props
+    const visible = this.isVisible()
+    const isOld = list && list.find((item) => item.reasons)
+    return (
+      <StylePayment key={index}>
+        <StylePaymentContent style={{ width: '80%' }}>
+          <StylePaymentHead>
+            <StylePaymentIndex>{index + 1}</StylePaymentIndex>
+            <StylePaymentAmmount>{item.amount + ' ELA'}</StylePaymentAmmount>
+            <StylePaymentType>{item.type ? I18N.get(`suggestion.budget.${item.type}`) : ''}</StylePaymentType>
+            {visible && (
+              <StylePaymentStatus>{item.status && I18N.get(`milestone.${item.status}`)}</StylePaymentStatus>
+            )}
+          </StylePaymentHead>
+          <div>
+            <StylePaymentContentItem goal="true">
+              <div >{I18N.get('suggestion.budget.goal') + ': '}</div>
+              <div>{this.renderGoal(item)}</div>
+            </StylePaymentContentItem>
+            <StylePaymentContentItem>
+              <div>{I18N.get('suggestion.budget.criteria') + ':'}</div>
+              <ShowLongText
+                text={item.criteria}
+                id={'criteria' + item.milestoneKey}
+              />
+            </StylePaymentContentItem>
+            {isOld ? (
+              <StylePaymentContentItem>
+                <div>{I18N.get('suggestion.budget.reasons') + ':'}</div>
+                <ShowLongText
+                  text={item.reasons}
+                  id={'reasons' + item.milestoneKey}
+                />
+              </StylePaymentContentItem>
+            ) : null}
+          </div>
+        </StylePaymentContent>
+        <StylePaymentAction>{visible && <div>{this.renderActions(item)}</div>}</StylePaymentAction>
+      </StylePayment>
+    )
+  }
+
   getApplication() {
     const { withdrawalHistory } = this.props
     const { stage } = this.state
@@ -251,65 +294,122 @@ class PaymentList extends Component {
     } = this.state
     const isOld = list && list.find((item) => item.reasons)
     return (
-      <StyledTable>
-        <StyledHead>
-          <StyledRow>
-            <th style={{ width: 100 }}>
-              {I18N.get('suggestion.budget.payment')}#
-            </th>
-            <th>{I18N.get('suggestion.budget.type')}</th>
-            <th>
-              {I18N.get('suggestion.budget.amount')}
-              (ELA)
-            </th>
-            {isOld ? (
-              <th style={{ width: '20%' }}>
-                {I18N.get('suggestion.budget.reasons')}
-              </th>
-            ) : null}
-            <th>{I18N.get('suggestion.budget.goal')}</th>
-            <th style={{ width: '18%' }}>
-              {I18N.get('suggestion.budget.criteria')}
-            </th>
-            {visible && <th>{I18N.get('milestone.status')}</th>}
-            {visible && <th>{I18N.get('suggestion.budget.action')}</th>}
-          </StyledRow>
-        </StyledHead>
-        <tbody>
-          {list &&
-            list.map((item, index) => this.renderPaymentItem(item, index))}
-        </tbody>
-
-        <Signature
-          toggle={toggle}
-          stage={stage}
-          isCompletion={isCompletion}
-          proposalId={proposalId}
-          applyPayment={actions.applyPayment}
-          getPaymentSignature={actions.getPaymentSignature}
-          hideModal={this.hideModal}
-          isSecretary={user.is_secretary}
-          opinion={opinion}
-          reviewApplication={actions.reviewApplication}
-          application={this.getApplication()}
-        />
-
-        {withdrawal ? (
-          <WithdrawMoney
-            withdrawal={withdrawal}
+      <div>
+        {list &&
+          list.map((item, index) => this.renderNewPaymentItem(item, index))}
+        <StyledTable>
+          <Signature
+            toggle={toggle}
+            stage={stage}
+            isCompletion={isCompletion}
             proposalId={proposalId}
-            withdraw={actions.withdraw}
-            stage={withdrawalStage}
-            hideModal={this.hideWithdrawalModal}
+            applyPayment={actions.applyPayment}
+            getPaymentSignature={actions.getPaymentSignature}
+            hideModal={this.hideModal}
+            isSecretary={user.is_secretary}
+            opinion={opinion}
+            reviewApplication={actions.reviewApplication}
+            application={this.getApplication()}
           />
-        ) : null}
-      </StyledTable>
+
+          {withdrawal ? (
+            <WithdrawMoney
+              withdrawal={withdrawal}
+              proposalId={proposalId}
+              withdraw={actions.withdraw}
+              stage={withdrawalStage}
+              hideModal={this.hideWithdrawalModal}
+            />
+          ) : null}
+        </StyledTable>
+      </div>
     )
   }
 }
 
 export default PaymentList
 
+const StylePayment = styled.div`
+  display: flex;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #e8e8e8;
+`
+const StylePaymentContent = styled.div`
+  width: 80%;
+  margin-bottom: 20px;
+`
+const StylePaymentContentItem= styled.div`
+  ${props => props.goal ? 'display: flex': ''}
+  margin-bottom: 20px;
+`
+const StylePaymentAction = styled.div`
+  width: 20%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+const StylePaymentActionBtn = styled.div`
+  width: 72px;
+  cursor:pointer;
+  border: 1px solid ${props => props.action ? '#43AF92': '#ED6060'};
+  color: ${props => props.action ? '#43AF92': '#ED6060'};
+  margin-bottom: ${props => props.approve ? '16px': '0'};
+  box-sizing: border-box;
+  border-radius: 24px;
+  font-size: 12px;
+  text-align: center;
+  height: 24px;
+  line-height: 20px;
+`
+const StylePaymentHead = styled.div`
+  display: flex;
+  align-items: center;
+  height: 32px;
+  margin-bottom: 20px
+`
+const StylePaymentIndex = styled.div`
+  width: 32px;
+  height: 32px;
+  margin-right: 24px;
+  background: #1DE9B6;
+  border-radius: 4px;
+  text-align: center;
+  display: flex;
+  color: #FFF;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+`
+const StylePaymentAmmount = styled.div`
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  font-size: 22px;
+  margin-right: 40px;
+`
+const StylePaymentType = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  color: #008D85;
+  font-size: 12px;
+  height: 25px;
+  background-color: #e4f8f3;
+  padding: 0px 10px 2px 10px;
+`
+const StylePaymentStatus = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 20px;
+  color: #A49939;
+  font-size: 12px;
+  height: 25px;
+  background-color: #F9F7CF;
+  padding: 0px 10px 2px 10px;
+`
 const StyledTable = styled.table`
   margin-top: 16px;
   width: 100%;

@@ -3745,6 +3745,7 @@ a.ant-btn-sm {
   margin-left: -132px;
   text-align: center;
   height: 34px;
+  padding:0 70px 0 0;
   line-height: 34px;
   color: rgba(0, 0, 0, 0.45);
 }

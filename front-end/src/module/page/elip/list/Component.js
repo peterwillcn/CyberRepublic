@@ -61,6 +61,10 @@ export default class extends BaseComponent {
     this.refetch()
   }
 
+  componentDidUpdate() {
+    window.scrollTo(0, 0)
+  }
+
   getQuery = () => {
     const sortBy = this.props.sortBy || DEFAULT_SORT
     const { filter, creationDate, author, type } = this.state

@@ -1068,6 +1068,20 @@ export default class extends Base {
     res.voteHistory = _.sortBy(voteHistory, function (item) {
       return -item.reasonCreatedAt
     })
+    if (!_.isEmpty(res.relevance)) {
+      let relevanceStr = ''
+      _.forEach(res.relevance[0] && res.relevance[0]._doc, (v, k) => {
+        if (k === '0') {
+          _.forEach(res.relevance[0]._doc, (v) => {
+            relevanceStr += v
+          })
+        }
+        return
+      })
+      if (!_.isEmpty(relevanceStr)) {
+        res.relevance = relevanceStr
+      }
+    }
     if (res.budgetAmount) {
       const doc = JSON.parse(JSON.stringify(res))
       // deal with 7e-08
@@ -2378,13 +2392,9 @@ export default class extends Base {
   public async getProposalTitle(param: any) {
     const db_cvote = this.getDBModel('CVote')
     if (_.isEmpty(param)) return
-    let value = ''
-    _.forEach(param, (v: any) => {
-      value += v
-    })
     const proposalList = await db_cvote.getDBInstance().find(
       {
-        title: { $regex: value, $options: 'i' }
+        title: { $regex: param.title, $options: 'i' }
       },
       ['_id', 'title']
     )

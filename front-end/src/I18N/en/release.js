@@ -14,5 +14,7 @@ export default {
   },
   modal: {
     delete: 'Are you sure to delete this Release?',
+    okText: 'Yes',
+    cancelText: 'Cancel'
   },
 }

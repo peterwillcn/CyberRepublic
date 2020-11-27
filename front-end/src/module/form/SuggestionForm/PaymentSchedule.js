@@ -18,7 +18,22 @@ class PaymentSchedule extends Component {
       total: _.get(value, 'budgetAmount') || 0,
       address: (value && value.elaAddress) || '',
       paymentItems: (value && value.paymentItems) || [],
-      budgetIntro: (value && value.budgetIntro) || ''
+      budgetIntro: (value && value.budgetIntro) || '',
+      changeNum: this.props.controVar
+    }
+  }
+
+  componentDidUpdate() {
+    const {initialValue: value, controVar} = this.props
+    const {changeNum} = this.state
+    if (changeNum !== controVar){
+      this.setState({
+        total: _.get(value, 'budgetAmount') || 0,
+        address: (value && value.elaAddress) || '',
+        paymentItems: (value && value.paymentItems) || [],
+        budgetIntro: (value && value.budgetIntro) || '',
+        changeNum: controVar
+      })
     }
   }
 

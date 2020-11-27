@@ -97,7 +97,9 @@ export default class extends BaseComponent {
       type,
       endsDate,
       showOldData: false,
-      fetching: false
+      fetching: false,
+      isChangeNext: true,
+      initNum: 0
     }
 
     this.authorSearch = _.debounce(this.authorSearch.bind(this), 800)
@@ -105,7 +107,31 @@ export default class extends BaseComponent {
   }
 
   async componentDidMount() {
+    const initPage = localStorage.getItem('proposal-page')
+    this.setState({isChangeNext:false})
+    if (!initPage) {
+      localStorage.setItem('proposal-page', 1)
+    }
+    if (this.props.location.query) {
+      this.viewOldData()
+    }
+    this.loadPage(localStorage.getItem('proposal-page') || 1, 10)
     this.refetch()
+  }
+
+  componentDidUpdate() {
+    const {isChangeNext, initNum} = this.state
+    if (isChangeNext || initNum == 0) {
+      if (initNum ==0) {
+        this.setState({initNum: initNum+1})
+      }
+      window.scrollTo(0, 0)
+    }
+    if (this.props.location.sate === 'return') {
+      window.scrollTo(0,localStorage.getItem('proposal-scrollY') || 0)
+    } else {
+      window.scrollTo(0, 0)
+    }
   }
 
   handleFilter = () => {
@@ -184,10 +210,14 @@ export default class extends BaseComponent {
   }
 
   viewOldData = async () => {
+    let page
+    if (this.props.location.query) {
+      page = localStorage.getItem('proposal-page')
+    }
     await this.setState((state) => ({
       showOldData: !state.showOldData,
       // go back to page 1 on toggle
-      page: 1,
+      page,
       results: 10,
       total: 0
     }))
@@ -455,6 +485,10 @@ export default class extends BaseComponent {
   }
 
   onPageChange = (page, pageSize) => {
+    localStorage.setItem('proposal-page', page)
+    this.setState({
+      isChangeNext: true
+    })
     this.loadPage(page, pageSize)
   }
 
@@ -543,7 +577,7 @@ export default class extends BaseComponent {
     this.ord_loading(true)
     const { listData, canManage, getCurrentheight, getAllAuthor } = this.props
     const param = this.getQuery()
-    const page = 1
+    const page = localStorage.getItem('proposal-page') || 1
     try {
       const { list: allListData, total: allListTotal } = await listData(
         param,
@@ -625,6 +659,10 @@ export default class extends BaseComponent {
   }
 
   toDetailPage(id) {
+    this.setState({
+      isChangeNext: false
+    })
+    localStorage.setItem('proposal-scrollY',window.scrollY)
     // this.props.history.push(`/proposals/${id}`)
     const w = window.open('about:blank')
     w.location.href = `/proposals/${id}`

@@ -15,9 +15,19 @@ class Component extends BaseComponent {
     super(props)
     this.state = {
       value: this.props.content ? this.props.content : '',
-      show: false
+      propsContent: this.props.content ? this.props.content : '',
+      show: false,
+      changeNum: this.props.controVar
     }
     this.editor = null
+  }
+
+  componentDidUpdate() {
+    const { controVar, content } = this.props
+    const { changeNum } = this.state
+    if (changeNum !== controVar) {
+      this.setState({ value: content, changeNum: controVar })
+    }
   }
 
   insertImage = (base64) => {
@@ -59,7 +69,7 @@ class Component extends BaseComponent {
               mode: 'gfm',
               theme: 'base16-light',
               lineWrapping: true,
-              autofocus: autofocus === false ? autofocus : true
+              autofocus: true
             }}
             onBeforeChange={(editor, data, value) => {
               this.setState({ value })

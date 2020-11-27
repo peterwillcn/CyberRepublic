@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Radio, InputNumber, Input, Checkbox, Select } from 'antd'
+import { Radio, Input, Checkbox, Select } from 'antd'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import { SUGGESTION_TYPE } from '@/constant'
+import _ from 'lodash'
 const { Option } = Select
 const {
   NEW_MOTION,
@@ -24,7 +25,10 @@ class SelectSuggType extends Component {
       changeOwner: value && value.newOwnerDID ? true : false,
       changeAddress: value && value.newAddress ? true : false,
       newAddress: value && value.newAddress,
-      proposals: []
+      proposals: [],
+      isChange: false,
+      changeType: (value && value.type) || '1',
+      controVar: this.props.controVar
     }
   }
 
@@ -35,6 +39,80 @@ class SelectSuggType extends Component {
       text: `#${el.vid} ${el.title}`
     }))
     this.setState({ proposals })
+  }
+
+  componentDidUpdate() {
+    const {initialValue:value, controVar: preVar} = this.props
+    const { type,
+      newSecretaryDID,
+      termination,
+      proposalNum,
+      newAddress,
+      newOwnerDID,
+      controVar } = this.state
+    if (preVar !== controVar) {
+
+      if (value.type === CHANGE_SECRETARY) {
+        const data = { 
+          type,
+          newSecretaryDID:  newSecretaryDID == '' ? undefined : newSecretaryDID
+        }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+
+      if (value.type === TERMINATE_PROPOSAL) {
+        const data = { type, termination }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+
+      if (value.type === CHANGE_PROPOSAL) {
+        const data = {
+          type,
+          proposalNum,
+          newAddress,
+          newOwnerDID: newOwnerDID == '' ? undefined : newOwnerDID
+        }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+
+      if (value.type === NEW_MOTION) {
+        const data = {
+          type
+        }
+        if (!_.isEqual(value, data)) {
+          this.dupOperating(value, preVar)
+        }
+      }
+    }
+  }
+
+  dupOperating(value, preVar) {
+    this.setState({
+      ...value,
+      controVar: preVar
+    }, () => {
+      this.props.changeType(value.type)
+      if (value.type === CHANGE_PROPOSAL) {
+        this.changeProposal(value)
+      }
+    })
+  }
+
+  changeProposal(value) {
+    if (value) {
+      if (value.newAddress) {
+        this.handleCheckboxChange({target: {checked: true}}, 'changeAddress')
+      }
+      if (value.newOwnerDID) {
+        this.handleCheckboxChange({target: {checked: true}}, 'changeOwner')
+      }
+    }
   }
 
   changeValue() {
@@ -57,23 +135,31 @@ class SelectSuggType extends Component {
     let data = { type }
     switch (type) {
       case CHANGE_PROPOSAL:
+        if (proposalNumErr) {
+          data.hasErr = true
+        }
         data.proposalNum = proposalNum
         data.changeOwner = changeOwner
         data.changeAddress = changeAddress
         if (changeOwner && !changeAddress) {
+          if (newOwnerDIDErr) {
+            data.hasErr = true
+          }
           data.newOwnerDID = newOwnerDID
         }
         if (changeAddress && !changeOwner) {
+          if (newAddressErr) {
+            data.hasErr = true
+          }
           data.newAddress = newAddress
         }
         if (changeAddress && changeOwner) {
+          if (newOwnerDIDErr || newAddressErr) {
+            data.hasErr = true
+          }
           data.newOwnerDID = newOwnerDID
           data.newAddress = newAddress
         }
-        if (proposalNumErr || newOwnerDIDErr || newAddressErr) {
-          data.hasErr = true
-        }
-        break
       case CHANGE_SECRETARY:
         data.newSecretaryDID = newSecretaryDID
         if (newSecretaryDIDErr) {
@@ -112,6 +198,7 @@ class SelectSuggType extends Component {
     const error = `${field}Err`
     if (field === 'type') {
       this.props.changeType(e.target.value)
+      this.setState({ isChange: false })
     }
     this.setState({ [field]: e.target.value, [error]: !e.target.value }, () => {
       this.changeValue()
@@ -180,6 +267,7 @@ class SelectSuggType extends Component {
               <Select
                 onChange={this.handleNumChange}
                 defaultValue={proposalNum}
+                className={proposalNumErr ? null : 'no-error'}
               >
                 {this.state.proposals.map((el) => (
                   <Option value={el.value} key={el.value}>
@@ -193,24 +281,18 @@ class SelectSuggType extends Component {
             </div>
             <Checkbox
               checked={changeOwner}
-              onChange={(e) => {
-                this.handleCheckboxChange(e, 'changeOwner')
-                this.props.changeOwnerOrAdd(!changeOwner, 'changeOwner')
-              }}
+              onChange={(e) => this.handleCheckboxChange(e, 'changeOwner')}
             >
               {I18N.get('suggestion.form.type.changeProposalOwner')}
             </Checkbox>
             <Checkbox
               checked={changeAddress}
-              onChange={(e) => {
-                this.handleCheckboxChange(e, 'changeAddress')
-                this.props.changeOwnerOrAdd(!changeAddress, 'changeAddress')
-            }}
+              onChange={(e) => this.handleCheckboxChange(e, 'changeAddress')}
             >
               {I18N.get('suggestion.form.type.changeProposalAddress')}
             </Checkbox>
             {changeOwner && (
-              <div className="sub">
+              <div className={`sub ${newOwnerDIDErr ? null : 'no-error'}`}>
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewOwner')}
                 </Label>
@@ -225,7 +307,7 @@ class SelectSuggType extends Component {
               </div>
             )}
             {changeAddress && (
-              <div className="sub">
+              <div className={`sub ${newAddressErr ? null : 'no-error'}`}>
                 <Label>
                   {I18N.get('suggestion.form.type.proposalNewAddress')}
                 </Label>
@@ -312,9 +394,30 @@ const Section = styled.div`
   max-width: 520px;
   .number {
     margin-bottom: 16px;
+    .no-error .ant-select-selection {
+      border-color: #d9d9d9;
+      &:active {
+        border-color: #d9d9d9;
+      }
+      &:focus {
+        box-shadow: unset;
+      }
+    }
+    .no-error .ant-select-arrow {
+      color: #d9d9d9;
+    }
   }
   .sub {
     margin-top: 16px;
+  }
+  .sub.no-error .ant-input {
+    border-color: #d9d9d9;
+    &:not([disabled]):hover {
+      border-color: #d9d9d9;
+    }
+    &:focus {
+      box-shadow: unset;
+    }
   }
 `
 const Error = styled.div`

@@ -257,7 +257,7 @@ export default class extends BaseService {
     const rs = await api_request({
       path: `/api/cvote/getProposalTitle`,
       method: 'get',
-      data
+      data: {title: data}
     })
     return rs
   }

@@ -81,6 +81,9 @@ export default createContainer(
       },
       async getSecretarySignatureUrl(id) {
         return service.getSecretarySignatureUrl(id)
+      },
+      async cancel(id) {
+        return service.cancel(id)
       }
     }
   }
