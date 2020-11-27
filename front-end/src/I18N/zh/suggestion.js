@@ -57,7 +57,8 @@ export default {
     associateDid: '绑定 DID',
     viewOldData: '查看旧数据',
     viewNewData: '查看新数据',
-    copyHash: '复制'
+    copyHash: '复制',
+    cancel: '撤销'
   },
   status: {
     posted: '发布',
@@ -66,9 +67,11 @@ export default {
     referred: '相关提案',
     [SUGGESTION_STATUS.ACTIVE]: '活跃',
     [SUGGESTION_STATUS.ABUSED]: '已举报',
-    [SUGGESTION_STATUS.ARCHIVED]: '已归档'
+    [SUGGESTION_STATUS.ARCHIVED]: '已归档',
+    [SUGGESTION_STATUS.CANCELLED]: '已撤销'
   },
   form: {
+    unit: '个月',
     search: '搜索建议',
     button: {
       continue: '继续',
@@ -82,7 +85,8 @@ export default {
       showVersion: '显示历史版本'
     },
     fields: {
-      title: '标题'
+      title: '标题',
+      validPeriod: '有效期'
     },
     type: {
       [SUGGESTION_TYPE.NEW_MOTION]: '新动议',
@@ -135,7 +139,6 @@ export default {
       previousMilestoneDate: '日期必须晚于前一个里程碑',
       requirePayment: '在完成提案之前，需要填写项目的支付项。',
       elaAddress: 'ELA 地址无效',
-      elaAddressNull: '请填写新 ELA 地址',
       schedule: '支付计划为空',
       payment: '支付项和里程碑必须保持一致，必须有结项款，至多一项预付款',
       advance: '预付款只能用于项目第一阶段',
@@ -185,7 +188,9 @@ export default {
     councilQRCode: `扫描上面二维码把建议转成提案，提案上链后请到网站提案列表页面查看`,
     toChain: '正在上链中',
     signQRCode: '扫描上面二维码签名建议',
-    associateDidFirst: '请先绑定您的 DID'
+    associateDidFirst: '请先绑定您的 DID',
+    cancelled: '撤销建议成功',
+    notCancelled: '撤销建议失败'
   },
   header: {
     suggestion: '建议',

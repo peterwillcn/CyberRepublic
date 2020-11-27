@@ -57,7 +57,8 @@ export default {
     associateDid: 'Associate DID',
     viewOldData: 'View old data',
     viewNewData: 'View new data',
-    copyHash: 'Copy'
+    copyHash: 'Copy',
+    cancel: 'Cancel'
   },
   status: {
     posted: 'Posted',
@@ -66,9 +67,11 @@ export default {
     referred: 'Referred in Proposal',
     [SUGGESTION_STATUS.ACTIVE]: 'Active',
     [SUGGESTION_STATUS.ABUSED]: 'Abused',
-    [SUGGESTION_STATUS.ARCHIVED]: 'Archived'
+    [SUGGESTION_STATUS.ARCHIVED]: 'Archived',
+    [SUGGESTION_STATUS.CANCELLED]: 'Cancelled'
   },
   form: {
+    unit: ' months',
     search: 'Search Suggestions',
     button: {
       continue: 'Continue',
@@ -82,7 +85,8 @@ export default {
       showVersion: 'Show version history'
     },
     fields: {
-      title: 'Title'
+      title: 'Title',
+      validPeriod: 'Valid period'
     },
     type: {
       [SUGGESTION_TYPE.NEW_MOTION]: 'New Motion',
@@ -135,7 +139,6 @@ export default {
       previousMilestoneDate: `The date must be later than the previous milestone.`,
       requirePayment: `Project Completion Payment is required before completing a proposal.`,
       elaAddress: 'Invalid ELA address',
-      elaAddressNull: 'The new ELA address is emtpy.',
       schedule: 'Payment schedule is empty',
       payment: `Project Completion Payment is required, at most one Project Initiation Payment, and each payment must match one milestone.`,
       advance: 'Project initiation payment only apply to the first milestone.',
@@ -184,7 +187,9 @@ export default {
     councilQRCode: `Scan the QR code above to make this suggestion into proposal. Then go to the proposal list page to view the proposal when it is saved on the chain.`,
     toChain: 'Saving onto blockchain',
     signQRCode: 'Scan the QR code above to sign your suggestion.',
-    associateDidFirst: 'Please associate your DID first.'
+    associateDidFirst: 'Please associate your DID first.',
+    cancelled: 'Suggestion cancelled successfully.',
+    notCancelled: 'Failed to cancel the suggestion.'
   },
   header: {
     suggestion: 'suggestion',

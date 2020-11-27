@@ -133,8 +133,8 @@ class PaymentList extends Component {
       )
     }
     if (
-      this.isVisible() &&
-      item.status === WAITING_FOR_REQUEST &&
+      item.status === WAITING_FOR_APPROVAL &&
+      user.is_secretary &&
       status === ACTIVE
     ) {
       return (

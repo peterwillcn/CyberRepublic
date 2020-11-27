@@ -186,7 +186,7 @@ export default class extends BaseComponent {
       'targetProposalNum',
       'newOwnerDID',
       'newAddress',
-      'closeProposalNum']
+      'closeProposalNum', 'validPeriod']
     const dataTemp = {}
     _.each(dataKey, (item) => {
       if (data[item] !== undefined) {
@@ -199,7 +199,7 @@ export default class extends BaseComponent {
     if (!_.isEmpty(dataTemp)) {
       localStorage.removeItem("draft-suggestion")
       localStorage.setItem("draft-suggestion", JSON.stringify(dataTemp))
-      window.location.href = "http://localhost:3001/suggestion/create"
+      window.location.href = "/suggestion/create"
     }
   }
 

@@ -40,7 +40,8 @@ const BASE_FIELDS = [
   'newOwnerDID',
   'newSecretaryDID',
   'closeProposalNum',
-  'newAddress'
+  'newAddress',
+  'validPeriod'
 ]
 
 interface BudgetItem {
@@ -58,6 +59,31 @@ export default class extends Base {
   protected init() {
     this.model = this.getDBModel('Suggestion')
     this.draftModel = this.getDBModel('SuggestionDraft')
+  }
+
+  public async cancel(id: string) {
+    try {
+      const suggestion = await this.model.findById(id)
+      if (!suggestion) {
+        return { success: false, message: 'No this suggestion' }
+      }
+      // check if current user is the owner of this suggestion
+      if (!suggestion.createdBy.equals(this.currentUser._id)) {
+        return { success: false, message: 'You are not the owner' }
+      }
+      if (_.get(suggestion, 'proposalHash')) {
+        return {
+          success: false,
+          message: `You can not cancel this suggestion because it has been made into a proposal`
+        }
+      }
+      suggestion.status = constant.SUGGESTION_STATUS.CANCELLED
+      await suggestion.save()
+      return { success: true, status: constant.SUGGESTION_STATUS.CANCELLED }
+    } catch (err) {
+      console.log('cancel suggestion error...', err)
+      logger.error(err)
+    }
   }
 
   private async getTypeDoc(param: any, doc: any, currDoc?: any) {
@@ -1000,13 +1026,13 @@ export default class extends Base {
         for (const thread of comment) {
           await model.getDBInstance().populate(thread, {
             path: 'createdBy',
-            select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+            select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID}`
           })
           if (thread.childComment.length > 0) {
             for (const child of thread.childComment) {
               await model.getDBInstance().populate(child, {
                 path: 'createdBy',
-                select: `${constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID} profile.avatar`
+                select: `profile.avatar profile.firstName profile.lastName`
               })
             }
           }
@@ -2034,12 +2060,15 @@ export default class extends Base {
 
   public async checkSignature(param: any) {
     const { id, type } = param
-    const suggestion = await this.show({ id })
+    const suggestion = await this.model.findById(id)
     if (suggestion) {
       if (type && type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
         const signature = _.get(suggestion, 'newOwnerSignature.data')
         if (signature) {
-          return { success: true, data: suggestion }
+          return {
+            success: true,
+            data: { newOwnerSignature: suggestion.newOwnerSignature }
+          }
         }
         const message = _.get(suggestion, 'newOwnerSignature.message')
         if (message) {
@@ -2054,7 +2083,10 @@ export default class extends Base {
       if (type && type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
         const signature = _.get(suggestion, 'newSecretarySignature.data')
         if (signature) {
-          return { success: true, data: suggestion }
+          return {
+            success: true,
+            data: { newSecretarySignature: suggestion.newSecretarySignature }
+          }
         }
         const message = _.get(suggestion, 'newSecretarySignature.message')
         if (message) {
@@ -2068,7 +2100,7 @@ export default class extends Base {
       }
       const signature = _.get(suggestion, 'signature.data')
       if (signature) {
-        return { success: true, data: suggestion }
+        return { success: true, data: { signature: suggestion.signature } }
       }
       const message = _.get(suggestion, 'signature.message')
       if (message) {
@@ -2375,4 +2407,46 @@ export default class extends Base {
       }
     }
   }
+
+  public async getSuggestionByNumber(param: any) {
+    const fields = [
+      '_id',
+      'title',
+      'type',
+      'teamInfo',
+      'relevance',
+      'planIntro',
+      'plan',
+      'abstract',
+      'budget',
+      'budgetAmount',
+      'budgetIntro',
+      'elaAddress',
+      'goal',
+      'motivation',
+      'newSecretaryDID',
+      'targetProposalNum',
+      'newOwnerDID',
+      'newAddress',
+      'closeProposalNum',
+      'validPeriod'
+    ]
+    if (param.type === 'byNumber') {
+      const suggestion = await this.model.getDBInstance().find(
+        {
+          displayId: param.id
+        },
+        fields
+      )
+      return suggestion
+    }
+    if (param.type === 'lastSuggestion') {
+      const user = _.get(this.currentUser, '_id')
+      const suggestionList = await this.model.getDBInstance().find({
+        createdBy: user
+      }, fields).sort({$natural: -1}).limit(5)
+      return suggestionList
+    }
+  }
+
 }

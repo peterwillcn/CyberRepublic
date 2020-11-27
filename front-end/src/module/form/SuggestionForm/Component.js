@@ -1,5 +1,5 @@
 import React from 'react'
-import { Form, Input, Button, Row, Tabs, message } from 'antd'
+import { Form, Input, Button, Row, Tabs, message, Select } from 'antd'
 import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import I18N from '@/I18N'
@@ -13,9 +13,11 @@ import { Container, TabPaneInner, Note, TabText, CirContainer } from './style'
 import SelectSuggType from './SelectSuggType'
 import ImplementationAndBudget from './ImplementationAndBudget'
 import TeamInfoSection from './TeamInfoSection'
+import DuplicateModal from '../DuplicateModalForm/Container'
 
 const FormItem = Form.Item
 const { TabPane } = Tabs
+const { Option } = Select
 
 const WORD_LIMIT = ABSTRACT_MAX_WORDS
 
@@ -31,8 +33,6 @@ class C extends BaseComponent {
   constructor(props) {
     super(props)
     const type = _.get(props, 'initialValues.type')
-    const newAddress = _.get(props, 'initialValues.newAddress')
-    const newOwnerDID = _.get(props, 'initialValues.newOwnerDID')
     const isNewType = _.includes(
       [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
       type
@@ -44,8 +44,8 @@ class C extends BaseComponent {
       errorKeys: {},
       type: type ? type : NEW_MOTION,
       tabs: !isNewType ? TAB_KEYS : NEW_TAB_KEYS,
-      changeAddress: newAddress ? true : false,
-      changeOwner: newOwnerDID ? true : false
+      dupData: {},
+      controVar: 1
     }
     const sugg = props.initialValues
     if (
@@ -95,12 +95,12 @@ class C extends BaseComponent {
       const pItems = _.get(values, 'budget.paymentItems')
 
       const initiation =
-        !_.isEmpty(pItems) &&
+        !_.isEmpty(pItems) && pItems instanceof Array  &&
         pItems.filter(
           (item) => item.type === ADVANCE && item.milestoneKey === '0'
         )
       const completion =
-        !_.isEmpty(pItems) &&
+        !_.isEmpty(pItems) && pItems instanceof Array && 
         pItems.filter((item) => {
           return (
             item.type === COMPLETION &&
@@ -108,7 +108,7 @@ class C extends BaseComponent {
           )
         })
       if (
-        !_.isEmpty(pItems) &&
+        !_.isEmpty(pItems) && pItems instanceof Array && 
         (milestone.length !== pItems.length ||
           initiation.length > 1 ||
           completion.length !== 1)
@@ -123,7 +123,7 @@ class C extends BaseComponent {
       const planIntro = _.get(values, 'planIntro')
       // exclude old suggestion data
       if (budget && typeof budget !== 'string') {
-        values.budget = budget.paymentItems
+        values.budget = pItems instanceof Array ? budget.paymentItems : []
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
       }
@@ -156,25 +156,23 @@ class C extends BaseComponent {
 
   formatType = (values, saveDraft) => {
     const type = _.get(values, 'type')
-    const {changeAddress, changeOwner} = this.state
     if (type && typeof type !== 'string') {
       values.type = type.type
       switch (type.type) {
         case CHANGE_PROPOSAL:
-          if (
-            !saveDraft &&
-            (!type.proposalNum || (changeOwner && !type.newOwnerDID) || (changeAddress && !type.newAddress))
-          ) {
-            if (changeOwner && !type.newOwnerDID) {
+          if (!saveDraft) {
+            if (!type.proposalNum || (!type.newAddress && !type.newOwnerDID)) {
+              message.error(I18N.get('suggestion.form.error.changeWhat'))
+              return
+            }
+            if (type.changeAddress && !type.newAddress) {
+              message.error(I18N.get('suggestion.form.error.elaAddress'))
+              return
+            }
+            if (type.changeOwner && !type.newOwnerDID) {
               message.error(I18N.get('suggestion.form.error.newOwner'))
               return
             }
-            if (changeAddress && !type.newAddress) {
-              message.error(I18N.get('suggestion.form.error.elaAddressNull'))
-              return
-            }
-            message.error(I18N.get('suggestion.form.error.changeWhat'))
-            return
           }
           if (type.newAddress) {
             values.newAddress = type.newAddress
@@ -216,7 +214,7 @@ class C extends BaseComponent {
         values.plan[`teamInfo`] = values.teamInfo
       }
       if (budget) {
-        values.budget = budget.paymentItems
+        values.budget = budget.paymentItems instanceof Array ? budget.paymentItems : []
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
         values.budgetIntro = budgetIntro
@@ -259,6 +257,26 @@ class C extends BaseComponent {
       ],
       initialValue: initialValues.title
     })(<Input size="large" type="text" />)
+  }
+
+  getValidPeriodInput() {
+    const { initialValues = {} } = this.props
+    const { getFieldDecorator } = this.props.form
+
+    return getFieldDecorator('validPeriod', {
+      rules: [
+        { required: true, message: I18N.get('suggestion.form.error.required') }
+      ],
+      initialValue: initialValues.validPeriod ? initialValues.validPeriod : 3
+    })(
+      <Select>
+        {[1, 3, 6, 12].map((el) => (
+          <Option value={el} key={el}>
+            {el + I18N.get('suggestion.form.unit')}
+          </Option>
+        ))}
+      </Select>
+    )
   }
 
   onTextareaChange = (activeKey) => {
@@ -336,27 +354,22 @@ class C extends BaseComponent {
       type
     )
     const tabs = !isNewType ? TAB_KEYS : NEW_TAB_KEYS
-    this.setState({ type, tabs, errorKeys: {} })
-  }
-
-  setChangeOnwerOrAddress = (data, type) => {
-    if (type === 'changeOwner') {
-      this.setState({
-        changeOwner: data
-      })
-    } else {
-      this.setState({
-        changeAddress: data
-      })
-    }
+    this.setState({ type, tabs, errorKeys: {}, activeKey: 'type' })
   }
 
   getTextarea(id) {
-    const initialValues = _.isEmpty(this.props.initialValues)
-      ? { type: '1' }
-      : this.props.initialValues
+    const { dupData, controVar } = this.state
+    const { getFieldDecorator, getFieldsValue } = this.props.form
 
-    const { getFieldDecorator } = this.props.form
+    let initialValues
+    if (!_.isEmpty(dupData)) {
+      initialValues = dupData
+    } else {
+      initialValues = _.isEmpty(this.props.initialValues)
+        ? { type: '1' }
+        : this.props.initialValues
+    }
+
     const rules = [
       {
         required: true,
@@ -397,20 +410,13 @@ class C extends BaseComponent {
       })(
         <SelectSuggType
           initialValue={data}
+          controVar={controVar}
           callback={this.onTextareaChange}
           getActiveProposals={this.props.getActiveProposals}
           changeType={this.changeType}
-          changeOwnerOrAdd={this.setChangeOnwerOrAddress}
         />
       )
     }
-
-    // if (id === 'abstract') {
-    //   rules.push({
-    //     message: I18N.get(`suggestion.form.error.limit${WORD_LIMIT}`),
-    //     validator: this.validateAbstract
-    //   })
-    // }
 
     if (
       id === 'planBudget' &&
@@ -429,6 +435,7 @@ class C extends BaseComponent {
         <ImplementationAndBudget
           getFieldDecorator={getFieldDecorator}
           initialValues={initialValues}
+          controVar={controVar}
           budgetValidator={this}
           form={this.props.form}
           callback={this.onTextareaChange}
@@ -449,6 +456,7 @@ class C extends BaseComponent {
       })(
         <TeamInfoSection
           title={I18N.get('suggestion.plan.teamInfo')}
+          controVar={controVar}
           callback={this.onTextareaChange}
           initialValue={teamInfo}
         />
@@ -476,6 +484,7 @@ class C extends BaseComponent {
     })(
       <CodeMirrorEditor
         callback={this.onTextareaChange}
+        controVar={controVar}
         content={initialValues[id]}
         activeKey={id}
         name={id}
@@ -555,9 +564,19 @@ class C extends BaseComponent {
             wrapperCol={{ span: 18 }}
             colon={false}
           >
-            {this.getTitleInput()}
+            <div style={{ display: 'flex' }}>
+              {this.getTitleInput()}
+              <DuplicateModal form={this.props.form} changeData={this.changeData} />
+            </div>
           </FormItem>
-
+          {/* <FormItem
+            label={`${I18N.get('suggestion.form.fields.validPeriod')}*`}
+            labelCol={{ span: 2 }}
+            wrapperCol={{ span: 4 }}
+            colon={false}
+          >
+            {this.getValidPeriodInput()}
+          </FormItem> */}
           <Tabs
             animated={false}
             tabBarGutter={5}
@@ -608,6 +627,14 @@ class C extends BaseComponent {
         </Form>
       </Container>
     )
+  }
+
+  changeData = (data) => {
+    const { controVar } = this.state
+    this.setState({ 
+      dupData: data,
+      controVar: controVar+1
+     })
   }
 
   onTabChange = (activeKey) => {

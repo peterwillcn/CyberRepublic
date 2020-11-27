@@ -304,7 +304,9 @@ const zh = {
   'suggestion.form.fields.timeline': '时间计划',
   'suggestion.form.fields.links': '相关链接',
   'suggestion.form.fields.linksSplit': '相关链接 (逗号分隔)',
-
+  'suggestion.form.fields.duplicate': '快速复制建议',
+  'suggestion.form.fields.duplicate.number': '建议编号',
+  'suggestion.form.fields.duplicate.button': '快速复制',
   // social share
   'socialShare.wechat.desc': '打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮。',
 

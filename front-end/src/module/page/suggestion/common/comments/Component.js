@@ -32,7 +32,7 @@ import {
 import { USER_AVATAR_DEFAULT, LINKIFY_OPTION, SUGGESTION_BUTTON_DEFAULT } from '@/constant'
 import './style.scss'
 
-const {TextArea} = Input
+const { TextArea } = Input
 const FormItem = Form.Item
 
 class C extends BaseComponent {
@@ -54,7 +54,7 @@ class C extends BaseComponent {
 
   async componentDidMount() {
     this.props.listUsers()
-    const {hash} = this.props.location
+    const { hash } = this.props.location
     if (hash && hash === '#comments') {
       document.getElementById('comments').scrollIntoView({
         behavior: 'smooth',
@@ -74,7 +74,7 @@ class C extends BaseComponent {
 
   commentBtnClick(id, user, parentId) {
     this.props.form.resetFields()
-    const {isComment} = this.state
+    const { isComment } = this.state
     if (isComment) {
       this.setState({
         commentId: '',
@@ -82,7 +82,7 @@ class C extends BaseComponent {
         parentId: '',
         isComment: !this.state.isComment
       })
-      return 
+      return
     }
     if (id && user) {
       this.setState({
@@ -107,7 +107,7 @@ class C extends BaseComponent {
           onCancel={this.handleCancelProfilePopup.bind(this)}
           footer={null}
         >
-          { this.state.showUserInfo
+          {this.state.showUserInfo
             && <ProfilePopup showUserInfo={this.state.showUserInfo} />
           }
         </Modal>
@@ -118,7 +118,7 @@ class C extends BaseComponent {
   renderBody() {
     const { curDetail } = this.state
     const comments = curDetail.comments || []
-    
+
     const commentsList = _.map(comments, (item, key) => {
       return this.renderCommentItem(item[0], key, false, null)
     })
@@ -130,20 +130,20 @@ class C extends BaseComponent {
   }
 
   renderCommentItem(item, key, isChild, parentId) {
-    if(!item) return
+    if (!item) return
 
     const { firstName, lastName } = item.createdBy && item.createdBy.profile
 
     return (
       <Comments key={key}>
         <AvatarDiv>
-          <div style={{margin:'0 auto'}}>{this.renderAvatarItem(item.createdBy)}</div>
+          <div style={{ margin: '0 auto' }}>{this.renderAvatarItem(item.createdBy)}</div>
           <UserName>{firstName + " " + lastName}</UserName>
         </AvatarDiv>
         <CommentBody>
           <div>
-            {isChild ? `@${item.commentTo}: ` : ''} 
-            <span style={isChild ? {fontWeight: 300} : {}}>
+            {isChild ? `@${item.commentTo}: ` : ''}
+            <span style={isChild ? { fontWeight: 300 } : {}}>
               {item.comment}
             </span>
           </div>
@@ -152,7 +152,7 @@ class C extends BaseComponent {
               {this.renderTranslationBtn(item.comment)}
               {this.renderCreatedAt(item.createdAt)}
             </CommentsFooterRight>
-            <SubmmitBtn style={isChild ? {} : {paddingRight: 20}}>
+            <SubmmitBtn style={isChild ? {} : { paddingRight: 20 }}>
               <img onClick={() => {
                 this.commentBtnClick(item._id, `${firstName + lastName}`, parentId)
               }} src={`${SUGGESTION_BUTTON_DEFAULT}`} />
@@ -205,8 +205,8 @@ class C extends BaseComponent {
 
   handleViewMore(item) {
     const viewArr = this.state.viewMore
-    if (_.includes(viewArr, item._id)){
-      _.remove(viewArr,(o)=> o === item._id)
+    if (_.includes(viewArr, item._id)) {
+      _.remove(viewArr, (o) => o === item._id)
     } else {
       viewArr.push(item._id)
     }
@@ -227,7 +227,7 @@ class C extends BaseComponent {
           onCancel={this.handleCancelProfilePopup.bind(this)}
           footer={null}
         >
-          { this.state.showUserInfo
+          {this.state.showUserInfo
             && <ProfilePopup showUserInfo={this.state.showUserInfo} />
           }
         </Modal>
@@ -288,7 +288,7 @@ class C extends BaseComponent {
         style={{ width: '100%', height: 100 }}
         defaultSuggestions={allUsers}
         notFoundContent={I18N.get('mentions.notFound')}
-        placeholder={ (commentTo !== null && isComment && `@ ${commentTo} :`) || I18N.get('comments.placeholder')}
+        placeholder={(commentTo !== null && isComment && `@ ${commentTo} :`) || I18N.get('comments.placeholder')}
       />
     )
 
@@ -323,8 +323,8 @@ class C extends BaseComponent {
 
   renderAvatarItem(info) {
     const profile = info && info.profile
-    const { avatar, firstName, lastName} = profile || {}
-    const { avatar:didAvatar} = !_.isEmpty(info.did) && info.did
+    const { avatar, firstName, lastName } = profile || {}
+    const { avatar: didAvatar } = !_.isEmpty(info.did) && info.did
     if (avatar || didAvatar || (!firstName && !lastName)) {
       return (
         <Avatar
@@ -333,7 +333,7 @@ class C extends BaseComponent {
           shape="circle"
           size={64}
           onClick={() => this.linkUserDetail(info)}
-      />
+        />
       )
     }
 
@@ -487,30 +487,32 @@ class C extends BaseComponent {
     )
   }
 
-   handleSubmit = async e => {
+  handleSubmit = async e => {
     e.preventDefault()
     this.setState({
       bool: false
     })
-    if (this.state.bool){
-      const { commentId, commentTo, parentId, isComment } = this.state
-      this.props.form.validateFields( async (err, values) => {
+    if (this.state.bool) {
+      const { commentId, commentTo, parentId } = this.state
+      this.props.form.validateFields(async (err, values) => {
         if (!err) {
-          const {comment} = values
+          const { comment } = values
           const commentPlainText = _.isFunction(comment.getPlainText)
             ? comment.getPlainText()
             : comment
-  
+
           if (_.isEmpty(commentPlainText)) {
             this.props.form.setFields({
               comment: {
                 errors: [new Error(I18N.get('suggestion.vote.error.empty'))],
               },
             })
-  
+            this.setState({
+              bool: true
+            })
             return
           }
-  
+
           if (commentPlainText.length > MAX_LENGTH_COMMENT) {
             this.props.form.setFields({
               comment: {
@@ -518,15 +520,18 @@ class C extends BaseComponent {
                 errors: [new Error(I18N.get('suggestion.vote.error.tooLong'))],
               },
             })
+            this.setState({
+              bool: true
+            })
             return
           }
-  
+
           const commentData = [{
             comment: commentPlainText,
             commentId: parentId ? parentId : commentId,
             commentTo: commentTo
           }]
-  
+
           const rs = await this.props.postComment(this.props.type,
             this.props.reduxType,
             this.props.detailReducer,
@@ -534,8 +539,8 @@ class C extends BaseComponent {
             this.getModelId(),
             commentData,
             values.headline)
-          
-          if(rs.nModified === 1) {
+
+          if (rs.nModified === 1) {
             this.setState({
               curDetail: rs.newDate,
               bool: true
@@ -543,7 +548,7 @@ class C extends BaseComponent {
             })
             message.success(I18N.get('comments.posted.success'))
           }
-  
+
           this.props.form.resetFields()
         }
       })

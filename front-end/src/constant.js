@@ -402,7 +402,12 @@ export const USER_PROFESSION = create([
 ])
 
 // suggestion
-export const SUGGESTION_STATUS = create(['ACTIVE', 'ABUSED', 'ARCHIVED'])
+export const SUGGESTION_STATUS = create([
+  'ACTIVE',
+  'ABUSED',
+  'ARCHIVED',
+  'CANCELLED'
+])
 
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 

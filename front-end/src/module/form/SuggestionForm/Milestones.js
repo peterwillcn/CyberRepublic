@@ -21,7 +21,24 @@ class Milestones extends Component {
         clicked: false,
         clickedSwitch: false
       },
-      toggleCreateForm: false
+      toggleCreateForm: false,
+      value: props.initialValue,
+      changeNum: props.controVar
+    }
+  }
+
+  componentDidUpdate(prePropos) {
+    const {initialValue:init, controVar} = prePropos
+    const { value, changeNum } = this.state
+    if (init !== value && controVar!=changeNum) {
+      this.setState({
+        milestones: init ? init : [],
+        milestonesTrigger: init
+          ? this.milestonesTrigger(init.length)
+          : {},
+        value: init,
+        changeNum: controVar
+      })
     }
   }
 

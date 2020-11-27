@@ -405,7 +405,13 @@ export default class extends BaseService {
       data: { id, type }
     })
     if (rs && rs.success && rs.data) {
-      this.dispatch(this.selfRedux.actions.detail_update(rs.data))
+      const curDetail = _.get(this.store.getState(), 'suggestion.detail')
+      this.dispatch(
+        this.selfRedux.actions.detail_update({
+          ...curDetail,
+          ...rs.data
+        })
+      )
     }
     return rs
   }
@@ -420,7 +426,7 @@ export default class extends BaseService {
     return res
   }
 
-  // signature
+  // new owner
   async getOwnerSignatureUrl(id) {
     const path = `${this.prefixPath}/owner-signature-url`
     const res = await api_request({
@@ -437,6 +443,38 @@ export default class extends BaseService {
       path,
       method: 'post',
       data: { id }
+    })
+    return res
+  }
+
+  async cancel(id) {
+    const path = `${this.prefixPath}/cancel`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    if (res && res.success) {
+      const curDetail = _.get(this.store.getState(), 'suggestion.detail')
+      this.dispatch(
+        this.selfRedux.actions.detail_update({
+          ...curDetail,
+          status: res.status
+        })
+      )
+      message.info(I18N.get('suggestion.msg.cancelled'))
+      return res
+    } else {
+      message.error(I18N.get('suggestion.msg.notCancelled'))
+    }
+  }
+
+  async getSuggestionByNumber(param) {
+    const path = `${this.prefixPath}/get-suggestion-by-number`
+    const res = await api_request({
+      path,
+      method: 'get',
+      data: { ...param }
     })
     return res
   }
