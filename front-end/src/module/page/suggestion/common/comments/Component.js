@@ -132,7 +132,8 @@ class C extends BaseComponent {
   renderCommentItem(item, key, isChild, parentId) {
     if (!item) return
 
-    const { firstName, lastName } = item.createdBy && item.createdBy.profile
+    const firstName = _.get(item.createdBy.profile, 'firstName') || " "
+    const lastName = _.get(item.createdBy.profile, 'lastName') || " "
 
     return (
       <Comments key={key}>
