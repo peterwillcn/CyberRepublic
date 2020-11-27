@@ -108,25 +108,30 @@ class DuplicateModal extends Component {
     const { setFieldsValue } = this.props.form
     const { value, data, radioData } = this.state
     const radio = _.find(radioData, { '_id': value })
+    let changedata
     if (data._id === value) {
 
       setFieldsValue({
         title: data.title,
         validPeriod: data.validPeriod ? data.validPeriod : 3
       })
-
-      this.props.changeData(data)
-      this.hideModal()
+      changedata = data
+      if (!_.get(data.relevance[0], 'title')) {
+        changedata = _.omit(data, 'relevance')
+      }
     }
     if (radio) {
       setFieldsValue({
         title: radio.title,
         validPeriod: radio.validPeriod ? radio.validPeriod : 3
       })
-
-      this.props.changeData(radio)
-      this.hideModal()
+      changedata = radio
+      if (!_.get(radio.relevance[0], 'title')) {
+        changedata = _.omit(radio, 'relevance')
+      }
     }
+    this.props.changeData(changedata)
+      this.hideModal()
   }
 
   render() {
