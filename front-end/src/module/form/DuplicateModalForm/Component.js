@@ -141,7 +141,7 @@ class DuplicateModal extends Component {
         changedata = _.omit(radio, 'relevance')
       }
     }
-    this.props.changeData({...changedata,  type: _.includes(suggestion_type, radio.type) ? radio.type : '1'})
+    this.props.changeData({...changedata,  type: _.includes(suggestion_type, changedata.type) ? changedata.type : '1'})
     this.hideModal()
   }
 
