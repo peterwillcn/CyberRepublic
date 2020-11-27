@@ -2436,7 +2436,6 @@ export default class extends Base {
       const suggestion = await this.model.getDBInstance().find(
         {
           displayId: param.id,
-          createdBy: user,
           old: { $exists: false }
         },
         fields
