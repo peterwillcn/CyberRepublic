@@ -134,6 +134,7 @@ const en = {
   comments: 'Comments',
   'comments.posts': 'Posts',
   'comments.post': 'Post',
+  'comments.cancel': 'Cancel',
   'comments.noComments': 'No comments yet, ',
   'comments.signIn': 'sign in ',
   'comments.firstToPost': 'to be the first to post!',
