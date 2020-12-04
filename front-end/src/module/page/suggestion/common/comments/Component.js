@@ -1,39 +1,29 @@
 import React from 'react'
 import {
   Form,
-  Col,
-  Row,
-  List,
   Avatar,
-  Icon,
   Button,
   Input,
   Mention,
   Modal,
-  Popconfirm,
   message
 } from 'antd'
 import _ from 'lodash'
 import moment from 'moment'
-import MediaQuery from 'react-responsive'
-import linkifyStr from 'linkifyjs/string'
 import BaseComponent from '@/model/BaseComponent'
 import ProfilePopup from '@/module/profile/OverviewPopup/Container'
 import Translation from '@/module/common/Translation/Container'
-import sanitizeHtml from '@/util/html'
 import userUtil from '@/util/user'
 import styled from 'styled-components'
 import I18N from '@/I18N'
 import {
-  MAX_WIDTH_MOBILE,
-  MIN_WIDTH_PC,
   MAX_LENGTH_COMMENT
 } from '@/config/constant'
-import { USER_AVATAR_DEFAULT, LINKIFY_OPTION, SUGGESTION_BUTTON_DEFAULT } from '@/constant'
+import { USER_AVATAR_DEFAULT, SUGGESTION_BUTTON_DEFAULT } from '@/constant'
+import CommentMention from './CommentMention'
 import './style.scss'
 
 const { TextArea } = Input
-const FormItem = Form.Item
 
 class C extends BaseComponent {
   constructor(props) {
@@ -46,8 +36,11 @@ class C extends BaseComponent {
       parentId: null,
       isComment: false,
       viewMore: [],
+      commentArr: [],
       bool: true,
-      curDetail: this.props.detailReducer ? (this.props.detailReducer(curDetail) || {}) : this.props[this.props.reduxType || this.props.type]
+      curDetail: this.props.detailReducer
+        ? (this.props.detailReducer(curDetail) || {})
+        : this.props[this.props.reduxType || this.props.type]
     }
 
   }
@@ -58,7 +51,7 @@ class C extends BaseComponent {
     if (hash && hash === '#comments') {
       document.getElementById('comments').scrollIntoView({
         behavior: 'smooth',
-        block: 'nearest'
+        block: 'start'
       })
     }
   }
@@ -72,24 +65,23 @@ class C extends BaseComponent {
     })
   }
 
-  commentBtnClick(id, user, parentId) {
-    this.props.form.resetFields()
-    const { isComment } = this.state
-    if (isComment) {
-      this.setState({
-        commentId: '',
-        commentTo: '',
-        parentId: '',
-        isComment: !this.state.isComment
-      })
-      return
+  handleCommentClick = e => {
+    const { commentArr } = this.state
+    const { _id: id } = e
+    if (_.includes(commentArr, id)) {
+      _.remove(commentArr, (item) => item === id)
+    } else {
+      commentArr.push(id)
     }
-    if (id && user) {
+    this.setState({
+      commentArr
+    })
+  }
+
+  changeCurComment(comments) {
+    if (comments) {
       this.setState({
-        commentId: id,
-        commentTo: user,
-        parentId,
-        isComment: !this.state.isComment
+        curDetail: comments
       })
     }
   }
@@ -99,7 +91,7 @@ class C extends BaseComponent {
     return (
       <div className="c_Comments">
         {this.renderHeader()}
-        {this.state.isComment ? null : this.getFooter()}
+        {<CommentMention {...this.props} onChange={this.changeCurComment.bind(this)} />}
         {this.renderBody()}
         <Modal
           className="profile-overview-popup-modal"
@@ -131,7 +123,7 @@ class C extends BaseComponent {
 
   renderCommentItem(item, key, isChild, parentId) {
     if (!item) return
-
+    const { commentArr } = this.state
     const firstName = _.get(item.createdBy.profile, 'firstName') || " "
     const lastName = _.get(item.createdBy.profile, 'lastName') || " "
 
@@ -155,12 +147,20 @@ class C extends BaseComponent {
             </CommentsFooterRight>
             <SubmmitBtn style={isChild ? {} : { paddingRight: 20 }}>
               <img onClick={() => {
-                this.commentBtnClick(item._id, `${firstName + lastName}`, parentId)
+                this.handleCommentClick(item)
               }} src={`${SUGGESTION_BUTTON_DEFAULT}`} />
             </SubmmitBtn>
           </CommentsFooter>
           {
-            this.state.isComment && this.state.commentId === item._id ? <div>{this.getFooter()}</div> : null
+            <div style={_.includes(commentArr, item._id) ? null : { display: 'none' }}>
+              <CommentMention
+                {...this.props}
+                item={item}
+                parentId={parentId}
+                commentTo={`${firstName + lastName}`}
+                onChange={this.changeCurComment.bind(this)}
+                onCancel={this.handleCommentClick.bind(this)} />
+            </div>
           }
           {
             this.renderChildCommentItem(item)
@@ -244,7 +244,7 @@ class C extends BaseComponent {
 
   renderHeader() {
     return (
-      <h3 className="no-margin with-gizmo">{this.props.header || I18N.get('comments')}</h3>
+      <h3 id="comments" className="no-margin with-gizmo">{this.props.header || I18N.get('comments')}</h3>
     )
   }
 
@@ -269,7 +269,6 @@ class C extends BaseComponent {
   }
 
   renderComment() {
-    // const allUsers = _.map(this.props.all_users, user => user.username)
     const allUsers = [`ALL (${I18N.get('suggestion.form.mention.allCouncil')})`]
     _.each(this.props.all_users, obj => {
       const mentionStr = `${obj.username} (${userUtil.formatUsername(obj)})`
@@ -297,7 +296,6 @@ class C extends BaseComponent {
   }
 
   renderCommentInput() {
-    // const allUsers = _.map(this.props.all_users, user => user.username)
     const allUsers = [`ALL (${I18N.get('suggestion.form.mention.allCouncil')})`]
     _.each(this.props.all_users, obj => {
       const mentionStr = `${obj.username} (${userUtil.formatUsername(obj)})`
@@ -367,23 +365,6 @@ class C extends BaseComponent {
     </CreatedAt>)
   }
 
-  renderCommentMobile() {
-    const allUsers = _.map(this.props.all_users, user => user.username)
-    const { getFieldDecorator } = this.props.form
-    const comment_fn = getFieldDecorator('comment', {
-      rules: [],
-      initialValue: '',
-    })
-    const comment_el = (
-      <TextArea
-        style={{ width: '100%', height: 100 }}
-        placeholder={I18N.get('comments.placeholder')}
-      />
-    )
-
-    return comment_fn(comment_el)
-  }
-
   isUserSubscribed() {
     const curDetail = this.props[this.props.reduxType || this.props.type]
     const subscribers = curDetail.subscribers || []
@@ -418,51 +399,6 @@ class C extends BaseComponent {
         >
           Subscribe
         </Button>
-      ) : null
-  }
-
-  getFooter() {
-    if (!this.props.currentUserId) {
-      return <div />
-    }
-
-    const p = this.getInputProps()
-    const subscribeButton = this.getSubscribeButton()
-
-    // TODO - canSubscribe requires canPost here, could be improved
-    return this.props.canPost
-      ? (
-        <Form onSubmit={this.handleSubmit.bind(this)} className="c_commentForm">
-          { this.props.headlines
-            && (
-              <FormItem>
-                {p.headline}
-              </FormItem>
-            )
-          }
-          <MediaQuery minWidth={MIN_WIDTH_PC}>
-            <FormItem>
-              {this.renderComment()}
-            </FormItem>
-          </MediaQuery>
-          <MediaQuery maxWidth={MAX_WIDTH_MOBILE}>
-            <FormItem>
-              {this.renderCommentMobile()}
-            </FormItem>
-          </MediaQuery>
-          <FormItem>
-            {subscribeButton}
-            <Button
-              className="ant-btn-ebp pull-right"
-              type="primary"
-              size="small"
-              htmlType="submit"
-              loading={this.isLoading()}
-            >
-              {I18N.get('comments.post')}
-            </Button>
-          </FormItem>
-        </Form>
       ) : null
   }
 

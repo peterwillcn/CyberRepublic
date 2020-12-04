@@ -134,6 +134,7 @@ const zh = {
   comments: '评论',
   'comments.posts': '动态',
   'comments.post': '发言',
+  'comments.cancel': '取消',
   'comments.noComments': '还没有评论，',
   'comments.signIn': '注册',
   'comments.firstToPost': '抢沙发！',
