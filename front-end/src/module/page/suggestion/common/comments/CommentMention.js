@@ -39,6 +39,11 @@ class CommentMention extends Component {
 
   handleSubmit = async e => {
     e.preventDefault()
+    const { currentUserId } = this.props
+    if (!currentUserId) {
+      window.location.href = "/login"
+    }
+    
     this.setState({
       bool: false
     })
