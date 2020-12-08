@@ -78,6 +78,7 @@ export default abstract class {
             }
 
         }catch(e){
+            console.log('back-end service error...', e)
             logger.error(e)
             this.res.json(this.result(-1, e))
         }
