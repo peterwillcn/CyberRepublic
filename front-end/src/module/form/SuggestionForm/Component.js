@@ -478,6 +478,13 @@ class C extends BaseComponent {
       )
     }
 
+    if (id === 'abstract') {
+      rules.push({
+        message: I18N.get(`suggestion.form.error.limit${WORD_LIMIT}`),
+        validator: this.validateAbstract
+      })
+    }
+
     return getFieldDecorator(id, {
       rules,
       initialValue: initialValues[id]
