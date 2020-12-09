@@ -315,7 +315,7 @@ export default class extends Base {
       _id: undefined,
       createdAt: undefined,
       updatedAt: undefined,
-      suggestion: id
+      suggestion: ObjectId(id)
     }
     const hismodel = this.getDBModel('Suggestion_Edit_History')
     const hisres = await hismodel.save(hisdoc)
