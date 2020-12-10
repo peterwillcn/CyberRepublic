@@ -28,8 +28,8 @@ class RelevanceList extends BaseComponent {
             return (
               item && (
                 <StyledRow key={index}>
-                  <p>{I18N.get('from.SuggestionForm.proposal') + `:` + item.title}</p>
-                  <p>
+                  <div>{I18N.get('from.SuggestionForm.proposal') + `:` + item.title}</div>
+                  <div>
                     <TitleLabel>
                       {I18N.get('from.SuggestionForm.detail') + `:`}
                       <ShowLongText text={item.relevanceDetail} id={'info' + index} />
@@ -54,7 +54,7 @@ class RelevanceList extends BaseComponent {
                         </SvgIcon>
                       )}
                     </SvgLabel>
-                  </p>
+                  </div>
                 </StyledRow>
               )
             )
