@@ -39,6 +39,11 @@ class CommentMention extends Component {
 
   handleSubmit = async e => {
     e.preventDefault()
+    const { currentUserId } = this.props
+    if (!currentUserId) {
+      window.location.href = "/login"
+    }
+    
     this.setState({
       bool: false
     })
@@ -157,7 +162,7 @@ class CommentMention extends Component {
   }
 
   render() {
-    const { item, parentId } = this.state
+    const { item, commentId } = this.state
     return (
       <Form onSubmit={this.handleSubmit.bind(this)} className="c_commentForm">
         <MediaQuery minWidth={MIN_WIDTH_PC}>
@@ -181,7 +186,7 @@ class CommentMention extends Component {
             {I18N.get('comments.post')}
           </Button>
           {
-            parentId ?
+            commentId ?
               <Button
                 className="ant-btn-ebp pull-right btn-cancel"
                 type="primary"

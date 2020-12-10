@@ -119,13 +119,26 @@ class C extends BaseComponent {
       }
 
       const budget = _.get(values, 'budget')
-      const budgetIntro = _.get(values, 'budgetIntro')
-      const planIntro = _.get(values, 'planIntro')
+      const planBudget = _.get(values, 'planBudget')
+      const budgetIntro = _.get(values, 'budgetIntro') || _.get(planBudget, 'budgetIntro')
+      const planIntro = _.get(values, 'planIntro') || _.get(planBudget, 'planIntro')
+      const teamInfo = _.get(values, 'teamInfo')
+      
       // exclude old suggestion data
       if (budget && typeof budget !== 'string') {
         values.budget = pItems instanceof Array ? budget.paymentItems : []
         values.budgetAmount = budget.budgetAmount
         values.elaAddress = budget.elaAddress
+      }
+      if (_.isEmpty(budget) && planBudget) {
+        values.budget = _.get(planBudget, 'budget')
+        values.budgetAmount = _.get(planBudget, 'budgetAmount')
+        values.elaAddress = _.get(planBudget, 'elaAddress')
+      }
+      if (_.isEmpty(milestone) && planBudget) {
+        values.plan = {
+          ..._.get(planBudget,'plan')
+        }
       }
       if (budgetIntro) {
         values.budgetIntro = budgetIntro
@@ -133,8 +146,11 @@ class C extends BaseComponent {
       if (planIntro) {
         values.planIntro = planIntro
       }
-      if (values.plan && values.teamInfo) {
-        values.plan[`teamInfo`] = values.teamInfo
+      if (teamInfo) {
+        values.plan = {
+          ...values.plan,
+          teamInfo
+        }
       }
       const rs = this.formatType(values, false)
       if (rs) {
@@ -429,12 +445,21 @@ class C extends BaseComponent {
           validator: this.validateBudget
         })
       }
+      let planBudgetData = {
+        plan: _.get(initialValues, "plan"),
+        planIntro: _.get(initialValues, "planIntro"),
+        budget: _.get(initialValues, "budget"),
+        budgetIntro: _.get(initialValues, "budgetIntro"),
+        elaAddress: _.get(initialValues, "elaAddress"),
+        budgetAmount: _.get(initialValues, "budgetAmount")
+      }
       return getFieldDecorator('planBudget', {
         // rules
+        initialValue: planBudgetData
       })(
         <ImplementationAndBudget
           getFieldDecorator={getFieldDecorator}
-          initialValues={initialValues}
+          initialValues={planBudgetData}
           controVar={controVar}
           budgetValidator={this}
           form={this.props.form}
@@ -476,6 +501,13 @@ class C extends BaseComponent {
           initialValue={relevance}
         />
       )
+    }
+
+    if (id === 'abstract') {
+      rules.push({
+        message: I18N.get(`suggestion.form.error.limit${WORD_LIMIT}`),
+        validator: this.validateAbstract
+      })
     }
 
     return getFieldDecorator(id, {
