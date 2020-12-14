@@ -9,9 +9,12 @@ class LoginWithDid extends Component {
     super(props)
     this.state = {
       url: '',
-      visible: false
+      oldUrl: '',
+      visible: false,
+      oldUrlVisible: false
     }
     this.timerDid = null
+    this.oldTimerDid = null
   }
 
   elaQrCode = () => {
@@ -20,6 +23,16 @@ class LoginWithDid extends Component {
       <Content>
         {url ? <QRCode value={url} size={180} /> : <Spin />}
         <Tip>{I18N.get('login.qrcodeTip')}</Tip>
+      </Content>
+    )
+  }
+
+  elaOldQrCode = () => {
+    const { oldUrl } = this.state
+    return (
+      <Content>
+        {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
+        <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
       </Content>
     )
   }
@@ -56,29 +69,80 @@ class LoginWithDid extends Component {
     }
   }
 
+  pollingWithOldUrl = async () => {
+    if (!this._isMounted) {
+      return
+    }
+    const { oldUrl } = this.state
+    const rs = await this.props.checkElaAuth(oldUrl)
+    if (rs && rs.success === true) {
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = null
+      if (rs.did) {
+        this.props.changeTab('register', rs.did)
+        this.setState({ oldUrlVisible: false })
+      }
+      return
+    }
+    if (rs && rs.success === false) {
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = null
+      if (rs.message) {
+        message.error(rs.message)
+      } else {
+        message.error('Something went wrong')
+      }
+      this.setState({ oldUrlVisible: false })
+      return
+    }
+    if (this._isMounted) {
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
+    }
+  }
+
   handleClick = () => {
+    if (this.oldTimerDid) {
+      clearTimeout(this.oldTimerDid)
+    }
     if (this.timerDid) {
       return
     }
     this.timerDid = setTimeout(this.polling, 3000)
   }
 
+  handleOldUrlClick = () => {
+    if (this.timerDid) {
+      clearTimeout(this.timerDid)
+    }
+    if (this.oldTimerDid) {
+      return
+    }
+    this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
+  }
+
   componentDidMount = async () => {
     this._isMounted = true
     const rs = await this.props.loginElaUrl()
     if (rs && rs.success) {
-      this.setState({ url: rs.url })
+      this.setState({ url: rs.url, oldUrl: rs.oldUrl })
     }
   }
 
   componentWillUnmount() {
     this._isMounted = false
     clearTimeout(this.timerDid)
+    clearTimeout(this.oldTimerDid)
     this.timerDid = null
+    this.oldTimerDid = null
   }
 
   handleVisibleChange = (visible) => {
-    this.setState({ visible })
+    this.setState({ visible, oldUrlVisible: false })
+  }
+
+  handleOldUrlVisibleChange = (visible) => {
+    this.setState({ oldUrlVisible: visible, visible: false })
   }
 
   render() {
@@ -96,6 +160,18 @@ class LoginWithDid extends Component {
         >
           <Button onClick={this.handleClick}>
             {I18N.get('login.withDid')}
+          </Button>
+        </Popover>
+        <br />
+        <Popover
+          visible={this.state.oldUrlVisible}
+          onVisibleChange={this.handleOldUrlVisibleChange}
+          content={this.elaOldQrCode()}
+          trigger="click"
+          placement="top"
+        >
+          <Button onClick={this.handleOldUrlClick}>
+            {I18N.get('login.withOldWallet')}
           </Button>
         </Popover>
       </Wrapper>

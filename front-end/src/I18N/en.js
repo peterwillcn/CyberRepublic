@@ -171,8 +171,10 @@ const en = {
   'login.reset': 'Reset password',
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
-  'login.withDid': 'Log in with Elastos DID',
-  'login.qrcodeTip': 'Open ELA wallet app and scan to log in.',
+  'login.withDid': 'Log in with the new version ELA wallet',
+  'login.withOldWallet': 'Log in with an older version ELA wallet',
+  'login.qrcodeTip': 'Open the new version ELA wallet app and scan to log in.',
+  'login.qrcodeOldTip': 'Open an older version ELA wallet app and scan to log in.',
 
   // Logout
   'logout.title': 'Are you sure you want to logout?',

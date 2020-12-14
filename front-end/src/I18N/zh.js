@@ -171,8 +171,10 @@ const zh = {
   'login.reset': '重置密码',
   'login.title': '登录 Cyber Republic',
   'login.description_1': '输入密码',
-  'login.withDid': '用 Elastos DID 登录',
-  'login.qrcodeTip': '打开 ELA wallet 应用扫码登录',
+  'login.withDid': '用新版 ELA 钱包登录',
+  'login.withOldWallet': '用旧版 ELA 钱包登录',
+  'login.qrcodeTip': '打开最新版 ELA 钱包应用扫码登录',
+  'login.qrcodeOldTip': '打开旧版 ELA 钱包应用扫码登录',
 
   // Logout
   'logout.title': '确定登出吗?',

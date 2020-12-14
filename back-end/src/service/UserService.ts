@@ -25,6 +25,8 @@ const restrictedFields = {
 }
 
 let tm = undefined
+const oldUrlPrefix = 'elastos://credaccess/'
+const urlPrefix = 'https://did.elastos.net/credaccess/'
 
 export default class extends Base {
   protected async init() {
@@ -861,12 +863,12 @@ export default class extends Base {
         expiresIn: '7d',
         algorithm: 'ES256'
       })
-      const url = `elastos://credaccess/${jwtToken}`
-
       const db_did = this.getDBModel('Did')
       await db_did.save({ number: nonce })
 
-      return { success: true, url }
+      const oldUrl = oldUrlPrefix + jwtToken
+      const url = urlPrefix + jwtToken
+      return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
       return { success: false }
@@ -892,10 +894,13 @@ export default class extends Base {
           message: 'The payload of jwt token is not correct.'
         }
       }
-
-      const payload: any = jwt.decode(
-        claims.req.slice('elastos://credaccess/'.length)
-      )
+      
+      let payload: any
+      if (claims.req.slice(0, oldUrlPrefix.length) === oldUrlPrefix) {
+        payload = claims.req.slice(oldUrlPrefix.length)
+      } else if (claims.req.slice(0, urlPrefix.length) === urlPrefix) {
+        payload = claims.req.slice(urlPrefix.length)
+      }
       if (!payload || (payload && !payload.nonce)) {
         return {
           code: 400,
@@ -990,7 +995,12 @@ export default class extends Base {
       if (!param.req) {
         return { success: false }
       }
-      const jwtToken = param.req.slice('elastos://credaccess/'.length)
+      let jwtToken: any
+      if (param.req.slice(0, oldUrlPrefix.length) === oldUrlPrefix) {
+        jwtToken = param.req.slice(oldUrlPrefix.length)
+      } else if (param.req.slice(0, urlPrefix.length) === urlPrefix) {
+        jwtToken = param.req.slice(urlPrefix.length)
+      }
       if (!jwtToken) {
         return { success: false }
       }
