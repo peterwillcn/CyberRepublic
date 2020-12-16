@@ -868,6 +868,8 @@ export default class extends Base {
 
       const oldUrl = oldUrlPrefix + jwtToken
       const url = urlPrefix + jwtToken
+      console.log('loginElaUrl oldUrl...', oldUrl)
+      console.log('loginElaUrl url...', url)
       return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
@@ -878,6 +880,7 @@ export default class extends Base {
   public async loginCallbackEla(param: any) {
     try {
       const jwtToken = param.jwt
+      console.log('loginCallbackEla jwtToken...', jwtToken)
       const claims: any = jwt.decode(jwtToken)
       if (!claims) {
         return {
@@ -894,13 +897,14 @@ export default class extends Base {
           message: 'The payload of jwt token is not correct.'
         }
       }
-      
-      let payload: any
+      let reqToken: any
       if (claims.req.slice(0, oldUrlPrefix.length) === oldUrlPrefix) {
-        payload = claims.req.slice(oldUrlPrefix.length)
+        reqToken = claims.req.slice(oldUrlPrefix.length)
       } else if (claims.req.slice(0, urlPrefix.length) === urlPrefix) {
-        payload = claims.req.slice(urlPrefix.length)
+        reqToken = claims.req.slice(urlPrefix.length)
       }
+      console.log('loginCallbackEla reqToken...', reqToken)
+      const payload: any = jwt.decode(reqToken)
       if (!payload || (payload && !payload.nonce)) {
         return {
           code: 400,
@@ -908,7 +912,7 @@ export default class extends Base {
           message: 'Problems parsing jwt token of CR website.'
         }
       }
-
+      console.log('loginCallbackEla payload...', payload)
       const db_did = this.getDBModel('Did')
       const rs: any = await getDidPublicKey(claims.iss)
       if (!rs) {
@@ -995,12 +999,14 @@ export default class extends Base {
       if (!param.req) {
         return { success: false }
       }
+      console.log('checkElaAuth param.req...', param.req)
       let jwtToken: any
       if (param.req.slice(0, oldUrlPrefix.length) === oldUrlPrefix) {
         jwtToken = param.req.slice(oldUrlPrefix.length)
       } else if (param.req.slice(0, urlPrefix.length) === urlPrefix) {
         jwtToken = param.req.slice(urlPrefix.length)
       }
+      console.log('checkElaAuth jwtToken...', jwtToken)
       if (!jwtToken) {
         return { success: false }
       }

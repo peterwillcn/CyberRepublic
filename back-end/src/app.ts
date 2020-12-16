@@ -16,7 +16,7 @@ import { logger } from './utility'
 import router, {middleware} from './router'
 
 import './config'
-import './utility/agenda'
+// import './utility/agenda'
 
 (async ()=>{
     const app = express()
