@@ -33,13 +33,6 @@ class RelevanceForm extends BaseComponent {
     })
   }
 
-  validatePlan = (rule, value, cb) => {
-    if (value && _.isEmpty(value)) {
-      return cb(I18N.get('suggestion.form.error.milestones'))
-    }
-    return cb()
-  }
-
   fetchProposal = async (value) => {
     this.setState({ data: [] })
     const { getProposalTitle, callback } = this.props
@@ -68,10 +61,7 @@ class RelevanceForm extends BaseComponent {
     if (!_.isEmpty(item)) {
       title = I18N.get('suggestion.plan.editRelevance')
     }
-    const rules = []
-    rules.push({
-      validator: this.validatePlan
-    })
+
     return (
       <Wrapper>
         <Title>{title}</Title>
@@ -81,7 +71,12 @@ class RelevanceForm extends BaseComponent {
           </Label>
           <FormItem>
             {getFieldDecorator('proposal', {
-              rules
+              rules: [
+                {
+                  required: true,
+                  message: I18N.get('suggestion.form.error.required')
+                }
+              ],
             })(
               <Select
                 showSearch
