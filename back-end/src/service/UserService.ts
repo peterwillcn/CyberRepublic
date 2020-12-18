@@ -739,6 +739,7 @@ export default class extends Base {
         }
       }
       let reqToken: any
+      let isNew: Boolean = false
       if (
         claims.req.slice(0, constant.oldAccessJwtPrefix.length) ===
         constant.oldAccessJwtPrefix
@@ -749,6 +750,7 @@ export default class extends Base {
         constant.accessJwtPrefix
       ) {
         reqToken = claims.req.slice(constant.accessJwtPrefix.length)
+        isNew = true
       }
       console.log('didCallbackEla reqToken...', reqToken)
       const payload: any = jwt.decode(reqToken)
@@ -803,7 +805,10 @@ export default class extends Base {
                 const did = {
                   message: 'This DID had been used by other user.'
                 }
-                await db_user.update({ _id: payload.userId }, { $set: { did } })
+                await db_user.update(
+                  { _id: payload.userId },
+                  { $set: { did, newVersion: isNew } }
+                )
                 return {
                   code: 400,
                   success: false,
