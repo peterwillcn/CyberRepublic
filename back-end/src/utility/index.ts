@@ -15,7 +15,7 @@ const { PublicKey } = require('bitcore-lib-p256')
 const jwkToPem = require('jwk-to-pem')
 import * as jwt from 'jsonwebtoken'
 const Big = require('big.js')
-
+import { constant } from '../constant'
 export {
   utilCrypto,
   sso,
@@ -322,4 +322,28 @@ export const getCurrentHeight = async () => {
   } catch (err) {
     logger.error(err)
   }
+}
+
+export const getProposalReqToken = (req: any) => {
+  let reqToken: any
+  const { oldProposalJwtPrefix, proposalJwtPrefix } = constant
+  if (
+    req.slice(0, oldProposalJwtPrefix.length) === oldProposalJwtPrefix
+  ) {
+    reqToken = req.slice(oldProposalJwtPrefix.length)
+  } else if (
+    req.slice(0, proposalJwtPrefix.length) === proposalJwtPrefix
+  ) {
+    reqToken = req.slice(proposalJwtPrefix.length)
+  }
+  return reqToken
+}
+
+export const getProposalJwtPrefix = (newVersion: boolean) => {
+  const { oldProposalJwtPrefix, proposalJwtPrefix } = constant
+  let jwtPrefix = oldProposalJwtPrefix
+  if (newVersion && newVersion === true) {
+    jwtPrefix = proposalJwtPrefix
+  }
+  return jwtPrefix
 }
