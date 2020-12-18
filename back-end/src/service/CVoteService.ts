@@ -10,7 +10,8 @@ import {
   utilCrypto,
   user as userUtil,
   timestamp,
-  logger
+  logger,
+  getProposalJwtPrefix
 } from '../utility'
 import { CVOTE_STATUS } from 'src/constant/constant'
 
@@ -1313,8 +1314,8 @@ export default class extends Base {
           algorithm: 'ES256'
         }
       )
-      const jwtPrefix = constant.proposalJwtPrefix
-      const url = jwtPrefix + jwtToken
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)
