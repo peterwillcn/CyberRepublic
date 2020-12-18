@@ -9,7 +9,9 @@ import {
   user as userUtil,
   utilCrypto,
   getPemPublicKey,
-  permissions
+  permissions,
+  getProposalReqToken,
+  getProposalJwtPrefix
 } from '../utility'
 const Big = require('big.js')
 const {
@@ -104,8 +106,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const jwtPrefix = constant.proposalJwtPrefix
-      const url = jwtPrefix + jwtToken
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url, messageHash }
     } catch (error) {
       logger.error(error)
@@ -124,10 +126,8 @@ export default class extends Base {
           message: 'Problems parsing jwt token.'
         }
       }
-      const jwtPrefix = constant.proposalJwtPrefix
-      const payload: any = jwt.decode(
-        claims.req.slice(jwtPrefix.length)
-      )
+      const reqToken = getProposalReqToken(claims.req)
+      const payload: any = jwt.decode(reqToken)
       const userDID = _.get(payload, 'data.userdid')
       if (!userDID) {
         return {
@@ -374,8 +374,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const jwtPrefix = constant.proposalJwtPrefix
-      const url = jwtPrefix + jwtToken
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url, messageHash: reasonHash }
     } catch (error) {
       logger.error(error)
@@ -528,8 +528,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const jwtPrefix = constant.proposalJwtPrefix
-      const url = jwtPrefix + jwtToken
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url }
     } catch (error) {
       logger.error(error)
