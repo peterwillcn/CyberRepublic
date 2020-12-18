@@ -19,7 +19,8 @@ class ImplementationAndBudget extends BaseComponent {
       disabled: !_.isEmpty(budget) || budgetIntro || elaAddress ? true : false,
       addressErr: '',
       itemErr: '',
-      changeNum: this.props.controVar
+      changeNum: this.props.controVar,
+      milestone: []
     }
     if (this.count == 0 && !_.isEmpty(budget) || budgetIntro || elaAddress) {
       this.props.budgetValidator.setBudgetValidator(true)
@@ -50,9 +51,9 @@ class ImplementationAndBudget extends BaseComponent {
   }
 
   validateBudget = (rule, value, cb) => {
+    const { milestone } = this.state
     const address = _.get(value, 'elaAddress')
     const pItems = _.get(value, 'paymentItems')
-
     if (!this.validateAddress(address)) {
       this.setState({
         addressErr: I18N.get('suggestion.form.error.elaAddress')
@@ -64,6 +65,12 @@ class ImplementationAndBudget extends BaseComponent {
         addressErr: I18N.get('suggestion.form.error.schedule')
       })
       return cb(I18N.get('suggestion.form.error.schedule'))
+    }
+    if (milestone.length != pItems.length) {
+      this.setState({
+        addressErr: I18N.get('suggestion.form.error.payment')
+      })
+      return cb(I18N.get('suggestion.form.error.payment'))
     }
     this.setState({addressErr:""})
     return cb()
@@ -85,7 +92,7 @@ class ImplementationAndBudget extends BaseComponent {
     rules.push({
       validator: this.validatePlan
     })
-
+    
     return getFieldDecorator('plan', {
       // rules,
       initialValue: initialValues.plan
@@ -173,16 +180,19 @@ class ImplementationAndBudget extends BaseComponent {
   toggle = () => {
     const data = this.props.form.getFieldValue("budget")
     const budgetIntro = this.props.form.getFieldValue("budgetIntro")
+    const plan = this.props.form.getFieldValue("plan")
     if (!_.isEmpty(budgetIntro)
       || !_.isEmpty(data.elaAddress)
       || (data.paymentItems instanceof Array && data.paymentItems.length > 0)
     ) {
       this.setState({
-        disabled: true
+        disabled: true,
+        milestone: _.get(plan, "milestone")
       })
     } else {
       this.setState({
-        disabled: false
+        disabled: false,
+        milestone: _.get(plan, "milestone")
       })
     }
   }
