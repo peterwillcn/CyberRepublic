@@ -25,9 +25,6 @@ const restrictedFields = {
 }
 
 let tm = undefined
-const oldUrlPrefix = 'elastos://credaccess/'
-const urlPrefix = 'https://did.elastos.net/credaccess/'
-
 export default class extends Base {
   protected async init() {
     // await this.cronJob()
@@ -711,8 +708,11 @@ export default class extends Base {
         expiresIn: '7d',
         algorithm: 'ES256'
       })
-      const url = `elastos://credaccess/${jwtToken}`
-      return { success: true, url }
+      const oldUrl = constant.oldAccessJwtPrefix + jwtToken
+      const url = constant.accessJwtPrefix + jwtToken
+      console.log('bind DID oldUrl...', oldUrl)
+      console.log('bind DID url...', url)
+      return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
       return { success: false }
@@ -738,10 +738,20 @@ export default class extends Base {
           message: 'The payload of jwt token is not correct.'
         }
       }
-
-      const payload: any = jwt.decode(
-        claims.req.slice('elastos://credaccess/'.length)
-      )
+      let reqToken: any
+      if (
+        claims.req.slice(0, constant.oldAccessJwtPrefix.length) ===
+        constant.oldAccessJwtPrefix
+      ) {
+        reqToken = claims.req.slice(constant.oldAccessJwtPrefix.length)
+      } else if (
+        claims.req.slice(0, constant.accessJwtPrefix.length) ===
+        constant.accessJwtPrefix
+      ) {
+        reqToken = claims.req.slice(constant.accessJwtPrefix.length)
+      }
+      console.log('didCallbackEla reqToken...', reqToken)
+      const payload: any = jwt.decode(reqToken)
       if (!payload || (payload && !payload.userId)) {
         return {
           code: 400,
@@ -866,8 +876,8 @@ export default class extends Base {
       const db_did = this.getDBModel('Did')
       await db_did.save({ number: nonce })
 
-      const oldUrl = oldUrlPrefix + jwtToken
-      const url = urlPrefix + jwtToken
+      const oldUrl = constant.oldAccessJwtPrefix + jwtToken
+      const url = constant.accessJwtPrefix + jwtToken
       console.log('loginElaUrl oldUrl...', oldUrl)
       console.log('loginElaUrl url...', url)
       return { success: true, url, oldUrl }
@@ -898,10 +908,16 @@ export default class extends Base {
         }
       }
       let reqToken: any
-      if (claims.req.slice(0, oldUrlPrefix.length) === oldUrlPrefix) {
-        reqToken = claims.req.slice(oldUrlPrefix.length)
-      } else if (claims.req.slice(0, urlPrefix.length) === urlPrefix) {
-        reqToken = claims.req.slice(urlPrefix.length)
+      if (
+        claims.req.slice(0, constant.oldAccessJwtPrefix.length) ===
+        constant.oldAccessJwtPrefix
+      ) {
+        reqToken = claims.req.slice(constant.oldAccessJwtPrefix.length)
+      } else if (
+        claims.req.slice(0, constant.accessJwtPrefix.length) ===
+        constant.accessJwtPrefix
+      ) {
+        reqToken = claims.req.slice(constant.accessJwtPrefix.length)
       }
       console.log('loginCallbackEla reqToken...', reqToken)
       const payload: any = jwt.decode(reqToken)
@@ -1001,10 +1017,16 @@ export default class extends Base {
       }
       console.log('checkElaAuth param.req...', param.req)
       let jwtToken: any
-      if (param.req.slice(0, oldUrlPrefix.length) === oldUrlPrefix) {
-        jwtToken = param.req.slice(oldUrlPrefix.length)
-      } else if (param.req.slice(0, urlPrefix.length) === urlPrefix) {
-        jwtToken = param.req.slice(urlPrefix.length)
+      if (
+        param.req.slice(0, constant.oldAccessJwtPrefix.length) ===
+        constant.oldAccessJwtPrefix
+      ) {
+        jwtToken = param.req.slice(constant.oldAccessJwtPrefix.length)
+      } else if (
+        param.req.slice(0, constant.accessJwtPrefix.length) ===
+        constant.accessJwtPrefix
+      ) {
+        jwtToken = param.req.slice(constant.accessJwtPrefix.length)
       }
       console.log('checkElaAuth jwtToken...', jwtToken)
       if (!jwtToken) {
