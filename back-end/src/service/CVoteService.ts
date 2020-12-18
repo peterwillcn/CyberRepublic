@@ -1570,9 +1570,9 @@ export default class extends Base {
       const jwtToken = jwt.sign(jwtClaims, process.env.APP_PRIVATE_KEY, {
         algorithm: 'ES256'
       })
-      const jwtPrefix = constant.proposalJwtPrefix
-      const url = jwtPrefix + jwtToken
-      return { success: true, url }
+      const oldUrl = constant.oldProposalJwtPrefix + jwtToken
+      const url = constant.proposalJwtPrefix + jwtToken
+      return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
       return { success: false }
