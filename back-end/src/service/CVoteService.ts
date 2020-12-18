@@ -1313,7 +1313,8 @@ export default class extends Base {
           algorithm: 'ES256'
         }
       )
-      const url = `elastos://crproposal/${jwtToken}`
+      const jwtPrefix = constant.proposalJwtPrefix
+      const url = jwtPrefix + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)
@@ -1568,7 +1569,8 @@ export default class extends Base {
       const jwtToken = jwt.sign(jwtClaims, process.env.APP_PRIVATE_KEY, {
         algorithm: 'ES256'
       })
-      const url = `elastos://crproposal/${jwtToken}`
+      const jwtPrefix = constant.proposalJwtPrefix
+      const url = jwtPrefix + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)

@@ -104,8 +104,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-
-      const url = `elastos://crproposal/${jwtToken}`
+      const jwtPrefix = constant.proposalJwtPrefix
+      const url = jwtPrefix + jwtToken
       return { success: true, url, messageHash }
     } catch (error) {
       logger.error(error)
@@ -124,9 +124,9 @@ export default class extends Base {
           message: 'Problems parsing jwt token.'
         }
       }
-
+      const jwtPrefix = constant.proposalJwtPrefix
       const payload: any = jwt.decode(
-        claims.req.slice('elastos://crproposal/'.length)
+        claims.req.slice(jwtPrefix.length)
       )
       const userDID = _.get(payload, 'data.userdid')
       if (!userDID) {
@@ -374,8 +374,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-
-      const url = `elastos://crproposal/${jwtToken}`
+      const jwtPrefix = constant.proposalJwtPrefix
+      const url = jwtPrefix + jwtToken
       return { success: true, url, messageHash: reasonHash }
     } catch (error) {
       logger.error(error)
@@ -528,7 +528,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const url = `elastos://crproposal/${jwtToken}`
+      const jwtPrefix = constant.proposalJwtPrefix
+      const url = jwtPrefix + jwtToken
       return { success: true, url }
     } catch (error) {
       logger.error(error)

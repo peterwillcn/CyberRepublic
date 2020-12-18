@@ -409,3 +409,6 @@ export const DEFAULT_BUDGET = [{ type: 'finalpayment', stage: 1, amount: '0' }]
 
 export const oldAccessJwtPrefix = 'elastos://credaccess/'
 export const accessJwtPrefix = 'https://did.elastos.net/credaccess/'
+
+export const oldProposalJwtPrefix = 'elastos://crproposal/'
+export const proposalJwtPrefix = 'https://did.elastos.net/crproposal/'
