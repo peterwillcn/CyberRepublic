@@ -47,7 +47,7 @@ class LoginWithDid extends Component {
       clearTimeout(this.timerDid)
       this.timerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did)
+        this.props.changeTab('register', rs.did, rs.newVersion)
         this.setState({ visible: false })
       }
       return
@@ -79,7 +79,7 @@ class LoginWithDid extends Component {
       clearTimeout(this.oldTimerDid)
       this.oldTimerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did)
+        this.props.changeTab('register', rs.did, rs.newVersion)
         this.setState({ oldUrlVisible: false })
       }
       return

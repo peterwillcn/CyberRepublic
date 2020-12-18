@@ -41,7 +41,8 @@ class C extends BaseComponent {
               this.state.savedValues.username,
               this.state.savedValues.password,
               this.props.did,
-              this.state.savedValues.email
+              this.state.savedValues.email,
+              this.props.newVersion
             )
             .then(shouldShowWelcome => {
               if (_.isFunction(this.props.onChangeActiveKey)) {
