@@ -940,8 +940,10 @@ const en = {
   'role.admin.mode': 'Admin Mode',
 
   // Profile
-  'profile.associateDid': 'Associate DID',
-  'profile.qrcodeTip': 'Open ELA wallet and scan',
+  'profile.associateDid': 'Associate DID with the new version ELA wallet',
+  'profile.oldAssociateDid': 'Associate DID with an older version ELA wallet',
+  'profile.qrcodeTip': 'Open the new ELA wallet and scan',
+  'profile.qrcodeOldTip': 'Open an older ELA wallet and scan',
   'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
   'profile.skillsets': 'My Skillsets',
