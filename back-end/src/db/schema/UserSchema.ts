@@ -141,5 +141,6 @@ export const User = {
   popupUpdate: {
     type: Boolean,
     default: false
-  }
+  },
+  newVersion: Boolean // mark if a user uses the new ELA wallet to log in
 }

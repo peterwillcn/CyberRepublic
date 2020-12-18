@@ -112,7 +112,7 @@ export default class extends Base {
     const db_user = this.getDBModel('User')
     await db_user.update(
       { _id: param.userId },
-      { $push: { logins: new Date() } }
+      { $push: { logins: new Date() }, $set: { newVersion: param.newVersion } }
     )
   }
 
@@ -908,6 +908,7 @@ export default class extends Base {
         }
       }
       let reqToken: any
+      let isNew: boolean = false
       if (
         claims.req.slice(0, constant.oldAccessJwtPrefix.length) ===
         constant.oldAccessJwtPrefix
@@ -918,6 +919,7 @@ export default class extends Base {
         constant.accessJwtPrefix
       ) {
         reqToken = claims.req.slice(constant.accessJwtPrefix.length)
+        isNew = true
       }
       console.log('loginCallbackEla reqToken...', reqToken)
       const payload: any = jwt.decode(reqToken)
@@ -984,7 +986,8 @@ export default class extends Base {
                   $set: {
                     did: decoded.iss,
                     success: true,
-                    message: 'Ok'
+                    message: 'Ok',
+                    newVersion: isNew
                   }
                 }
               )
@@ -1045,7 +1048,11 @@ export default class extends Base {
             if (doc) {
               if (doc.did) {
                 await db_did.getDBInstance().remove({ number: decoded.nonce })
-                return { did: doc.did, success: true }
+                return {
+                  did: doc.did,
+                  success: true,
+                  newVersion: doc.newVersion
+                }
               }
               if (doc.success === false) {
                 await db_did.update(

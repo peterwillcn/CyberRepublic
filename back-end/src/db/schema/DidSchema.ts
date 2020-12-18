@@ -6,5 +6,7 @@ export const Did = {
     unique: true
   },
   message: String,
-  success: Boolean
+  success: Boolean,
+  // mark if a user uses the new version ELA wallet to log in
+  newVersion: Boolean
 }
