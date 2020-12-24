@@ -90,7 +90,7 @@ export default class extends Base {
         } else {
           doc.did = { id: param.did }
         }
-        if (param.newVersion) {
+        if ([true, false].includes(param.newVersion)) {
           doc.newVersion = param.newVersion
         }
       }
@@ -114,7 +114,7 @@ export default class extends Base {
   public async recordLogin(param) {
     const db_user = this.getDBModel('User')
     const fields = { $push: { logins: new Date() } }
-    if (param.newVersion) {
+    if ([true, false].includes(param.newVersion)) {
       fields['$set'] = { newVersion: param.newVersion }
     }
     await db_user.update({ _id: param.userId }, fields)
