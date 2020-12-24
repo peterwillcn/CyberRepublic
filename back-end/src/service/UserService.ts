@@ -809,10 +809,7 @@ export default class extends Base {
                 const did = {
                   message: 'This DID had been used by other user.'
                 }
-                await db_user.update(
-                  { _id: payload.userId },
-                  { $set: { did, newVersion: isNew } }
-                )
+                await db_user.update({ _id: payload.userId }, { $set: { did } })
                 return {
                   code: 400,
                   success: false,
@@ -823,7 +820,10 @@ export default class extends Base {
                 id: decoded.iss,
                 compressedPublicKey: rs.compressedPublicKey
               }
-              await db_user.update({ _id: payload.userId }, { $set: { did } })
+              await db_user.update(
+                { _id: payload.userId },
+                { $set: { did, newVersion: isNew } }
+              )
               return { code: 200, success: true, message: 'Ok' }
             } catch (err) {
               logger.error(err)
