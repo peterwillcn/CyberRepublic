@@ -3,21 +3,22 @@ import _ from 'lodash'
 import BaseComponent from '@/model/BaseComponent'
 import UserEditForm from '@/module/form/UserEditForm/Container'
 import I18N from '@/I18N'
-import { Col, Row, Icon, Spin, Modal, Upload } from 'antd'
+import {Col, Row, Icon, Spin, Modal, Upload, Avatar} from 'antd'
 import moment from 'moment-timezone'
 import { upload_file } from '@/util'
 import { getSafeUrl } from '@/util/url'
 import {
   USER_AVATAR_DEFAULT,
   LINKIFY_OPTION,
-  USER_ROLE_TO_TEXT
+  USER_ROLE_TO_TEXT,
 } from '@/constant'
 import config from '@/config'
 import MediaQuery from 'react-responsive'
 import linkifyStr from 'linkifyjs/string'
 import sanitizeHtml from '@/util/html'
 import GenderSvg from './GenderSvg'
-
+import ProfileDid from './ProfileDid'
+import TelegramIcon from '@/module/common/TelegramIcon'
 import './style.scss'
 
 /**
@@ -33,7 +34,7 @@ export default class extends BaseComponent {
     super(props)
 
     this.state = {
-      editing: false
+      editing: false,
     }
   }
 
@@ -70,6 +71,7 @@ export default class extends BaseComponent {
         <div className="profile-info-container profile-info-container-mobile clearfix">
           {this.renderAvatar(true)}
           {this.renderFullName(true)}
+          {this.renderDidBtn()}
           {this.renderRole(true)}
           {this.renderLocation(true)}
           {this.renderLocalTime(true)}
@@ -134,6 +136,7 @@ export default class extends BaseComponent {
           <div className="profile-left pull-left">{this.renderAvatar()}</div>
           <div className="profile-right pull-left">
             {this.renderFullName()}
+            {this.renderDidBtn()}
             <Row>
               <Col span={24} className="profile-right-col">
                 {this.renderRole()}
@@ -213,7 +216,7 @@ export default class extends BaseComponent {
           style={{
             backgroundImage: this.getBannerWithFallback(
               url || this.props.user.profile.banner
-            )
+            ),
           }}
         />
         <Icon
@@ -228,18 +231,47 @@ export default class extends BaseComponent {
   renderAvatar(isMobile) {
     const p_avatar = {
       showUploadList: false,
-      customRequest: info => {
-        upload_file(info.file).then(async d => {
+      customRequest: (info) => {
+        upload_file(info.file).then(async (d) => {
           await this.props.updateUser(this.props.currentUserId, {
             profile: {
               avatar: d.url,
               avatarFilename: d.filename,
-              avatarFileType: d.type
-            }
+              avatarFileType: d.type,
+            },
           })
 
           await this.props.getCurrentUser()
         })
+      },
+    }
+
+    const renderAvatar = () => {
+      const { avatar, firstName, lastName} = this.props.user.profile || {}
+
+      if (avatar || (!firstName && !lastName)) {
+        return (
+          <Avatar
+                src={avatar || USER_AVATAR_DEFAULT}
+                shape="square"
+                size={142}
+            />
+        )
+      }
+
+      if (firstName || lastName) {
+        return (
+          <Avatar
+                style={{
+                  backgroundColor: '#000',
+                  fontSize: 64
+                }}
+                shape="square"
+                size={142}
+            >
+            {`${firstName && firstName.toUpperCase().substr(0, 1)}${lastName && lastName.toUpperCase().substr(0, 1)}`}
+          </Avatar>
+        )
       }
     }
 
@@ -261,9 +293,7 @@ export default class extends BaseComponent {
                 <Icon type="loading" />
               </div>
             ) : (
-              <img
-                src={this.getAvatarWithFallback(this.props.user.profile.avatar)}
-              />
+              renderAvatar()
             )}
           </Upload>
         </div>
@@ -282,6 +312,17 @@ export default class extends BaseComponent {
         <Icon type="user" />
         <span>{user.role && USER_ROLE_TO_TEXT[user.role]}</span>
       </div>
+    )
+  }
+
+  renderDidBtn() {
+    const { getElaUrl, getNewActiveDid, user } = this.props
+    return (
+      <ProfileDid
+        getElaUrl={getElaUrl}
+        getNewActiveDid={getNewActiveDid}
+        did={user.did}
+      />
     )
   }
 
@@ -328,8 +369,11 @@ export default class extends BaseComponent {
   renderSkillsets(isMobile) {
     return (
       <div className="skillset-container">
-        {_.map(this.props.user.profile.skillset || [], skillset => (
-          <div key={skillset}>+ {I18N.get(`user.skillset.${skillset}`)}</div>
+        {_.map(this.props.user.profile.skillset || [], (skillset) => (
+          <div key={skillset}>
++
+            {I18N.get(`user.skillset.${skillset}`)}
+          </div>
         ))}
       </div>
     )
@@ -352,8 +396,13 @@ export default class extends BaseComponent {
               target="_blank"
               className="link-container"
             >
-              <Icon type="link" />{' '}
-              <span> {I18N.get('profile.portfolio')} </span>
+              <Icon type="link" />
+              {' '}
+              <span>
+                {' '}
+                {I18N.get('profile.portfolio')}
+                {' '}
+              </span>
             </a>
           </div>
         )}
@@ -386,7 +435,9 @@ export default class extends BaseComponent {
       >
         <Icon type="clock-circle" />
         <span>
-          {I18N.get('profile.localTime')} {localTime}
+          {I18N.get('profile.localTime')}
+          {' '}
+          {localTime}
         </span>
       </div>
     )
@@ -401,32 +452,32 @@ export default class extends BaseComponent {
       >
         {profile.telegram && (
           <a href={getSafeUrl(profile.telegram)} target="_blank">
-            <i className="fab fa-telegram fa-2x" />
+            <TelegramIcon style={{ fill: '#333333' }} />
           </a>
         )}
         {profile.twitter && (
           <a href={getSafeUrl(profile.twitter)} target="_blank">
-            <i className="fab fa-twitter fa-2x" />
+            <Icon type="twitter" style={{ fontSize: 32 }} />
           </a>
         )}
         {profile.facebook && (
           <a href={getSafeUrl(profile.facebook)} target="_blank">
-            <i className="fab fa-facebook-square fa-2x" />
+            <Icon type="facebook" style={{ fontSize: 32 }} />
           </a>
         )}
         {profile.reddit && (
           <a href={getSafeUrl(profile.reddit)} target="_blank">
-            <i className="fab fa-reddit fa-2x" />
+            <Icon type="reddit" style={{ fontSize: 32 }} />
           </a>
         )}
         {profile.linkedin && (
           <a href={getSafeUrl(profile.linkedin)} target="_blank">
-            <i className="fab fa-linkedin fa-2x" />
+            <Icon type="linkedin" style={{ fontSize: 32 }} />
           </a>
         )}
         {profile.github && (
           <a href={getSafeUrl(profile.github)} target="_blank">
-            <i className="fab fa-github fa-2x" />
+            <Icon type="github" style={{ fontSize: 32 }} />
           </a>
         )}
       </div>
@@ -456,7 +507,7 @@ export default class extends BaseComponent {
 
   switchEditMode() {
     this.setState({
-      editing: !this.state.editing
+      editing: !this.state.editing,
     })
   }
 }

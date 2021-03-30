@@ -19,118 +19,190 @@ import abuse from './abuse'
 import archive from './archive'
 import del from './delete'
 import editHistories from './editHistories'
+import revertVersion from './revertVersion'
 import investigation from './investigation'
 import advisory from './advisory'
+import signatureUrl from './signature_url'
+import signatureCallback from './signature_callback'
+import checkSignature from './check_signature'
+import getSuggestion from './getSuggestion'
+import cmSignatureUrl from './cm_signature_url'
+import ownerSignatureUrl from './owner_signature_url'
+import ownerSignatureCallback from './owner_signature_callback'
+import secSignatureUrl from './sec_signature_url'
+import secSignatureCallback from './sec_signature_callback'
+import cancel from './cancel'
+import getSuggestionByNumber from './get_suggestion_by_number'
 
 export default Base.setRouter([
   {
     path: '/create',
     router: create,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/list',
     router: list,
-    method: 'get',
+    method: 'get'
   },
   {
     path: '/export2csv',
     router: export2csv,
-    method: 'get',
+    method: 'get'
   },
   {
     path: '/:id/show',
     router: show,
-    method: 'get',
+    method: 'get'
   },
   {
     path: '/:id/showDraft',
     router: showDraft,
-    method: 'get',
+    method: 'get'
   },
   {
     path: '/:id/update',
     router: update,
-    method: 'put',
+    method: 'put'
   },
   {
     path: '/:id/saveDraft',
     router: saveDraft,
-    method: 'put',
+    method: 'put'
   },
   {
     path: '/:id/addtag',
     router: addTag,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/like',
     router: like,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/dislike',
     router: dislike,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/reportabuse',
     router: reportabuse,
-    method: 'post',
+    method: 'post'
   },
   {
-    path : '/:id/comment',
-    router : comment,
-    method : 'post'
+    path: '/:id/comment',
+    router: comment,
+    method: 'post'
   },
   {
-    path : '/:id/comment_update',
-    router : comment_update,
-    method : 'post'
+    path: '/:id/comment_update',
+    router: comment_update,
+    method: 'post'
   },
   {
-    path : '/:id/comment_remove',
-    router : comment_remove,
-    method : 'post'
+    path: '/:id/comment_remove',
+    router: comment_remove,
+    method: 'post'
   },
   {
-    path : '/:id/subscribe',
-    router : subscribe,
-    method : 'post'
+    path: '/:id/subscribe',
+    router: subscribe,
+    method: 'post'
   },
   {
-    path : '/:id/unsubscribe',
-    router : unsubscribe,
-    method : 'post'
+    path: '/:id/unsubscribe',
+    router: unsubscribe,
+    method: 'post'
   },
   {
     path: '/:id/abuse',
     router: abuse,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/archive',
     router: archive,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/delete',
     router: del,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/editHistories',
     router: editHistories,
-    method: 'get',
+    method: 'get'
+  },
+  {
+    path: '/:id/revertVersion',
+    router: revertVersion,
+    method: 'post'
   },
   {
     path: '/:id/investigation',
     router: investigation,
-    method: 'post',
+    method: 'post'
   },
   {
     path: '/:id/advisory',
     router: advisory,
-    method: 'post',
+    method: 'post'
+  },
+  {
+    path: '/signature-url',
+    router: signatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/signature-callback',
+    router: signatureCallback,
+    method: 'post'
+  },
+  {
+    path: '/signature',
+    router: checkSignature,
+    method: 'post'
+  },
+  {
+    path: '/get_suggestion/:id',
+    router: getSuggestion,
+    method: 'get'
+  },
+  {
+    path: '/cm-signature-url',
+    router: cmSignatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/owner-signature-url',
+    router: ownerSignatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/new-owner-signature-cb',
+    router: ownerSignatureCallback,
+    method: 'post'
+  },
+  {
+    path: '/sec-signature-url',
+    router: secSignatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/sec-signature-cb',
+    router: secSignatureCallback,
+    method: 'post'
+  },
+  {
+    path: '/cancel',
+    router: cancel,
+    method: 'post'
+  },
+  {
+    path: '/get-suggestion-by-number',
+    router: getSuggestionByNumber,
+    method: 'get'
   }
 ])

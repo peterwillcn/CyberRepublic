@@ -1,27 +1,121 @@
 import React from 'react'
 import PropTypes from 'prop-types'
+import I18N from '@/I18N'
 import _ from 'lodash'
+import OnChain from '../../detail/OnChain'
+import ViewVoteHistoryButton from '../../detail/ViewVoteHistoryButton'
 import Translation from '@/module/common/Translation/Container'
+import { Avatar } from 'antd'
+import { USER_AVATAR_DEFAULT } from '@/constant'
+import { Container, ResultRow, Reason, Label, List, Item } from './style'
 
-import { Container, ResultRow, Reason, Label, List, Item, Avatar, StyledAvatarIcon } from './style'
-
-const Component = ({ label, type, dataList }) => {
+const Component = ({
+  label,
+  type,
+  dataList,
+  id,
+  getReviewProposal,
+  getReviewProposalUrl,
+  updateProposal,
+  isProposed,
+  isCouncil,
+  currentUserId,
+  voteHistory
+}) => {
   const votesNode = _.map(dataList, (data, key) => {
-    // const isReject = type === CVOTE_RESULT.REJECT
+    let voteStatus = data.status
+    if (
+      voteStatus == undefined ||
+      voteStatus == 'failed' ||
+      voteStatus == 'unchain'
+    ) {
+      voteStatus = (
+        <div className="status unchain">
+          <div>{I18N.get(`council.voting.chainStatus.unchain`)}</div>
+        </div>
+      )
+    }
+    if (voteStatus == 'chained') {
+      voteStatus = (
+        <div className="status chained">
+          <div>{I18N.get(`council.voting.chainStatus.chained`)}</div>
+        </div>
+      )
+    }
+    let isOwner = data.votedBy && data.votedBy === currentUserId
+
+    let votehistoryBy = _.filter(voteHistory,['votedBy._id', data.votedBy])
+    const avatarName = data.name.split(' ')
     const userNode = (
       <Item key={key}>
-        {data.avatar ? <Avatar src={data.avatar} alt="voter avatar" /> : <StyledAvatarIcon />}
-        <div>{data.name}</div>
+        {data.avatar || avatarName[0] == 'undefined' ? (
+          <Avatar
+            size={64}
+            src={data.avatar || USER_AVATAR_DEFAULT}
+            alt="voter avatar"
+          />
+        ) : (
+          <Avatar
+            className="comment-avatar pull-left"
+            style={{
+              backgroundColor: '#000',
+              fontSize: 24
+            }}
+            shape="circle"
+            size={64}
+          >
+            {`${avatarName[0] &&
+              avatarName[0].toUpperCase().substr(0, 1)}${avatarName[1] &&
+              avatarName[1].toUpperCase().substr(0, 1)}`}
+          </Avatar>
+        )}
+        <div>{data.didName}</div>
+        {data.reason !== '' ? voteStatus : null}
+        <div style={{ marginTop: '0.5rem' }}>
+          {isProposed &&
+          isCouncil &&
+          isOwner &&
+          (data.status === 'unchain' || data.status === undefined) &&
+          data.reason !== '' ? (
+            <OnChain
+              getReviewProposal={getReviewProposal}
+              getReviewProposalUrl={getReviewProposalUrl}
+              updateProposal={updateProposal}
+              id={id}
+            />
+          ) : null}
+        </div>
+        <div>
+          {votehistoryBy.length > 1 &&
+            (
+              !_.isEmpty(_.find(votehistoryBy, ['status', 'chained']))
+              &&
+              !_.isEmpty(_.find(votehistoryBy,['isCurrentVote', true]))
+            )
+            ? <ViewVoteHistoryButton data={votehistoryBy} />
+            : null}
+        </div>
       </Item>
     )
 
-    const googleNode = data.reason && <div style={{ marginTop: '0.5rem'}}><Translation text={data.reason} /></div>
+    const googleNode = data.reason && (
+      <div style={{ marginTop: '0.5rem' }}>
+        <Translation text={data.reason} />
+      </div>
+    )
 
     // if (!isReject) return userNode
     // show reason for all vote type
     const reasonNode = (
       <Reason>
-        {data.reason}
+        {data.reason.split('\n').map((item, key) => {
+          return (
+            <span key={key}>
+              {item}
+              <br />
+            </span>
+          )
+        })}
         {googleNode}
       </Reason>
     )
@@ -46,6 +140,13 @@ const propTypes = {
   label: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
   dataList: PropTypes.array.isRequired,
+  id: PropTypes.string.isRequired,
+  getReviewProposal: PropTypes.func.isRequired,
+  getReviewProposalUrl: PropTypes.func.isRequired,
+  updateProposal: PropTypes.func.isRequired,
+  isCouncil: PropTypes.bool.isRequired,
+  isProposed: PropTypes.bool.isRequired,
+  currentUserId: PropTypes.string.isRequired
 }
 
 Component.propTypes = propTypes

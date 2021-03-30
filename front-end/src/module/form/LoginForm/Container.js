@@ -37,6 +37,32 @@ export default createContainer(
           message.error(err.message)
           return false
         }
+      },
+      async loginElaUrl() {
+        return await userService.loginElaUrl()
+      },
+      async checkElaAuth(qrcodeStr) {
+        try {
+          const rs = await userService.checkElaAuth(qrcodeStr)
+          if (rs && rs.did) {
+            message.info(I18N.get('login.noBindingDID'))
+          }
+          if (rs && rs.success && rs.username) {
+            message.success(`${I18N.get('login.success')}, ${rs.username}`)
+            const loginRedirect = sessionStorage.getItem('loginRedirect')
+            if (loginRedirect) {
+              this.history.push(loginRedirect)
+              sessionStorage.setItem('loggedIn', '1')
+              sessionStorage.setItem('loginRedirect', null)
+            } else {
+              this.history.push('/profile/info')
+            }
+          }
+          return rs
+        } catch (err) {
+          message.error(err.message)
+          return false
+        }
       }
     }
   }

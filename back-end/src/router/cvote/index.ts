@@ -1,7 +1,6 @@
 import Base from '../Base'
 
 import create_draft from './create_draft'
-import propose_suggestion from './propose_suggestion'
 import update_draft from './update_draft'
 import delete_draft from './delete_draft'
 import create from './create'
@@ -14,16 +13,22 @@ import finish from './finish'
 import unfinish from './unfinish'
 import update_notes from './update_notes'
 import listcrcandidates from './listcrcandidates'
+import onchain from './onchain'
+import all_search from './all_search'
+import get_proposal from './get_proposal'
+import check_signature from './check_signature'
+import memberVote from './memberVote'
+import updateAborted from './update_aborted'
+import getCurrentHeight from './get_current_height'
+import getAllAuthor from './get_author'
+import getActiveProposals from './get_active_proposals'
+import getProposalTitle from './get_proposal_title'
+import walletVote from './wallet_vote'
 
 export default Base.setRouter([
   {
     path: '/create_draft',
     router: create_draft,
-    method: 'post'
-  },
-  {
-    path: '/propose_suggestion',
-    router: propose_suggestion,
     method: 'post'
   },
   {
@@ -84,6 +89,60 @@ export default Base.setRouter([
   {
     path: '/listcrcandidates',
     router: listcrcandidates,
+    method: 'post'
+  },
+  {
+    path: '/reviewproposal-url',
+    router: onchain,
+    method: 'post'
+  },
+  {
+    path: '/signature',
+    router: check_signature,
+    method: 'post'
+  },
+  {
+    path: '/member_vote',
+    router: memberVote,
+    method: 'post'
+  },
+  {
+    path: '/all_search',
+    router: all_search,
+    method: 'get'
+  },
+  {
+    path: '/get_proposal/:id',
+    router: get_proposal,
+    method: 'get'
+  },
+  {
+    path: '/update_aborted',
+    router: updateAborted,
+    method: 'get'
+  },
+  {
+    path: '/get_current_height',
+    router: getCurrentHeight,
+    method: 'get'
+  },
+  {
+    path: '/get_author',
+    router: getAllAuthor,
+    method: 'get'
+  },
+  {
+    path: '/active_proposals',
+    router: getActiveProposals,
+    method: 'get'
+  },
+  {
+    path: '/getProposalTitle',
+    router: getProposalTitle,
+    method: 'get'
+  },{
+    path: '/wallet_vote',
+    router: walletVote,
     method: 'post'
   }
 ])

@@ -15,18 +15,21 @@ const Component = ({
   createdAt,
   createdBy,
   reference,
-  user
+  user,
+  proposalHash,
+  txHash,
+  copyFun,
+  closeProposalNum,
+  newSecretaryDID,
+  targetProposalNum,
+  newOwnerDID,
+  newAddress
 }) => {
   // header
   const headerNode = (
     <Header id="preamble">{I18N.get('proposal.fields.preamble')}</Header>
   )
 
-  const typeMap = {
-    1: I18N.get('council.voting.type.newMotion'),
-    2: I18N.get('council.voting.type.motionAgainst'),
-    3: I18N.get('council.voting.type.anythingElse')
-  }
   // type
   const typeNode = (
     <Item>
@@ -34,7 +37,7 @@ const Component = ({
         <ItemTitle>{I18N.get('proposal.fields.type')}</ItemTitle>
       </Col>
       <Col span={18}>
-        <ItemText>{typeMap[type]}</ItemText>
+        <ItemText>{I18N.get(`proposal.type.${type}`)}</ItemText>
       </Col>
     </Item>
   )
@@ -48,6 +51,66 @@ const Component = ({
       </Col>
       <Col span={18}>
         <ItemText>{`#${vid}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const closeProposalNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.closeProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`#${closeProposalNum}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const targetProposalNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.targetProposalNum')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`#${targetProposalNum}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newSecretaryNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.secretary')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newSecretaryDID}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newOwnerNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.owner')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newOwnerDID}`}</ItemText>
+      </Col>
+    </Item>
+  )
+  const newAddressNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>
+          {I18N.get('proposal.fields.preambleSub.address')}
+        </ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText>{`did:elastos:${newAddress}`}</ItemText>
       </Col>
     </Item>
   )
@@ -110,6 +173,33 @@ const Component = ({
       </Col>
     </Item>
   )
+  // proposalHash
+  const txHashNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>{I18N.get('proposal.fields.preambleSub.txHash')}</ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText><a href={`https://blockchain.elastos.org/tx/${txHash}`}>{txHash}</a></ItemText>
+      </Col>
+    </Item>
+  )
+  // proposalHash
+  const hashNode = (
+    <Item>
+      <Col span={6}>
+        <ItemTitle>{I18N.get('proposal.fields.preambleSub.hash')}</ItemTitle>
+      </Col>
+      <Col span={18}>
+        <ItemText >
+          {proposalHash}
+          <CopyButton onClick={() => copyFun(proposalHash)} >
+            {I18N.get('suggestion.btn.copyHash')}
+          </CopyButton>
+        </ItemText>
+      </Col>
+    </Item>
+  )
   return (
     <div>
       {headerNode}
@@ -118,8 +208,15 @@ const Component = ({
       {proposerNode}
       {reference && reference.displayId ? refereeNode : null}
       {typeNode}
+      {closeProposalNum ? closeProposalNode : null}
+      {targetProposalNum? targetProposalNode: null}
+      {newSecretaryDID ? newSecretaryNode : null}
+      {newOwnerDID ? newOwnerNode: null}
+      {newAddress ? newAddressNode : null}
       {statusNode}
       {createdNode}
+      {txHash ? txHashNode : null}
+      {hashNode}
     </div>
   )
 }
@@ -152,4 +249,18 @@ const ItemTitle = styled.div`
 `
 const ItemText = styled.div`
   font-weight: 200;
+`
+const CopyButton = styled.span`
+  display: inline-block;
+  font-weight: 200;
+  background: #008D85;
+  width: 56px;
+  height: 20px;
+  margin-left: 30px;
+  border-radius: 2px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 16px;
+  cursor:pointer;
+  color: #fff;
 `

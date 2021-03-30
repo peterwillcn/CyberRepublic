@@ -1,7 +1,8 @@
 import {
   ABSTRACT_MAX_WORDS,
   SUGGESTION_STATUS,
-  SUGGESTION_BUDGET_TYPE
+  SUGGESTION_BUDGET_TYPE,
+  SUGGESTION_TYPE
 } from '@/constant'
 
 export default {
@@ -18,7 +19,18 @@ export default {
       creator: '创建人',
       status: '状态',
       created: '创建日期',
-      updated: '更新日期'
+      updated: '更新日期',
+      signature: '签名',
+      txHash: 'TxID',
+      proposalHash: 'Hash',
+      type: '类型',
+      owner: '变更提案新负责人',
+      address: '变更提案新 ELA 地址',
+      secretary: '新秘书长',
+      targetProposalNum: '变更提案编号',
+      closeProposalNum: '终止提案',
+      newOwnerSignature: '变更提案新负责人签名',
+      newSecretarySignature: '新秘书长签名'
     },
     abstract: '摘要',
     goal: '目标',
@@ -26,7 +38,9 @@ export default {
     relevance: '关联性',
     budget: '预算',
     type: '类型',
-    plan: '实施计划',
+    planBudget: '实施 & 预算计划',
+    plan: '实施',
+    teamInfo: '实施团队',
     vote: '投票',
     tracking: '跟踪',
     summary: '总结',
@@ -38,7 +52,13 @@ export default {
   btn: {
     makeIntoProposal: '发布为提案',
     needDueDiligence: '需要尽职调查',
-    needAdvisory: '需要咨询'
+    needAdvisory: '需要咨询',
+    signSuggetion: '签名建议',
+    associateDid: '绑定 DID',
+    viewOldData: '查看旧数据',
+    viewNewData: '查看新数据',
+    copyHash: '复制',
+    cancel: '撤销'
   },
   status: {
     posted: '发布',
@@ -47,9 +67,11 @@ export default {
     referred: '相关提案',
     [SUGGESTION_STATUS.ACTIVE]: '活跃',
     [SUGGESTION_STATUS.ABUSED]: '已举报',
-    [SUGGESTION_STATUS.ARCHIVED]: '已归档'
+    [SUGGESTION_STATUS.ARCHIVED]: '已归档',
+    [SUGGESTION_STATUS.CANCELLED]: '已撤销'
   },
   form: {
+    unit: '个月',
     search: '搜索建议',
     button: {
       continue: '继续',
@@ -58,26 +80,51 @@ export default {
       save: '保存并发布',
       update: '更新',
       create: '创建',
-      discardChanges: '放弃修改'
+      discardChanges: '放弃修改',
+      revertVersion: '使用该版本',
+      showVersion: '显示历史版本'
     },
     fields: {
-      title: '标题'
+      title: '标题',
+      validPeriod: '有效期'
     },
     type: {
+      [SUGGESTION_TYPE.NEW_MOTION]: '新动议',
+      [SUGGESTION_TYPE.MOTION_AGAINST]: '反对动议',
+      [SUGGESTION_TYPE.ANYTHING_ELSE]: '其它事宜',
+      [SUGGESTION_TYPE.CHANGE_PROPOSAL]: '变更提案动议',
+      [SUGGESTION_TYPE.CHANGE_SECRETARY]: '变更秘书长动议',
+      [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: '终止提案动议',
       newMotion: '新动议',
       motionAgainst: '反对动议',
-      anythingElse: '其它事宜'
+      anythingElse: '其它事宜',
+      changeProposalOwner: '变更提案负责人',
+      changeProposalAddress: '变更提案 ELA 接收地址',
+      proposalNum: '提案编号',
+      proposalNewOwner: '提案新负责人',
+      proposalNewAddress: '提案新 ELA 接收地址',
+      newSecretary: '新秘书长',
+      ownerInfo: `请输入提案新负责人的 DID`,
+      secretaryInfo: `请输入新秘书长的 DID`,
+      desc: {
+        [SUGGESTION_TYPE.NEW_MOTION]: `关于 CR 或亦来云技术发展相关的议题`,
+        [SUGGESTION_TYPE.CHANGE_PROPOSAL]: `更换提案负责人或提案经费接收地址的议题`,
+        [SUGGESTION_TYPE.TERMINATE_PROPOSAL]: `关于终止无法执行或不应执行提案的议题`,
+        [SUGGESTION_TYPE.CHANGE_SECRETARY]: `更换 CR 秘书长人选的议题`
+      }
     },
     note: {
       type: '选择一个建议类型。',
       abstract: '一个关于提案内容的简短描述（不超过200字）。',
       goal: '描述通过执行提案期望达到的效果。目标应该是清晰且可度量的。',
-      motivation: `描述为什么会提出这个提案。对于试图对亦来云有所改变的提案来说，动机至关重要。这里应该清楚的解释为什么现有的机制不足以解决提案想解决的问题，`,
+      motivation: `描述为什么会提出这个提案。对于试图对亦来云有所改变的提案来说，动机至关重要。这里应该清楚的解释为什么现有的机制不足以解决提案想解决的问题。`,
       motivationHighlight: '没有足够动机的提案被拒的可能性很大。',
       relevance: `如果和其它CRC提案有所关联，这里应该提供关联提案的提案号并且说明和相关提案的关系。如果与亦来云技术或者其它CRC提案有冲突，则应该对这些冲突进行说明并解释怎么处理它们。`,
       budget: `如果执行提案需要CRC的经费支持，这里应该说明总的预算以及支出计划。这是一个和执行计划配套的财务计划。`,
       type: '选择一个提案类型。',
       plan: `这里应该说明通过什么方法和过程达成目标，对执行人或者团队应该有一个简单的介绍。如果提案的执行周期比较长，应该设立一些执行过程中的检查点，两个检查点之间不超过3个月。和提案目标一样，检查点也应该是清晰且可度量的。`,
+      planBudget: `这里应该说明通过什么方法和过程达成目标，对执行人或者团队应该有一个简单的介绍。如果提案的执行周期比较长，应该设立一些执行过程中的检查点，两个检查点之间不超过3个月。和提案目标一样，检查点也应该是清晰且可度量的。`,
+      teamInfo: '团队信息',
       tracking: `当提案完成的时候，提案人应该在这里提交对提案执行状况的一个总结，包括目标达成状况和财务决算。CRC秘书处负责该部分内容的审核。`
     },
     error: {
@@ -89,7 +136,25 @@ export default {
       milestones: '里程碑为空',
       team: '实施团队为空',
       amount: '金额大于总金额的30%',
-      previousMilestoneDate: '日期必须晚于前一个里程碑'
+      previousMilestoneDate: '日期必须晚于前一个里程碑',
+      requirePayment: '在完成提案之前，需要填写项目的支付项。',
+      elaAddress: 'ELA 地址无效',
+      schedule: '支付计划为空',
+      payment: '支付项和里程碑必须保持一致，必须有结项款，至多一项预付款',
+      advance: '预付款只能用于项目第一阶段',
+      completion: '结项款只能用于项目最后阶段.',
+      conditioned: '该阶段支付不能用于项目的这个阶段',
+      isUsed: '该项目阶段已被其它支付项使用了',
+      exception: '出错了',
+      notEqual: '支付项款之和与项目总金额不一致',
+      introduction: '里程碑简介不能为空',
+      noOwner: `提案新负责人账号不存在`,
+      noSecretary: `新的秘书长账号不存在`,
+      noProposal: `无效的提案编号`,
+      proposalNum: '提案编号为空',
+      secretary: '新秘书长 DID 为空',
+      newOwner: '新负责人 DID 为空',
+      changeWhat: '请填写变更提案的信息'
     }
   },
   modal: {
@@ -98,7 +163,12 @@ export default {
     cancel: '取消',
     pleaseUpdate: '请按照需求更新建议，并通过评论通知委员或社区',
     commentsFromCouncil: '来自委员或管理员的评论:',
-    consideration: '您确定要将此建议标记为委员会正在审议中？'
+    consideration: '您确定要将此建议标记为委员会正在审议中？',
+    signNotice: '准备好让理事会成员进行审查了吗？',
+    signNoticeNow: '请立即签名建议。',
+    signNoticeNote: '注意：签名后，您将无法编辑建议。',
+    signNow: '签名',
+    signLater: '稍后'
   },
   tag: {
     show: '展示',
@@ -112,7 +182,15 @@ export default {
     consideration: '已标记为委员会正在审议中',
     notify: '已给秘书发送邮件',
     archived: '建议已归档',
-    unarchived: '建议已取消归档'
+    unarchived: '建议已取消归档',
+    revertVersion: '已使用指定版本的内容',
+    madeByOtherCM: '其他委员已经把这个建议转成提案了。',
+    councilQRCode: `扫描上面二维码把建议转成提案，提案上链后请到网站提案列表页面查看`,
+    toChain: '正在上链中',
+    signQRCode: '扫描上面二维码签名建议',
+    associateDidFirst: '请先绑定您的 DID',
+    cancelled: '撤销建议成功',
+    notCancelled: '撤销建议失败'
   },
   header: {
     suggestion: '建议',
@@ -144,7 +222,9 @@ export default {
     [SUGGESTION_BUDGET_TYPE.COMPLETION]: '结项款',
     [SUGGESTION_BUDGET_TYPE.CONDITIONED]: '阶段支付',
     goal: '目标',
-    milestone: '里程碑'
+    milestone: '里程碑',
+    introduction: '预算说明',
+    totalBudget: '总金额(ELA)：'
   },
   plan: {
     teamMember: '团队成员',
@@ -152,6 +232,8 @@ export default {
     responsibility: '职责',
     moreInfo: '更多信息',
     createTeamInfo: '添加团队成员',
+    createRelevance: '添加关联项目',
+    editRelevance: '编辑关联项目',
     action: '操作',
     teamInfo: '实施团队',
     milestones: '里程碑',
@@ -161,9 +243,14 @@ export default {
     showDetail: '显示详细信息',
     hideDetail: '隐藏详细信息',
     selectDate: '选择日期',
-    milestone: '里程碑'
+    milestone: '里程碑',
+    introduction: '实施说明'
   },
   label: {
     hasMadeIntoProposal: '已经将此建议发布为'
+  },
+  comments: {
+    viewMore: '显示更多',
+    viewLess: '收起'
   }
 }

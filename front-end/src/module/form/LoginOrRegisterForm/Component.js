@@ -3,7 +3,7 @@ import BaseComponent from '@/model/BaseComponent'
 import LoginForm from '@/module/form/LoginForm/Container'
 import RegisterForm from '@/module/form/RegisterForm/Container'
 import I18N from '@/I18N'
-import {Tabs, Row, Col} from 'antd'
+import { Tabs } from 'antd'
 import _ from 'lodash'
 
 import './style.scss'
@@ -15,7 +15,8 @@ export default class extends BaseComponent {
     return {
       persist: true,
       activeKey: 'login', // login, register, post
-      hideTabBar: false
+      hideTabBar: false,
+      did: ''
     }
   }
 
@@ -25,7 +26,7 @@ export default class extends BaseComponent {
     if (_.isFunction(this.props.onHideModal)) {
       this.props.onHideModal()
     }
-    this.props.history.push('/crcles')
+    this.props.history.push('/')
   }
 
   showPostRegLogScreen() {
@@ -59,11 +60,19 @@ export default class extends BaseComponent {
             }}
             className={!this.state.hideTabBar ? '' : 'hide-tabbar'}>
             <TabPane tab={I18N.get('0205')} key="login">
-              <LoginForm onHideModal={this.props.onHideModal}/>
+              <LoginForm
+                onHideModal={this.props.onHideModal}
+                onChangeActiveKey={(key, did) => {
+                  this.setState({ activeKey: key, did })
+                }}
+              />
             </TabPane>
             <TabPane tab={I18N.get('0202')} key="register">
-              <RegisterForm onHideTabBar={() => { this.setState({hideTabBar: true}) }}
-                onChangeActiveKey={(key) => { this.setState({activeKey: key}) }}/>
+              <RegisterForm
+                did={this.state.did}
+                onHideTabBar={() => { this.setState({hideTabBar: true}) }}
+                onChangeActiveKey={(key) => { this.setState({activeKey: key}) }}
+              />
             </TabPane>
           </Tabs>
         )

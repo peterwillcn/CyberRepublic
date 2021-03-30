@@ -21,11 +21,28 @@ class Milestones extends Component {
         clicked: false,
         clickedSwitch: false
       },
-      toggleCreateForm: false
+      toggleCreateForm: false,
+      value: props.initialValue,
+      changeNum: props.controVar
     }
   }
 
-  milestonesTrigger = size => {
+  componentDidUpdate(prePropos) {
+    const {initialValue:init, controVar} = prePropos
+    const { value, changeNum } = this.state
+    if (init !== value && controVar!=changeNum) {
+      this.setState({
+        milestones: init ? init : [],
+        milestonesTrigger: init
+          ? this.milestonesTrigger(init.length)
+          : {},
+        value: init,
+        changeNum: controVar
+      })
+    }
+  }
+
+  milestonesTrigger = (size) => {
     const triggers = {}
     for (let i = 0; i < size; i++) {
       triggers[i] = { clicked: false, clickedSwitch: false }
@@ -33,7 +50,7 @@ class Milestones extends Component {
     return triggers
   }
 
-  handleSubmit = values => {
+  handleSubmit = (values) => {
     const { milestones, milestonesTrigger } = this.state
     const { onChange } = this.props
     this.setState(
@@ -83,7 +100,7 @@ class Milestones extends Component {
     })
   }
 
-  handleClickSwitchChange = index => {
+  handleClickSwitchChange = (index) => {
     const { currentMilestonesTrigger } = this.state
     const isCurrentMilestone = currentMilestonesTrigger.index === index
     this.setState({
@@ -97,7 +114,7 @@ class Milestones extends Component {
     })
   }
 
-  handleVisibleChange = visible => {
+  handleVisibleChange = (visible) => {
     this.setState({ toggleCreateForm: visible })
   }
 
@@ -105,7 +122,7 @@ class Milestones extends Component {
     this.setState({ toggleCreateForm: false })
   }
 
-  getMilestoneTrigger = index => {
+  getMilestoneTrigger = (index) => {
     const { currentMilestonesTrigger, milestonesTrigger } = this.state
     const isCurrentMilestone = currentMilestonesTrigger.index === index
     if (isCurrentMilestone) {
@@ -119,6 +136,14 @@ class Milestones extends Component {
       <div className="square-number">
         <span>{`#${index + 1}`}</span>
       </div>
+    )
+    const arr = !!item.version ? item.version.split('\n') : []
+    const content = isBigSquare ? (
+      <Fragment>
+        {arr.map((item, index) => (item ? <p key={index}>{item}</p> : null))}
+      </Fragment>
+    ) : (
+      <p>{arr[0]}</p>
     )
     const date = (
       <div className="square-date">
@@ -134,7 +159,7 @@ class Milestones extends Component {
             }}
           />
         ) : (
-          <p>{item.version}</p>
+          content
         )}
       </div>
     )
@@ -144,7 +169,8 @@ class Milestones extends Component {
         onClick={() => this.handleClickSwitchChange(index)}
         style={{ margin: '4px 0 16px 0' }}
       >
-        {this.getMilestoneTrigger(index).clickedSwitch
+        {this.getMilestoneTrigger(index) &&
+        this.getMilestoneTrigger(index).clickedSwitch
           ? I18N.get('suggestion.plan.hideDetail')
           : I18N.get('suggestion.plan.showDetail')}
       </Button>
@@ -176,8 +202,11 @@ class Milestones extends Component {
                       content={this.renderSquare(item, index, true)}
                       trigger="click"
                       overlayStyle={{}}
-                      visible={this.getMilestoneTrigger(index).clickedSwitch}
-                      onVisibleChange={isVisible =>
+                      visible={
+                        this.getMilestoneTrigger(index) &&
+                        this.getMilestoneTrigger(index).clickedSwitch
+                      }
+                      onVisibleChange={(isVisible) =>
                         this.handleClickSwitchChange(index)
                       }
                     >
@@ -204,8 +233,11 @@ class Milestones extends Component {
                           />
                         }
                         trigger="click"
-                        visible={this.getMilestoneTrigger(index).clicked}
-                        onVisibleChange={isVisible =>
+                        visible={
+                          this.getMilestoneTrigger(index) &&
+                          this.getMilestoneTrigger(index).clicked
+                        }
+                        onVisibleChange={(isVisible) =>
                           this.handleClickChange(index, isVisible)
                         }
                         placement="top"
@@ -226,8 +258,11 @@ class Milestones extends Component {
                         content={this.renderSquare(item, index, true)}
                         trigger="click"
                         overlayStyle={{}}
-                        visible={this.getMilestoneTrigger(index).clickedSwitch}
-                        onVisibleChange={isVisible =>
+                        visible={
+                          this.getMilestoneTrigger(index) &&
+                          this.getMilestoneTrigger(index).clickedSwitch
+                        }
+                        onVisibleChange={(isVisible) =>
                           this.handleClickSwitchChange(index)
                         }
                       >
@@ -376,6 +411,8 @@ const Square = styled.div`
       &.square-content > p {
         overflow-wrap: break-word;
         white-space: normal;
+        text-align: left;
+        padding-bottom: 16px;
       }
     }
   }
@@ -400,7 +437,7 @@ const Circle = styled.div`
 `
 const Action = styled.div`
   padding-left: 60px;
-  padding-right: ${props => (props.visible === false ? '0' : '150px')};
+  padding-right: ${(props) => (props.visible === false ? '0' : '150px')};
   border-bottom: 1px solid #ced6e3;
   position: relative;
   padding-bottom: 24px;
@@ -408,7 +445,7 @@ const Action = styled.div`
     content: '>';
     position: absolute;
     right: -2px;
-    bottom: ${props => (props.visible === false ? '-8px' : '-17px')};
+    bottom: ${(props) => (props.visible === false ? '-8px' : '-17px')};
     color: #ced6e3;
   }
 `

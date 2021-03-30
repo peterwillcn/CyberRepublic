@@ -1,5 +1,5 @@
-import {combineReducers} from 'redux'
-import {routerReducer} from 'react-router-redux'
+import { combineReducers } from 'redux'
+import { routerReducer } from 'react-router-redux'
 
 import cvote from './redux/cvote'
 import cvoteTracking from './redux/cvoteTracking'
@@ -17,9 +17,10 @@ import permission from './redux/permission'
 import permissionRole from './redux/permissionRole'
 import release from './redux/release'
 import elip from './redux/elip'
+import trackingMessage from './redux/trackingMessage'
 
 const default_state = {
-  init: false,
+  init: false
 }
 
 const appReducer = (state = default_state) => {
@@ -46,5 +47,6 @@ export default combineReducers({
   permission: permission.getReducer(),
   permissionRole: permissionRole.getReducer(),
   release: release.getReducer(),
-  elip: elip.getReducer()
+  elip: elip.getReducer(),
+  trackingMessage: trackingMessage.getReducer()
 })

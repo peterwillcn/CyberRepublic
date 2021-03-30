@@ -8,6 +8,7 @@ import getting_started from './en/getting_started'
 import whitepaper from './en/whitepaper'
 import elip from './en/elip'
 import area from './en/area'
+import milestone from './en/milestone'
 
 const en = {
   council,
@@ -19,6 +20,7 @@ const en = {
   elip,
   whitepaper,
   area,
+  milestone,
   // Header
   '0000': 'ALPHA',
   '0001': 'Bounty Programs',
@@ -118,14 +120,16 @@ const en = {
   2306: 'Communities',
   'profile.suggestion': 'My Suggestions',
 
+  'login.access.forum': 'Please login or create a Cyber Republic account to access the forum',
   'login.success': 'Welcome back',
   'logout.success': 'logout success',
+  'login.noBindingDID': 'Please register an account or log in with an existing account',
 
   'mentions.notFound': 'User not found',
 
   'meta.postedBy': 'Posted By',
   'image.upload.type.error': 'The upload file is not an image.',
-  'image.upload.size.error': 'The maximum upload file size is less than 500KB.',
+  'image.upload.size.error': 'The maximum upload file size is less than 10M.',
 
   comments: 'Comments',
   'comments.posts': 'Posts',
@@ -149,6 +153,11 @@ const en = {
   'popup.changes.2018-12-26.4': 'You can also automatically login to the forum through the link in the top right:',
   'popup.changes.2018-12-26.5': 'The updated CR website will be relaunched on January 15, 2019, more information can be found at',
   'popup.changes.2018-12-26.blog_link': 'https://blog.cyberrepublic.org/2018/12/26/important-cyber-republic-announcement',
+  
+  'popup.suggestion.title': 'Important notice',
+  'popup.suggestion.member': 'Dear CR members:',
+  'popup.suggestion.content': 'The Cyber Republic Consensus will be launched at 10:00 am, June 10th, 2020, Beijing time. Accordingly the CR website will be upgraded recent days. The Suggestion function will be suspended and restarted when the new council is elected. Newly submitted suggestions will be handled by the new council.',
+  'popup.suggestion.team': 'CR website developer team',
 
   // LoginForm
   'login.label_username': 'Please input your email address or username',
@@ -161,6 +170,8 @@ const en = {
   'login.reset': 'Reset password',
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
+  'login.withDid': 'Log in with Elastos DID',
+  'login.qrcodeTip': 'Open ELA wallet app and scan to log in.',
 
   // Logout
   'logout.title': 'Are you sure you want to logout?',
@@ -275,11 +286,12 @@ const en = {
   'suggestion.archived': 'Archived',
   'suggestion.archive': 'Archive',
   'suggestion.unarchive': 'Unarchive',
+  'suggestion.duplicate': 'Duplicate',
   'suggestion.search': 'Search',
   'suggestion.cancel': 'Cancel',
   'suggestion.submit': 'Submit',
   'suggestion.header.edit': 'Edit Suggestion',
-  'suggestion.editHistory': 'Edit History',
+  'suggestion.editHistory': 'Version History',
   'suggestion.showEditHistory': 'Show Edit History',
   'suggestion.edited': 'Edited',
   'suggestion.form.mention.allCouncil': 'All Council Members',
@@ -294,6 +306,9 @@ const en = {
   'suggestion.form.fields.timeline': 'Expected Completion',
   'suggestion.form.fields.links': 'Links',
   'suggestion.form.fields.linksSplit': 'Links (Split By Comma)',
+  'suggestion.form.fields.duplicate': 'Duplicate existing suggestion',
+  'suggestion.form.fields.duplicate.number': 'Suggestion Number',
+  'suggestion.form.fields.duplicate.button': 'Duplicate existing suggestion',
 
   // social share
   'socialShare.wechat.desc': 'Scan QR code below using WeChat, then share this web page with your WeChat friends.',
@@ -309,6 +324,8 @@ const en = {
   // suggestion error
   'suggestion.create.error.required': 'This field is required',
   'suggestion.create.error.tooShort': 'This field is too short',
+  'suggestion.vote.error.empty': 'Please input comment',
+  'suggestion.vote.error.tooLong': 'Comment is too long',
 
   // suggestion rules
   'suggestion.rules': 'Rules',
@@ -343,6 +360,61 @@ const en = {
 
   // Roles & Permissions
   'permission.title': 'Roles & Permissions',
+  'permission.btn': 'Create Permission',
+  'permission.btn.tips': 'Require server to restart to take effect',
+  'permission.form.name': 'Name',
+  'permission.form.resource': 'ResourceType',
+  'permission.form.desc': 'Desc',
+  'permission.form.http': 'HttpMethod',
+  'permission.form.url': 'Url',
+  'permission.tab.admin': 'ADMIN',
+  'permission.tab.council': 'COUNCIL',
+  'permission.tab.secretary': 'SECRETARY',
+  'permission.tab.custom': 'CUSTOM',
+  'permission.tab.member': 'MEMBER',
+  'permission.tab.leader': 'LEADER',
+
+  // Communities
+  'communities.btn': 'Add Country',
+  'communities.btn.add': 'Add Country',
+  'communities.btn.cancel': 'Cancel',
+  'communities.btn.delete': 'Delete',
+  'communities.form.country': 'Country',
+  'communities.form.name': 'Name',
+  'communities.form.leader': 'Leader',
+  'communities.form.organizer': 'Organizer',
+  'communities.form.required':'This field is required',
+  'communities.form.country.placeholder': 'Please select a country',
+  'communities.form.leader.placeholder': 'Please select a member',
+  'communities.form.add.success': 'Add new country successfully',
+  'communities.form.add.error': 'Error while add country',
+  'communities.form.organizer.change': 'Change Organizer',
+  
+  'communities.organizer.has': 'Has Organizer(s)',
+  'communities.organizer.needs': 'Needs an Organizer',
+
+  'communitites.country.organizers': 'Country Organizers',
+  'communities.btn.add.country': 'Add',
+  'communities.btn.add.state': 'Add states / province',
+  'communities.btn.add.city': 'Add City',
+  'communities.btn.add.region': 'Add Region',
+  'communities.btn.add.school': 'Add School',
+  'communities.btn.add.region': 'Add region',
+  'communities.btn.update.state': 'Update states / provinces',
+  'communities.btn.update.city': 'Update city',
+  'communities.btn.update.region': 'Update region',
+  'communities.btn.update.school': 'Update school',
+  'communities.form.title.state': 'Add states / provinces',
+  'communities.form.title.city': 'Add city',
+  'communities.form.title.region': 'Add region',
+  'communities.form.title.school': 'Add school',
+  'communities.form.organizer.success': 'Add new organizer successfully',
+  'communities.form.organizer.error': 'Error while add organizer',
+  'communitites.form.country.change': 'Change organizer successfully',
+  'communities.form.country.update': 'Update community successfully',
+  'communities.form.country.delete': 'Delete community successfully',
+  'communitites.form.country.success': 'Add new sub community successfully',
+  'communitites.form.country.error': 'Error while adding new sub community',
 
   // Developer
   'developer.breadcrumb.developers': 'Community',
@@ -695,6 +767,8 @@ const en = {
   'task.applyReason': 'Why you wanted to join this task',
   'task.createNew': 'Propose New Task',
 
+  'task.select.status': 'Select a status',
+
   // General
   'select.placeholder': 'Please select',
   '.ok': 'Ok',
@@ -753,19 +827,22 @@ const en = {
   'council.voting.voteByCouncil': 'Votes by Council Members',
   'council.voting.councilMembersVotes': 'Council Members Votes',
   'council.voting.votingEndsIn': 'Voting Ends In',
+  'council.voting.communityEndsIn': 'Community Review Ends In',
   'council.voting.votingEndsIn.ended': 'Ended',
+  'council.voting.votingEndsIn.finished': 'Finished',
+  'council.voting.votingEndsIn.approx': 'approx',
   'council.voting.votingEndsIn.day': 'Day',
   'council.voting.votingEndsIn.days': 'Days',
+  'council.voting.votingEndsIn.hours': 'Hours',
+  'council.voting.votingEndsIn.minutes': 'Minutes',
   'council.voting.status': 'Status',
   'council.voting.createdAt': 'Created',
   'council.voting.proposedAt': 'Proposed',
+  'council.voting.chainStatus.chained':'Chained',
+  'council.voting.chainStatus.chaining':'Chaining',
+  'council.voting.chainStatus.unchain':'UnChain',
+  'council.voting.chainStatus.failed':'Failed',
 
-  'council.voting.type.newMotion': 'New Motion',
-  'council.voting.type.motionAgainst': 'Motion Against',
-  'council.voting.type.anythingElse': 'Anything Else',
-  'council.voting.type.standardTrack': 'Standards Tracking ELIP',
-  'council.voting.type.information': 'Information ELIP',
-  'council.voting.type.process': 'Process ELIP',
   'council.voting.type.support': 'Yes',
   'council.voting.type.reject': 'No',
   'council.voting.type.abstention': 'Abstained',
@@ -803,159 +880,13 @@ const en = {
   'council.voting.voteResult.all': 'All',
   'council.voting.voteResult.unvoted': 'Unvoted by me',
 
+  'council.voting.voteResult.onchain':'Vote onchain',
+  
+  'council.voting.viewHistory.btn': 'Voting history',
+  'council.voting.viewHistory.current':'Current Voting',
+
   // Landing
-  'landing.elastos': 'Elastos',
-  'landing.alpha': 'ALPHA',
-  'landing.header': 'Powering Cyber Republic.',
-  'landing.playVideo': 'Play Video',
-  'landing.action.enter': 'Enter',
-  'landing.action.here': 'Here',
-  'landing.stayUpdate': 'Stay up to date with Cyber Republic',
-  'landing.whatIs': 'What is Elastos?',
-
-  'landing.whatIs.content.1':
-    'Elastos is the first completely safe and decentralized environment on the internet. Built with blockchain, it provides a virtual ecosystem where decentralized applications are protected from direct access with the internet while allowing near infinite scalability to billions of users.',
-  'landing.whatIs.content.2':
-    'Elastos is a “Cyber Republic” that enables wealth generation through the ownership and exchange of data and digital assets.',
-
-  'landing.cr100.content.1': 'Welcome to the Internet of',
-  'landing.cr100.content.2': 'Everything, where security',
-  'landing.cr100.content.3': ' & freedom are by design',
-  'landing.cr100.content.4': 'Join Us in Building the First 100 Projects',
-
-  'landing.solution.explained.1':
-    'The main chain handles basic payments and hash storage. Everything else, including smart contracts, run on sidechains where applications have the ability to create additional sidechains.',
-  'landing.solution.explained.2':
-    'Elastos is merge mined with Bitcoin to reduce energy consumption and provide the Bitcoin network security to all applications. Sidechains are included thereby utilizing Bitcoin hashpower in multiple chains at once.',
-  'landing.solution.explained.3':
-    'Employing PoW+DPoS as a consensus model for the Elastos Blockchain, sidechains may choose POW merge mining with ELA or between consensus models such as PoS, DPoS, DBFT, and others.',
-
-  'landing.elaSol': 'The Elastos Solution',
-  'landing.scalability': 'Scalability',
-  'landing.mainSideChain': 'Main Chain + Sidechain Structure',
-  'landing.security': 'Security',
-  'landing.mergeMining': 'Merge Mining',
-  'landing.consensus': 'Consensus',
-  'landing.consensusMulti': 'Multiple Consensus Methods',
-
-  'landing.fourPillars': 'The Four Pillars',
-  'landing.ofSmartWeb': 'of The Elastos Smart Web',
-  'landing.blockchain': 'Elastos Blockchain',
-  'landing.blockchain.content.1': 'Establishing trust on the Internet by',
-  'landing.blockchain.content.2': 'building a decentralized Smart Web',
-  'landing.blockchain.content.3': 'where devices, individuals, websites',
-  'landing.blockchain.content.4': 'and digital assets have trustworthy IDs.',
-  'landing.runtime': 'Elastos Runtime',
-  'landing.runtime.content.1': 'A lightweight operating system that',
-  'landing.runtime.content.2': 'can run on mobile devices or PCs',
-  'landing.runtime.content.3': 'that prevents applications from',
-  'landing.runtime.content.4': 'directly accessing the internet.',
-  'landing.software': 'Elastos Software',
-  'landing.software.devkit': 'Development Kit',
-  'landing.software.content.1': 'Used to access IDs and Elastos',
-  'landing.software.content.2': 'Carrier service on the Smart Web.',
-  'landing.carrier': 'Elastos Carrier',
-  'landing.carrier.content.1': 'Completely decentralized peer-to-peer',
-  'landing.carrier.content.2': 'platform that conveys information for',
-  'landing.carrier.content.3': 'applications by taking over all network',
-  'landing.carrier.content.4': 'traffic between virtual machines.',
-
-  'landing.businessModel.the': 'The',
-  'landing.businessModel': 'Elastos Business Model',
-  'landing.businessModel.content.1': 'Fulfill the essential missing link for',
-  'landing.businessModel.content.2': 'peer-to-peer communication between',
-  'landing.businessModel.content.3': 'ALL smart devices including IoT',
-  'landing.businessModel.content.4': 'and autonomous vehicles.',
-  'landing.businessModel.content.5': 'Provide large blockchain',
-  'landing.businessModel.content.6': 'applications with a secure',
-  'landing.businessModel.content.7': 'running environment.',
-  'landing.businessModel.content.8': 'Big data and digital content',
-  'landing.businessModel.content.9': 'will be able to identify',
-  'landing.businessModel.content.10': 'ownership on the blockchain.',
-  'landing.businessModel.content.11': 'Wealth generation through the',
-  'landing.businessModel.content.12': 'exchange of tokens traded',
-  'landing.businessModel.content.13': 'legally on the blockchain.',
-  'landing.businessModel.content.14': 'Usage of ELA tokens to register',
-  'landing.businessModel.content.15': 'IDs for purchase of items such',
-  'landing.businessModel.content.16': 'as DApps, digital products, and',
-  'landing.businessModel.content.17': 'cloud storage.',
-  'landing.businessModel.content.18': 'Scarcity creation through',
-  'landing.businessModel.content.19': 'limiting the fixed amount of',
-  'landing.businessModel.content.20': 'digital assets.',
-  'landing.businessModel.content.21': 'Provide large blockchain applications',
-  'landing.businessModel.content.22': 'the ability to run on a device rather',
-  'landing.businessModel.content.23': 'than blockchain nodes.',
-  'landing.businessModel.content.24': 'Offer a secure runtime environment',
-  'landing.businessModel.content.25': 'free of man-in-the-middle, distributed',
-  'landing.businessModel.content.26': 'denial-of-service, and additional',
-  'landing.businessModel.content.27': 'cyber-attacks.',
-  'landing.businessModel.content.28': 'Easily port existing mobile',
-  'landing.businessModel.content.29': 'applications to the Elastos platform',
-  'landing.businessModel.content.30': 'by means of an SDK integration.',
-  'landing.businessModel.content.31': 'Longevity of digital content',
-  'landing.businessModel.content.32': 'through numerous uses.',
-
-  'landing.vision.header': 'Our Vision Is',
-  'landing.vision.content.1': 'to provide',
-  'landing.vision.content.2': 'users with a trustful',
-  'landing.vision.content.3': 'runtime environment',
-
-  'landing.application.header': 'Applications',
-  'landing.application.content.1':
-    'Applications on Elastos will run in a trustful runtime environment that utilizes blockchain technology. This creates real security by providing a “sandboxed” environment that will need verification from the blockchain before allowing access to the internet. This enables massive potential for the construction of any type of application with any use case or scenario.',
-  'landing.application.content.2': 'The following are examples of use cases',
-  'landing.application.content.3':
-    'for applications that could be built on Elastos:',
-
-  'landing.usecase.content.1': 'Support point-to-point conversation,',
-  'landing.usecase.content.2': 'point-to-point document transfer through',
-  'landing.usecase.content.3': 'decentralized P2P communication.',
-  'landing.usecase.content.4': 'Support point-to-point business',
-  'landing.usecase.content.5': 'through decentralized payment.',
-  'landing.usecase.content.6': 'Support applications about evidence,',
-  'landing.usecase.content.7': 'traceability to source, ID verification,',
-  'landing.usecase.content.8': 'etc. through trustful storage.',
-  'landing.usecase.content.9':
-    'Support digital content APPs, such as: electronic',
-  'landing.usecase.content.10':
-    'books, games and video players. All digital assets',
-  'landing.usecase.content.11': 'can be protected in a trustful environment.',
-
-  'landing.elaToken': 'Elastos Token (ELA)',
-  'landing.elaToken.content.1':
-    'ELA tokens will be used to register IDs on the blockchain, opening the door to the Elastos ecosystem. Once inside, countless exchange opportunities will be available.',
-  'landing.elaToken.content.2':
-    'You can purchase Decentralized Applications, acquire Cloud storage, buy and sell digital products and assets like songs, movies, books, and videos, and limitless other resources.',
-  'landing.elaToken.content.3':
-    'In addition, holders of ELA tokens will be provided the opportunity to invest in numerous projects. For every DApp operating on Elastos, it will be essential to have ELA for registering digital assets thus creating a continuous necessity for the token.',
-
   'landing.cr': 'Cyber Republic',
-  'landing.contribute.1':
-    'We are a diverse democratic group of leaders, developers, organizers and designers',
-  'landing.contribute.2':
-    'formed to promote Elastos in our communities. Membership is open to everyone.',
-  'landing.contribute.mob.1': 'We are a diverse democratic group of',
-  'landing.contribute.mob.2': 'leaders, developers, organizers and',
-  'landing.contribute.mob.3': 'designers formed to promote Elastos',
-  'landing.contribute.mob.4': 'in our communities. Membership is',
-  'landing.contribute.mob.5': 'open to everyone.',
-  'landing.contribute.action.1': 'Become',
-  'landing.contribute.action.2': ' a Contributor',
-
-  'landing.empower35.header': 'Empower35',
-  'landing.empower35.partnership': 'Partnership Lead',
-  'landing.empower35.marketer': 'Marketer',
-  'landing.empower35.legal': 'Legal Council',
-  'landing.empower35.video': 'Videographer',
-  'landing.empower35.designer': 'Designer',
-  'landing.empower35.writer': 'Writer',
-  'landing.empower35.dapp': 'DApp Analyst',
-  'landing.empower35.evangelist': 'Evangelist',
-  'landing.empower35.action.1': 'View All',
-  'landing.empower35.action.2': 'Positions',
-
-  'landing.footer.header.1': 'Become a part of the',
-  'landing.footer.header.2': 'Cyber Republic',
   'landing.footer.note': 'Stay up to date with Cyber Republic',
   'landing.footer.email': 'Enter Email',
   'landing.footer.resources': 'Resources',
@@ -969,21 +900,8 @@ const en = {
   'landing.footer.support': 'Support',
   'landing.footer.contacts': 'Other',
   'landing.footer.join': 'Join Us On',
-
-  'landing.footer.legal': 'Legal',
   'landing.footer.privacyPolicy': 'Privacy Policy',
   'landing.footer.termsAndConditions': 'Terms & Conditions',
-
-  'landing.0220':
-    'ELA tokens will be used to register IDs on the blockchain, opening the door to the Elastos ecosystem. Once inside, countless exchange opportunities will be available.',
-  'landing.0221':
-    'You can purchase Decentralized Applications, acquire Cloud storage, buy and sell digital products and assets like songs, movies, books, and videos, and limitless other resources.',
-  'landing.0222':
-    'In addition, holders of ELA tokens will be provided the opportunity to invest in numerous projects. For every DApp operating on Elastos, it will be essential to have ELA for registering digital assets thus creating a continuous necessity for the token.',
-
-  'landing.0230':
-    'Applications on Elastos will run in a trustful runtime environment that utilizes blockchain technology. This creates real security by providing a “sandboxed” environment that will need verification from the blockchain before allowing access to the internet. This enables massive potential for the construction of any type of application with any use case or scenario.',
-  'landing.0231': '',
 
   // Project Detail
   'pdetail.like': 'Like',
@@ -1019,6 +937,9 @@ const en = {
   'role.admin.mode': 'Admin Mode',
 
   // Profile
+  'profile.associateDid': 'Associate DID',
+  'profile.qrcodeTip': 'Open ELA wallet and scan',
+  'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
   'profile.skillsets': 'My Skillsets',
   'profile.completeProfile': 'Complete your Profile',
@@ -1048,7 +969,8 @@ const en = {
   'profile.profession.ECONOMICS': 'Economics',
   'profile.profession.MANAGEMENT': 'Management',
   'profile.profession.OTHER': 'Other',
-  'profile.complete': 'Complete Your Profile',
+  // 'profile.complete': 'Complete Your Profile',
+  'profile.complete': 'Please associate your DID using ELA wallet. [Associate now]',
   'profile.complete.dismiss': 'Dismiss',
   'profile.skillsDetails.placeholder':
     'Explain more about your skills, work experience, etc.',
@@ -1123,6 +1045,18 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
+  'profile.member.vote.qrcodeTip':'Open ELA wallet and scan vote (for community review)',
+
+  'profile.forms.table.header.title': 'Title',
+  'profile.forms.table.header.name': 'Name',
+  'profile.forms.table.header.campaign': 'Campaign',
+  'profile.forms.table.header.created': 'CreatedAt',
+  'profile.forms.show': 'Show Archived',
+  'profile.forms.search': 'Search',
+
+  'profile.form.headline': 'Headline',
+  'profile.form.headline.error': 'Please input headline!',
+
   // Validate Form
   'ambassadors.form.required': 'This must be filled out',
   'ambassadors.form.reason.max': 'Reason too long',
@@ -1184,6 +1118,7 @@ const en = {
   'profile.detail.no': 'No',
 
   'profile.popover.email': 'Email',
+  'profile.popover.did': 'DID',
   'profile.popover.name': 'Name',
   'profile.popover.copy': 'Copy',
   'profile.popover.viewProfile': 'View Profile',
@@ -1425,6 +1360,12 @@ const en = {
   'from.UserEditForm.label.profession': 'Profession',
   'from.UserEditForm.label.portfolio': 'Portfolio',
   'from.UserEditForm.label.github': 'GitHub',
+  'from.UserEditForm.label.linkedin': 'LinkedIn',
+  'from.UserEditForm.label.telegram': 'Telegram',
+  'from.UserEditForm.label.reddit': 'Reddit',
+  'from.UserEditForm.label.wechat': 'WeChat',
+  'from.UserEditForm.label.twitter': 'Twitter',
+  'from.UserEditForm.label.facebook': 'Facebook',
   'from.UserEditForm.username.required': 'Username is required',
   'from.UserEditForm.firstName.required': 'First name is required',
   'from.UserEditForm.lastName.required': 'Last name is required',
@@ -1451,6 +1392,12 @@ const en = {
   'from.UserProfileForm.text.lastName': 'Last Name',
   'from.UserProfileForm.text.slogan': 'Bio',
   'from.UserProfileForm.text.motto': 'Profile Motto',
+
+  'from.SuggestionForm.title': 'Relevance Detail',
+  'from.SuggestionForm.proposal': 'Proposal #',
+  'from.SuggestionForm.detail': 'Relevance Detail',
+  
+  'btn.CopyHash': 'Copy successful',
 
   // CR Video / Earn ELA page
   'cr-video.here': 'here',
@@ -1617,11 +1564,15 @@ const en = {
   'user.skillset.FINANCIAL_CONSULTING': 'Financial Consulting',
   'user.skillset.PRESENTATION': 'Business Presentations',
 
+  'user.update.council.secretariat.role': 'Update Role',
+  'user.update.council.secretariat.success': 'Update Success',
+
   // Council & Secretariat
   cs: {
     candidates: 'CANDIDATES',
     incumbent: 'INCUMBENT',
-    council: 'CYBER REPUBLIC INTERIM COUNCIL',
+    council: 'CYBER REPUBLIC COUNCIL',
+    intro: 'INTRODUCTION',
     voting: 'VOTING',
     secretariat: {
       title: 'SECRETARIAT',
@@ -1668,6 +1619,7 @@ const en = {
       }
     },
     contact: 'Contact',
+    did: 'DID',
     no1: {
       name: 'Alex Shipp',
       intro: 'Elastos Foundation Writer, Era of Quantum Wealth co-author, Quantum Wealth Supernode Owner, without a home base.',
@@ -1727,5 +1679,8 @@ en[`cvoteStatus.${CVOTE_STATUS.REJECT}`] = 'REJECTED'
 en[`cvoteStatus.${CVOTE_STATUS.FINAL}`] = 'FINAL'
 en[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = 'INCOMPLETED'
 en[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = 'DEFERRED'
+en[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = 'NOTIFICATION'
+en[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = 'VETOED'
+en[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = 'TERMINATED'
 
 export default en

@@ -9,8 +9,12 @@ export default {
   form: {
     add: 'Add a Release',
     edit: 'Edit Release',
+    name: 'Name',
+    desc: 'Desc',
   },
   modal: {
     delete: 'Are you sure to delete this Release?',
+    okText: 'Yes',
+    cancelText: 'Cancel'
   },
 }

@@ -3,63 +3,7 @@ import { CommentSchema } from './CommentSchema'
 import { SubscriberSchema } from './SubscriberSchema'
 import { constant } from '../../constant'
 import * as _ from 'lodash'
-
-const SuggestionCore = {
-  title: {
-    type: String
-  },
-  descUpdatedAt: Date,
-
-  // old fields
-  shortDesc: {
-    type: String,
-    maxLength: 255
-  },
-  desc: {
-    type: String
-  },
-  benefits: {
-    type: String
-  },
-  funding: {
-    type: Number
-  },
-  timeline: {
-    type: Date
-  },
-  link: [String],
-  coverImg: String,
-
-  // new fields
-  type: {
-    type: String,
-    enum: _.values(constant.SUGGESTION_TYPE)
-  },
-  abstract: {
-    type: String
-  },
-  goal: {
-    type: String
-  },
-  motivation: {
-    type: String
-  },
-  relevance: {
-    type: String
-  },
-  budgetAmount: {
-    type: Number
-  },
-  elaAddress: {
-    type: String
-  },
-  budget: {
-    type: Schema.Types.Mixed
-  },
-  plan: {
-    type: Schema.Types.Mixed
-  }
-}
+import { SuggestionCore } from './SuggestionCoreSchema'
 
 const tag = {
   type: {
@@ -85,6 +29,10 @@ export const Suggestion = {
   contentType: {
     type: String,
     enum: _.values(constant.CONTENT_TYPE)
+  },
+  version: {
+    type: Number,
+    default: 1.0
   },
   likes: {
     type: [Schema.Types.ObjectId],
@@ -140,6 +88,31 @@ export const Suggestion = {
       ref: 'cvote'
     }
   ],
-  tags: [tag]
+  tags: [tag],
+  signature: { data: String, message: String },
+  draftHash: String,
+  ownerPublicKey: String,
+  proposalHash: String,
+  // council members make suggesiton into proposal
+  proposers: [
+    {
+      did: String,
+      timestamp: String
+    }
+  ],
+  closeProposalNum: Number, // terminate a proposal
+  targetProposalNum: Number, // change the proposal owner
+  newOwnerDID: String,
+  // if no newOwnerDID, the newOwnerPublicKey is the compressed public key of  the target proposal's proposer
+  newOwnerPublicKey: String,
+  newOwnerSignature: { data: String, message: String },
+  newSecretarySignature: { data: String, message: String },
+  newSecretaryDID: String,
+  newSecretaryPublicKey: String,
+  targetProposalHash: String,
+  newAddress: String, // new ELA address
+  // if no newAddress, the newRecipient is the target proposal's ELA address
+  newRecipient: String,
+  old: Boolean, // mark an old suggestion
+  validPeriod: Number
 }
-

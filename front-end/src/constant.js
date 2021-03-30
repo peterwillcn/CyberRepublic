@@ -1,6 +1,6 @@
 import * as _ from 'lodash'
 
-const create = list => {
+const create = (list) => {
   return _.zipObject(list, list)
 }
 
@@ -219,9 +219,10 @@ export const TEAM_SUBCATEGORY = create([
   'DEVELOPER'
 ])
 // Images
-export const USER_AVATAR_DEFAULT = '/assets/images/user_blurred_white.png'
+export const USER_AVATAR_DEFAULT = '/assets/images/default_avatar.png'
 export const TASK_AVATAR_DEFAULT = '/assets/images/Elastos_Logo.png'
 export const TEAM_AVATAR_DEFAULT = '/assets/images/team_blurred.svg'
+export const SUGGESTION_BUTTON_DEFAULT = '/assets/images/comment_btn.png'
 
 // council vote
 export const CVOTE_STATUS = create([
@@ -231,7 +232,10 @@ export const CVOTE_STATUS = create([
   'REJECT',
   'FINAL',
   'DEFERRED',
-  'INCOMPLETED'
+  'INCOMPLETED',
+  'NOTIFICATION',
+  'VETOED',
+  'TERMINATED'
 ])
 
 export const CVOTE_STATUS_TEXT = {
@@ -242,6 +246,13 @@ export const CVOTE_STATUS_TEXT = {
   DEFERRED: 'DEFERRED',
   FINAL: 'FINAL',
   INCOMPLETED: 'INCOMPLETED'
+}
+
+export const CVOTE_CHAIN_STATUS = {
+  CHAINED: 'chained',
+  UNCHAIN: 'unchain',
+  CHAINING: 'chaining',
+  FAILED: 'failed'
 }
 
 export const CONTENT_TYPE = create(['MARKDOWN', 'HTML'])
@@ -272,6 +283,11 @@ export const CVOTE_SUMMARY_STATUS = create([
   'PUBLISHED',
   'REJECT'
 ])
+export const CVOTE_WITHDRAWAL_STATUS = create([
+  'REVIEWING',
+  'APPROVED',
+  'REJECTED'
+])
 
 export const CVOTE_TRACKING_STATUS_TEXT = {
   [CVOTE_TRACKING_STATUS.DRAFT]: 'DRAFT',
@@ -293,10 +309,16 @@ export const avatar_map = {
     'https://s3-ap-southeast-1.amazonaws.com/s3-cr-asia-prod/19691cdc-913f-40d1-9d1d-f88b709fcecf_yipeng.jpeg'
 }
 
-export const CVOTE_TYPE = {
-  1: 'New Motion',
-  2: 'Motion Against',
-  3: 'Anything Else'
+export const PROPOSAL_TYPE = {
+  NEW_MOTION: '1',
+  MOTION_AGAINST: '2',
+  ANYTHING_ELSE: '3',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL',
+  STANDARD_TRACK: '4',
+  PROCESS: '5',
+  INFORMATIONAL: '6'
 }
 
 export const USER_SKILLSET = {
@@ -380,7 +402,12 @@ export const USER_PROFESSION = create([
 ])
 
 // suggestion
-export const SUGGESTION_STATUS = create(['ACTIVE', 'ABUSED', 'ARCHIVED'])
+export const SUGGESTION_STATUS = create([
+  'ACTIVE',
+  'ABUSED',
+  'ARCHIVED',
+  'CANCELLED'
+])
 
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 
@@ -423,3 +450,30 @@ export const ELIP_VOTE_STATUS_COLOR = {
 }
 export const ELIP_TYPE = create(['STANDARD_TRACK', 'PROCESS', 'INFORMATIONAL'])
 export const ELIP_NUMBER_TYPE = ['4', '5', '6']
+
+export const MILESTONE_STATUS = create([
+  'WAITING_FOR_REQUEST',
+  'REJECTED',
+  'WAITING_FOR_APPROVAL',
+  'WAITING_FOR_WITHDRAWAL',
+  'WITHDRAWN'
+])
+export const REVIEW_OPINION = create(['REJECTED', 'APPROVED'])
+export const SUGGESTION_TYPE = {
+  NEW_MOTION: '1',
+  MOTION_AGAINST: '2',
+  ANYTHING_ELSE: '3',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
+}
+export const TAB_KEYS = [
+  'type',
+  'abstract',
+  'motivation',
+  'goal',
+  'planBudget',
+  'teamInfo',
+  'relevance'
+]
+export const NEW_TAB_KEYS = ['type', 'abstract', 'motivation']

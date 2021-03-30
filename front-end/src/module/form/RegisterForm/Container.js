@@ -11,7 +11,7 @@ message.config({ top: 100 })
  */
 export default createContainer(
   Component,
-  state => {
+  (state) => {
     return {
       ...state.user.register_form,
       language: state.language
@@ -21,17 +21,16 @@ export default createContainer(
     const userService = new UserService()
 
     return {
-      async register(username, password, profile) {
+      async register(username, password, did, email) {
         try {
-          const rs = await userService.register(username, password, profile)
-
+          const rs = await userService.register(username, password, did, email)
           if (rs) {
             const registerRedirect = sessionStorage.getItem('registerRedirect')
 
             if (registerRedirect) {
               return true
             }
-            this.history.push('/crcles')
+            this.history.push('/')
           }
         } catch (err) {
           message.error(

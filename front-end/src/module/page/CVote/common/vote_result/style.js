@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { CVOTE_RESULT, CVOTE_RESULT_COLOR } from '@/constant'
+import { CVOTE_RESULT_COLOR } from '@/constant'
 import { breakPoint } from '@/constants/breakPoint'
 import AvatarIcon from './AvatarIcon'
 
@@ -26,22 +26,21 @@ export const Label = styled.div`
 
 export const List = styled.div`
   position: relative;
-  padding: 40px;
-  /* display: ${props => (props.type === CVOTE_RESULT.REJECT ? 'block' : 'flex')}; */
+  padding: 40px 20px;
   display: block;
   align-items: center;
   box-sizing: border-box;
   height: 100%;
   border-left: 10px solid;
-  border-color: ${props => CVOTE_RESULT_COLOR[props.type]};
+  border-color: ${(props) => CVOTE_RESULT_COLOR[props.type]};
   &:after {
-    content: " ";
+    content: ' ';
     min-width: 500px;
     position: absolute;
     left: 5px;
     right: 5px;
     bottom: -7px;
-    border-bottom: 1px solid #E5E5E5;
+    border-bottom: 1px solid #e5e5e5;
   }
   @media only screen and (max-width: ${breakPoint.mobile}) {
     padding: 5px;
@@ -49,10 +48,28 @@ export const List = styled.div`
 `
 
 export const Item = styled.div`
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
-  margin-left: 28px;
-  @media only screen and (max-width: ${breakPoint.mobile}) {
-    margin-left: 5px;
+  .status {
+    text-align: center;
+    border-radius: 10px;
+    font-size: 13px;
+    width: 70px;
+    height: 20px;
+    margin-top: 8px;
+  }
+  .status.chained {
+    color: #fff;
+    background: #008d85;
+  }
+  .status.unchain {
+    background: #ffffff;
+    border: 1px solid #008d85;
+    color: #008d85;
   }
 `
 

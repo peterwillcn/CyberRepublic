@@ -2,7 +2,7 @@ import * as _ from 'lodash'
 
 const create = (constant_list: string[]): any => {
   const map = {}
-  _.each(constant_list, key => {
+  _.each(constant_list, (key) => {
     map[key] = key
   })
 
@@ -12,7 +12,10 @@ const create = (constant_list: string[]): any => {
 export const SUGGESTION_TYPE = {
   NEW_MOTION: '1',
   MOTION_AGAINST: '2',
-  ANYTHING_ELSE: '3'
+  ANYTHING_ELSE: '3',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
 }
 
 export const CVOTE_TYPE = {
@@ -21,7 +24,19 @@ export const CVOTE_TYPE = {
   ANYTHING_ELSE: '3',
   STANDARD_TRACK: '4',
   PROCESS: '5',
-  INFORMATIONAL: '6'
+  INFORMATIONAL: '6',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
+}
+
+export const CVOTE_TYPE_API = {
+  CHANGE_PROPOSAL: 'changeproposalowner',
+  CHANGE_SECRETARY: 'secretarygeneral',
+  TERMINATE_PROPOSAL: 'closeproposal',
+  1: 'normal',
+  2: 'motion_against',
+  3: 'anything_else',
 }
 
 export const USER_ROLE = {
@@ -150,15 +165,30 @@ export const TASK_CANDIDATE_CATEGORY = {
   RSVP: 'RSVP'
 }
 
+export const TERM_COUNCIL_STATUS = create(['HISTORY', 'CURRENT', 'VOTING'])
+
+export const COUNCIL_STATUS = {
+  ELECTED: 'Elected',
+  IMPEACHED: 'Impeached',
+  RETURNED: 'Returned',
+  TERMINATED: 'Terminated',
+  INACTIVE: 'Inactive'
+}
+
+export const SECRETARIAT_STATUS = create(['CURRENT', 'NON_CURRENT'])
+
 // ACTIVE === PASSED, currently 'published' flag is used for 'DRAFT'
 export const CVOTE_STATUS = create([
   'DRAFT',
   'PROPOSED',
+  'NOTIFICATION',
   'ACTIVE',
   'REJECT',
   'FINAL',
   'DEFERRED',
-  'INCOMPLETED'
+  'INCOMPLETED',
+  'VETOED',
+  'TERMINATED'
 ])
 export const CVOTE_TRACKING_STATUS = create([
   'DRAFT',
@@ -184,13 +214,21 @@ export const ELIP_VOTE_RESULT = {
   ABSTENTION: 'abstention',
   UNDECIDED: 'undecided'
 }
+export const CVOTE_CHAIN_STATUS = {
+  CHAINED: 'chained',
+  UNCHAIN: 'unchain',
+  CHAINING: 'chaining',
+  FAILED: 'failed'
+}
 // expiration period: 7 days
-export const CVOTE_EXPIRATION = 1000 * 60 * 60 * 24 * 7
+export const CVOTE_EXPIRATION = 1000 * 60 * 60 * 24 * 14
+export const CVOTE_COUNCIL_EXPIRATION = 1000 * 60 * 60 * 24 * 7
 export const ELIP_EXPIRATION = 1000 * 60 * 60 * 24 * 7
 
 export const CONTENT_TYPE = create(['MARKDOWN', 'HTML'])
 
 export const ONE_DAY = 1000 * 60 * 60 * 24
+export const THREE_DAY = 1000 * 60 * 60 * 24 * 3
 
 export const USER_SKILLSET = {
   DESIGN: create([
@@ -275,7 +313,13 @@ export const USER_PROFESSION = create([
   'MANAGEMENT'
 ])
 
-export const SUGGESTION_STATUS = create(['ACTIVE', 'ABUSED', 'ARCHIVED'])
+export const SUGGESTION_STATUS = create([
+  'ACTIVE',
+  'ABUSED',
+  'ARCHIVED',
+  'PROPOSED',
+  'CANCELLED'
+])
 
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 
@@ -296,14 +340,18 @@ export const DB_SELECTED_FIELDS = {
   USER: {
     NAME: 'profile.firstName profile.lastName username',
     NAME_EMAIL: 'profile.firstName profile.lastName username email',
-    NAME_AVATAR: 'profile.avatar profile.firstName profile.lastName username'
+    // prettier-ignore
+    NAME_AVATAR: 'profile.avatar profile.firstName profile.lastName username did.didName',
+    // prettier-ignore
+    NAME_EMAIL_DID: 'profile.avatar profile.firstName profile.lastName username email did'
   },
   SUGGESTION: {
     ID: 'displayId'
   },
   CVOTE: {
     ID: 'vid',
-    ID_STATUS: 'vid status'
+    ID_STATUS: 'vid status',
+    ID_STATUS_HASH_TXID: 'vid status proposalHash txHash'
   }
 }
 
@@ -318,13 +366,43 @@ export const ELIP_STATUS = create([
   'SUBMITTED_AS_PROPOSAL'
 ])
 
-export const ELIP_REVIEW_STATUS = create([
-  'APPROVED',
-  'REJECTED'
+export const ELIP_REVIEW_STATUS = create(['APPROVED', 'REJECTED'])
+
+export const ELIP_TYPE = create(['STANDARD_TRACK', 'PROCESS', 'INFORMATIONAL'])
+
+export const MILESTONE_STATUS = create([
+  'WAITING_FOR_REQUEST',
+  'REJECTED',
+  'WAITING_FOR_APPROVAL',
+  'WAITING_FOR_WITHDRAWAL',
+  'WITHDRAWN'
+])
+export const REVIEW_OPINION = create(['REJECTED', 'APPROVED'])
+
+export const PROPOSAL_TRACKING_TYPE = {
+  PROGRESS: 'progress',
+  REJECTED: 'rejected',
+  TERMINATED: 'terminated',
+  CHANGEOWNER: 'changeowner',
+  FINALIZED: 'finalized'
+}
+
+export const SUGGESTION_BUDGET_TYPE = create([
+  'ADVANCE',
+  'COMPLETION',
+  'CONDITIONED'
 ])
 
-export const ELIP_TYPE = create([
-  'STANDARD_TRACK',
-  'PROCESS',
-  'INFORMATIONAL'
-])
+export const TRANSACTION_TYPE = {
+  SUGGESTION_TO_PROPOSAL: 37,
+  COUNCIL_VOTE: 38
+}
+
+export const API_VOTE_TYPE = {
+  PROPOSAL: 'proposalvote',
+  SUGGESTION: 'suggestionvote'
+}
+
+export const DID_PREFIX = 'did:elastos:'
+export const ELA_BURN_ADDRESS = 'ELANULLXXXXXXXXXXXXXXXXXXXXXYvs3rr'
+export const DEFAULT_BUDGET = [{ type: 'finalpayment', stage: 1, amount: '0' }]

@@ -8,6 +8,7 @@ import getting_started from './en/getting_started'
 import whitepaper from './zh/whitepaper'
 import elip from './zh/elip'
 import area from './zh/area'
+import milestone from './zh/milestone'
 
 const zh = {
   council,
@@ -19,6 +20,7 @@ const zh = {
   whitepaper,
   elip,
   area,
+  milestone,
   // Header
   '0000': 'ALPHA版本',
   '0001': '奖励计划',
@@ -118,14 +120,16 @@ const zh = {
   2306: '社区',
   'profile.suggestion': '我的建议',
 
+  'login.access.forum': '请先登录或注册 Cyber Republic 账号后访问论坛',
   'login.success': '欢迎回来',
   'logout.success': '登出成功',
+  'login.noBindingDID': '请注册账号或用已有账号登陆',
 
   'mentions.notFound': '该用户不存在',
 
   'meta.postedBy': '发布者',
   'image.upload.type.error': '上传的文件不是图片',
-  'image.upload.size.error': '上传的文件大小不能超过500KB',
+  'image.upload.size.error': '上传的文件大小不能超过10M',
 
   comments: '评论',
   'comments.posts': '动态',
@@ -149,6 +153,11 @@ const zh = {
   'popup.changes.2018-12-26.4': '您还可以通过右上角的链接自动登录论坛：',
   'popup.changes.2018-12-26.5': '更新后的CR网站将于2019年1月15日重新上线，更多信息请参考：',
   'popup.changes.2018-12-26.blog_link': 'https://blog.cyberrepublic.org/zh/2018/12/26/cyber-republic%E7%9A%84%E9%87%8D%E8%A6%81%E5%85%AC%E5%91%8A',
+  
+  'popup.suggestion.title': '关于 CR 网站升级的说明',
+  'popup.suggestion.member': '各 CR 成员：',
+  'popup.suggestion.content': 'CRC 共识将于 2020 年 6 月 10 日 10 时上线，为配合委员会职能，CR 网站近期将进行技术升级。建议提交功能将暂停并于2020年6月10日重启，新建议将交由首届CR委员会负责。',
+  'popup.suggestion.team': 'CR 网站技术团队',
 
   // LoginForm
   'login.label_username': '请输入用户名或邮箱',
@@ -161,6 +170,8 @@ const zh = {
   'login.reset': '重置密码',
   'login.title': '登录 Cyber Republic',
   'login.description_1': '输入密码',
+  'login.withDid': '用 Elastos DID 登录',
+  'login.qrcodeTip': '打开 ELA wallet 应用扫码登录',
 
   // Logout
   'logout.title': '确定登出吗?',
@@ -273,11 +284,12 @@ const zh = {
   'suggestion.archived': '归档的',
   'suggestion.archive': '归档',
   'suggestion.unarchive': '取消归档',
+  'suggestion.duplicate': '复制内容',
   'suggestion.search': '搜索',
   'suggestion.cancel': '取消',
   'suggestion.submit': '提交',
   'suggestion.header.edit': '编辑',
-  'suggestion.editHistory': '编辑历史',
+  'suggestion.editHistory': '版本历史',
   'suggestion.showEditHistory': '查看编辑历史',
   'suggestion.edited': '编辑于',
   'suggestion.form.mention.allCouncil': '所有委员',
@@ -292,7 +304,9 @@ const zh = {
   'suggestion.form.fields.timeline': '时间计划',
   'suggestion.form.fields.links': '相关链接',
   'suggestion.form.fields.linksSplit': '相关链接 (逗号分隔)',
-
+  'suggestion.form.fields.duplicate': '快速复制建议',
+  'suggestion.form.fields.duplicate.number': '建议编号',
+  'suggestion.form.fields.duplicate.button': '快速复制',
   // social share
   'socialShare.wechat.desc': '打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮。',
 
@@ -307,6 +321,8 @@ const zh = {
   // suggestion error
   'suggestion.create.error.required': '必填项',
   'suggestion.create.error.tooShort': '文字太短',
+  'suggestion.vote.error.empty': '请输入内容',
+  'suggestion.vote.error.tooLong': '内容太长',
 
   // suggestion rules
   'suggestion.rules': '规则',
@@ -335,7 +351,63 @@ const zh = {
     '向亦来云基金会或CR的任何成员索要信息将不被受理，这超出了CR共识的范畴。对于这些问题，请联系社区经理。',
 
   // Roles & Permissions
-  'permission.title': 'Roles & Permissions',
+  'permission.title': '角色与权限',
+  'permission.btn': '创建权限',
+  'permission.btn.tips': '要求服务器重新启动才能生效',
+  'permission.form.name': '名称',
+  'permission.form.resource': '资源类型',
+  'permission.form.desc': '描述',
+  'permission.form.http': 'Http请求方法',
+  'permission.form.url': 'Url',
+  'permission.tab.admin': '管理员',
+  'permission.tab.council': '委员',
+  'permission.tab.secretary': '秘书长',
+  'permission.tab.custom': '自定义',
+  'permission.tab.member': '用户',
+  'permission.tab.leader': '领导者',
+  
+  // Communities
+  'communities.btn': '添加国家',
+  'communities.btn.add': '添加国家',
+  'communities.btn.cancel': '取消',
+  'communities.btn.delete': '删除',
+  'communities.form.country': '国家',
+  'communities.form.name': '名称',
+  'communities.form.leader': '领导者',
+  'communities.form.organizer': '组织者',
+  'communities.form.required':'这是必填项',
+  'communities.form.country.placeholder': '请选择一个国家',
+  'communities.form.leader.placeholder': '请选择一个用户',
+  'communities.form.add.success': '成功添加新国家',
+  'communities.form.add.error': '添加国家/地区时出错',
+  'communities.form.organizer.change': '更改组织者',
+  
+  'communities.organizer.has': '有组织者',
+  'communities.organizer.needs': '需要一个组织者',
+
+  'communitites.country.organizers': '国家组织者',
+  'communities.btn.add.country': '添加',
+  'communities.btn.add.state': '添加州省',
+  'communities.btn.add.city': '添加城市',
+  'communities.btn.add.region': '添加地区',
+  'communities.btn.add.school': '添加学校',
+  'communities.btn.add.region': '添加地区',
+  'communities.btn.update.state': '更新州省',
+  'communities.btn.update.city': '更新城市',
+  'communities.btn.update.region': '更新地区',
+  'communities.btn.update.school': '更新学校',
+  'communities.form.title.state': '添加州省',
+  'communities.form.title.city': '添加城市',
+  'communities.form.title.region': '添加地区',
+  'communities.form.title.school': '添加学校',
+  'communities.form.organizer.success': '成功添加新的组织者',
+  'communities.form.organizer.error': '添加组织者是出错',
+  'communitites.form.country.change': '成功更改组织者',
+  'communities.form.country.update': '更新社区成功',
+  'communities.form.country.delete': '删除社区成功',
+  'communitites.form.country.success': '成功添加新的子社区',
+  'communitites.form.country.error': '添加新的子社区时出错',
+
 
   // Developer
   'developer.breadcrumb.developers': '社区',
@@ -675,6 +747,8 @@ const zh = {
   'task.applyReason': '为什么您想加入这个任务',
   'task.createNew': '提交一个新任务',
 
+  'task.select.status': '选择一个状态',
+
   // General
   'select.placeholder': '请选择',
   '.ok': '确定',
@@ -729,19 +803,22 @@ const zh = {
   'council.voting.voteByCouncil': '委员会投票结果',
   'council.voting.councilMembersVotes': '委员会成员投票',
   'council.voting.votingEndsIn': '投票剩余时间',
+  'council.voting.communityEndsIn': '社区投票剩余时间',
   'council.voting.votingEndsIn.ended': '已结束',
+  'council.voting.votingEndsIn.finished': '已结束',
+  'council.voting.votingEndsIn.approx': '大约',
   'council.voting.votingEndsIn.day': '天',
   'council.voting.votingEndsIn.days': '天',
+  'council.voting.votingEndsIn.hours': '小时',
+  'council.voting.votingEndsIn.minutes': '分钟',
   'council.voting.status': '状态',
   'council.voting.createdAt': '创建日期',
   'council.voting.proposedAt': '发布日期',
+  'council.voting.chainStatus.chained':'已上链',
+  'council.voting.chainStatus.chaining':'上链中',
+  'council.voting.chainStatus.unchain':'未上链',
+  'council.voting.chainStatus.failed':'上链失败',
 
-  'council.voting.type.newMotion': '新动议',
-  'council.voting.type.motionAgainst': '反对动议',
-  'council.voting.type.anythingElse': '其它事宜',
-  'council.voting.type.standardTrack': '标准跟踪 ELIP',
-  'council.voting.type.information': '信息 ELIP',
-  'council.voting.type.process': '流程 ELIP',
   'council.voting.type.support': '赞成',
   'council.voting.type.reject': '否决',
   'council.voting.type.abstention': '弃权',
@@ -776,185 +853,29 @@ const zh = {
   'council.voting.voteResult.show': '显示',
   'council.voting.voteResult.all': '所有',
   'council.voting.voteResult.unvoted': '待投票',
+  
+  'council.voting.voteResult.onchain':'投票上链',
+
+  'council.voting.viewHistory.btn': '投票历史',
+  'council.voting.viewHistory.current':'当前投票',
 
   // Landing
-  'landing.elastos': 'Elastos',
-  'landing.alpha': 'ALPHA',
-  'landing.header': '支持Cyber Republic.',
-  'landing.playVideo': '播放视频',
-  'landing.action.enter': '进入社区',
-  'landing.action.here': '点击这里',
-  'landing.stayUpdate': '跟进Cyber Republic最新动态',
-  'landing.whatIs': '什么是亦来云?',
-
-  'landing.whatIs.content.1':
-    '亦来云是第一个完全安全和去中心化的互联网环境。使用区块链构建，它提供了一个虚拟生态系统，来保护去中心化式应用程序不受互联网的直接访问，同时为数十亿用户提供近乎无限的可扩展性。',
-  'landing.whatIs.content.2':
-    '亦来云是一个“Cyber Republic”，通过对数据和数字资产的确权和交换来产生财富。',
-
-  'landing.cr100.content.1': '欢迎来到万物互联的世界，',
-  'landing.cr100.content.2': '在这里，',
-  'landing.cr100.content.3': '安全和自由天然存在。',
-  'landing.cr100.content.4': '加入我们一起构建前100个项目。',
-
-  'landing.solution.explained.1':
-    '主链处理基本的支付和哈希存储。其他所有信息，包括智能合约，都运行在侧链上，其中应用程序能够创建额外的侧链。',
-  'landing.solution.explained.2':
-    '亦来云与比特币联合挖矿可以降低能源消耗并且为所有应用提供比特币网络安全。包含侧链，从而可以同时在多个链中使用比特币哈希算力。',
-  'landing.solution.explained.3':
-    '使用PoW+DPoS作为亦来云区块链的共识模型，侧链可以选择与ELA进行PoW联合挖矿，或者在PoS、DPoS、DBFT等共识模型之间进行合并。',
-
-  'landing.elaSol': '亦来云的解决方案',
-  'landing.scalability': '可扩展性',
-  'landing.mainSideChain': '主链+侧链结构',
-  'landing.security': '安全',
-  'landing.mergeMining': '联合挖矿',
-  'landing.consensus': '共识机制',
-  'landing.consensusMulti': '混合共识方案',
-
-  'landing.fourPillars': '亦来云智能网络',
-  'landing.ofSmartWeb': '的四大支柱',
-  'landing.blockchain': '亦来云区块链',
-  'landing.blockchain.content.1': '通过构建去中心化智能网络',
-  'landing.blockchain.content.2': '在互联网上建立信任，赋予',
-  'landing.blockchain.content.3': '设备、个人、网站以及',
-  'landing.blockchain.content.4': '数字资产可信的IDs。',
-  'landing.runtime': '亦来云Runtime',
-  'landing.runtime.content.1': '一个轻量级操作系统',
-  'landing.runtime.content.2': '可以运行在移动设备或pc上',
-  'landing.runtime.content.3': '防止应用程序直接访问互联网。',
-  'landing.runtime.content.4': '',
-  'landing.software': '亦来云',
-  'landing.software.devkit': 'SDK',
-  'landing.software.content.1': '用于访问IDs和Elastos',
-  'landing.software.content.2': '智能网络上的运营商服务。',
-  'landing.carrier': '亦来云Carrier',
-  'landing.carrier.content.1': '完全去中心化的点对点平台',
-  'landing.carrier.content.2': '通过接管所有虚拟机之间的',
-  'landing.carrier.content.3': '网络通信来实现信息的传递。',
-  'landing.carrier.content.4': '',
-
-  'landing.businessModel.the': '',
-  'landing.businessModel': 'Elastos商业模式',
-  'landing.businessModel.content.1': '实现所有智能设备(包括物',
-  'landing.businessModel.content.2': '联网和自动驾驶汽车)之间',
-  'landing.businessModel.content.3': '点对点网络通信缺失的',
-  'landing.businessModel.content.4': '必要链路的完整连接。',
-  'landing.businessModel.content.5': '为大型区块链应用',
-  'landing.businessModel.content.6': '程序提供安全的运',
-  'landing.businessModel.content.7': '行环境。',
-  'landing.businessModel.content.8': '为大数据和数字',
-  'landing.businessModel.content.9': '内容在区块链上',
-  'landing.businessModel.content.10': '确认所有权。',
-  'landing.businessModel.content.11': '通过在区块链上',
-  'landing.businessModel.content.12': '令牌的合法交换',
-  'landing.businessModel.content.13': '产生财富。',
-  'landing.businessModel.content.14': '使用ELA令牌注册',
-  'landing.businessModel.content.15': 'IDs来购买DApps、',
-  'landing.businessModel.content.16': '数字产品以及云存储。',
-  'landing.businessModel.content.17': '等服务',
-  'landing.businessModel.content.18': '通过限制数字资产',
-  'landing.businessModel.content.19': '的固定数量来创造',
-  'landing.businessModel.content.20': '稀缺性。',
-  'landing.businessModel.content.21': '赋予大型区块链应用程序',
-  'landing.businessModel.content.22': '能够在设备上而不是在区',
-  'landing.businessModel.content.23': '块链节点上运行的能力。',
-  'landing.businessModel.content.24': '提供一个安全的运行环境，',
-  'landing.businessModel.content.25': '免除中间环节，避免分布',
-  'landing.businessModel.content.26': '式拒绝服务攻击和其他',
-  'landing.businessModel.content.27': '网络攻击。',
-  'landing.businessModel.content.28': '通过集成SDK，轻松将',
-  'landing.businessModel.content.29': '现有的移动应用程序',
-  'landing.businessModel.content.30': '移植到Elastos平台。',
-  'landing.businessModel.content.31': '通过多种应用来保持',
-  'landing.businessModel.content.32': '数字内容的使用寿命。',
-
-  'landing.vision.header': '我们的愿景是',
-  'landing.vision.content.1': '为用户提供值得信赖的',
-  'landing.vision.content.2': '',
-  'landing.vision.content.3': '运行环境。',
-
-  'landing.application.header': '应用',
-  'landing.application.content.1':
-    '亦来云上的应用程序将运行在利用区块链技术构建的可靠运行环境中。它通过提供一个“沙箱”环境来创建真正的安全性，在允许访问internet之前，该环境需要从区块链得到验证。这为构建任何类型的应用程序和任何用例或场景提供了巨大的潜力。',
-  'landing.application.content.2': '下面是用例',
-  'landing.application.content.3': '关于在亦来云上构建应用程序:',
-
-  'landing.usecase.content.1': '通过去中心化的P2P',
-  'landing.usecase.content.2': '通信，支持点对点通话,',
-  'landing.usecase.content.3': '和点对点文档传输。',
-  'landing.usecase.content.4': '通过去中心化支付',
-  'landing.usecase.content.5': '支持点对点业务。',
-  'landing.usecase.content.6': '通过可信的储存来支持',
-  'landing.usecase.content.7': '应用程序的查证、溯源',
-  'landing.usecase.content.8': '和ID验证等等。',
-  'landing.usecase.content.9': '支持数字内容应用程序，如:电子书、',
-  'landing.usecase.content.10': '游戏和视频播放器。 所有数字资产都',
-  'landing.usecase.content.11': '可以在可信环境中得到保护。',
-
-  'landing.elaToken': '亦来云令牌(ELA)',
-  'landing.elaToken.content.1':
-    'ELA令牌将用于在区块链上注册ID，打开通往亦来云生态系统的大门。 一旦加入，您将会获得无数的交流机会。',
-  'landing.elaToken.content.2':
-    '您可以购买去中心化应用程序，获得云存储，购买和销售数字产品和资产，如歌曲、电影、书籍和视频，以及其他无限的资源。',
-  'landing.elaToken.content.3':
-    '此外，ELA令牌持有者将有机会投资于众多项目。对于在亦来云上运行的每一个DApp，拥有ELA来注册数字资产将是非常重要的，从而为ELA令牌创造持续的必要性。',
-
   'landing.cr': 'Cyber Republic',
-  'landing.contribute.1':
-    '我们是一个由领导者、开发者、组织者和设计师组成的多元化民主团体',
-  'landing.contribute.2':
-    '成立的目的是在我们的社区推广亦来云。会员资格向所有人开放。',
-  'landing.contribute.mob.1': '我们是一个多元化的民主团体',
-  'landing.contribute.mob.2': '领导者，开发者，组织者和',
-  'landing.contribute.mob.3': '设计师们为了在我们的社区',
-  'landing.contribute.mob.4': '推广亦来云而成立。会员资格',
-  'landing.contribute.mob.5': '向所有人开放。',
-  'landing.contribute.action.1': '成为',
-  'landing.contribute.action.2': ' 一名贡献者',
-
-  'landing.empower35.header': 'Empower35',
-  'landing.empower35.partnership': '首席合伙人',
-  'landing.empower35.marketer': '营销员',
-  'landing.empower35.legal': '法律顾问',
-  'landing.empower35.video': '录像师',
-  'landing.empower35.designer': '设计师',
-  'landing.empower35.writer': '作家',
-  'landing.empower35.dapp': 'DApp 分析师',
-  'landing.empower35.evangelist': '推广大使',
-  'landing.empower35.action.1': '显示全部',
-  'landing.empower35.action.2': '职位',
-
-  'landing.footer.header.1': '成为Cyber Republic',
-  'landing.footer.header.2': '的一员',
-  'landing.footer.note': '及时了解Cyber Republic的动态',
+  'landing.footer.note': '及时了解 Cyber Republic 的动态',
   'landing.footer.email': '输入您的邮箱',
   'landing.footer.resources': '资源',
   'landing.footer.wallet': '钱包',
   'landing.footer.explorer': '区块浏览器',
   'landing.footer.github': 'Github',
-  'landing.footer.assets': 'Logo资源',
+  'landing.footer.assets': 'Logo 资源',
   'landing.footer.elaNews': 'ELA 新闻',
   'landing.footer.contact': '联系我们',
   'landing.footer.community': '全球社区',
   'landing.footer.support': '支持',
   'landing.footer.contacts': '其他联系人',
   'landing.footer.join': '加入我们',
-
-  'landing.footer.other': '法律',
   'landing.footer.privacyPolicy': '隐私政策',
   'landing.footer.termsAndConditions': '条款与条件',
-
-  'landing.0220':
-    'ELA代币将用于在区块链上注册ID，打开通往亦来云生态系统的门。 一旦加入，将会有无数的交流机会。',
-  'landing.0221':
-    '您可以购买去中心化应用程序，获得云存储，购买和销售数字产品和资产，如歌曲、电影、书籍和视频，以及无限的其他资源。',
-  'landing.0222':
-    '此外，ELA代币持有者将有机会投资于众多项目。对于在亦来云上运行的每一个DApp，拥有ELA来注册数字资产将是非常重要的，从而为令牌创造持续的必要性。',
-
-  'landing.0230':
-    '在亦来云上的应用程序将运行在区块链技术的可靠运行时环境中。它通过提供一个“沙箱”环境来创建真正的安全性，在允许访问互联网之前，该环境需要获得区块链上的验证。这为构建各种用例或场景的任何应用程序提供了巨大的潜力。',
-  'landing.0231': '',
 
   // Project Detail
   'pdetail.like': '感兴趣',
@@ -989,6 +910,9 @@ const zh = {
   'role.admin.mode': '管理员模式',
 
   // Profile
+  'profile.associateDid': '绑定 DID',
+  'profile.qrcodeTip': '打开 ELA 钱包扫码',
+  'profile.reassociateDid': '重新绑定 DID',
   'profile.thanksForCompleting': '感谢更新您的个人档案！',
   'profile.skillsets': '我的技能',
   'profile.completeProfile': '请完成您的个人档案',
@@ -1017,7 +941,8 @@ const zh = {
   'profile.profession.ECONOMICS': '经济',
   'profile.profession.MANAGEMENT': '管理',
   'profile.profession.OTHER': '其他',
-  'profile.complete': '请完成您的档案',
+  // 'profile.complete': '请完成您的档案',
+  'profile.complete': '请先用ELA钱包绑定您的DID。 现在绑定',
   'profile.complete.dismiss': '取消',
   'profile.skillsDetails.placeholder': '请详细描述您的技能，工作经历等',
   'profile.motto.placeholder': '您的座右铭是什么？',
@@ -1088,6 +1013,19 @@ const zh = {
   'profile.submission.table.type': '类型',
   'profile.submission.table.created': '创建日期',
 
+  'profile.member.vote.qrcodeTip':'打开 ELA 钱包扫码投票（社区投票专用）',
+
+  'profile.forms.table.header.title': '标题',
+  'profile.forms.table.header.name': '名称',
+  'profile.forms.table.header.campaign': '竞选',
+  'profile.forms.table.header.created': '创建时间',
+  'profile.forms.show': '显示已存档',
+  'profile.forms.search': '搜索',
+
+  'profile.form.headline': '标题',
+  'profile.form.headline.error': '请输入标题！',
+  
+
   // Validate Form
   'ambassadors.form.required': '必填项目',
   'ambassadors.form.reason.max': '原因太长',
@@ -1148,6 +1086,7 @@ const zh = {
   'profile.detail.no': '否',
 
   'profile.popover.email': '邮箱',
+  'profile.popover.did': 'DID',
   'profile.popover.name': '姓名',
   'profile.popover.copy': '复制',
   'profile.popover.viewProfile': '查看个人资料',
@@ -1373,6 +1312,13 @@ const zh = {
   'from.UserEditForm.label.profession': '职业',
   'from.UserEditForm.label.portfolio': '作品集',
   'from.UserEditForm.label.github': 'GitHub',
+  'from.UserEditForm.label.linkedin': '领英',
+  'from.UserEditForm.label.telegram': '电报',
+  'from.UserEditForm.label.reddit': '红迪网',
+  'from.UserEditForm.label.wechat': '微信',
+  'from.UserEditForm.label.twitter': '推特',
+  'from.UserEditForm.label.facebook': '脸书',
+
   'from.UserEditForm.username.required': '用户名为必填项',
   'from.UserEditForm.firstName.required': '名字为必填项',
   'from.UserEditForm.lastName.required': '姓氏为必填项',
@@ -1399,6 +1345,12 @@ const zh = {
   'from.UserProfileForm.text.lastName': '姓氏',
   'from.UserProfileForm.text.slogan': '个人标语',
   'from.UserProfileForm.text.motto': '个人座右铭',
+
+  'from.SuggestionForm.title': '相关细节',
+  'from.SuggestionForm.proposal': '提案 #',
+  'from.SuggestionForm.detail': '相关细节',
+
+  'btn.CopyHash': '复制成功',
 
   // CR Video / Earn ELA page
   'cr-video.here': '点击这里',
@@ -1560,11 +1512,15 @@ const zh = {
   'user.skillset.FINANCIAL_CONSULTING': '金融咨询',
   'user.skillset.PRESENTATION': '商务演示',
 
+  'user.update.council.secretariat.role': '更新用户权限',
+  'user.update.council.secretariat.success': '更新成功',
+
   // Council & Secretariat
   cs: {
     candidates: '候选人',
     incumbent: '现任委员',
-    council: 'CYBER REPUBLIC 筹委会',
+    council: 'CR 委员会',
+    intro: '简介',
     voting: '选举',
     secretariat: {
       title: '秘书处',
@@ -1607,6 +1563,7 @@ const zh = {
       }
     },
     contact: '联系',
+    did: 'DID',
     no1: {
       name: 'Alex Shipp',
       intro: '亦来云基金会编辑、量子财富观共同作者、量子财富节点拥有者，暂时没有固定驻地。',
@@ -1664,5 +1621,9 @@ zh[`cvoteStatus.${CVOTE_STATUS.REJECT}`] = '已否决'
 zh[`cvoteStatus.${CVOTE_STATUS.FINAL}`] = '已完成'
 zh[`cvoteStatus.${CVOTE_STATUS.INCOMPLETED}`] = '未完成'
 zh[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = '已过期'
+zh[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = '公示期'
+zh[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = '社区否决'
+zh[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = '已终止'
+
 
 export default zh

@@ -155,9 +155,9 @@ export default class extends BaseComponent {
               <Menu.Item key="blog">
                 {I18N.get('navigation.resources.submenu.blog')}
               </Menu.Item>
-              <Menu.Item key="docs">
+              {/* <Menu.Item key="docs">
                 {I18N.get('navigation.resources.submenu.docs')}
-              </Menu.Item>
+              </Menu.Item> */}
             </Menu>
           </Col>
         </Row>

@@ -10,6 +10,7 @@ import Navigator from '../../../shared/HomeNavigator/Container'
 import config from '@/config'
 import { COMMUNITY_TYPE, USER_GENDER, DEFAULT_IMAGE } from '@/constant'
 import { logger } from '@/util'
+import I18N from '@/I18N'
 import '../style.scss'
 
 export default class extends AdminPage {
@@ -72,10 +73,10 @@ export default class extends AdminPage {
         }
 
         this.props.updateCommunity(communityClone).then(() => {
-          message.success('Add new organizer successfully')
+          message.success(I18N.get('communities.form.organizer.success'))
           this.loadCommunityDetail()
         }).catch((err) => {
-          message.error('Error while add organizer')
+          message.error(I18N.get('communities.form.organizer.error'))
           logger.error(err)
         })
       })
@@ -247,7 +248,7 @@ export default class extends AdminPage {
         }).then(() => {
           form.resetFields()
           this.setState({visibleModalChangeOrganizer: false})
-          message.success('Change organizer successfully')
+          message.success(I18N.get('communitites.form.country.change'))
 
           this.loadCommunityDetail()
         })
@@ -347,7 +348,7 @@ export default class extends AdminPage {
           form.resetFields()
           this.setState({visibleModalUpdateSubCommunity: false})
 
-          message.success('Update community successfully')
+          message.success(I18N.get('communities.form.country.update'))
 
           this.loadSubCommunities()
         })
@@ -357,7 +358,7 @@ export default class extends AdminPage {
     handleDeleteSubCommunity = () => {
       this.props.deleteCommunity(this.state.editedSubCommunity._id).then(() => {
         this.setState({visibleModalUpdateSubCommunity: false})
-        message.success('Delete community successfully')
+        message.success(I18N.get('communities.form.country.delete'))
         this.loadSubCommunities()
       })
     }
@@ -383,10 +384,10 @@ export default class extends AdminPage {
         geolocation: this.props.match.params.country,
         name: formValues.name,
       }).then(() => {
-        message.success('Add new sub community successfully')
+        message.success(I18N.get('communitites.form.country.success'))
         this.loadSubCommunities()
       }).catch((err) => {
-        message.error('Error while adding new sub community')
+        message.error(I18N.get('communitites.form.country.error'))
         logger.error(err)
       })
     }
@@ -539,7 +540,7 @@ export default class extends AdminPage {
           <Col span={4}
             className="user-card user-card--without-padding user-card--organizer">
             <h5 className="without-padding overflow-ellipsis" title={`${this.state.community.name} Organizers`}>
-                        Country Organizers
+                        {I18N.get('communitites.country.organizers')}
             </h5>
             {this.state.community.leaders && this.state.community.leaders.map((leader, index) => {
               return (
@@ -556,7 +557,9 @@ export default class extends AdminPage {
                 </Card>
               )
             })}
-            <Button className="ant-btn-ebp add-organizer" type="primary" size="small" onClick={this.showModalAddOrganizer}>Add</Button>
+            <Button className="ant-btn-ebp add-organizer" type="primary" size="small" onClick={this.showModalAddOrganizer}>
+              {I18N.get('communities.btn.add.country')}
+            </Button>
           </Col>
           <Col span={20} className="wrap-child-box-users">
             {Object.keys(config.data.mappingSubCommunityTypesAndName).map((communityType, index) => {

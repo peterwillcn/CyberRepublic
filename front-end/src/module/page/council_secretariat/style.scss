@@ -162,8 +162,22 @@ $maxWithContent: 888px;
           font-size: 30px;
           color: #ffffff;
         }
+        
         .self-intro {
           font-family: 'synthese', sans-serif;
+          // display: -webkit-box;
+          // /*!autoprefixer:off*/
+          // -webkit-box-orient: vertical;
+          // /*autoprefixer:on*/
+          // -webkit-line-clamp: 3;
+          // overflow: hidden;
+          // text-overflow: ellipsis;
+          /*! autoprefixer: off */
+          -webkit-box-orient: vertical; 
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          display: -webkit-box;
         }
       }
     }
@@ -230,10 +244,6 @@ $maxWithContent: 888px;
   .ebp-wrap {
     padding: 0;
     background-color: $bg_navy;
-
-    // @media only screen and (max-width: $mobile-width) {
-    //   padding-left: 20px;
-    // }
   }
 
   .lower-section {

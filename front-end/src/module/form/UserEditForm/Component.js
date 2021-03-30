@@ -638,22 +638,22 @@ class C extends BaseComponent {
 
       return (
         <div className={contentClass}>
-          <FormItem label="LinkedIn" {...formItemLayout}>
+          <FormItem label={I18N.get('from.UserEditForm.label.linkedin')} {...formItemLayout}>
             {p.linkedin}
           </FormItem>
-          <FormItem label="Telegram" {...formItemLayout}>
+          <FormItem label={I18N.get('from.UserEditForm.label.telegram')} {...formItemLayout}>
             {p.telegram}
           </FormItem>
-          <FormItem label="Reddit" {...formItemLayout}>
+          <FormItem label={I18N.get('from.UserEditForm.label.reddit')} {...formItemLayout}>
             {p.reddit}
           </FormItem>
-          <FormItem label="WeChat" {...formItemLayout}>
+          <FormItem label={I18N.get('from.UserEditForm.label.wechat')} {...formItemLayout}>
             {p.wechat}
           </FormItem>
-          <FormItem label="Twitter" {...formItemLayout}>
+          <FormItem label={I18N.get('from.UserEditForm.label.twitter')} {...formItemLayout}>
             {p.twitter}
           </FormItem>
-          <FormItem label="Facebook" {...formItemLayout}>
+          <FormItem label={I18N.get('from.UserEditForm.label.facebook')} {...formItemLayout}>
             {p.facebook}
           </FormItem>
         </div>

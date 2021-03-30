@@ -3174,7 +3174,7 @@ a.ant-btn-sm {
 }
 .ant-calendar-picker-clear {
   opacity: 0;
-  z-index: 1;
+  z-index: 2;
   color: rgba(0, 0, 0, 0.25);
   background: #fff;
   pointer-events: none;
@@ -3745,6 +3745,7 @@ a.ant-btn-sm {
   margin-left: -132px;
   text-align: center;
   height: 34px;
+  padding:0 70px 0 0;
   line-height: 34px;
   color: rgba(0, 0, 0, 0.45);
 }
@@ -10051,8 +10052,6 @@ li.ant-menu-item.ant-menu-item-selected:after {
   float: left;
   border-bottom: 2px solid transparent;
 }
-.ant-menu-horizontal > .ant-menu-item:hover,
-.ant-menu-horizontal > .ant-menu-submenu:hover,
 .ant-menu-horizontal > .ant-menu-item-active,
 .ant-menu-horizontal > .ant-menu-submenu-active,
 .ant-menu-horizontal > .ant-menu-item-open,
@@ -10060,6 +10059,13 @@ li.ant-menu-item.ant-menu-item-selected:after {
 .ant-menu-horizontal > .ant-menu-item-selected,
 .ant-menu-horizontal > .ant-menu-submenu-selected {
   border-bottom: 2px solid #43af92;
+  font-weight: 500 !important;
+  color: #000;
+}
+.ant-menu-horizontal > .ant-menu-item:hover,
+.ant-menu-horizontal > .ant-menu-submenu:hover {
+  border-bottom: 2px solid #43af92;
+  font-weight: 500 !important;
   color: #43af92;
 }
 .ant-menu-horizontal > .ant-menu-item > a {
@@ -10073,7 +10079,8 @@ li.ant-menu-item.ant-menu-item-selected:after {
   bottom: -2px;
 }
 .ant-menu-horizontal > .ant-menu-item-selected > a {
-  color: #43af92;
+  /* color: #43af92; */
+  color: #000;
 }
 .ant-menu-horizontal:after {
   content: "\20";

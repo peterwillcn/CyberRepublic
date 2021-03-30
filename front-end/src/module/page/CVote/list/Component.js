@@ -9,7 +9,9 @@ import {
   Select,
   Input,
   DatePicker,
-  Checkbox
+  Checkbox,
+  Icon,
+  Spin,
 } from 'antd'
 import rangePickerLocale from 'antd/es/date-picker/locale/zh_CN'
 import { CSVLink } from 'react-csv'
@@ -17,12 +19,12 @@ import BaseComponent from '@/model/BaseComponent'
 import Meta from '@/module/common/Meta'
 import I18N from '@/I18N'
 import { logger } from '@/util'
-import { CVOTE_RESULT, CVOTE_STATUS } from '@/constant'
+import { CVOTE_RESULT, CVOTE_STATUS, CVOTE_CHAIN_STATUS } from '@/constant'
 import VoteStats from '../stats/Component'
 import userUtil from '@/util/user'
 import { ReactComponent as UpIcon } from '@/assets/images/icon-up.svg'
 import { ReactComponent as DownIcon } from '@/assets/images/icon-down.svg'
-
+import { PROPOSAL_TYPE } from '@/constant'
 // style
 import {
   Container,
@@ -31,14 +33,20 @@ import {
   ItemUndecided,
   StyledButton,
   StyledSearch,
-  VoteFilter,
   FilterLabel,
   FilterPanel,
   FilterContent,
   FilterItem,
   FilterItemLabel,
   FilterClearBtn,
-  CheckboxText
+  CheckboxText,
+  SplitLabel,
+  ViewOldDataBtn,
+  CurrentHeight,
+  CurrentHeightImg,
+  CurrentHeightTitle,
+  CurrentHeightContent,
+  CurrentHeightFooter
 } from './style'
 
 const { RangePicker } = DatePicker
@@ -73,6 +81,8 @@ export default class extends BaseComponent {
     } = this.props.filters
     this.state = {
       list: [],
+      alllist: [],
+      total: 1,
       loading: true,
       page: 1,
       isVisitableFilter,
@@ -86,13 +96,42 @@ export default class extends BaseComponent {
       author,
       type,
       endsDate,
+      showOldData: false,
+      fetching: false,
+      isChangeNext: true,
+      initNum: 0
     }
 
+    this.authorSearch = _.debounce(this.authorSearch.bind(this), 800)
     this.debouncedRefetch = _.debounce(this.refetch.bind(this), 300)
   }
 
   async componentDidMount() {
+    const initPage = localStorage.getItem('proposal-page')
+    this.setState({isChangeNext:false})
+    if (!initPage) {
+      localStorage.setItem('proposal-page', 1)
+    }
+    if (this.props.location.query) {
+      this.viewOldData()
+    }
+    this.loadPage(localStorage.getItem('proposal-page') || 1, 10)
     this.refetch()
+  }
+
+  componentDidUpdate() {
+    const {isChangeNext, initNum} = this.state
+    if (isChangeNext || initNum == 0) {
+      if (initNum ==0) {
+        this.setState({initNum: initNum+1})
+      }
+      window.scrollTo(0, 0)
+    }
+    if (this.props.location.sate === 'return') {
+      window.scrollTo(0,localStorage.getItem('proposal-scrollY') || 0)
+    } else {
+      window.scrollTo(0, 0)
+    }
   }
 
   handleFilter = () => {
@@ -100,39 +139,39 @@ export default class extends BaseComponent {
     this.setState({ isVisitableFilter: !isVisitableFilter })
   }
 
-  handleSearchChange = e => {
+  handleSearchChange = (e) => {
     this.setState({ search: e.target.value })
   }
 
-  handleStatusChange = status => {
+  handleStatusChange = (status) => {
     this.setState({ status })
   }
 
-  handleBudgetRequestedChange = budgetRequested => {
+  handleBudgetRequestedChange = (budgetRequested) => {
     this.setState({ budgetRequested })
   }
 
-  handleHasTrackingMsgChange = e => {
+  handleHasTrackingMsgChange = (e) => {
     this.setState({ hasTrackingMsg: e.target.checked })
   }
 
-  handleIsUnvotedByYouChange = e => {
+  handleIsUnvotedByYouChange = (e) => {
     this.setState({ isUnvotedByYou: e.target.checked })
   }
 
-  handleCreationDateChange = creationDate => {
+  handleCreationDateChange = (creationDate) => {
     this.setState({ creationDate })
   }
 
-  handleAuthorChange = e => {
-    this.setState({ author: e.target.value })
+  handleAuthorChange = (e) => {
+    this.setState({ author: e})
   }
 
-  handleTypeChange = type => {
+  handleTypeChange = (type) => {
     this.setState({ type })
   }
 
-  handleEndsDateChange = endsDate => {
+  handleEndsDateChange = (endsDate) => {
     this.setState({ endsDate })
   }
 
@@ -153,7 +192,7 @@ export default class extends BaseComponent {
       creationDate,
       author,
       type,
-      endsDate,
+      endsDate
     } = this.state
     this.props.updateFilters({
       voteResult,
@@ -165,21 +204,30 @@ export default class extends BaseComponent {
       creationDate,
       author,
       type,
-      endsDate,
+      endsDate
     })
     this.refetch()
   }
 
-  ord_render() {
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
+  viewOldData = async () => {
+    let page
+    if (this.props.location.query) {
+      page = localStorage.getItem('proposal-page')
     }
-    const { canManage, isSecretary } = this.props
+    await this.setState((state) => ({
+      showOldData: !state.showOldData,
+      // go back to page 1 on toggle
+      page,
+      results: 10,
+      total: 0
+    }))
+
+    this.refetch()
+  }
+
+  ord_render() {
+    const { canManage, isSecretary, isCouncil } = this.props
+    const canCreateProposal = !isCouncil && !isSecretary
     const { isVisitableFilter } = this.state
 
     const columns = [
@@ -211,11 +259,18 @@ export default class extends BaseComponent {
       {
         title: I18N.get('council.voting.type'),
         dataIndex: 'type',
-        render: (type, item) => PROPOSAL_TYPE[type]
+        render: (type, item) => I18N.get(`proposal.type.${type}`)
       },
       {
         title: I18N.get('council.voting.author'),
-        dataIndex: 'proposedBy'
+        dataIndex: 'proposer.profile.firstName',
+        render: (proposer, item) => (
+          userUtil.formatUsername(item.proposer)
+        )
+      },
+      {
+        title: I18N.get('council.voting.voteByCouncil'),
+        render: (id, item) => this.voteDataByUser(item)
       },
       {
         title: I18N.get('council.voting.votingEndsIn'),
@@ -224,28 +279,28 @@ export default class extends BaseComponent {
         render: (proposedAt, item) => this.renderEndsIn(item)
       },
       {
-        title: I18N.get('council.voting.voteByCouncil'),
-        render: (id, item) => this.voteDataByUser(item)
+        title: I18N.get('council.voting.communityEndsIn'),
+        dataIndex: 'proposedAt',
+        key: 'CommunityendsIn',
+        render: (proposedAt, item) => this.renderCommunityEndsIn(item)
       },
       {
         title: I18N.get('council.voting.status'),
-        render: (id, item) => this.renderStatus(item.status)
+        render: (id, item) => this.renderStatus(item.status, item.rejectAmount, item.rejectThroughAmount)
       },
       {
         title: I18N.get('council.voting.proposedAt'),
         dataIndex: 'proposedAt',
-        render: (proposedAt, doc) => this.renderProposed(doc.published, proposedAt || doc.createdAt)
+        render: (proposedAt, doc) =>
+          this.renderProposed(doc.published, proposedAt || doc.createdAt)
       }
     ]
 
     if (canManage) {
       columns.splice(1, 0, {
         dataIndex: 'published',
-        render: (published, item, index) => (published ? (
-          <i className="fas fa-eye" />
-        ) : (
-          <i className="far fa-eye-slash" />
-        ))
+        render: (published, item, index) =>
+          published ? <Icon type="eye" /> : <Icon type="eye-invisible" />
       })
     }
 
@@ -262,18 +317,20 @@ export default class extends BaseComponent {
       </List>
     )
 
-    const createBtn = canManage && (
-      <Row type="flex" align="middle" justify="end">
-        <Col lg={8} md={12} sm={24} xs={24} style={{ textAlign: 'right' }}>
-          <StyledButton
-            onClick={this.createAndRedirect}
-            className="cr-btn cr-btn-primary"
-          >
-            {I18N.get('from.CVoteForm.button.add')}
-          </StyledButton>
-        </Col>
-      </Row>
-    )
+    // no one can see this button
+    const createBtn = canManage &&
+      canCreateProposal && (
+        <Row type="flex" align="middle" justify="end">
+          <Col lg={8} md={12} sm={24} xs={24} style={{ textAlign: 'right' }}>
+            <StyledButton
+              onClick={this.createAndRedirect}
+              className="cr-btn cr-btn-primary"
+            >
+              {I18N.get('from.CVoteForm.button.add')}
+            </StyledButton>
+          </Col>
+        </Row>
+      )
 
     const title = (
       <Col lg={8} md={8} sm={12} xs={24}>
@@ -315,92 +372,124 @@ export default class extends BaseComponent {
       </FilterLabel>
     )
     const filterPanel = this.renderFilterPanel(PROPOSAL_TYPE)
-    const { list, loading, page } = this.state
-    let dataCSV = []
+    const { list, total, loading, page } = this.state
+    // const dataCSV = []
     if (isSecretary) {
-      const itemsCSV = _.map(list, v => [
-        v.vid,
-        v.title,
-        PROPOSAL_TYPE[v.type],
-        v.proposedBy,
-        this.renderEndsInForCSV(v),
-        this.voteDataByUserForCSV(v),
-        this.renderStatus(v.status),
-        _.replace(
-          this.renderProposed(v.published, v.proposedAt || v.createdAt) || '',
-          ',',
-          ' '
-        )
-      ])
-      dataCSV = _.concat(
-        [
-          [
-            I18N.get('council.voting.number'),
-            I18N.get('council.voting.title'),
-            I18N.get('council.voting.type'),
-            I18N.get('council.voting.author'),
-            I18N.get('council.voting.votingEndsIn'),
-            I18N.get('council.voting.voteByCouncil'),
-            I18N.get('council.voting.status'),
-            I18N.get('council.voting.proposedAt')
-          ]
-        ],
-        itemsCSV
-      )
+      /*
+         const itemsCSV = _.map(list, v => [
+         v.vid,
+         v.title,
+         I18N.get(`proposal.type.${v.type}`),
+         v.proposedBy,
+         this.renderEndsInForCSV(v),
+         this.voteDataByUserForCSV(v),
+         this.renderStatus(v.status),
+         _.replace(
+         this.renderProposed(v.published, v.proposedAt || v.createdAt) || '',
+         ',',
+         ' '
+         )
+         ])
+         dataCSV = _.concat(
+         [
+         [
+         I18N.get('council.voting.number'),
+         I18N.get('council.voting.title'),
+         I18N.get('council.voting.type'),
+         I18N.get('council.voting.author'),
+         I18N.get('council.voting.votingEndsIn'),
+         I18N.get('council.voting.voteByCouncil'),
+         I18N.get('council.voting.status'),
+         I18N.get('council.voting.proposedAt')
+         ]
+         ],
+         // itemsCSV
+         )
+       */
     }
+    const currentHeight = this.renderCurrentHeight()
+
     return (
       <div>
         <Meta title="Cyber Republic - Elastos" />
         <Container>
+          {currentHeight}
           {createBtn}
           <Row
-          type="flex"
-          align="bottom"
-          justify="space-between"
-          style={{ marginTop: 20 }}
-        >
+            type="flex"
+            align="bottom"
+            justify="space-between"
+            style={{ marginTop: 20 }}
+          >
             {title}
             {btns}
           </Row>
           <Row
-          type="flex"
-          align="middle"
-          justify="start"
-          gutter={40}
-          style={{ marginTop: 20, marginBottom: 20 }}
-        >
+            type="flex"
+            align="middle"
+            justify="start"
+            gutter={40}
+            style={{ marginTop: 20, marginBottom: 20 }}
+          >
             {searchInput}
             {filterBtns}
           </Row>
           {isVisitableFilter && filterPanel}
           <Row type="flex" align="middle" justify="end">
             {isSecretary && (
-            <CSVLink data={dataCSV} style={{ marginBottom: 16 }}>
-              {I18N.get('elip.button.exportAsCSV')}
-            </CSVLink>
+              <CSVLink data={this.state.alllist} style={{ marginBottom: 16 }}>
+                {I18N.get('elip.button.exportAsCSV')}
+              </CSVLink>
             )}
+            {isSecretary && <SplitLabel />}
+            <ViewOldDataBtn onClick={this.viewOldData}>
+              {this.state.showOldData === false
+                ? I18N.get('proposal.btn.viewOldData')
+                : I18N.get('proposal.btn.viewNewData')}
+            </ViewOldDataBtn>
           </Row>
           <Table
-          columns={columns}
-          loading={loading}
-          dataSource={list}
-          rowKey={record => record._id}
-          pagination={{
-            current: page,
-            pageSize: 10,
-            total: list && list.length,
-            onChange: this.onPageChange
-          }}
-        />
+            columns={columns}
+            loading={loading}
+            dataSource={list}
+            rowKey={(record) => record._id}
+            pagination={{
+              current: page,
+              pageSize: 10,
+              total, // list && list.length,
+              onChange: this.onPageChange
+            }}
+          />
           {createBtn}
         </Container>
       </div>
     )
   }
 
+  renderCurrentHeight = () => {
+    const { currentHeight } = this.state
+    let currentHeightDiv = null
+    if (currentHeight) {
+      currentHeightDiv = (<CurrentHeight>
+      <CurrentHeightContent>
+        <CurrentHeightImg src={'/assets/images/Elastos_Logo.png'}></CurrentHeightImg>
+        <CurrentHeightTitle>
+          {I18N.get('proposal.fields.currentHeight')}:
+        </CurrentHeightTitle>
+        {currentHeight ? currentHeight.toLocaleString() : 0}
+        <CurrentHeightFooter />
+      </CurrentHeightContent>
+    </CurrentHeight>)
+    }
+    return currentHeightDiv
+  }
+
   onPageChange = (page, pageSize) => {
-    this.setState({ page: parseInt(page) })
-    sessionStorage.setItem('proposalPage', page)
+    localStorage.setItem('proposal-page', page)
+    this.setState({
+      isChangeNext: true
+    })
+    this.loadPage(page, pageSize)
   }
 
   createAndRedirect = async () => {
@@ -439,6 +528,7 @@ export default class extends BaseComponent {
       endsDate,
       voteResult,
       search,
+      showOldData
     } = this.state
     const query = {}
     const formatStr = 'YYYY-MM-DD'
@@ -447,6 +537,9 @@ export default class extends BaseComponent {
     }
     if (!_.isEmpty(status)) {
       query.status = status
+    }
+    if (showOldData) {
+      query.old = true
     }
     if (!_.isEmpty(budgetRequested) && budgetRequested > 0) {
       const budget = BUDGET_REQUESTED_OPTIONS[budgetRequested]
@@ -482,12 +575,57 @@ export default class extends BaseComponent {
 
   refetch = async () => {
     this.ord_loading(true)
-    const { listData, canManage } = this.props
+    const { listData, canManage, getCurrentheight, getAllAuthor } = this.props
     const param = this.getQuery()
+    const page = localStorage.getItem('proposal-page') || 1
     try {
-      const list = await listData(param, canManage)
-      const page = sessionStorage.getItem('proposalPage')
-      this.setState({ list, page: (page && parseInt(page)) || 1 })
+      const { list: allListData, total: allListTotal } = await listData(
+        param,
+        canManage
+      )
+      const dataCSV = []
+      dataCSV.push([
+        I18N.get('council.voting.number'),
+        I18N.get('council.voting.title'),
+        I18N.get('council.voting.type'),
+        I18N.get('council.voting.author'),
+        I18N.get('council.voting.votingEndsIn'),
+        I18N.get('council.voting.communityEndsIn'),
+        I18N.get('council.voting.voteByCouncil'),
+        I18N.get('council.voting.status'),
+        I18N.get('council.voting.proposedAt')
+      ])
+      _.map(allListData, (v) => {
+        dataCSV.push([
+          v.vid,
+          v.title,
+          I18N.get(`proposal.type.${v.type}`),
+          v.proposedBy,
+          this.renderEndsInForCSV(v),
+          this.renderCommunityEndsInForCSV(v),
+          this.voteDataByUserForCSV(v),
+          this.renderStatus(v.status, v.rejectAmount, v.rejectThroughAmount),
+          _.replace(
+            this.renderProposed(v.published, v.proposedAt || v.createdAt) || '',
+            ',',
+            ' '
+          )
+        ])
+      })
+      // const page = sessionStorage.getItem('proposalPage')
+      param.page = page
+      param.results = 10
+      const { list, total } = await listData(param, canManage)
+      const rs = await getCurrentheight()
+      const authorArr = await getAllAuthor()
+      this.setState({
+        list,
+        alllist: dataCSV,
+        total,
+        page: (page && parseInt(page)) || 1,
+        currentHeight: rs,
+        authorArr,
+      })
     } catch (error) {
       logger.error(error)
     }
@@ -495,101 +633,186 @@ export default class extends BaseComponent {
     this.ord_loading(false)
   }
 
-  searchChangedHandler = search => {
+  loadPage = async (page, pageSize) => {
+    this.ord_loading(true)
+    const { listData, canManage } = this.props
+    const query = {
+      ...this.getQuery(),
+      page,
+      results: pageSize
+    }
+    try {
+      const { list, total } = await listData(query, canManage)
+      // const page = sessionStorage.getItem('proposalPage')
+      this.setState({ list, total, page: (page && parseInt(page)) || 1 })
+      sessionStorage.setItem('proposalPage', page)
+    } catch (error) {
+      logger.error(error)
+    }
+    this.ord_loading(false)
+  }
+
+  searchChangedHandler = (search) => {
     sessionStorage.removeItem('proposalPage')
     this.props.updateFilters({ search })
     this.setState({ search }, this.debouncedRefetch)
   }
 
   toDetailPage(id) {
-    this.props.history.push(`/proposals/${id}`)
+    this.setState({
+      isChangeNext: false
+    })
+    localStorage.setItem('proposal-scrollY',window.scrollY)
+    // this.props.history.push(`/proposals/${id}`)
+    const w = window.open('about:blank')
+    w.location.href = `/proposals/${id}`
   }
 
   toEditPage(id) {
     this.props.history.push(`/proposals/${id}/edit`)
   }
 
-  renderEndsIn = item => {
+  renderEndsIn = (item) => {
     return this.renderBaseEndsIn(item)
   }
 
-  renderEndsInForCSV = item => {
+  renderEndsInForCSV = (item) => {
     return this.renderBaseEndsIn(item, true)
   }
 
   renderBaseEndsIn = (item, isCSV = false) => {
     if (item.status === CVOTE_STATUS.DRAFT) return null
+    if (item.status !== CVOTE_STATUS.PROPOSED) return I18N.get('council.voting.votingEndsIn.finished')
     // only show when status is PROPOSED
-    const endsInFloat = moment
-      .duration(
-        moment(item.proposedAt || item.createdAt)
-          .add(7, 'd')
-          .diff(moment())
-      )
-      .as('days')
-    if (item.status !== CVOTE_STATUS.PROPOSED || endsInFloat <= 0) {
-      return I18N.get('council.voting.votingEndsIn.ended')
-    }
-    if (endsInFloat > 0 && endsInFloat <= 1) {
-      const oneDay = `1 ${I18N.get('council.voting.votingEndsIn.day')}`
-      return isCSV ? oneDay : <span style={{ color: 'red' }}>{oneDay}</span>
-    }
-    return `${Math.ceil(endsInFloat)} ${I18N.get(
-      'council.voting.votingEndsIn.days'
-    )}`
+    return this.renderVoteEndsIn(item.proposedEndsHeight, item.proposedEnds)
   }
 
-  renderStatus = status => {
-    return I18N.get(`cvoteStatus.${status}`) || ''
+  renderCommunityEndsIn = (item) => {
+    return this.renderCommunityBaseEndsIn(item)
+  }
+
+  renderCommunityEndsInForCSV = (item) => {
+    return this.renderCommunityBaseEndsIn(item, true)
+  }
+
+  renderCommunityBaseEndsIn = (item, isCSV = false) => {
+    if (item.status === CVOTE_STATUS.DRAFT) return null
+    if (item.status === CVOTE_STATUS.PROPOSED || item.status === CVOTE_STATUS.REJECT) return '--'
+    if (item.status !== CVOTE_STATUS.NOTIFICATION) return I18N.get('council.voting.votingEndsIn.finished')
+    // only show when status is PROPOSED
+    return this.renderVoteEndsIn(item.notificationEndsHeight, item.notificationEnds)
+  }
+
+  renderVoteEndsIn = (endsHeight, endsIn) => {
+    let endsInFloat = moment
+      .duration(
+        moment()
+          .add(endsIn, 'minutes')
+          .diff(moment())
+      )
+      .as('minutes')
+    let surplusTime = Math.ceil(endsInFloat / 60 / 24) + ' ' + I18N.get('council.voting.votingEndsIn.days')
+    if (endsInFloat <= 0) {
+      surplusTime = '1 ' + I18N.get('council.voting.votingEndsIn.minutes')
+    }
+    if (endsInFloat > 0 && endsInFloat <= 60) {
+      surplusTime = Math.ceil(endsInFloat) + ' ' + I18N.get('council.voting.votingEndsIn.minutes')
+    }
+    if (endsInFloat > 60 && endsInFloat <= 60 * 24) {
+      const hours = moment.duration(moment().add(endsIn, 'minutes').diff(moment())).get('h')
+      const minute = moment.duration(moment().add(endsIn, 'minutes').diff(moment())).get('m')
+      surplusTime = hours + ' ' +
+        I18N.get('council.voting.votingEndsIn.hours') + ' ' +
+        minute + ' ' +
+        I18N.get('council.voting.votingEndsIn.minutes')
+    }
+    if (endsInFloat > 60 * 24 && endsInFloat <= 60 * 24 * 2) {
+      const days = moment.duration(moment().add(endsIn, 'minutes').diff(moment())).get('d')
+      const hours = moment.duration(moment().add(endsIn, 'minutes').diff(moment())).get('h')
+      surplusTime = days + ' ' +
+        I18N.get('council.voting.votingEndsIn.days') + ' ' +
+        hours + ' ' +
+        I18N.get('council.voting.votingEndsIn.hours')
+    }
+    return <span style={{ whiteSpace: 'pre-wrap' }}>
+      {`${endsHeight}\n( ≈ ${surplusTime})`}
+    </span>
+  }
+
+  renderStatus = (status, rejectAmount, rejectThroughAmount) => {
+    const percentage = rejectAmount  / (rejectThroughAmount / 0.1) * 100
+    let percentageStr = ""
+    if (status == 'VETOED') {
+      percentageStr = this.props.lang == 'en'
+        ? `(${parseInt(percentage)}%)`
+        : `（${parseInt(percentage)}%）`
+    }
+    return I18N.get(`cvoteStatus.${status}`) + percentageStr || ''
   }
 
   renderProposed = (published, createdAt) => {
     const lang = localStorage.getItem('lang') || 'en'
     const format = lang === 'en' ? 'MMM D, YYYY' : 'YYYY-MM-DD'
-    return published && moment(createdAt).format(format)
+    const formatTime = 'hh:mm:ss'
+    const proposed = published && moment(createdAt).format(format)
+    const detailTime = published && moment(createdAt).format(formatTime)
+    return <span style={{ whiteSpace: 'pre-wrap' }}>{proposed + '\n' + detailTime}</span>
   }
 
-  voteDataByUser = data => {
+  voteDataByUser = (data) => {
     return this.baseVoteDataByUser(data)
   }
 
-  voteDataByUserForCSV = data => {
+  voteDataByUserForCSV = (data) => {
     return this.baseVoteDataByUser(data, true)
   }
 
   baseVoteDataByUser = (data, isCSV = false) => {
-    const { vote_map: voteMap, voteResult, status } = data
+    const { vote_map: voteMap, voteResult, status, voteHistory } = data
     let voteArr
-
     if (status === CVOTE_STATUS.DRAFT) return null
 
     if (!_.isEmpty(voteResult)) {
-      voteArr = _.map(
-        voteResult,
-        item => CVOTE_RESULT[item.value.toUpperCase()]
-      )
+      voteArr = _.map(voteResult, (item) => {
+        if (item.status === CVOTE_CHAIN_STATUS.CHAINED) {
+          return CVOTE_RESULT[item.value.toUpperCase()]
+        }
+        const index = _.findLastIndex(voteHistory, ['votedBy', item.votedBy])
+        const rs = voteHistory[index]
+        if (rs && rs.status === CVOTE_CHAIN_STATUS.CHAINED) {
+          return CVOTE_RESULT[rs.value.toUpperCase()]
+        }
+        return CVOTE_RESULT.UNDECIDED
+      })
     } else if (!_.isEmpty(voteMap)) {
+      // deal with old data
       voteArr = _.map(
         voteMap,
-        value => CVOTE_RESULT[value.toUpperCase()] || CVOTE_RESULT.UNDECIDED
+        (value) => CVOTE_RESULT[value.toUpperCase()] || CVOTE_RESULT.UNDECIDED
       )
     } else {
       return ''
     }
+    voteArr = _.sortBy(voteArr)
     const supportNum = _.countBy(voteArr)[CVOTE_RESULT.SUPPORT] || 0
     const percentage = (supportNum * 100) / voteArr.length
     const proposalAgreed = percentage > 50
-    const percentageStr =
-      percentage.toString() && `${percentage.toFixed(1).toString()}%`
+    const percentageStr = percentage.toString() && `${percentage.toFixed(1).toString()}%`
     return isCSV ? (
       percentageStr
     ) : (
-      <VoteStats
-        percentage={percentageStr}
-        values={voteArr}
-        yes={proposalAgreed}
-      />
-    )
+        <VoteStats
+          percentage={percentageStr}
+          values={voteArr}
+          yes={proposalAgreed}
+        />
+      )
+  }
+
+  authorSearch = async (data) => {
+    this.setState({authorList: [],fetching:true})
+    const authorList = await this.props.getAllAuthor({data, old:this.state.showOldData})
+    this.setState({authorList,fetching:false})
   }
 
   renderFilterPanel = (PROPOSAL_TYPE) => {
@@ -610,6 +833,13 @@ export default class extends BaseComponent {
       rangePickerOptions.locale = rangePickerLocale
     }
     const colSpan = isCouncil ? 8 : 12
+    const { Option } = Select
+    const options = _.map(this.state.authorList, (o => {
+      const isEmpty = _.isEmpty(o.firstName)
+      return (<Option key={o._id}>
+        { !isEmpty ? o.firstName + ' ' + o.lastName : o.username}
+      </Option>)
+    }))
     return (
       <FilterPanel isCouncil={isCouncil}>
         <Row type="flex" gutter={10} className="filter">
@@ -624,7 +854,7 @@ export default class extends BaseComponent {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  {_.map(CVOTE_STATUS, value => (
+                  {_.map(CVOTE_STATUS, (value) => value !== 'DRAFT' && (
                     <Select.Option key={value} value={value}>
                       {I18N.get(`cvoteStatus.${value}`)}
                     </Select.Option>
@@ -691,7 +921,19 @@ export default class extends BaseComponent {
                   {I18N.get('proposal.fields.author')}
                 </FilterItemLabel>
                 <div className="filter-input">
-                  <Input value={author} onChange={this.handleAuthorChange} />
+                  <Select
+                    showSearch
+                    // labelInValue
+                    value={this.state.author}
+                    style={{ width: '100%' }}
+                    showArrow={false}
+                    filterOption={false}
+                    onSearch={this.authorSearch}
+                    onChange={this.handleAuthorChange}
+                    notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
+                  >
+                    {options}
+                  </Select>
                 </div>
               </FilterItem>
               <FilterItem>
@@ -703,11 +945,19 @@ export default class extends BaseComponent {
                   value={type}
                   onChange={this.handleTypeChange}
                 >
-                  {_.map(PROPOSAL_TYPE, (value, key) => (
-                    <Select.Option key={key} value={key}>
-                      {value}
-                    </Select.Option>
-                  ))}
+                  {_.map(PROPOSAL_TYPE, (value, key) => {
+                    const rs = _.includes([
+                      PROPOSAL_TYPE.MOTION_AGAINST,
+                      PROPOSAL_TYPE.ANYTHING_ELSE
+                    ], value)
+                    return (
+                      !rs && (
+                        <Select.Option key={key} value={value}>
+                          {I18N.get(`proposal.type.${value}`)}
+                        </Select.Option>
+                      )
+                    )
+                  })}
                 </Select>
               </FilterItem>
               <FilterItem>

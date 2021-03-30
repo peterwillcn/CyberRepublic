@@ -100,7 +100,6 @@ export const StyledButton = styled(Button)`
   > span {
     font-size: 12px !important;
     line-height: 12px !important;
-    display: block;
     margin-top: -4px;
   }
 `
@@ -180,4 +179,31 @@ export const Paragraph = styled.div`
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+`
+export const CopyButton = styled.span`
+  display: inline-block;
+  font-weight: 200;
+  background: #008D85;
+  width: 56px;
+  height: 20px;
+  margin-left: 30px;
+  border-radius: 2px;
+  font-size: 12px;
+  text-align: center;
+  line-height: 16px;
+  cursor:pointer;
+  color: #fff;
+`
+
+export const StyledRow = styled.div`
+  width: 100%;
+  border-bottom: 1px solid #edf1f5;
+  margin-bottom: 10px;
+  > button {
+    margin: 0 4px;
+  }
+  p {
+    padding: 0px;
+    margin-top:5px;
+  }
 `

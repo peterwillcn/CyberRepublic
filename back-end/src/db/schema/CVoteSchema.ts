@@ -17,6 +17,17 @@ export const CVoteResultSchema = {
   reason: {
     type: String,
     default: ''
+  },
+  status: {
+    type: String,
+    emnu: _.values(constant.CVOTE_CHAIN_STATUS),
+    default: constant.CVOTE_CHAIN_STATUS.UNCHAIN
+  },
+  reasonHash: {
+    type: String
+  },
+  reasonCreatedAt: {
+    type: Date
   }
 }
 
@@ -26,6 +37,21 @@ export const CVoteHistorySchema = {
     type: Date,
     required: true,
     default: Date.now
+  }
+}
+
+const withdrawalHistorySchema = {
+  message: String,
+  messageHash: String,
+  milestoneKey: String,
+  signature: String,
+  createdAt: Date,
+  error: String,
+  review: {
+    reason: String,
+    reasonHash: String,
+    opinion: String,
+    createdAt: Date
   }
 }
 
@@ -55,11 +81,15 @@ export const CVote = {
   motivation: {
     type: String
   },
-  relevance: {
-    type: String
-  },
+  relevance: [
+    {
+      proposal: Schema.Types.ObjectId,
+      title: String,
+      relevanceDetail: String
+    }
+  ],
   budgetAmount: {
-    type: Number
+    type: Schema.Types.Mixed
   },
   elaAddress: {
     type: String
@@ -70,12 +100,6 @@ export const CVote = {
   plan: {
     type: Schema.Types.Mixed
   },
-  // tracking: {
-  //   type: String,
-  // },
-  // summary: {
-  //   type: String,
-  // },
   // name of proposer
   proposedBy: {
     type: String,
@@ -98,6 +122,7 @@ export const CVote = {
   avatar_map: Object,
   reason_map: Object,
   reason_zh_map: Object,
+  // council member
   createdBy: { type: Schema.Types.ObjectId, ref: 'users' },
 
   published: {
@@ -153,5 +178,70 @@ export const CVote = {
   },
   copyright: {
     type: String
-  }
+  },
+  payment: {
+    type: String
+  },
+  proposalHash: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  draftHash: {
+    type: String,
+    required: true,
+    unique: true
+  },
+  ownerPublicKey: String,
+  rejectAmount: {
+    type: String
+  },
+  rejectThroughAmount: {
+    type: String
+  },
+  withdrawalHistory: [withdrawalHistorySchema],
+  old: Boolean, // mark an old proposal
+  notifiedOneDay: {
+    type: Boolean,
+    default: false
+  },
+  planIntro: {
+    type: String
+  },
+  budgetIntro: {
+    type: String
+  },
+  registerHeight: {
+    type: Number
+  },
+  proposedEndsHeight: {
+    type: Number
+  },
+  notificationEndsHeight: {
+    type: Number
+  },
+  proposedEnds: {
+    type: Date
+  },
+  notificationEnds: {
+    type: Date
+  },
+  txHash: {
+    type: String
+  },
+  targetProposalNum: String,
+  closeProposalNum: String,
+  newSecretaryDID: String,
+  newOwnerDID: String,
+  newAddress: String,
+  terminatedBy: {
+    vid: Number,
+    id: { type: Schema.Types.ObjectId, ref: 'cvote' }
+  },
+  changedBy: [
+    {
+      vid: Number,
+      id: { type: Schema.Types.ObjectId, ref: 'cvote' }
+    }
+  ]
 }

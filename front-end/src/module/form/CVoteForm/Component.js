@@ -48,9 +48,9 @@ const renderTypeRadioGroup = (data, key, getFieldDecorator) => {
 
   const content_el = (
     <Radio.Group>
-      <Radio value="1">{I18N.get('council.voting.type.newMotion')}</Radio>
-      <Radio value="2">{I18N.get('council.voting.type.motionAgainst')}</Radio>
-      <Radio value="3">{I18N.get('council.voting.type.anythingElse')}</Radio>
+      <Radio value="1">{I18N.get('proposal.type.1')}</Radio>
+      <Radio value="2">{I18N.get('proposal.type.2')}</Radio>
+      <Radio value="3">{I18N.get('proposal.type.3')}</Radio>
     </Radio.Group>
   )
   return content_fn(content_el)

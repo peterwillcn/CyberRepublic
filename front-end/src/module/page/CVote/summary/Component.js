@@ -8,12 +8,14 @@ import CreateForm from './create/Container'
 
 export default class extends BaseComponent {
   ord_render() {
+    const oldData = _.get(this.props.proposal, 'old')
     return (
       <Container>
         {this.renderSummary()}
-        {this.renderForm()}
+        {/* {!oldData && this.renderForm()} */}
       </Container>
     )
+    // return null
   }
 
   renderSummary() {
