@@ -1,14 +1,11 @@
 import React from 'react'
 import LoginOrRegisterForm from '@/module/form/LoginOrRegisterForm/Container'
+import I18N from '@/I18N'
 
 import './style.scss'
 import URI from 'urijs'
 
 import StandardPage from '../StandardPage'
-
-const MSG_CODE = {
-  1: 'Please login or create a Cyber Republic account to access the forums'
-}
 
 export default class extends StandardPage {
   ord_renderContent() {
@@ -22,7 +19,7 @@ export default class extends StandardPage {
           </div>
           <div>
             {params.MSG_CODE && (
-              <div className="login-msg">{MSG_CODE[params.MSG_CODE]}</div>
+              <div className="login-msg">{I18N.get('login.access.forum')}</div>
             )}
             <div className="side-form">
               <LoginOrRegisterForm />

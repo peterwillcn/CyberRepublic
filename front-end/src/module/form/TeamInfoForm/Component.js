@@ -78,6 +78,7 @@ class TeamInfoForm extends BaseComponent {
                 content={item && item.responsibility ? item.responsibility : ''}
                 name="responsibility"
                 autofocus={false}
+                upload={false}
               />
             )}
           </FormItem>
@@ -91,6 +92,7 @@ class TeamInfoForm extends BaseComponent {
                 content={item && item.info ? item.info : ''}
                 name="info"
                 autofocus={false}
+                upload={false}
               />
             )}
           </FormItem>

@@ -18,7 +18,22 @@ class PaymentSchedule extends Component {
       total: _.get(value, 'budgetAmount') || 0,
       address: (value && value.elaAddress) || '',
       paymentItems: (value && value.paymentItems) || [],
-      budgetIntro: (value && value.budgetIntro) || ''
+      budgetIntro: (value && value.budgetIntro) || '',
+      changeNum: this.props.controVar
+    }
+  }
+
+  componentDidUpdate() {
+    const {initialValue: value, controVar} = this.props
+    const {changeNum} = this.state
+    if (changeNum !== controVar){
+      this.setState({
+        total: _.get(value, 'budgetAmount') || 0,
+        address: (value && value.elaAddress) || '',
+        paymentItems: (value && value.paymentItems) || [],
+        budgetIntro: (value && value.budgetIntro) || '',
+        changeNum: controVar
+      })
     }
   }
 
@@ -134,15 +149,16 @@ class PaymentSchedule extends Component {
     const disabled = !milestone || flag
     return (
       <Wrapper>
+        <Note>{I18N.get(`suggestion.form.note.budget`)}</Note>
         <Section>
-          <Label>{I18N.get('suggestion.budget.address')}</Label>
+          <Label> * {I18N.get('suggestion.budget.address')}</Label>
           <StyledInput
             value={address}
             onChange={(e) => this.handleChange(e, 'address')}
           />
         </Section>
         <Section>
-          <Label>{I18N.get('suggestion.budget.schedule')}</Label>
+          <Label> * {I18N.get('suggestion.budget.schedule')}</Label>
           <Button onClick={this.showModal} disabled={disabled ? true : false}>
             {I18N.get('suggestion.budget.create')}
           </Button>
@@ -158,8 +174,11 @@ class PaymentSchedule extends Component {
         ) : null}
         <Section>
           <Label>{`${I18N.get('suggestion.budget.introduction')}`}</Label>
-          {getFieldDecorator('budgetIntro')(
+          {getFieldDecorator('budgetIntro',{
+            initialValue:budgetIntro
+          })(
             <CodeMirrorEditor
+              callback={this.props.callback}
               content={budgetIntro}
               activeKey="budgetIntro"
               name="budgetIntro"
@@ -252,4 +271,8 @@ const Total = styled.div`
 const Digit = styled.span`
   font-size: 18px;
   color: #000;
+`
+const Note = styled.div`
+  margin-top: 20px;
+  margin-bottom: 20px;
 `

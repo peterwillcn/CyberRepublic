@@ -50,6 +50,7 @@ export const Title = styled.h2`
     margin: 0;
     font-size: 24px;
   `}
+  word-break: break-all;
 `
 
 export const ContentTitle = styled.h4`
@@ -163,4 +164,38 @@ export const Paragraph = styled.div`
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+`
+
+export const StyledRow = styled.div`
+  width: 100%;
+  border-bottom: 1px solid #edf1f5;
+  margin-bottom: 10px;
+  > button {
+    margin: 0 4px;
+  }
+  p {
+    padding: 0px;
+    margin-top:5px;
+  }
+`
+export const StyledTab = styled.div`
+  font-size: 18px;
+`
+export const StyledTabs = styled.div`
+  .ant-tabs-nav {
+    color: #afb6c3;
+  }
+  .ant-tabs-nav .ant-tabs-tab:hover {
+    color: #333333;
+  }
+  .ant-tabs-nav .ant-tabs-tab-active {
+    color: #333333;
+  }
+  .ant-tabs-nav .ant-tabs-tab-active:hover {
+    color: #333333;
+  }
+  .ant-tabs-ink-bar {
+    background-color: #1de9b6;
+    height: 4px;
+  }
 `

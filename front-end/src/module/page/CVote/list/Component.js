@@ -10,7 +10,8 @@ import {
   Input,
   DatePicker,
   Checkbox,
-  Icon
+  Icon,
+  Spin,
 } from 'antd'
 import rangePickerLocale from 'antd/es/date-picker/locale/zh_CN'
 import { CSVLink } from 'react-csv'
@@ -23,7 +24,7 @@ import VoteStats from '../stats/Component'
 import userUtil from '@/util/user'
 import { ReactComponent as UpIcon } from '@/assets/images/icon-up.svg'
 import { ReactComponent as DownIcon } from '@/assets/images/icon-down.svg'
-
+import { PROPOSAL_TYPE } from '@/constant'
 // style
 import {
   Container,
@@ -95,14 +96,42 @@ export default class extends BaseComponent {
       author,
       type,
       endsDate,
-      showOldData: false
+      showOldData: false,
+      fetching: false,
+      isChangeNext: true,
+      initNum: 0
     }
 
+    this.authorSearch = _.debounce(this.authorSearch.bind(this), 800)
     this.debouncedRefetch = _.debounce(this.refetch.bind(this), 300)
   }
 
   async componentDidMount() {
+    const initPage = localStorage.getItem('proposal-page')
+    this.setState({isChangeNext:false})
+    if (!initPage) {
+      localStorage.setItem('proposal-page', 1)
+    }
+    if (this.props.location.query) {
+      this.viewOldData()
+    }
+    this.loadPage(localStorage.getItem('proposal-page') || 1, 10)
     this.refetch()
+  }
+
+  componentDidUpdate() {
+    const {isChangeNext, initNum} = this.state
+    if (isChangeNext || initNum == 0) {
+      if (initNum ==0) {
+        this.setState({initNum: initNum+1})
+      }
+      window.scrollTo(0, 0)
+    }
+    if (this.props.location.sate === 'return') {
+      window.scrollTo(0,localStorage.getItem('proposal-scrollY') || 0)
+    } else {
+      window.scrollTo(0, 0)
+    }
   }
 
   handleFilter = () => {
@@ -135,7 +164,7 @@ export default class extends BaseComponent {
   }
 
   handleAuthorChange = (e) => {
-    this.setState({ author: e.target.value })
+    this.setState({ author: e})
   }
 
   handleTypeChange = (type) => {
@@ -181,10 +210,14 @@ export default class extends BaseComponent {
   }
 
   viewOldData = async () => {
+    let page
+    if (this.props.location.query) {
+      page = localStorage.getItem('proposal-page')
+    }
     await this.setState((state) => ({
       showOldData: !state.showOldData,
       // go back to page 1 on toggle
-      page: 1,
+      page,
       results: 10,
       total: 0
     }))
@@ -193,14 +226,6 @@ export default class extends BaseComponent {
   }
 
   ord_render() {
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
-    }
     const { canManage, isSecretary, isCouncil } = this.props
     const canCreateProposal = !isCouncil && !isSecretary
     const { isVisitableFilter } = this.state
@@ -234,11 +259,14 @@ export default class extends BaseComponent {
       {
         title: I18N.get('council.voting.type'),
         dataIndex: 'type',
-        render: (type, item) => PROPOSAL_TYPE[type]
+        render: (type, item) => I18N.get(`proposal.type.${type}`)
       },
       {
         title: I18N.get('council.voting.author'),
-        dataIndex: 'proposedBy'
+        dataIndex: 'proposer.profile.firstName',
+        render: (proposer, item) => (
+          userUtil.formatUsername(item.proposer)
+        )
       },
       {
         title: I18N.get('council.voting.voteByCouncil'),
@@ -351,7 +379,7 @@ export default class extends BaseComponent {
          const itemsCSV = _.map(list, v => [
          v.vid,
          v.title,
-         PROPOSAL_TYPE[v.type],
+         I18N.get(`proposal.type.${v.type}`),
          v.proposedBy,
          this.renderEndsInForCSV(v),
          this.voteDataByUserForCSV(v),
@@ -440,21 +468,27 @@ export default class extends BaseComponent {
 
   renderCurrentHeight = () => {
     const { currentHeight } = this.state
-    return (
-      <CurrentHeight>
-        <CurrentHeightContent>
-          <CurrentHeightImg src={'/assets/images/Elastos_Logo.png'}></CurrentHeightImg>
-          <CurrentHeightTitle>
-            {I18N.get('proposal.fields.currentHeight')}:
-          </CurrentHeightTitle>
-          {currentHeight ? currentHeight.toLocaleString() : 0}
-          <CurrentHeightFooter />
-        </CurrentHeightContent>
-      </CurrentHeight>
-    )
+    let currentHeightDiv = null
+    if (currentHeight) {
+      currentHeightDiv = (<CurrentHeight>
+      <CurrentHeightContent>
+        <CurrentHeightImg src={'/assets/images/Elastos_Logo.png'}></CurrentHeightImg>
+        <CurrentHeightTitle>
+          {I18N.get('proposal.fields.currentHeight')}:
+        </CurrentHeightTitle>
+        {currentHeight ? currentHeight.toLocaleString() : 0}
+        <CurrentHeightFooter />
+      </CurrentHeightContent>
+    </CurrentHeight>)
+    }
+    return currentHeightDiv
   }
 
   onPageChange = (page, pageSize) => {
+    localStorage.setItem('proposal-page', page)
+    this.setState({
+      isChangeNext: true
+    })
     this.loadPage(page, pageSize)
   }
 
@@ -541,17 +575,9 @@ export default class extends BaseComponent {
 
   refetch = async () => {
     this.ord_loading(true)
-    const PROPOSAL_TYPE = {
-      1: I18N.get('council.voting.type.newMotion'),
-      2: I18N.get('council.voting.type.motionAgainst'),
-      3: I18N.get('council.voting.type.anythingElse'),
-      4: I18N.get('council.voting.type.standardTrack'),
-      5: I18N.get('council.voting.type.process'),
-      6: I18N.get('council.voting.type.information')
-    }
-    const { listData, canManage, getCurrentheight } = this.props
+    const { listData, canManage, getCurrentheight, getAllAuthor } = this.props
     const param = this.getQuery()
-    const page = 1
+    const page = localStorage.getItem('proposal-page') || 1
     try {
       const { list: allListData, total: allListTotal } = await listData(
         param,
@@ -573,7 +599,7 @@ export default class extends BaseComponent {
         dataCSV.push([
           v.vid,
           v.title,
-          PROPOSAL_TYPE[v.type],
+          I18N.get(`proposal.type.${v.type}`),
           v.proposedBy,
           this.renderEndsInForCSV(v),
           this.renderCommunityEndsInForCSV(v),
@@ -591,12 +617,14 @@ export default class extends BaseComponent {
       param.results = 10
       const { list, total } = await listData(param, canManage)
       const rs = await getCurrentheight()
+      const authorArr = await getAllAuthor()
       this.setState({
         list,
         alllist: dataCSV,
         total,
         page: (page && parseInt(page)) || 1,
-        currentHeight: rs
+        currentHeight: rs,
+        authorArr,
       })
     } catch (error) {
       logger.error(error)
@@ -631,6 +659,10 @@ export default class extends BaseComponent {
   }
 
   toDetailPage(id) {
+    this.setState({
+      isChangeNext: false
+    })
+    localStorage.setItem('proposal-scrollY',window.scrollY)
     // this.props.history.push(`/proposals/${id}`)
     const w = window.open('about:blank')
     w.location.href = `/proposals/${id}`
@@ -777,6 +809,12 @@ export default class extends BaseComponent {
       )
   }
 
+  authorSearch = async (data) => {
+    this.setState({authorList: [],fetching:true})
+    const authorList = await this.props.getAllAuthor({data, old:this.state.showOldData})
+    this.setState({authorList,fetching:false})
+  }
+
   renderFilterPanel = (PROPOSAL_TYPE) => {
     const {
       status,
@@ -795,6 +833,13 @@ export default class extends BaseComponent {
       rangePickerOptions.locale = rangePickerLocale
     }
     const colSpan = isCouncil ? 8 : 12
+    const { Option } = Select
+    const options = _.map(this.state.authorList, (o => {
+      const isEmpty = _.isEmpty(o.firstName)
+      return (<Option key={o._id}>
+        { !isEmpty ? o.firstName + ' ' + o.lastName : o.username}
+      </Option>)
+    }))
     return (
       <FilterPanel isCouncil={isCouncil}>
         <Row type="flex" gutter={10} className="filter">
@@ -809,7 +854,7 @@ export default class extends BaseComponent {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  {_.map(CVOTE_STATUS, (value) => (
+                  {_.map(CVOTE_STATUS, (value) => value !== 'DRAFT' && (
                     <Select.Option key={value} value={value}>
                       {I18N.get(`cvoteStatus.${value}`)}
                     </Select.Option>
@@ -876,7 +921,19 @@ export default class extends BaseComponent {
                   {I18N.get('proposal.fields.author')}
                 </FilterItemLabel>
                 <div className="filter-input">
-                  <Input value={author} onChange={this.handleAuthorChange} />
+                  <Select
+                    showSearch
+                    // labelInValue
+                    value={this.state.author}
+                    style={{ width: '100%' }}
+                    showArrow={false}
+                    filterOption={false}
+                    onSearch={this.authorSearch}
+                    onChange={this.handleAuthorChange}
+                    notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
+                  >
+                    {options}
+                  </Select>
                 </div>
               </FilterItem>
               <FilterItem>
@@ -888,11 +945,19 @@ export default class extends BaseComponent {
                   value={type}
                   onChange={this.handleTypeChange}
                 >
-                  {_.map(PROPOSAL_TYPE, (value, key) => (
-                    <Select.Option key={key} value={key}>
-                      {value}
-                    </Select.Option>
-                  ))}
+                  {_.map(PROPOSAL_TYPE, (value, key) => {
+                    const rs = _.includes([
+                      PROPOSAL_TYPE.MOTION_AGAINST,
+                      PROPOSAL_TYPE.ANYTHING_ELSE
+                    ], value)
+                    return (
+                      !rs && (
+                        <Select.Option key={key} value={value}>
+                          {I18N.get(`proposal.type.${value}`)}
+                        </Select.Option>
+                      )
+                    )
+                  })}
                 </Select>
               </FilterItem>
               <FilterItem>

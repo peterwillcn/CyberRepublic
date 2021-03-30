@@ -37,7 +37,7 @@ export default {
       replaces: 'Replaces',
       superseded: 'Superseded-By'
     },
-    filter: '过滤',
+    filter: '高级选项',
     elipStatus: 'Elip 状态',
     creationDate: '创建日期'
   },
@@ -66,8 +66,8 @@ export default {
     abstain: '弃权',
     delete: '删除',
     exportAsCSV: '导出CSV文件',
-    clearFilter: '重置过滤',
-    applyFilter: '应用过滤',
+    clearFilter: '重置',
+    applyFilter: '确定',
     preview: '预览',
     personalDraft: '保存为个人草案',
     saveChanges: '保存修改',

@@ -7,7 +7,7 @@ import I18N from '@/I18N'
 import { LG_WIDTH } from '@/config/constant'
 import Meta from '@/module/common/Meta'
 import StandardPage from '../../StandardPage'
-
+import { message } from 'antd'
 import { Container } from './style'
 import './style.scss'
 
@@ -38,11 +38,27 @@ export default class extends StandardPage {
   }
 
   historyBack = (id) => {
-    this.props.history.push(`/suggestion/${id}?new=true`)
+    if (id) {
+      this.props.history.push(`/suggestion/${id}?new=true`)
+    } else {
+      localStorage.removeItem(LOCALSTORAGE_DRAFT)
+      this.props.history.push('/suggestion')
+    }
   }
 
   onSubmit = async (model) => {
     const rs = await this.props.createSuggestion(model)
+    if (rs && rs.success === false) {
+      if (rs.owner === false) {
+        return message.error(I18N.get('suggestion.form.error.noOwner'))
+      }
+      if (rs.secretary === false) {
+        return message.error(I18N.get('suggestion.form.error.noSecretary'))
+      }
+      if (rs.proposal === false) {
+        return message.error(I18N.get('suggestion.form.error.noProposal'))
+      }
+    }
     this.historyBack(rs && rs._id)
     localStorage.removeItem(LOCALSTORAGE_DRAFT)
   }
@@ -82,6 +98,7 @@ export default class extends StandardPage {
               onSubmit={this.onSubmit}
               onCancel={this.historyBack}
               onSaveDraft={this.onSaveDraft}
+              getActiveProposals={this.props.getActiveProposals}
             />
           </div>
         </Container>

@@ -13,6 +13,8 @@ export default {
     desc: '摘要',
   },
   modal: {
-    delete: '你确定要删除当前版本更新?'
+    delete: '你确定要删除当前版本更新?',
+    okText: '确认',
+    cancelText: '取消'
   }
 }

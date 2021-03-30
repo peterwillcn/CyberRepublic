@@ -63,5 +63,6 @@ export const Secretariat = {
     status: {
         type: String,
         required: true,
-    }
+    },
+    publicKey: String
 }

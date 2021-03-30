@@ -50,7 +50,9 @@ class PaymentList extends BaseComponent {
       <StyledTable>
         <StyledHead>
           <StyledRow>
-            <th>{I18N.get('suggestion.budget.payment')}#</th>
+            <th style={{ width: 100 }}>
+              {I18N.get('suggestion.budget.payment')}#
+            </th>
             <th>{I18N.get('suggestion.budget.type')}</th>
             <th>
               {I18N.get('suggestion.budget.amount')}
@@ -144,7 +146,7 @@ const StyledTable = styled.table`
   margin-top: 16px;
   width: 100%;
   font-size: 13px;
-  table-layout: auto;
+  table-layout: fixed;
 `
 const StyledHead = styled.thead`
   > tr {
@@ -164,6 +166,7 @@ const StyledRow = styled.tr`
     padding: 8px 16px;
     color: #000;
     overflow-wrap: break-word;
+    vertical-align: middle;
     > button {
       margin: 0 4px;
     }

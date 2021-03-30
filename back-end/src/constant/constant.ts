@@ -12,7 +12,10 @@ const create = (constant_list: string[]): any => {
 export const SUGGESTION_TYPE = {
   NEW_MOTION: '1',
   MOTION_AGAINST: '2',
-  ANYTHING_ELSE: '3'
+  ANYTHING_ELSE: '3',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
 }
 
 export const CVOTE_TYPE = {
@@ -21,7 +24,19 @@ export const CVOTE_TYPE = {
   ANYTHING_ELSE: '3',
   STANDARD_TRACK: '4',
   PROCESS: '5',
-  INFORMATIONAL: '6'
+  INFORMATIONAL: '6',
+  CHANGE_PROPOSAL: 'CHANGE_PROPOSAL',
+  CHANGE_SECRETARY: 'CHANGE_SECRETARY',
+  TERMINATE_PROPOSAL: 'TERMINATE_PROPOSAL'
+}
+
+export const CVOTE_TYPE_API = {
+  CHANGE_PROPOSAL: 'changeproposalowner',
+  CHANGE_SECRETARY: 'secretarygeneral',
+  TERMINATE_PROPOSAL: 'closeproposal',
+  1: 'normal',
+  2: 'motion_against',
+  3: 'anything_else',
 }
 
 export const USER_ROLE = {
@@ -156,7 +171,8 @@ export const COUNCIL_STATUS = {
   ELECTED: 'Elected',
   IMPEACHED: 'Impeached',
   RETURNED: 'Returned',
-  TERMINATED: 'Terminated'
+  TERMINATED: 'Terminated',
+  INACTIVE: 'Inactive'
 }
 
 export const SECRETARIAT_STATUS = create(['CURRENT', 'NON_CURRENT'])
@@ -171,7 +187,8 @@ export const CVOTE_STATUS = create([
   'FINAL',
   'DEFERRED',
   'INCOMPLETED',
-  'VETOED'
+  'VETOED',
+  'TERMINATED'
 ])
 export const CVOTE_TRACKING_STATUS = create([
   'DRAFT',
@@ -296,7 +313,13 @@ export const USER_PROFESSION = create([
   'MANAGEMENT'
 ])
 
-export const SUGGESTION_STATUS = create(['ACTIVE', 'ABUSED', 'ARCHIVED', 'PROPOSED'])
+export const SUGGESTION_STATUS = create([
+  'ACTIVE',
+  'ABUSED',
+  'ARCHIVED',
+  'PROPOSED',
+  'CANCELLED'
+])
 
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 
@@ -317,7 +340,9 @@ export const DB_SELECTED_FIELDS = {
   USER: {
     NAME: 'profile.firstName profile.lastName username',
     NAME_EMAIL: 'profile.firstName profile.lastName username email',
+    // prettier-ignore
     NAME_AVATAR: 'profile.avatar profile.firstName profile.lastName username did.didName',
+    // prettier-ignore
     NAME_EMAIL_DID: 'profile.avatar profile.firstName profile.lastName username email did'
   },
   SUGGESTION: {
@@ -372,3 +397,12 @@ export const TRANSACTION_TYPE = {
   SUGGESTION_TO_PROPOSAL: 37,
   COUNCIL_VOTE: 38
 }
+
+export const API_VOTE_TYPE = {
+  PROPOSAL: 'proposalvote',
+  SUGGESTION: 'suggestionvote'
+}
+
+export const DID_PREFIX = 'did:elastos:'
+export const ELA_BURN_ADDRESS = 'ELANULLXXXXXXXXXXXXXXXXXXXXXYvs3rr'
+export const DEFAULT_BUDGET = [{ type: 'finalpayment', stage: 1, amount: '0' }]

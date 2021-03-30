@@ -1,12 +1,12 @@
 import React from 'react'
 import BaseComponent from '@/model/BaseComponent'
-import { message } from 'antd'
+import { message, Icon } from 'antd'
 import I18N from '@/I18N'
 import styled from 'styled-components'
 import PropTypes from 'prop-types'
 
 const IMAGE_SIZE = {
-  MAX_WIDTH: 720,
+  MAX_WIDTH: 1080,
   MAX_HEIGHT: 720
 }
 
@@ -40,7 +40,7 @@ function resizeImage(img) {
 }
 
 class UploadBase64Image extends BaseComponent {
-  onChange = e => {
+  onChange = (e) => {
     const file = e.target.files[0]
     if (!file) {
       return
@@ -51,8 +51,9 @@ class UploadBase64Image extends BaseComponent {
       return
     }
 
-    if (file.size > 502400) {
+    if (file.size > 10 * 1024 * 1024) {
       message.error(I18N.get('image.upload.size.error'))
+      e.target.value = null
       return
     }
 
@@ -67,6 +68,7 @@ class UploadBase64Image extends BaseComponent {
       URL.revokeObjectURL(blobURL)
       this.props.insertImage(base64)
     }
+    e.target.value = null
   }
 
   ord_render() {
@@ -81,13 +83,7 @@ class UploadBase64Image extends BaseComponent {
         />
         <label htmlFor={name}>
           <figure>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              class="icon"
-            >
-              <path d="M 12.9994,8.99807L 18.4994,8.99807L 12.9994,3.49807L 12.9994,8.99807 Z M 5.99938,1.99809L 13.9994,1.99809L 19.9994,7.99808L 19.9994,19.9981C 19.9994,21.1021 19.1034,21.9981 17.9994,21.9981L 5.98937,21.9981C 4.88537,21.9981 3.99939,21.1021 3.99939,19.9981L 4.0094,3.99808C 4.0094,2.89407 4.89437,1.99809 5.99938,1.99809 Z M 6,20L 15,20L 18,20L 18,12L 14,16L 12,14L 6,20 Z M 8,9C 6.89543,9 6,9.89543 6,11C 6,12.1046 6.89543,13 8,13C 9.10457,13 10,12.1046 10,11C 10,9.89543 9.10457,9 8,9 Z "></path>
-            </svg>
+            <Icon type="picture" />
           </figure>
         </label>
       </Wrapper>
@@ -119,8 +115,8 @@ const Wrapper = styled.div`
   }
 
   .upload-base64 + label figure {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
     background-color: #008d85;
     border-radius: 50%;
     display: flex;

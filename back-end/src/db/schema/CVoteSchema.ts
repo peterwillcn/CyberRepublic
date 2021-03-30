@@ -46,6 +46,7 @@ const withdrawalHistorySchema = {
   milestoneKey: String,
   signature: String,
   createdAt: Date,
+  error: String,
   review: {
     reason: String,
     reasonHash: String,
@@ -80,9 +81,13 @@ export const CVote = {
   motivation: {
     type: String
   },
-  relevance: {
-    type: String
-  },
+  relevance: [
+    {
+      proposal: Schema.Types.ObjectId,
+      title: String,
+      relevanceDetail: String
+    }
+  ],
   budgetAmount: {
     type: Schema.Types.Mixed
   },
@@ -223,5 +228,20 @@ export const CVote = {
   },
   txHash: {
     type: String
-  }
+  },
+  targetProposalNum: String,
+  closeProposalNum: String,
+  newSecretaryDID: String,
+  newOwnerDID: String,
+  newAddress: String,
+  terminatedBy: {
+    vid: Number,
+    id: { type: Schema.Types.ObjectId, ref: 'cvote' }
+  },
+  changedBy: [
+    {
+      vid: Number,
+      id: { type: Schema.Types.ObjectId, ref: 'cvote' }
+    }
+  ]
 }

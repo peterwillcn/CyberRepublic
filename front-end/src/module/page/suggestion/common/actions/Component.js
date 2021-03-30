@@ -13,6 +13,7 @@ import { ReactComponent as CommentIcon } from '@/assets/images/icon-comment.svg'
 import { ReactComponent as FollowIcon } from '@/assets/images/icon-follow.svg'
 import { ReactComponent as FlagIcon } from '@/assets/images/icon-flag.svg'
 import { ReactComponent as ArchiveIcon } from '@/assets/images/icon-archive.svg'
+import { ReactComponent as CopyIcon } from '@/assets/images/icon-copy.svg'
 
 import './style.scss'
 
@@ -41,9 +42,9 @@ export default class extends BaseComponent {
     const isLiked = _.includes(likes, currentUserId)
     const isDisliked = _.includes(dislikes, currentUserId)
     const isSubscribed = _.findIndex(
-        subscribers,
-        subscriber => subscriber.user === currentUserId
-      ) !== -1
+      subscribers,
+      subscriber => subscriber.user === currentUserId
+    ) !== -1
     const isAbused = abusedStatus === SUGGESTION_ABUSED_STATUS.REPORTED
     const isArchived = status === SUGGESTION_STATUS.ARCHIVED
 
@@ -102,12 +103,12 @@ export default class extends BaseComponent {
 
     const commentNode = (
       <div className="cr-icon-group">
-        <Link to={`/suggestion/${_id}/#comments`}>
+        <a href='#comments'>
           <IconText
             component={!!CommentIcon && <CommentIcon />}
             text={commentsNum}
           />
-        </Link>
+        </a>
       </div>
     )
 
@@ -131,6 +132,7 @@ export default class extends BaseComponent {
 
   renderPopover() {
     const { isSubscribed, isAbused, isArchived } = this.state
+    const { isLogin } = this.props
     const content = (
       <div className="popover-actions">
         <IconText
@@ -159,6 +161,12 @@ export default class extends BaseComponent {
           onClick={this.handleClick('isArchived')}
           className="archive-icon"
         />
+        {isLogin ? <IconText
+          component={!!CopyIcon && <CopyIcon />}
+          text={I18N.get('suggestion.duplicate')}
+          onClick={() => this.handleClickCopy()}
+          className="archive-icon"
+        /> : null}
       </div>
     )
     return (
@@ -166,6 +174,33 @@ export default class extends BaseComponent {
         <Icon type="ellipsis" />
       </Popover>
     )
+  }
+
+  handleClickCopy() {
+    const { data } = this.props
+    const dataKey = [
+      "title", "type", "abstract", "motivation",
+      "goal", "relevance", "plan", "budget",
+      "planIntro", "budgetIntro", "budgetAmount",
+      "elaAddress", 'newSecretaryDID',
+      'targetProposalNum',
+      'newOwnerDID',
+      'newAddress',
+      'closeProposalNum', 'validPeriod']
+    const dataTemp = {}
+    _.each(dataKey, (item) => {
+      if (data[item] !== undefined) {
+        if (item === "relevance" && typeof data[item] === "string") {
+          return
+        }
+        dataTemp[item] = data[item]
+      }
+    })
+    if (!_.isEmpty(dataTemp)) {
+      localStorage.removeItem("draft-suggestion")
+      localStorage.setItem("draft-suggestion", JSON.stringify(dataTemp))
+      window.location.href = "/suggestion/create"
+    }
   }
 
   getActionParams(action) {

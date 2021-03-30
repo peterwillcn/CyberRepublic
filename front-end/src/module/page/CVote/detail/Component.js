@@ -8,13 +8,19 @@ import {
   Anchor,
   Row,
   Col,
-  Popconfirm
+  Popconfirm,
+  Tabs
 } from 'antd'
 import { Link } from 'react-router-dom'
 import I18N from '@/I18N'
 import _ from 'lodash'
 import StandardPage from '@/module/page/StandardPage'
-import { CVOTE_RESULT, CVOTE_STATUS, CVOTE_CHAIN_STATUS } from '@/constant'
+import {
+  CVOTE_RESULT,
+  CVOTE_STATUS,
+  CVOTE_CHAIN_STATUS,
+  SUGGESTION_TYPE
+} from '@/constant'
 import Footer from '@/module/layout/Footer/Container'
 import BackLink from '@/module/shared/BackLink/Component'
 import CRPopover from '@/module/shared/Popover/Component'
@@ -30,13 +36,15 @@ import Tracking from '../tracking/Container'
 import Summary from '../summary/Container'
 import Meta from '@/module/common/Meta'
 import SocialShareButtons from '@/module/common/SocialShareButtons'
+import TrackingMessage from '../tracking_message/Container'
 import { logger } from '@/util'
 
 import {
   convertMarkdownToHtml,
   removeImageFromMarkdown,
   getPlanHtml,
-  getBudgetHtml
+  getBudgetHtml,
+  getRelevanceHtml
 } from '@/util/markdown-it'
 import PaymentList from './PaymentList'
 import TeamInfoList from '@/module/form/SuggestionForm/TeamInfoList'
@@ -48,7 +56,6 @@ import {
   ContentTitle,
   StyledAnchor,
   FixedHeader,
-  FixedHeaderQrCode,
   Body,
   SubTitleHeading,
   SubTitleContainer,
@@ -59,12 +66,20 @@ import {
   PartTitle,
   PartContent,
   Subtitle,
-  Paragraph
+  Paragraph,
+  StyledRow,
+  StyledTab,
+  StyledTabs
 } from './style'
 import './style.scss'
-import { ItemText } from '../../suggestion/detail/style'
 
 const { TextArea } = Input
+const { TabPane } = Tabs
+const {
+  CHANGE_PROPOSAL,
+  CHANGE_SECRETARY,
+  TERMINATE_PROPOSAL
+} = SUGGESTION_TYPE
 
 const renderRichContent = (data, key, title, user, actions) => {
   let rc
@@ -79,7 +94,7 @@ const renderRichContent = (data, key, title, user, actions) => {
         <div className="budget-payment-list">
           <PaymentList
             list={data.budget}
-            milestone={data.plan.milestone}
+            milestone={data.plan && data.plan.milestone}
             withdrawalHistory={data.withdrawalHistory}
             user={user}
             proposer={data.proposer}
@@ -111,6 +126,30 @@ const renderRichContent = (data, key, title, user, actions) => {
         ) : null}
       </div>
     )
+  } else if (
+    key === 'relevance' &&
+    data.relevance &&
+    typeof data.relevance !== 'string'
+  ) {
+    rc = (
+      <div key="relevance">
+        <Subtitle id="relevance"> </Subtitle>
+        {data.relevance.map((item, index) => {
+          return (
+            item && (
+              <StyledRow key={index}>
+                <p>
+                  {I18N.get('from.SuggestionForm.proposal') + `:`}
+                  <a href={`/proposals/${item.proposal}`}>{item.title}</a>
+                </p>
+                <p>{I18N.get('from.SuggestionForm.detail') + `:`}</p>
+                <MarkdownPreview content={item.relevanceDetail} />
+              </StyledRow>
+            )
+          )
+        })}
+      </div>
+    )
   } else {
     rc = <MarkdownPreview content={data[key]} />
   }
@@ -133,7 +172,8 @@ class C extends StandardPage {
       visibleOppose: false,
       visibleAbstain: false,
       editing: false,
-      smallSpace: false
+      smallSpace: false,
+      activeKey: 'budget'
     }
 
     this.isLogin = this.props.isLogin
@@ -196,8 +236,7 @@ class C extends StandardPage {
     const notesNode = this.renderNotes()
     const voteActionsNode = this.renderVoteActions()
     const voteDetailNode = this.renderVoteResults()
-    const trackingNode = this.renderTracking()
-    const summaryNode = this.renderSummary()
+    const trackingTabsNode = this.renderTrackingTabs()
 
     // get the first line pure text of abstract
     const abstract = data.abstract && data.abstract.trim().split('\n')[0]
@@ -212,7 +251,7 @@ class C extends StandardPage {
         {anchorNode}
         <Container className="p_CVoteDetail">
           <StickyContainer>
-            <BackLink link="/proposals" />
+            <BackLink link={{pathname:"/proposals", query: data.old ? data.old : false, sate: 'return'}} />
             {this.renderStickyHeader()}
             <Body>
               {contentNode}
@@ -220,8 +259,7 @@ class C extends StandardPage {
               {notesNode}
               {isVote ? voteActionsNode : null}
               {voteDetailNode}
-              {trackingNode}
-              {summaryNode}
+              {trackingTabsNode}
             </Body>
             <SocialShareButtons
               shareQuote={`${data.title} - Proposal Detail - Cyber Republic`}
@@ -259,7 +297,7 @@ class C extends StandardPage {
           return (
             <div style={finalStyle}>
               <Row>
-                <Col span={this.state.smallSpace ? 24 : 12}>
+                <Col span={this.state.smallSpace || !isNotification ? 24 : 12}>
                   <FixedHeader>
                     {metaNode}
                     {titleNode}
@@ -311,7 +349,7 @@ class C extends StandardPage {
       result = sections
         .map((section) => {
           return `
-          <h2>${I18N.get(`elip.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`elip.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
             removeImageFromMarkdown(data[section])
           )}</p>
@@ -334,13 +372,21 @@ class C extends StandardPage {
             data.budget &&
             typeof data.budget !== 'string'
           ) {
+            if (_.isEmpty(data.budget)) return null
             return `
-            <h2>${I18N.get('proposal.fields.budget')}</h2>
-            <p>${I18N.get('suggestion.budget.total')}</p>
+            <h2 translate="no">${I18N.get('proposal.fields.budget')}</h2>
+            <p translate="no">${I18N.get('suggestion.budget.total')}</p>
             <p>${data.budgetAmount}</p>
-            <p>${I18N.get('suggestion.budget.address')}</p>
+            <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
+            <p>${I18N.get('suggestion.budget.schedule')}</p>
             <p>${getBudgetHtml(data.budget)}</p>
+            <h2 translate="no">${I18N.get(
+              `suggestion.budget.introduction`
+            )}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(data.budgetIntro)
+            )}</p>
           `
           }
           if (
@@ -349,12 +395,27 @@ class C extends StandardPage {
             typeof data.plan !== 'string'
           ) {
             return `
-            <h2>${I18N.get('proposal.fields.plan')}</h2>
+            <h2 translate="no">${I18N.get('proposal.fields.plan')}</h2>
             <p>${getPlanHtml(data.plan.teamInfo)}</p>
+            <h2 translate="no">${I18N.get(`suggestion.plan.introduction`)}</h2>
+            <p>${convertMarkdownToHtml(
+              removeImageFromMarkdown(data.planIntro)
+            )}</p>
           `
           }
+          if (
+            section === 'relevance' &&
+            data.relevance &&
+            typeof data.relevance !== 'string'
+          ) {
+            return `
+            <h2 translate="no">${I18N.get('suggestion.fields.relevance')}</h2>
+            <p>${getRelevanceHtml(data.relevance)}</p>
+            `
+          }
+
           return `
-          <h2>${I18N.get(`proposal.fields.${section}`)}</h2>
+          <h2 translate="no">${I18N.get(`proposal.fields.${section}`)}</h2>
           <p>${convertMarkdownToHtml(
             removeImageFromMarkdown(data[section])
           )}</p>
@@ -391,17 +452,6 @@ class C extends StandardPage {
     ) {
       isShowFollowingUp = true
     }
-
-    const trackingTitle = trackingStatus ? (
-      <span>
-        {I18N.get('proposal.fields.tracking')}{' '}
-        <span style={{ fontSize: 10, color: '#aaa' }}>
-          ({I18N.get(`proposal.status.trackingRaw.${trackingStatus}`)})
-        </span>
-      </span>
-    ) : (
-      I18N.get('proposal.fields.tracking')
-    )
     const summaryTitle = summaryStatus ? (
       <span>
         {I18N.get('proposal.fields.summary')}{' '}
@@ -412,13 +462,17 @@ class C extends StandardPage {
     ) : (
       I18N.get('proposal.fields.summary')
     )
-    const tracking = isShowFollowingUp && (
-      <Anchor.Link href="#tracking" title={trackingTitle} key="tracking" />
+    const trackingMessage = isShowFollowingUp && (
+      <Anchor.Link
+        href="#tracking-message"
+        title={I18N.get('proposal.fields.trackingMessage')}
+        key="tracking-message"
+      />
     )
     const summary = isShowFollowingUp && (
       <Anchor.Link href="#summary" title={summaryTitle} key="summary" />
     )
-    const commonLinks = [tracking, summary]
+    const commonLinks = [trackingMessage, summary]
     return isElip
       ? this.renderElipLinks(commonLinks)
       : this.renderSuggestionLinks(commonLinks)
@@ -472,6 +526,11 @@ class C extends StandardPage {
   }
 
   renderSuggestionLinks(commonLinks) {
+    const type = _.get(this.props, 'data.type')
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
     return (
       <StyledAnchor offsetTop={300}>
         <Anchor.Link
@@ -487,20 +546,31 @@ class C extends StandardPage {
           href="#motivation"
           title={I18N.get('proposal.fields.motivation')}
         />
-        <LinkGroup>
-          <Anchor.Link href="#goal" title={I18N.get('proposal.fields.goal')} />
-        </LinkGroup>
-        <Anchor.Link href="#plan" title={I18N.get('proposal.fields.plan')} />
-        <Anchor.Link
-          href="#relevance"
-          title={I18N.get('proposal.fields.relevance')}
-        />
-        <LinkGroup marginTop={48}>
+        {!isNewType && (
+          <LinkGroup>
+            <Anchor.Link
+              href="#goal"
+              title={I18N.get('proposal.fields.goal')}
+            />
+          </LinkGroup>
+        )}
+        {!isNewType && (
+          <Anchor.Link href="#plan" title={I18N.get('proposal.fields.plan')} />
+        )}
+        {!isNewType && (
           <Anchor.Link
-            href="#budget"
-            title={I18N.get('proposal.fields.budget')}
+            href="#relevance"
+            title={I18N.get('proposal.fields.relevance')}
           />
-        </LinkGroup>
+        )}
+        {!isNewType && (
+          <LinkGroup marginTop={48}>
+            <Anchor.Link
+              href="#budget"
+              title={I18N.get('proposal.fields.budget')}
+            />
+          </LinkGroup>
+        )}
         <LinkGroup marginTop={48}>
           <Anchor.Link href="#vote" title={I18N.get('proposal.fields.vote')} />
         </LinkGroup>
@@ -616,6 +686,11 @@ class C extends StandardPage {
     }
     // legacy data structure has content field
     if (_.has(data, 'content')) return renderRichContent(data, 'content')
+    const type = _.get(this.props, 'data.type')
+    const isNewType = _.includes(
+      [CHANGE_PROPOSAL, CHANGE_SECRETARY, TERMINATE_PROPOSAL],
+      type
+    )
     return (
       <div>
         <Preamble {...data} user={user} copyFun={this.copyToClip} />
@@ -629,25 +704,29 @@ class C extends StandardPage {
           'motivation',
           I18N.get('proposal.fields.motivation')
         )}
-        {renderRichContent(data, 'goal', I18N.get('proposal.fields.goal'))}
-        {renderRichContent(data, 'plan', I18N.get('proposal.fields.plan'))}
-        {renderRichContent(
-          data,
-          'relevance',
-          I18N.get('proposal.fields.relevance')
-        )}
-        {renderRichContent(
-          data,
-          'budget',
-          I18N.get('proposal.fields.budget'),
-          user,
-          {
-            applyPayment: this.props.applyPayment,
-            getPaymentSignature: this.props.getPaymentSignature,
-            reviewApplication: this.props.reviewApplication,
-            withdraw: this.props.withdraw
-          }
-        )}
+        {!isNewType &&
+          renderRichContent(data, 'goal', I18N.get('proposal.fields.goal'))}
+        {!isNewType &&
+          renderRichContent(data, 'plan', I18N.get('proposal.fields.plan'))}
+        {!isNewType &&
+          renderRichContent(
+            data,
+            'relevance',
+            I18N.get('proposal.fields.relevance')
+          )}
+        {!isNewType &&
+          renderRichContent(
+            data,
+            'budget',
+            I18N.get('proposal.fields.budget'),
+            user,
+            {
+              applyPayment: this.props.applyPayment,
+              getPaymentSignature: this.props.getPaymentSignature,
+              reviewApplication: this.props.reviewApplication,
+              withdraw: this.props.withdraw
+            }
+          )}
       </div>
     )
   }
@@ -788,6 +867,45 @@ class C extends StandardPage {
     )
   }
 
+  onTabChange = (activeKey) => {
+    this.setState({ activeKey })
+  }
+
+  renderTrackingTabs() {
+    const { withdrawalHistory, budget } = this.props.data
+    const completion = _.filter(budget, { type: 'COMPLETION' })
+    // prettier-ignore
+    const dataList = completion[0] && _.filter(withdrawalHistory, {
+      milestoneKey:  completion[0].milestoneKey
+    })
+    return (
+      <StyledTabs id="tracking-message">
+        <Tabs
+          animated={false}
+          tabBarGutter={38}
+          activeKey={this.state.activeKey}
+          onChange={this.onTabChange}
+        >
+          <TabPane tab={this.renderTabTitle('budget')} key="budget">
+            {this.renderTracking()}
+          </TabPane>
+          <TabPane tab={this.renderTabTitle('status')} key="status">
+            {this.renderTrackingMessage()}
+          </TabPane>
+          {!_.isEmpty(dataList) ? 
+          <TabPane tab={this.renderTabTitle('summary')} key="summary">
+            {this.renderSummary()}
+          </TabPane> 
+          : null}
+        </Tabs>
+      </StyledTabs>
+    )
+  }
+
+  renderTabTitle(item) {
+    return <StyledTab>{I18N.get(`proposal.text.tracking.${item}`)}</StyledTab>
+  }
+
   renderTracking() {
     const { data, currentUserId } = this.props
     let isShowFollowingUp = _.includes(
@@ -803,6 +921,21 @@ class C extends StandardPage {
     if (!isShowFollowingUp) return null
 
     return <Tracking proposal={data} />
+  }
+
+  renderTrackingMessage() {
+    const { data } = this.props
+    let isShowFollowingUp = _.includes(
+      [
+        CVOTE_STATUS.ACTIVE,
+        CVOTE_STATUS.INCOMPLETED,
+        CVOTE_STATUS.FINAL,
+        CVOTE_STATUS.TERMINATED
+      ],
+      data.status
+    )
+    if (!isShowFollowingUp) return null
+    return <TrackingMessage proposal={data} />
   }
 
   renderSummary() {
@@ -890,7 +1023,9 @@ class C extends StandardPage {
               'votedBy.profile.lastName'
             )} `,
             didName: _.get(cur, 'votedBy.did.didName'),
-            avatar: _.get(cur, 'votedBy.profile.avatar'),
+            avatar:
+              _.get(cur, 'votedBy.profile.avatar') ||
+              _.get(cur, 'votedBy.did.avatar'),
             reason: cur.reason,
             votedBy,
             status: cur.status
@@ -980,7 +1115,8 @@ class C extends StandardPage {
         isProposed,
         isCouncil,
         currentUserId,
-        ownerVote
+        ownerVote,
+        voteHistory
       }
       return <VoteResultComponent {...props} key={key} />
     })

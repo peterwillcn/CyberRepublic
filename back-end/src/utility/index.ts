@@ -1,7 +1,6 @@
 import axios from 'axios'
 import base64url from 'base64url'
 import * as bs58 from 'bs58'
-import * as moment from 'moment'
 import utilCrypto from './crypto'
 import mail from './mail'
 import validate from './validate'
@@ -72,7 +71,8 @@ export const getDidPublicKey = async (did: string) => {
   }
   try {
     const res = await axios.post(process.env.DID_SIDECHAIN_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res && res.data && res.data.result) {
       const base64 = _.get(res.data.result, 'transaction[0].operation.payload')
@@ -122,7 +122,8 @@ export const getUtxosByAmount = async (amount: string) => {
   }
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res && res.data) {
       const utxos = _.get(res.data, 'result')
@@ -161,7 +162,8 @@ export const getProposalState = async (query: {
   }
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res) {
       const status = _.get(res.data, 'result.proposalstate.status')
@@ -189,7 +191,8 @@ export const getProposalData = async (proposalHash: string) => {
   }
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res) {
       const status = _.get(res.data, 'result.proposalstate.status')
@@ -245,7 +248,8 @@ export const getDidName = async (did: string) => {
   }
   try {
     const res = await axios.post(process.env.DID_SIDECHAIN_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res && res.data && res.data.result) {
       const base64 = _.get(res.data.result, 'transaction[0].operation.payload')
@@ -281,7 +285,8 @@ export const getVoteResultByTxid = async (txid: string) => {
   }
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res && res.data && res.data.result) {
       const confirmations = _.get(res.data.result, 'confirmations')
@@ -305,7 +310,8 @@ export const getCurrentHeight = async () => {
   }
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
-      headers
+      headers,
+      timeout: 5000,
     })
     if (res) {
       const height = _.get(res.data, 'result')

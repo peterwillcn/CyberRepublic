@@ -10,6 +10,7 @@ import mark from 'markdown-it-mark'
 import deflist from 'markdown-it-deflist'
 import ins from 'markdown-it-ins'
 import { getSiteUrl } from './url'
+import I18N from '@/I18N'
 
 const mdi = markdownIt({
   html: true,
@@ -27,7 +28,7 @@ const mdi = markdownIt({
   .use(ins)
   .use(deflist)
 
-const autolinkReferenceNumber = content => {
+const autolinkReferenceNumber = (content) => {
   const url = getSiteUrl()
   const patterns = [
     {
@@ -60,38 +61,45 @@ const autolinkReferenceNumber = content => {
   }, content)
 }
 
-export const convertMarkdownToHtml = content => {
+export const convertMarkdownToHtml = (content) => {
   const rs = content && autolinkReferenceNumber(content)
   return DOMPurify.sanitize(mdi.render(rs || ''))
 }
 
-export const removeImageFromMarkdown = content => {
+export const removeImageFromMarkdown = (content) => {
   return content ? content.replace(/\!\[image\]\(data:image\/.*\)/g, '') : ''
 }
 
-export const getPlanHtml = plan => {
+export const getPlanHtml = (plan) => {
   if (!plan) {
     return
   }
   const lists = plan
-    .map(item => {
+    .map((item) => {
       return `
         <p>
           <span>${item.member}</span>
           <span>${item.role}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.responsibility))}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.info))}</span>
+          <span>${convertMarkdownToHtml(
+            removeImageFromMarkdown(item.responsibility)
+          )}</span>
+          <span>${convertMarkdownToHtml(
+            removeImageFromMarkdown(item.info)
+          )}</span>
         </p>
       `
     })
     .join('')
   return `
     <div>
+      <p translate="no">${I18N.get('suggestion.plan.teamInfo')}</p>
       <p>
-        <span>Team Member#</span>
-        <span>Role</span>
-        <span>Responsibility</span>
-        <span>More info</span>
+        <span translate="no">${I18N.get('suggestion.plan.teamMember')}#</span>
+        <span translate="no">${I18N.get('suggestion.plan.role')}</span>
+        <span translate="no">${I18N.get(
+          'suggestion.plan.responsibility'
+        )}</span>
+        <span translate="no">${I18N.get('suggestion.plan.moreInfo')}</span>
       </p>
       ${lists}
     </div>
@@ -99,7 +107,7 @@ export const getPlanHtml = plan => {
 }
 
 export const getBudgetHtml = budget => {
-  if (!budget) {
+  if (!budget || _.isEmpty(budget)) {
     return
   }
   const lists = budget
@@ -107,21 +115,51 @@ export const getBudgetHtml = budget => {
       return `
         <p>
           <span>${index + 1}</span>
+          <span translate="no">${I18N.get(
+            `suggestion.budget.${item.type}`
+          )}</span>
           <span>${item.amount}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.reasons))}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.criteria))}</span>
+          <span>${Number(item.milestoneKey) + 1}</span>
+          <span>${convertMarkdownToHtml(
+            removeImageFromMarkdown(item.criteria)
+          )}</span>
         </p>
       `
     })
     .join('')
   return `
     <div>
+      <p translate="no">${I18N.get('suggestion.budget.schedule')}</p>
       <p>
-        <span>Payment#</span>
-        <span>Amount(ELA)</span>
-        <span>Reasons</span>
-        <span>Payment of Criteria</span>
+        <span translate="no">${I18N.get('suggestion.budget.payment')}#</span>
+        <span translate="no">${I18N.get('suggestion.budget.type')}</span>
+        <span translate="no">${I18N.get('suggestion.budget.amount')}(ELA)</span>
+        <span translate="no">${I18N.get('suggestion.budget.goal')}</span>
+        <span translate="no">${I18N.get('suggestion.budget.criteria')}</span>
       </p>
+      ${lists}
+    </div>
+  `
+}
+
+export const getRelevanceHtml = relevance => {
+  if (!relevance) return
+  const lists = relevance
+    .map((item, index) => {
+      return `
+        <p>
+          <p>
+          <span translate="no">${I18N.get('from.SuggestionForm.proposal')} : </span>
+          <span>${item.title}</span>
+          </p>
+          <p translate="no">${I18N.get('from.SuggestionForm.detail')} : </p>
+          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.relevanceDetail))}</span>
+        </p>
+      `
+    })
+    .join('')
+  return `
+    <div>
       ${lists}
     </div>
   `

@@ -56,7 +56,10 @@ const mapDispatch = () => {
     },
     async getCurrentheight() {
       return service.getCurrentheight()
-    }
+    },
+    async getAllAuthor(param) {
+      return service.getAllAuthor(param)
+    },
   }
 }
 

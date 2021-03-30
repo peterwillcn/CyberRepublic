@@ -25,7 +25,8 @@ import Council from './Council'
 import Secretariat from './Secretariat'
 import Ela_Transaction from './Ela_Transaction'
 import Config from './Config'
-
+import CVote_Vote_History from './CVote_Vote_History'
+import CVote_Tracking_Message from './CVote_Tracking_Message'
 import Log from './Log'
 
 import { utilCrypto } from '../utility'
@@ -53,7 +54,7 @@ export default class {
 
     this.connection.on('disconnected', this.handleUnexpectedDisconnect)
 
-    this.connection.on('reconnected', function() {
+    this.connection.on('reconnected', function () {
       console.log('MongoDB reconnected!')
     })
 
@@ -125,6 +126,8 @@ export default class {
     this.db.Secretariat = new Secretariat(db)
     this.db.Ela_Transaction = new Ela_Transaction(db)
     this.db.Config = new Config(db)
+    this.db.CVote_Vote_History = new CVote_Vote_History(db)
+    this.db.CVote_Tracking_Message = new CVote_Tracking_Message(db)
   }
 
   public getModel(name: string) {

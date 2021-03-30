@@ -385,7 +385,7 @@ export default class extends ProfilePage {
                       <Select
                         showSearch={true}
                         allowClear={true}
-                        placeholder="Select a status"
+                        placeholder={I18N.get('task.select.status')}
                         defaultValue={this.state.statusFilter}
                         onChange={this.setStatusFilter.bind(this)}
                       >

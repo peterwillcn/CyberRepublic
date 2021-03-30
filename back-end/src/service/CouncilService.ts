@@ -15,23 +15,55 @@ export default class extends Base {
   private secretariatModel: any
   private userMode: any
   private proposalMode: any
+  private configModel: any
 
   protected init() {
     this.model = this.getDBModel('Council')
     this.secretariatModel = this.getDBModel('Secretariat')
     this.userMode = this.getDBModel('User')
     this.proposalMode = this.getDBModel('CVote')
+    this.configModel = this.getDBModel('Config')
   }
 
   public async term(): Promise<any> {
     const fields = ['index', 'startDate', 'endDate', 'status']
 
     const result = await this.model.getDBInstance().find({}, fields)
-
+    
+    const currentConfig = await this.configModel.getDBInstance().findOne()
+    const crRelatedStageStatus = await ela.getCrrelatedStage()
+    const {
+      ondutyendheight,
+      invoting,
+      votingstartheight,
+      votingendheight
+    } = crRelatedStageStatus
+    const { currentHeight } = currentConfig
+    let votingStart
+    if (invoting) {
+      votingStart = await ela.getTimestampByHeight(votingstartheight)
+    }
+    let blockMinute = 2 * 60
+    if (process.env.NODE_ENV !== 'production'){
+      blockMinute = 252 * 60
+    }
     return _.map(result, (o: any) => {
       let dateObj = {}
       if (o.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
+        // staging one block time
+        const difference = (ondutyendheight - currentHeight) * blockMinute
+        // pro one block time
+        // const difference = (ondutyendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = o.startDate && moment(o.startDate).unix()
+        dateObj['endDate'] = difference + (o.startDate && moment(o.startDate).unix())
+      }
+      if (o.status == constant.TERM_COUNCIL_STATUS.VOTING && invoting) {
+        // staging one block time
+        const difference = (votingendheight - currentHeight) * blockMinute
+        // pro one block time
+        // const difference = (votingendheight - currentHeight) * 2 * 60
+        dateObj['startDate'] = votingStart
+        dateObj['endDate'] = difference + votingStart
       }
       if (o.status === constant.TERM_COUNCIL_STATUS.HISTORY) {
         dateObj['endDate'] = o.endDate && moment(o.endDate).unix()
@@ -53,7 +85,8 @@ export default class extends Base {
       'councilMembers.did',
       'councilMembers.user.did',
       'councilMembers.location',
-      'councilMembers.status'
+      'councilMembers.status',
+      'councilMembers.impeachmentVotes',
     ]
 
     const secretariatFields = [
@@ -97,9 +130,34 @@ export default class extends Base {
         data: null
       }
     }
+    
+    let circulatingSupply
+    if (result.status === constant.TERM_COUNCIL_STATUS.CURRENT) {
+      circulatingSupply = (await ela.currentCirculatingSupply()) * 0.2
+    }
 
-    const filterFields = (o: any) => {
-      return _.omit(o, ['_id', 'user', 'startDate', 'endDate'])
+    const filterFields = (o: any, status: any) => {
+      const fields = ['_id', 'user', 'startDate', 'endDate']
+      if (status !== constant.TERM_COUNCIL_STATUS.CURRENT) {
+        fields.push('impeachmentVotes')
+        return _.omit(o, fields)
+      }
+
+      if (
+        o.impeachmentVotes >= 0 &&
+        circulatingSupply &&
+        circulatingSupply > 0
+      ) {
+        o.rejectRatio =
+          o.impeachmentVotes == 0
+            ? 0
+            : _.toNumber(
+                (
+                  _.toNumber(o.impeachmentVotes) / _.toNumber(circulatingSupply)
+                ).toFixed(8)
+              )
+      }
+      return _.omit(o, fields)
     }
 
     const councilList =
@@ -113,12 +171,12 @@ export default class extends Base {
             ].includes(e.status)
           )
     const council = _.map(councilList, (o: any) => ({
-      ...filterFields(o._doc),
+      ...filterFields(o._doc, result.status),
       ...this.getUserInformation(o._doc, o.user)
     }))
 
     const secretariat = _.map(secretariatResult, (o: any) => ({
-      ...filterFields(o._doc),
+      ...filterFields(o._doc, null),
       ...this.getUserInformation(o._doc, o.user),
       startDate: moment(o.startDate).unix(),
       endDate: o.endDate && moment(o.endDate).unix()
@@ -126,11 +184,13 @@ export default class extends Base {
 
     return {
       council,
-      secretariat
+      secretariat,
+      circulatingSupply
     }
   }
 
   public async councilInformation(param: any): Promise<any> {
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
     const { id, did } = param
 
     if (!id && !did) {
@@ -163,7 +223,8 @@ export default class extends Base {
           status: {
             $in: [
               constant.COUNCIL_STATUS.ELECTED,
-              constant.COUNCIL_STATUS.IMPEACHED
+              constant.COUNCIL_STATUS.IMPEACHED,
+              constant.COUNCIL_STATUS.INACTIVE
             ]
           }
         }
@@ -225,6 +286,9 @@ export default class extends Base {
       let term = []
       let impeachmentObj = {}
       if (councilList.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
+        const currentCouncil =  await ela.currentCouncil()
+        const thisDidInfo = _.find(currentCouncil.crmembersinfo,{did})
+        impeachmentObj['dpospublickey'] = thisDidInfo.dpospublickey
         // update impeachment
         const circulatingSupply = councilList.circulatingSupply
           ? councilList.circulatingSupply
@@ -246,7 +310,6 @@ export default class extends Base {
             'title',
             'status',
             'voteResult',
-            'voteHistory'
           ]
           const proposalList = await this.proposalMode
             .getDBInstance()
@@ -255,7 +318,6 @@ export default class extends Base {
                 $or: [
                   { proposer: council.user._id },
                   { 'voteResult.votedBy': council.user._id },
-                  { 'voteHistory.votedBy': council.user._id }
                 ]
               },
               proposalFields
@@ -265,7 +327,11 @@ export default class extends Base {
               'createdBy',
               constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
             )
-
+          const cvoteHistory = await db_cvote_history
+            .getDBInstance()
+            .find({votedBy: council.user._id})
+            .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+          const history = _.keyBy(cvoteHistory, 'votedBy._id')
           term = _.map(proposalList, (o: any) => {
             const didName = _.get(o, 'createdBy.did.didName')
             let voteResult = _.filter(
@@ -276,10 +342,9 @@ export default class extends Base {
             )
             if (_.isEmpty(voteResult)) {
               voteResult = _.filter(
-                o.voteHistory,
-                (o: any) =>
-                  council.user._id.equals(o.votedBy) &&
-                  o.status == constant.CVOTE_CHAIN_STATUS.CHAINED
+                history,
+                (e: any) => e.proposalBy.equals(o._id) &&
+                  e.status == constant.CVOTE_CHAIN_STATUS.CHAINED
               )
             }
             const currentVoteResult = _.get(voteResult[0], 'value')
@@ -321,67 +386,69 @@ export default class extends Base {
   }
 
   public async eachSecretariatJob() {
-    // const secretariatPublicKey = '0349cb77a69aa35be0bcb044ffd41a616b8367136d3b339d515b1023cc0f302f87'
-    const secretaryGeneral = await ela.getSecretaryGeneral()
-    const { secretarygeneral: secretariatPublicKey } = secretaryGeneral || {
-      secretarygeneral: null
+    const result = await ela.getSecretaryGeneral()
+    const secretaryPublicKey = _.get(result, 'secretarygeneral')
+    if (!secretaryPublicKey) {
+      return
     }
-    const secretariatDID = process.env.SECRETARIAT_DID
 
-    const currentSecretariat = await this.secretariatModel
-      .getDBInstance()
-      .findOne({ status: constant.SECRETARIAT_STATUS.CURRENT })
-    const { did: currentSecretariatDID } = currentSecretariat || {
-      did: secretariatDID
+    const query = { 'did.compressedPublicKey': secretaryPublicKey }
+    const user = await this.userMode.findOne(query, ['_id', 'did'])
+    let information: any
+    let didName: string
+    const did = _.get(user, 'did.id')
+    if (user && did) {
+      const rs = await Promise.all([getInformationByDid(did), getDidName(did)])
+      information = rs[0]
+      didName = rs[1]
     }
-    const information: any = await getInformationByDid(
-      DID_PREFIX + currentSecretariatDID
-    )
-    const didName = await getDidName(DID_PREFIX + currentSecretariatDID)
 
-    const user = await this.userMode
-      .getDBInstance()
-      .findOne({ 'did.id': DID_PREFIX + currentSecretariatDID }, ['_id', 'did'])
+    const current = await this.secretariatModel.findOne({
+      status: constant.SECRETARIAT_STATUS.CURRENT
+    })
 
-    if (!currentSecretariat) {
+    const isChanged = current && current.publicKey !== secretaryPublicKey
+    if (!current || isChanged) {
+      if (isChanged) {
+        current.status = constant.SECRETARIAT_STATUS.NON_CURRENT
+        await Promise.all([
+          current.save(),
+          this.userMode.update(
+            { 'did.id': DID_PREFIX + current.did },
+            { role: constant.USER_ROLE.MEMBER }
+          )
+        ])
+      }
       const doc: any = this.filterNullField({
         ...information,
         user: user && user._id,
-        did: currentSecretariatDID,
+        did: did && did.slice(DID_PREFIX.length),
         didName,
         startDate: new Date(),
-        status: constant.SECRETARIAT_STATUS.CURRENT
+        status: constant.SECRETARIAT_STATUS.CURRENT,
+        publicKey: secretaryPublicKey
       })
-
       // add secretariat
       await this.secretariatModel.getDBInstance().create(doc)
     } else {
+      const doc: any = this.filterNullField({
+        ...information,
+        user: user && user._id,
+        did: did && did.slice(DID_PREFIX.length),
+        didName
+      })
       // update secretariat
-      await this.secretariatModel.getDBInstance().update(
-        {
-          $or: [
-            { did: currentSecretariatDID },
-            { did: DID_PREFIX + currentSecretariatDID }
-          ]
-        },
-        {
-          ...information,
-          did: currentSecretariatDID,
-          user: user && user._id
-        }
-      )
+      await this.secretariatModel.update({ publicKey: secretaryPublicKey }, doc)
     }
 
     if (user && user.did) {
-      const { USER_ROLE } = constant
       let fields: any = {}
-      if (user.role !== USER_ROLE.SECRETARY) {
-        fields.role = USER_ROLE.SECRETARY
+      if (user.role !== constant.USER_ROLE.SECRETARY) {
+        fields.role = constant.USER_ROLE.SECRETARY
       }
       const did = this.filterNullField({
         'did.avatar': _.get(information, 'avatar'),
-        'did.didName': didName,
-        'did.compressedPublicKey': secretariatPublicKey
+        'did.didName': didName
       })
       if (!_.isEmpty(did)) {
         const keys = Object.keys(did)
@@ -393,12 +460,7 @@ export default class extends Base {
         }
       }
       if (!_.isEmpty(fields)) {
-        await this.userMode.getDBInstance().update(
-          { _id: user._id },
-          {
-            $set: fields
-          }
-        )
+        await this.userMode.update({ _id: user._id }, { $set: fields })
       }
     }
   }

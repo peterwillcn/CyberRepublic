@@ -23,6 +23,16 @@ class TeamInfoSection extends Component {
     this.setState({ visible: true, index: -1 })
   }
 
+  changeValue = value => {
+    const { onChange, callback } = this.props
+    const { teamInfos } = this.state
+    this.setState(
+      { values: [...teamInfos, value.teamInfos] }, () => {
+        onChange(this.state.teamInfos)
+        callback('teamInfo')
+      })
+  }
+
   handleDelete = index => {
     const { teamInfos } = this.state
     this.setState(
@@ -30,7 +40,7 @@ class TeamInfoSection extends Component {
         teamInfos: [...teamInfos.slice(0, index), ...teamInfos.slice(index + 1)]
       },
       () => {
-        this.props.onChange({ teamInfo: this.state.teamInfos })
+        this.changeValue({ teamInfos: this.state.teamInfos })
       }
     )
   }
@@ -49,7 +59,7 @@ class TeamInfoSection extends Component {
         return item
       })
       this.setState({ teamInfos: rs, visible: false }, () => {
-        this.props.onChange({ teamInfo: this.state.teamInfos })
+        this.changeValue({ teamInfos: this.state.teamInfos })
       })
       return
     }
@@ -59,7 +69,7 @@ class TeamInfoSection extends Component {
         visible: false
       },
       () => {
-        this.props.onChange({ teamInfo: this.state.teamInfos })
+        this.changeValue({ teamInfos: this.state.teamInfos })
       }
     )
   }
@@ -70,7 +80,6 @@ class TeamInfoSection extends Component {
     return (
       <Wrapper>
         <Header>
-          <Label>{title}</Label>
           <Button onClick={this.showModal}>
             {I18N.get('suggestion.plan.createTeamInfo')}
           </Button>
@@ -114,6 +123,7 @@ const Wrapper = styled.div`
   margin-bottom: 24px;
 `
 const Header = styled.div`
+  margin-top: 20px;
   margin-bottom: 4px;
   display: flex;
   justify-content: space-between;

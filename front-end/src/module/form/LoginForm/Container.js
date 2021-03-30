@@ -45,13 +45,12 @@ export default createContainer(
         try {
           const rs = await userService.checkElaAuth(qrcodeStr)
           if (rs && rs.did) {
-            message.info('请注册账号或用已有账号登陆')
+            message.info(I18N.get('login.noBindingDID'))
           }
           if (rs && rs.success && rs.username) {
             message.success(`${I18N.get('login.success')}, ${rs.username}`)
             const loginRedirect = sessionStorage.getItem('loginRedirect')
             if (loginRedirect) {
-              
               this.history.push(loginRedirect)
               sessionStorage.setItem('loggedIn', '1')
               sessionStorage.setItem('loginRedirect', null)

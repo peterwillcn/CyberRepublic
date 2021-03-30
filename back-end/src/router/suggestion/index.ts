@@ -27,6 +27,12 @@ import signatureCallback from './signature_callback'
 import checkSignature from './check_signature'
 import getSuggestion from './getSuggestion'
 import cmSignatureUrl from './cm_signature_url'
+import ownerSignatureUrl from './owner_signature_url'
+import ownerSignatureCallback from './owner_signature_callback'
+import secSignatureUrl from './sec_signature_url'
+import secSignatureCallback from './sec_signature_callback'
+import cancel from './cancel'
+import getSuggestionByNumber from './get_suggestion_by_number'
 
 export default Base.setRouter([
   {
@@ -168,5 +174,35 @@ export default Base.setRouter([
     path: '/cm-signature-url',
     router: cmSignatureUrl,
     method: 'post'
+  },
+  {
+    path: '/owner-signature-url',
+    router: ownerSignatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/new-owner-signature-cb',
+    router: ownerSignatureCallback,
+    method: 'post'
+  },
+  {
+    path: '/sec-signature-url',
+    router: secSignatureUrl,
+    method: 'post'
+  },
+  {
+    path: '/sec-signature-cb',
+    router: secSignatureCallback,
+    method: 'post'
+  },
+  {
+    path: '/cancel',
+    router: cancel,
+    method: 'post'
+  },
+  {
+    path: '/get-suggestion-by-number',
+    router: getSuggestionByNumber,
+    method: 'get'
   }
 ])

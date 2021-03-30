@@ -145,12 +145,12 @@ export default class extends BaseService {
         method: 'put',
         data: doc
       })
+      return res
     } catch (error) {
       this.dispatch(this.selfRedux.actions.loading_update(false))
       message.error('Error happened, please try again later or contact admin.')
       logger.error(error)
     }
-    return res
   }
 
   async addTag(doc) {
@@ -397,15 +397,21 @@ export default class extends BaseService {
     return res
   }
 
-  async getSignature(id) {
+  async getSignature(id, type) {
     const path = `${this.prefixPath}/signature`
     const rs = await api_request({
       path,
       method: 'post',
-      data: { id }
+      data: { id, type }
     })
     if (rs && rs.success && rs.data) {
-      this.dispatch(this.selfRedux.actions.detail_update(rs.data))
+      const curDetail = _.get(this.store.getState(), 'suggestion.detail')
+      this.dispatch(
+        this.selfRedux.actions.detail_update({
+          ...curDetail,
+          ...rs.data
+        })
+      )
     }
     return rs
   }
@@ -416,6 +422,59 @@ export default class extends BaseService {
       path,
       method: 'post',
       data: { id }
+    })
+    return res
+  }
+
+  // new owner
+  async getOwnerSignatureUrl(id) {
+    const path = `${this.prefixPath}/owner-signature-url`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
+
+  async getSecretarySignatureUrl(id) {
+    const path = `${this.prefixPath}/sec-signature-url`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    return res
+  }
+
+  async cancel(id) {
+    const path = `${this.prefixPath}/cancel`
+    const res = await api_request({
+      path,
+      method: 'post',
+      data: { id }
+    })
+    if (res && res.success) {
+      const curDetail = _.get(this.store.getState(), 'suggestion.detail')
+      this.dispatch(
+        this.selfRedux.actions.detail_update({
+          ...curDetail,
+          status: res.status
+        })
+      )
+      message.info(I18N.get('suggestion.msg.cancelled'))
+      return res
+    } else {
+      message.error(I18N.get('suggestion.msg.notCancelled'))
+    }
+  }
+
+  async getSuggestionByNumber(param) {
+    const path = `${this.prefixPath}/get-suggestion-by-number`
+    const res = await api_request({
+      path,
+      method: 'get',
+      data: { ...param }
     })
     return res
   }
