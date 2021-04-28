@@ -29,7 +29,7 @@ export default class extends Base {
     const fields = ['index', 'startDate', 'endDate', 'status']
 
     const result = await this.model.getDBInstance().find({}, fields)
-    
+
     const currentConfig = await this.configModel.getDBInstance().findOne()
     const crRelatedStageStatus = await ela.getCrrelatedStage()
     const {
@@ -44,7 +44,7 @@ export default class extends Base {
       votingStart = await ela.getTimestampByHeight(votingstartheight)
     }
     let blockMinute = 2 * 60
-    if (process.env.NODE_ENV !== 'production'){
+    if (process.env.NODE_ENV !== 'production') {
       blockMinute = 252 * 60
     }
     return _.map(result, (o: any) => {
@@ -55,6 +55,7 @@ export default class extends Base {
         // pro one block time
         // const difference = (ondutyendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = o.startDate && moment(o.startDate).unix()
+        // prettier-ignore
         dateObj['endDate'] = difference + (o.startDate && moment(o.startDate).unix())
       }
       if (o.status == constant.TERM_COUNCIL_STATUS.VOTING && invoting) {
@@ -86,7 +87,7 @@ export default class extends Base {
       'councilMembers.user.did',
       'councilMembers.location',
       'councilMembers.status',
-      'councilMembers.impeachmentVotes',
+      'councilMembers.impeachmentVotes'
     ]
 
     const secretariatFields = [
@@ -130,7 +131,7 @@ export default class extends Base {
         data: null
       }
     }
-    
+
     let circulatingSupply
     if (result.status === constant.TERM_COUNCIL_STATUS.CURRENT) {
       circulatingSupply = (await ela.currentCirculatingSupply()) * 0.2
@@ -195,7 +196,7 @@ export default class extends Base {
 
     if (!id && !did) {
       return {
-        tyep: 'Other'
+        type: 'Other'
       }
     }
 
@@ -286,8 +287,8 @@ export default class extends Base {
       let term = []
       let impeachmentObj = {}
       if (councilList.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
-        const currentCouncil =  await ela.currentCouncil()
-        const thisDidInfo = _.find(currentCouncil.crmembersinfo,{did})
+        const currentCouncil = await ela.currentCouncil()
+        const thisDidInfo = _.find(currentCouncil.crmembersinfo, { did })
         impeachmentObj['dpospublickey'] = thisDidInfo.dpospublickey
         // update impeachment
         const circulatingSupply = councilList.circulatingSupply
@@ -309,7 +310,7 @@ export default class extends Base {
             'vid',
             'title',
             'status',
-            'voteResult',
+            'voteResult'
           ]
           const proposalList = await this.proposalMode
             .getDBInstance()
@@ -317,7 +318,7 @@ export default class extends Base {
               {
                 $or: [
                   { proposer: council.user._id },
-                  { 'voteResult.votedBy': council.user._id },
+                  { 'voteResult.votedBy': council.user._id }
                 ]
               },
               proposalFields
@@ -329,8 +330,11 @@ export default class extends Base {
             )
           const cvoteHistory = await db_cvote_history
             .getDBInstance()
-            .find({votedBy: council.user._id})
-            .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+            .find({ votedBy: council.user._id })
+            .populate(
+              'votedBy',
+              constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
+            )
           const history = _.keyBy(cvoteHistory, 'votedBy._id')
           term = _.map(proposalList, (o: any) => {
             const didName = _.get(o, 'createdBy.did.didName')
@@ -343,7 +347,8 @@ export default class extends Base {
             if (_.isEmpty(voteResult)) {
               voteResult = _.filter(
                 history,
-                (e: any) => e.proposalBy.equals(o._id) &&
+                (e: any) =>
+                  e.proposalBy.equals(o._id) &&
                   e.status == constant.CVOTE_CHAIN_STATUS.CHAINED
               )
             }
