@@ -16,6 +16,7 @@ export default class extends Base {
   private userMode: any
   private proposalMode: any
   private configModel: any
+  private candidateModel: any
 
   protected init() {
     this.model = this.getDBModel('Council')
@@ -23,6 +24,7 @@ export default class extends Base {
     this.userMode = this.getDBModel('User')
     this.proposalMode = this.getDBModel('CVote')
     this.configModel = this.getDBModel('Config')
+    this.candidateModel = this.getDBModel('Candidate')
   }
 
   public async term(): Promise<any> {
@@ -267,8 +269,13 @@ export default class extends Base {
       .populate('user', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
     if (!councilList && !secretariat) {
-      const unelectedCouncil = await ela.depositCoin(did)
-      if (unelectedCouncil) {
+      const query = {
+        term: id,
+        members: { $elemMatch: { did } }
+      }
+      const result = await this.candidateModel.findOne(query)
+      if (result) {
+        const unelectedCouncil = await ela.depositCoin(did)
         return {
           type: 'UnelectedCouncilMember',
           depositAmount: _.get(unelectedCouncil, 'available')
