@@ -9,6 +9,13 @@ const create = (constant_list: string[]): any => {
   return map
 }
 
+export const CANDIDATE_STATE = {
+  PENDING: 'Pending', // 候选人刚注册，注册交易还没有6次确认
+  ACTIVE: 'Active', // 正常状态，可被投票
+  CANCELED: 'Canceled', // 候选人已注销
+  RETURNED: 'Returned' // 候选人已注销且已经取回了质押金
+}
+
 export const SUGGESTION_TYPE = {
   NEW_MOTION: '1',
   MOTION_AGAINST: '2',
@@ -36,7 +43,7 @@ export const CVOTE_TYPE_API = {
   TERMINATE_PROPOSAL: 'closeproposal',
   1: 'normal',
   2: 'motion_against',
-  3: 'anything_else',
+  3: 'anything_else'
 }
 
 export const USER_ROLE = {
