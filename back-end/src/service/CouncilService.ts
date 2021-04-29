@@ -271,7 +271,9 @@ export default class extends Base {
     if (!councilList && !secretariat) {
       const query = {
         term: id,
-        members: { $elemMatch: { did } }
+        members: {
+          $elemMatch: { did, status: constant.CANDIDATE_STATE.ACTIVE }
+        }
       }
       const result = await this.candidateModel.findOne(query)
       if (result) {

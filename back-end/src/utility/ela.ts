@@ -95,7 +95,7 @@ const ela = {
     const data = {
       method: 'listcrcandidates',
       params: {
-        state: 'active'
+        state: 'all'
       }
     }
     try {
