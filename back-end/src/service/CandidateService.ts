@@ -34,15 +34,16 @@ export default class extends Base {
       term: curTerm.index,
       votingstartheight,
       votingendheight,
-      members: candidatesList
+      members: candidatesList.crcandidatesinfo
     }
     const doc = await this.model.findOne({ term: curTerm.index })
     if (!doc) {
       await this.model.save(fields)
     }
+
     await this.model.update(
       { term: curTerm.index },
-      { members: candidatesList }
+      { members: candidatesList.crcandidatesinfo }
     )
   }
 }

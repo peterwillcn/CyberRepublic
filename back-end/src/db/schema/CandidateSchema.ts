@@ -7,6 +7,7 @@ import { constant } from '../../constant'
   index: 一般是按照votes排序的，每次查询会根据票数进行排序，不是每个候选人的唯一标识。
 */
 export const Members = {
+  _id: false,
   code: String,
   cid: String,
   did: {

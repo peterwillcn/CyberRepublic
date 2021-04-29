@@ -181,11 +181,12 @@ agenda.define(JOB_NAME.PROCESS_OLD_DATAO_NCE, async (job: any, done: any) => {
 })
 agenda.define(JOB_NAME.BACKUP_CANDIDATE_LIST, async (job: any, done: any) => {
   try {
+    console.log('------backup candidate list is beginning------')
     const DB = await db.create()
     const candidateService = new CandidateService(DB, { user: undefined })
     await candidateService.backupCandidateList()
   } catch (err) {
-    console.log('', err)
+    console.log('backup candidate list error...', err)
   } finally {
     done()
   }
@@ -203,5 +204,5 @@ agenda.define(JOB_NAME.BACKUP_CANDIDATE_LIST, async (job: any, done: any) => {
   await agenda.every('3 minutes', JOB_NAME.COUNCILREVIEWJOB)
   await agenda.every('1 minutes', JOB_NAME.TRANSACTIONJOB)
   await agenda.every('10 minutes', JOB_NAME.NOTIFICATIONCOUNCILVOTE)
-  await agenda.every('10 minutes', JOB_NAME.BACKUP_CANDIDATE_LIST)
+  await agenda.every('5 minutes', JOB_NAME.BACKUP_CANDIDATE_LIST)
 })()
