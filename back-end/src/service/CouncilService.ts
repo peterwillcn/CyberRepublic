@@ -272,7 +272,7 @@ export default class extends Base {
       const query = {
         term: id,
         members: {
-          $elemMatch: { did, status: constant.CANDIDATE_STATE.ACTIVE }
+          $elemMatch: { did, state: constant.CANDIDATE_STATE.ACTIVE }
         }
       }
       const result = await this.candidateModel.findOne(query)
