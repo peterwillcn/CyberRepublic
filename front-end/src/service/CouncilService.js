@@ -70,4 +70,14 @@ export default class extends BaseService {
 
     return rs
   }
+
+  async getCrrelatedStage() {
+    const path = '/api/council/invoting'
+    const rs = await api_request({
+      path,
+      method: 'get'
+    })
+
+    return rs
+  }
 }

@@ -868,4 +868,9 @@ export default class extends Base {
       secretariat: secretariat && secretariat._doc
     }
   }
+
+  public async invoting() {
+    const { invoting } = await ela.getCrrelatedStage()
+    return invoting
+  }
 }
