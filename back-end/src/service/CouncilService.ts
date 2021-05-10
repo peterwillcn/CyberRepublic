@@ -871,6 +871,6 @@ export default class extends Base {
 
   public async invoting() {
     const { invoting } = await ela.getCrrelatedStage()
-    return invoting
+    return { invoting }
   }
 }

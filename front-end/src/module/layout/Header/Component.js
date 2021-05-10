@@ -8,6 +8,7 @@ import { MAX_WIDTH_MOBILE, MIN_WIDTH_PC } from '@/config/constant'
 import { USER_ROLE, USER_LANGUAGE } from '@/constant'
 import UserEditForm from '@/module/form/UserEditForm/Container'
 import Headroom from 'react-headroom'
+import CouncilService from '@/service/CouncilService'
 
 import ChinaFlag from './ChinaFlag'
 import UsFlag from './UsFlag'
@@ -42,8 +43,15 @@ export default class extends BaseComponent {
       affixed: false,
       popover: false,
       completing: false,
-      showDidModal: false
+      showDidModal: false,
+      invoting: false
     }
+  }
+
+  async componentDidMount() {
+    const councilService = new CouncilService()
+    const rs = await councilService.getCrRelatedStage()
+    rs && this.setState({ invoting: true })
   }
 
   renderCompleteProfileModal() {
@@ -190,9 +198,11 @@ export default class extends BaseComponent {
         <Menu.Item key="council">
           {I18N.get('navigation.council.submenu.incumbent')}
         </Menu.Item>
-        <Menu.Item key="candidates">
-          {I18N.get('navigation.council.submenu.candidate')}
-        </Menu.Item>
+        {this.state.invoting && (
+          <Menu.Item key="candidates">
+            {I18N.get('navigation.council.submenu.candidate')}
+          </Menu.Item>
+        )}
       </Menu>
     )
   }
@@ -485,7 +495,7 @@ export default class extends BaseComponent {
       if (key === 'landing') {
         this.props.history.push('/')
       } else if (key === 'login') {
-        window.location = "/login"
+        window.location = '/login'
       } else {
         this.props.history.push(`/${e.key}`)
       }
