@@ -1242,12 +1242,14 @@ export default class extends Base {
 
   public async listcrcandidates(param) {
     const { pageNum, pageSize, state } = param
-
     let ret = null
-    // url: 'http://54.223.244.60/api/dposnoderpc/check/listcrcandidates',
+    let url = `https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates`
+    if (process.env.NODE_ENV !== 'production') {
+      url = 'http://cen.longrunweather.com:18080/'
+    }
     const postPromise = util.promisify(request.post, { multiArgs: true })
     await postPromise({
-      url: `https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates`,
+      url,
       form: { pageNum, pageSize, state },
       encoding: 'utf8'
     }).then((value) => (ret = value.body))
@@ -1505,13 +1507,15 @@ export default class extends Base {
       )
     }
     if (proposalStatus === constant.CVOTE_STATUS.ACTIVE) {
-      const budget = !_.isEmpty(proposal.budget) ? proposal.budget.map((item: any) => {
-        if (item.type === 'ADVANCE') {
-          return { ...item, status: WAITING_FOR_WITHDRAWAL }
-        } else {
-          return { ...item, status: WAITING_FOR_REQUEST }
-        }
-      }) : null
+      const budget = !_.isEmpty(proposal.budget)
+        ? proposal.budget.map((item: any) => {
+            if (item.type === 'ADVANCE') {
+              return { ...item, status: WAITING_FOR_WITHDRAWAL }
+            } else {
+              return { ...item, status: WAITING_FOR_REQUEST }
+            }
+          })
+        : null
       const updateStatus = await db_cvote.update(
         {
           _id
@@ -1681,7 +1685,7 @@ export default class extends Base {
       temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
       if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
         temp.voteEndsIn = _.toNumber(
-            (o.proposedEndsHeight - rs[2]) * 2 * 60
+          (o.proposedEndsHeight - rs[2]) * 2 * 60
         ).toFixed()
       }
       if (
@@ -1690,7 +1694,7 @@ export default class extends Base {
         o.rejectThroughAmount > 0
       ) {
         temp.voteEndsIn = _.toNumber(
-            (o.notificationEndsHeight - rs[2]) * 2 * 60
+          (o.notificationEndsHeight - rs[2]) * 2 * 60
         ).toFixed()
         temp.rejectAmount = `${o.rejectAmount}`
         temp.rejectThroughAmount = `${parseFloat(
