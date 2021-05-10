@@ -108,7 +108,19 @@ export default class extends StandardPage {
   }
 
   renderCandidate = (col, colIndex) => {
-    const voteRate = (col.votes / this.state.totalVotes) * 100
+    let voteRate
+    if (parseInt(col.votes) === 0) {
+      voteRate = 0
+    } else {
+      const rate = ((col.votes / this.state.totalVotes) * 100)
+        .toString()
+        .split('.')
+      if (rate[0] === '0') {
+        voteRate = 0
+      } else {
+        voteRate = rate[0] + '.' + rate[1].slice(0, 2)
+      }
+    }
     return (
       <Col lg={6} md={8} sm={12} xs={24} key={colIndex}>
         <Card>
@@ -148,9 +160,9 @@ export default class extends StandardPage {
                 {I18N.get('council.candidate.votes')}
               </div>
               <div className="vote">
-                <Popover content={voteRate}>
-                  <div className="wrap-content data data-rate">{voteRate}</div>
-                </Popover>
+                {voteRate === 0
+                  ? `< 1`
+                  : voteRate}
                 {`% ${I18N.get('council.candidate.voteRate')}`}
               </div>
             </Meta>
