@@ -1243,13 +1243,13 @@ export default class extends Base {
   public async listcrcandidates(param) {
     const { pageNum, pageSize, state } = param
     let ret = null
-    let url = `https://unionsquare.elastos.org/api/dposnoderpc/check/listcrcandidates`
+    let url = 'https://unionsquare.elastos.org'
     if (process.env.NODE_ENV !== 'production') {
-      url = 'http://cen.longrunweather.com:18080/'
+      url = 'http://cen.longrunweather.com:18080'
     }
     const postPromise = util.promisify(request.post, { multiArgs: true })
     await postPromise({
-      url,
+      url: `${url}/api/dposnoderpc/check/listcrcandidates`,
       form: { pageNum, pageSize, state },
       encoding: 'utf8'
     }).then((value) => (ret = value.body))
