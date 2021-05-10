@@ -52,21 +52,16 @@ export default class extends Base {
     return _.map(result, (o: any) => {
       let dateObj = {}
       if (o.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
-        // staging one block time
         const difference = (ondutyendheight - currentHeight) * blockMinute
-        // pro one block time
-        // const difference = (ondutyendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = o.startDate && moment(o.startDate).unix()
-        // prettier-ignore
-        dateObj['endDate'] = difference + (o.startDate && moment(o.startDate).unix())
+        if (!o.endDate) {
+          dateObj['endDate'] = difference + moment().unix()
+        }
       }
       if (o.status == constant.TERM_COUNCIL_STATUS.VOTING && invoting) {
-        // staging one block time
         const difference = (votingendheight - currentHeight) * blockMinute
-        // pro one block time
-        // const difference = (votingendheight - currentHeight) * 2 * 60
         dateObj['startDate'] = votingStart
-        dateObj['endDate'] = difference + votingStart
+        dateObj['endDate'] = difference + moment().unix()
       }
       if (o.status === constant.TERM_COUNCIL_STATUS.HISTORY) {
         dateObj['endDate'] = o.endDate && moment(o.endDate).unix()
