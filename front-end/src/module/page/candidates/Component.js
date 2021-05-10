@@ -284,13 +284,12 @@ const Meta = styled.div`
       max-width: 25%;
     }
   }
-}
 `
 const Name = styled.div`
-  height: 30px;
+  height: 36px;
   font-family: komu-a;
   font-size: 30px;
-  line-height: 30px;
+  line-height: 36px;
   color: ${text.white};
 `
 
