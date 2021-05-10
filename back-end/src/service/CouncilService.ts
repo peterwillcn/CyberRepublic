@@ -46,9 +46,9 @@ export default class extends Base {
       votingStart = await ela.getTimestampByHeight(votingstartheight)
     }
     let blockMinute = 2 * 60
-    if (process.env.NODE_ENV !== 'production') {
-      blockMinute = 252 * 60
-    }
+    // if (process.env.NODE_ENV !== 'production') {
+    //   blockMinute = 252 * 60
+    // }
     return _.map(result, (o: any) => {
       let dateObj = {}
       if (o.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
