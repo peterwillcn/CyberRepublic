@@ -1,7 +1,7 @@
 import Base from './Base'
 import { constant } from '../constant'
 import { CVOTE_STATUS_TO_WALLET_STATUS } from './CVoteService'
-import { ela, logger, getInformationByDid, getDidName } from '../utility'
+import { ela, getInformationByDid, getDidName } from '../utility'
 import * as moment from 'moment'
 
 const _ = require('lodash')

@@ -14,7 +14,8 @@ import {
   utilCrypto,
   getPemPublicKey,
   getProposalReqToken,
-  getProposalJwtPrefix
+  getProposalJwtPrefix,
+  ela
 } from '../utility'
 const Big = require('big.js')
 const {
@@ -2145,6 +2146,14 @@ export default class extends Base {
           message: 'The owner of this suggetion does not sign'
         }
       }
+      const { invoting } = await ela.getCrrelatedStage()
+      if (invoting) {
+        return {
+          success: false,
+          message: `During CRC election, CR Council Members will not be able to raise new proposals.`
+        }
+      }
+
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
       const jwtClaims: any = {
@@ -2445,12 +2454,18 @@ export default class extends Base {
       return suggestion
     }
     if (param.type === 'lastSuggestion') {
-      const suggestionList = await this.model.getDBInstance().find({
-        createdBy: user,
-        old: { $exists: false }
-      }, fields).sort({$natural: -1}).limit(5)
+      const suggestionList = await this.model
+        .getDBInstance()
+        .find(
+          {
+            createdBy: user,
+            old: { $exists: false }
+          },
+          fields
+        )
+        .sort({ $natural: -1 })
+        .limit(5)
       return suggestionList
     }
   }
-
 }
