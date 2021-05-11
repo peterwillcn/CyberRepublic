@@ -536,7 +536,7 @@ const UserName = styled.div`
 `
 const CommentBody = styled.div`
   width: 90%;
-  boder-bottom: 1px soild #fff;
+  border-bottom: 1px soild #fff;
 `
 const TranslationBtn = styled.div`
   margin-top: 20px;
