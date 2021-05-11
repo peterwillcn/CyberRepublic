@@ -246,7 +246,8 @@ export default {
     introduction: 'Plan Statement'
   },
   label: {
-    hasMadeIntoProposal: 'has made it into'
+    hasMadeIntoProposal: 'has made it into',
+    invoting: `During CRC election, CR Council Members will not be able to raise new proposals.`
   },
   comments: {
     viewMore: 'View More',

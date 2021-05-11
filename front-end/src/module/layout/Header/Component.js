@@ -8,7 +8,6 @@ import { MAX_WIDTH_MOBILE, MIN_WIDTH_PC } from '@/config/constant'
 import { USER_ROLE, USER_LANGUAGE } from '@/constant'
 import UserEditForm from '@/module/form/UserEditForm/Container'
 import Headroom from 'react-headroom'
-import CouncilService from '@/service/CouncilService'
 
 import ChinaFlag from './ChinaFlag'
 import UsFlag from './UsFlag'
@@ -49,8 +48,7 @@ export default class extends BaseComponent {
   }
 
   async componentDidMount() {
-    const councilService = new CouncilService()
-    const rs = await councilService.getCrRelatedStage()
+    const rs = await this.props.getCrRelatedStage()
     rs && this.setState({ invoting: true })
   }
 

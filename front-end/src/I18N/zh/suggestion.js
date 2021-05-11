@@ -247,7 +247,8 @@ export default {
     introduction: '实施说明'
   },
   label: {
-    hasMadeIntoProposal: '已经将此建议发布为'
+    hasMadeIntoProposal: '已经将此建议发布为',
+    invoting: 'CR 委员选举期间，停止提交提案'
   },
   comments: {
     viewMore: '显示更多',

@@ -83,14 +83,21 @@ export default class extends StandardPage {
       showMobile: false,
       showForm: false,
       needsInfoVisible: false,
-      proposeLoading: false
+      proposeLoading: false,
+      invoting: false
     }
   }
 
   async componentDidMount() {
     super.componentDidMount()
-    await this.refetch(true)
-    await this.props.getDraft(_.get(this.props, 'match.params.id'))
+    const rs = await Promise.all([
+      this.refetch(true),
+      this.props.getDraft(_.get(this.props, 'match.params.id')),
+      this.props.getCrRelatedStage()
+    ])
+    if (rs && rs[2]) {
+      this.setState({ invoting: true })
+    }
   }
 
   componentWillUnmount() {
@@ -189,7 +196,9 @@ export default class extends StandardPage {
               {newSecretaryActionNode}
               {councilActionsNode}
             </div>
-            <div id='comments' name='comments' style={{ marginTop: 60 }}>{commentNode}</div>
+            <div id="comments" name="comments" style={{ marginTop: 60 }}>
+              {commentNode}
+            </div>
           </MediaQuery>
           <MediaQuery minWidth={LG_WIDTH + 1}>
             <BackLink
@@ -721,6 +730,8 @@ export default class extends StandardPage {
       getCMSignatureUrl
     } = this.props
     const oldData = _.get(detail, 'old')
+    if (oldData) return null
+
     const signature = _.get(detail, 'signature.data')
     const makeIntoProposalPanel = this.renderMakeIntoProposalPanel()
     const isCancelled = _.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED
@@ -740,17 +751,7 @@ export default class extends StandardPage {
           </Popconfirm>
         </Col>
       )
-    const needMoreInfoBtn = (isCouncil || isAdmin) && (
-      <Col xs={24} sm={8}>
-        <StyledButton
-          type="ebp"
-          className="cr-btn cr-btn-default"
-          onClick={this.showAddTagModal}
-        >
-          {I18N.get('suggestion.btnText.needMoreInfo')}
-        </StyledButton>
-      </Col>
-    )
+
     const type = _.get(detail, 'type')
     let isSignable = signature
     if (type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
@@ -771,41 +772,30 @@ export default class extends StandardPage {
           />
         </Col>
       )
-    const needDueDiligenceBtn = isCouncil && (
-      <Col xs={24} sm={8}>
-        <StyledButton
-          type="ebp"
-          className="cr-btn cr-btn-default"
-          onClick={this.needDueDiligence}
-        >
-          {I18N.get('suggestion.btn.needDueDiligence')}
-        </StyledButton>
-      </Col>
-    )
-    const needAdvisoryBtn = isCouncil && (
-      <Col xs={24} sm={8}>
-        <StyledButton
-          type="ebp"
-          className="cr-btn cr-btn-default"
-          onClick={this.needAdvisory}
-        >
-          {I18N.get('suggestion.btn.needAdvisory')}
-        </StyledButton>
-      </Col>
-    )
+
+    const { invoting } = this.state
+    const invotingPanel = invoting &&
+      isCouncil &&
+      !isReference && (
+        <Row style={{ marginBottom: 30 }} type="flex" justify="center">
+          <Col span={24}>
+            <CreateProposalText>
+              {I18N.get('suggestion.label.invoting')}
+            </CreateProposalText>
+          </Col>
+        </Row>
+      )
 
     const res = (
       <BtnGroup>
         {makeIntoProposalPanel}
-        <Row type="flex" justify="start">
-          {considerBtn}
-          {/* {needMoreInfoBtn} */}
-          {makeIntoProposalBtn}
-        </Row>
-        {/* <Row type="flex" justify="start">
-          {needDueDiligenceBtn}
-          {needAdvisoryBtn}
-        </Row> */}
+        {invotingPanel}
+        {!invoting && (
+          <Row type="flex" justify="start">
+            {considerBtn}
+            {makeIntoProposalBtn}
+          </Row>
+        )}
       </BtnGroup>
     )
     return !oldData && res
