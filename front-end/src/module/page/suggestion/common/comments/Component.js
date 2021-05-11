@@ -114,16 +114,14 @@ class C extends BaseComponent {
   renderCommentItem(item, key, isChild, parentId) {
     if (!item) return
     const { commentArr } = this.state
-    const firstName = _.get(item.createdBy.profile, 'firstName') || ' '
-    const lastName = _.get(item.createdBy.profile, 'lastName') || ' '
-
+    const userName = userUtil.formatUsername(item.createdBy)
     return (
       <Comments key={key}>
         <AvatarDiv>
           <div style={{ margin: '0 auto' }}>
             {this.renderAvatarItem(item.createdBy)}
           </div>
-          <UserName>{firstName + ' ' + lastName}</UserName>
+          <UserName>{userName}</UserName>
         </AvatarDiv>
         <CommentBody>
           <div>
@@ -156,7 +154,7 @@ class C extends BaseComponent {
                 {...this.props}
                 item={item}
                 parentId={parentId}
-                commentTo={`${firstName + lastName}`}
+                commentTo={userName}
                 onChange={this.changeCurComment.bind(this)}
                 onCancel={this.handleCommentClick.bind(this)}
               />
