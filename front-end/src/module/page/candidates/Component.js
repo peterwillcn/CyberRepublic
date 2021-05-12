@@ -10,7 +10,6 @@ import { logger } from '@/util'
 import Connector from './svg/Connector'
 import Square from './svg/Square'
 import Circle from './svg/Circle'
-import { checkPropTypes } from 'prop-types'
 
 const RANK_TEXT = {
   0: 'TH',
@@ -117,6 +116,8 @@ export default class extends StandardPage {
         .split('.')
       if (rate[0] === '0') {
         voteRate = 0
+      } else if (!rate[1]) {
+        voteRate = rate[0]
       } else {
         voteRate = rate[0] + '.' + rate[1].slice(0, 2)
       }
@@ -160,9 +161,7 @@ export default class extends StandardPage {
                 {I18N.get('council.candidate.votes')}
               </div>
               <div className="vote">
-                {voteRate === 0
-                  ? `< 1`
-                  : voteRate}
+                {voteRate === 0 ? `< 1` : voteRate}
                 {`% ${I18N.get('council.candidate.voteRate')}`}
               </div>
             </Meta>
