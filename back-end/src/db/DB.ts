@@ -28,6 +28,7 @@ import Config from './Config'
 import CVote_Vote_History from './CVote_Vote_History'
 import CVote_Tracking_Message from './CVote_Tracking_Message'
 import Log from './Log'
+import Candidate from './Candidtate'
 
 import { utilCrypto } from '../utility'
 import * as uuid from 'uuid'
@@ -128,6 +129,7 @@ export default class {
     this.db.Config = new Config(db)
     this.db.CVote_Vote_History = new CVote_Vote_History(db)
     this.db.CVote_Tracking_Message = new CVote_Tracking_Message(db)
+    this.db.Candidate = new Candidate(db)
   }
 
   public getModel(name: string) {

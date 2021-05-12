@@ -4,6 +4,7 @@ import Component from './Component'
 import SuggestionService from '@/service/SuggestionService'
 import CommentService from '@/service/CommentService'
 import CVoteService from '@/service/CVoteService'
+import CouncilService from '@/service/CouncilService'
 
 export default createContainer(
   Component,
@@ -30,12 +31,10 @@ export default createContainer(
     const service = new SuggestionService()
     const commentService = new CommentService()
     const cVoteService = new CVoteService()
+    const councilService = new CouncilService()
     return {
       async getDetail({ id, incViewsNum }) {
-        return service.getDetail({
-          id,
-          incViewsNum
-        })
+        return service.getDetail({ id, incViewsNum })
       },
       async createDraft(param) {
         return cVoteService.createDraft(param)
@@ -84,6 +83,9 @@ export default createContainer(
       },
       async cancel(id) {
         return service.cancel(id)
+      },
+      async getCrRelatedStage() {
+        return await councilService.getCrRelatedStage()
       }
     }
   }

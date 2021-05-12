@@ -4,7 +4,9 @@ import CVoteServive from '../service/CVoteService'
 import CouncilService from '../service/CouncilService'
 import UserService from '../service/UserService'
 import ElaTransactionService from '../service/ElaTransactionService'
+import CandidateService from '../service/CandidateService'
 import { constant } from '../constant'
+
 const Agenda = require('agenda')
 const agenda = new Agenda({ db: { address: process.env.DB_URL } })
 
@@ -18,7 +20,8 @@ const JOB_NAME = {
   TRANSACTIONJOB: 'new append transaction',
   NOTIFICATIONCOUNCILVOTE: 'notification council to vote',
   UPDATECURRENTHEIGHT: 'update current height',
-  PROCESSOLDDATAONCE: 'process old data once'
+  PROCESS_OLD_DATAO_NCE: 'process old data once',
+  BACKUP_CANDIDATE_LIST: 'backup candidate list'
 }
 
 agenda.define(JOB_NAME.UPDATEMILESTONE, async (job: any, done: any) => {
@@ -30,7 +33,7 @@ agenda.define(JOB_NAME.UPDATEMILESTONE, async (job: any, done: any) => {
   } catch (err) {
     console.log('update milestone status cron job err...', err)
   } finally {
-    done();
+    done()
   }
 })
 
@@ -79,7 +82,7 @@ agenda.define(JOB_NAME.INTOPROPOSAL, async (job: any, done: any) => {
   } catch (err) {
     console.log('make into proposal cron job err...', err)
   } finally {
-    done();
+    done()
   }
 })
 agenda.define(JOB_NAME.CVOTEJOB, async (job: any, done: any) => {
@@ -92,7 +95,7 @@ agenda.define(JOB_NAME.CVOTEJOB, async (job: any, done: any) => {
   } catch (err) {
     console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
 agenda.define(JOB_NAME.COUNCILJOB, async (job: any, done: any) => {
@@ -106,7 +109,7 @@ agenda.define(JOB_NAME.COUNCILJOB, async (job: any, done: any) => {
   } catch (err) {
     console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
 agenda.define(JOB_NAME.USERJOB, async (job: any, done: any) => {
@@ -119,7 +122,7 @@ agenda.define(JOB_NAME.USERJOB, async (job: any, done: any) => {
   } catch (err) {
     console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
 agenda.define(JOB_NAME.COUNCILREVIEWJOB, async (job: any, done: any) => {
@@ -130,9 +133,9 @@ agenda.define(JOB_NAME.COUNCILREVIEWJOB, async (job: any, done: any) => {
     await cvoteService.updateVoteStatusByChain()
     console.log(JOB_NAME.COUNCILREVIEWJOB, 'at working')
   } catch (err) {
-    console.log('',err)
+    console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
 agenda.define(JOB_NAME.TRANSACTIONJOB, async (job: any, done: any) => {
@@ -145,9 +148,9 @@ agenda.define(JOB_NAME.TRANSACTIONJOB, async (job: any, done: any) => {
     await elaTransactionService.appendAllTransaction()
     console.log(JOB_NAME.TRANSACTIONJOB, 'at working')
   } catch (err) {
-    console.log('',err)
+    console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
 agenda.define(JOB_NAME.NOTIFICATIONCOUNCILVOTE, async (job: any, done: any) => {
@@ -159,23 +162,37 @@ agenda.define(JOB_NAME.NOTIFICATIONCOUNCILVOTE, async (job: any, done: any) => {
     await cvoteService.notifyCouncilToVote(constant.THREE_DAY)
     console.log(JOB_NAME.NOTIFICATIONCOUNCILVOTE, 'at working')
   } catch (err) {
-    console.log('',err)
+    console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
-agenda.define(JOB_NAME.PROCESSOLDDATAONCE, async (job: any, done: any) => {
-  try{
+agenda.define(JOB_NAME.PROCESS_OLD_DATAO_NCE, async (job: any, done: any) => {
+  try {
     const DB = await db.create()
     const cvoteService = new CVoteServive(DB, { user: undefined })
     await cvoteService.processOldData()
-    console.log(JOB_NAME.PROCESSOLDDATAONCE, 'at working')
+    console.log(JOB_NAME.PROCESS_OLD_DATAO_NCE, 'at working')
   } catch (err) {
-    console.log('',err)
+    console.log('', err)
   } finally {
-    done();
+    done()
   }
 })
+agenda.define(JOB_NAME.BACKUP_CANDIDATE_LIST, async (job: any, done: any) => {
+  try {
+    console.log('------backup candidate list is beginning------')
+    const DB = await db.create()
+    const candidateService = new CandidateService(DB, { user: undefined })
+    await candidateService.backupCandidateList()
+  } catch (err) {
+    console.log('backup candidate list error...', err)
+  } finally {
+    done()
+  }
+})
+
+// exec cron jobs
 ;(async function () {
   console.log('------cron job starting------')
   await agenda.start()
@@ -187,5 +204,5 @@ agenda.define(JOB_NAME.PROCESSOLDDATAONCE, async (job: any, done: any) => {
   await agenda.every('3 minutes', JOB_NAME.COUNCILREVIEWJOB)
   await agenda.every('1 minutes', JOB_NAME.TRANSACTIONJOB)
   await agenda.every('10 minutes', JOB_NAME.NOTIFICATIONCOUNCILVOTE)
-  await agenda.now(JOB_NAME.PROCESSOLDDATAONCE)
+  await agenda.every('5 minutes', JOB_NAME.BACKUP_CANDIDATE_LIST)
 })()

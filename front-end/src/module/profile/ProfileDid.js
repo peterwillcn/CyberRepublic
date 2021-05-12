@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import styled from 'styled-components'
 import { Popover, Spin, message } from 'antd'
 import I18N from '@/I18N'
@@ -10,17 +10,30 @@ class ProfileDid extends Component {
     super(props)
     this.state = {
       url: '',
-      visible: false
+      oldUrl: '',
+      visible: false,
+      oldUrlVisible: false
     }
     this.timerDid = null
+    this.oldTimerDid = null
   }
 
   elaQrCode = () => {
     const { url } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={145} /> : <Spin />}
+        {url ? <QRCode value={url} size={180} /> : <Spin />}
         <Tip>{I18N.get('profile.qrcodeTip')}</Tip>
+      </Content>
+    )
+  }
+
+  elaOldQrCode = () => {
+    const { oldUrl } = this.state
+    return (
+      <Content>
+        {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
+        <Tip>{I18N.get('profile.qrcodeOldTip')}</Tip>
       </Content>
     )
   }
@@ -53,29 +66,76 @@ class ProfileDid extends Component {
     }
   }
 
+  pollingDidWithOldUrl = async () => {
+    if (!this._isMounted) {
+      return
+    }
+    const rs = await this.props.getNewActiveDid()
+    if (rs && rs.success) {
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = null
+      this.setState({ oldUrl: '', oldUrlVisible: false })
+      return
+    }
+    if (rs && rs.success === false) {
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = null
+      if (rs.message) {
+        message.error(rs.message)
+      } else {
+        message.error('Something went wrong')
+      }
+      this.setState({ oldUrlVisible: false })
+      return
+    }
+    if (this._isMounted) {
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = setTimeout(this.pollingDidWithOldUrl, 3000)
+    }
+  }
+
   handleAssociate = () => {
+    if (this.oldTimerDid) {
+      clearTimeout(this.oldTimerDid)
+    }
     if (this.timerDid) {
       return
     }
     this.timerDid = setTimeout(this.pollingDid, 3000)
   }
 
+  handleOldAssociate = () => {
+    if (this.timerDid) {
+      clearTimeout(this.timerDid)
+    }
+    if (this.oldTimerDid) {
+      return
+    }
+    this.oldTimerDid = setTimeout(this.pollingDidWithOldUrl, 3000)
+  }
+
   componentDidMount = async () => {
     this._isMounted = true
     const rs = await this.props.getElaUrl()
     if (rs && rs.success) {
-      this.setState({ url: rs.url })
+      this.setState({ url: rs.url, oldUrl: rs.oldUrl })
     }
   }
 
   componentWillUnmount() {
     this._isMounted = false
     clearTimeout(this.timerDid)
+    clearTimeout(this.oldTimerDid)
     this.timerDid = null
+    this.oldTimerDid = null
   }
 
   handleVisibleChange = (visible) => {
-    this.setState({ visible })
+    this.setState({ visible, oldUrlVisible: false })
+  }
+
+  handleOldUrlVisibleChange = (visible) => {
+    this.setState({ oldUrlVisible: visible, visible: false })
   }
 
   render() {
@@ -102,17 +162,31 @@ class ProfileDid extends Component {
       )
     } else {
       return (
-        <Popover
-          content={this.elaQrCode()}
-          trigger="click"
-          placement="top"
-          visible={this.state.visible}
-          onVisibleChange={this.handleVisibleChange}
-        >
-          <Button onClick={this.handleAssociate}>
-            {I18N.get('profile.associateDid')}
-          </Button>
-        </Popover>
+        <Fragment>
+          <Popover
+            content={this.elaQrCode()}
+            trigger="click"
+            placement="top"
+            visible={this.state.visible}
+            onVisibleChange={this.handleVisibleChange}
+          >
+            <Button onClick={this.handleAssociate}>
+              {I18N.get('profile.associateDid')}
+            </Button>
+          </Popover>
+          <br />
+          <Popover
+            content={this.elaOldQrCode()}
+            trigger="click"
+            placement="top"
+            visible={this.state.oldUrlVisible}
+            onVisibleChange={this.handleOldUrlVisibleChange}
+          >
+            <Button onClick={this.handleOldAssociate}>
+              {I18N.get('profile.oldAssociateDid')}
+            </Button>
+          </Popover>
+        </Fragment>
       )
     }
   }

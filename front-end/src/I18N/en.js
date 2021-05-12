@@ -172,9 +172,9 @@ const en = {
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
   'login.withDid': 'Log in with the new version ELA wallet',
-  'login.withOldWallet': 'Log in with an older version ELA wallet',
-  'login.qrcodeTip': 'Open the new version ELA wallet app and scan to log in.',
-  'login.qrcodeOldTip': 'Open an older version ELA wallet app and scan to log in.',
+  'login.withOldWallet': 'Log in with ELA wallet',
+  'login.qrcodeTip': 'Open the new version ELA wallet and scan to log in.',
+  'login.qrcodeOldTip': 'Open ELA wallet and scan to log in.',
 
   // Logout
   'logout.title': 'Are you sure you want to logout?',
@@ -940,8 +940,10 @@ const en = {
   'role.admin.mode': 'Admin Mode',
 
   // Profile
-  'profile.associateDid': 'Associate DID',
-  'profile.qrcodeTip': 'Open ELA wallet and scan',
+  'profile.associateDid': 'Associate DID with the new version ELA wallet',
+  'profile.oldAssociateDid': 'Associate DID with an older version ELA wallet',
+  'profile.qrcodeTip': 'Open the new ELA wallet and scan',
+  'profile.qrcodeOldTip': 'Open an older ELA wallet and scan',
   'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
   'profile.skillsets': 'My Skillsets',
@@ -1048,8 +1050,8 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
-  'profile.member.vote.qrcodeTip':'Open ELA wallet and scan vote (for community review)',
-
+  'profile.member.vote.qrcodeTip':'Open the new version ELA wallet and scan vote (for community review)',
+  'profile.member.vote.qrcodeOldTip':'Open an older version ELA wallet and scan vote (for community review)',
   'profile.forms.table.header.title': 'Title',
   'profile.forms.table.header.name': 'Name',
   'profile.forms.table.header.campaign': 'Campaign',

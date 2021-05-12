@@ -3,26 +3,35 @@ import { createContainer } from '@/util'
 import Component from './Component'
 import UserService from '@/service/UserService'
 import LanguageService from '@/service/LanguageService'
+import CouncilService from '@/service/CouncilService'
 import I18N from '@/I18N'
 
-export default createContainer(Component, state => ({
-  isLogin: state.user.is_login,
-  role: state.user.role,
-  pathname: state.router.location.pathname,
-  user: state.user,
-}), () => {
-  const userService = new UserService()
-  const languageService = new LanguageService()
-  return {
-    async logout() {
-      const rs = await userService.logout()
-      if (rs) {
-        message.success(I18N.get('logout.success'))
-        userService.path.push('/login')
+export default createContainer(
+  Component,
+  (state) => ({
+    isLogin: state.user.is_login,
+    role: state.user.role,
+    pathname: state.router.location.pathname,
+    user: state.user
+  }),
+  () => {
+    const userService = new UserService()
+    const languageService = new LanguageService()
+    const councilService = new CouncilService()
+    return {
+      async logout() {
+        const rs = await userService.logout()
+        if (rs) {
+          message.success(I18N.get('logout.success'))
+          userService.path.push('/login')
+        }
+      },
+      changeLanguage(lang) {
+        languageService.changeLanguage(lang)
+      },
+      async getCrRelatedStage() {
+        return await councilService.getCrRelatedStage()
       }
-    },
-    changeLanguage(lang) {
-      languageService.changeLanguage(lang)
-    },
+    }
   }
-})
+)

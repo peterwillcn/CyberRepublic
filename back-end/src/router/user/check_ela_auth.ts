@@ -12,7 +12,7 @@ export default class extends Base {
       if (user) {
         const resultData = { user }
         // record user login date
-        userService.recordLogin({ userId: user.id })
+        userService.recordLogin({ userId: user.id, newVersion: rs.newVersion })
   
         // always return api-token on login, this is needed for future requests
         this.session.userId = user.id

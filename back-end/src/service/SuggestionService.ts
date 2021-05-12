@@ -12,7 +12,10 @@ import {
   logger,
   getDidPublicKey,
   utilCrypto,
-  getPemPublicKey
+  getPemPublicKey,
+  getProposalReqToken,
+  getProposalJwtPrefix,
+  ela
 } from '../utility'
 const Big = require('big.js')
 const {
@@ -1655,7 +1658,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const url = `elastos://crproposal/${jwtToken}`
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)
@@ -1674,10 +1678,9 @@ export default class extends Base {
           message: 'Problems parsing jwt token.'
         }
       }
-
-      const payload: any = jwt.decode(
-        claims.req.slice('elastos://crproposal/'.length)
-      )
+      const reqToken = getProposalReqToken(claims.req)
+      const payload: any = jwt.decode(reqToken)
+      console.log('newOwnerSignatureCallback payload...', payload)
       const userDID = _.get(payload, 'data.userdid')
       if (!userDID) {
         return {
@@ -1908,7 +1911,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const url = `elastos://crproposal/${jwtToken}`
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)
@@ -1927,10 +1931,8 @@ export default class extends Base {
           message: 'Problems parsing jwt token.'
         }
       }
-
-      const payload: any = jwt.decode(
-        claims.req.slice('elastos://crproposal/'.length)
-      )
+      const reqToken = getProposalReqToken(claims.req)
+      const payload: any = jwt.decode(reqToken)
       const userDID = _.get(payload, 'data.userdid')
       if (!userDID) {
         return {
@@ -2148,6 +2150,14 @@ export default class extends Base {
           message: 'The owner of this suggetion does not sign'
         }
       }
+      const { invoting } = await ela.getCrrelatedStage()
+      if (invoting) {
+        return {
+          success: false,
+          message: `During CRC election, CR Council Members will not be able to raise new proposals.`
+        }
+      }
+
       const currDate = Date.now()
       const now = Math.floor(currDate / 1000)
       const jwtClaims: any = {
@@ -2226,7 +2236,8 @@ export default class extends Base {
         { _id: suggestion._id },
         { $push: { proposers: { did: councilMemberDid, timestamp: now } } }
       )
-      const url = `elastos://crproposal/${jwtToken}`
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)
@@ -2292,7 +2303,8 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const url = `elastos://crproposal/${jwtToken}`
+      const newVersion = _.get(this.currentUser, 'newVersion')
+      const url = getProposalJwtPrefix(newVersion) + jwtToken
       return { success: true, url }
     } catch (err) {
       logger.error(err)
@@ -2311,9 +2323,8 @@ export default class extends Base {
           message: 'Problems parsing jwt token.'
         }
       }
-      const payload: any = jwt.decode(
-        claims.req.slice('elastos://crproposal/'.length)
-      )
+      const reqToken = getProposalReqToken(claims.req)
+      const payload: any = jwt.decode(reqToken)
       const userDID = _.get(payload, 'data.userdid')
       if (!userDID) {
         return {
@@ -2447,12 +2458,18 @@ export default class extends Base {
       return suggestion
     }
     if (param.type === 'lastSuggestion') {
-      const suggestionList = await this.model.getDBInstance().find({
-        createdBy: user,
-        old: { $exists: false }
-      }, fields).sort({$natural: -1}).limit(5)
+      const suggestionList = await this.model
+        .getDBInstance()
+        .find(
+          {
+            createdBy: user,
+            old: { $exists: false }
+          },
+          fields
+        )
+        .sort({ $natural: -1 })
+        .limit(5)
       return suggestionList
     }
   }
-
 }

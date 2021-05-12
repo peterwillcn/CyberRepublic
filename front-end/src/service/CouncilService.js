@@ -14,7 +14,6 @@ export default class extends BaseService {
     await this.dispatch(councilRedux.actions.tab_update(tabKey))
   }
 
-
   async getCouncilMembers() {
     const selfStore = this.store.getRedux('council')
     await this.dispatch(selfStore.actions.council_members_loading_update(true))
@@ -27,11 +26,13 @@ export default class extends BaseService {
       result = await api_request({
         path,
         method: 'get',
-        signal: this.getAbortSignal(path),
+        signal: this.getAbortSignal(path)
       })
 
       await this.dispatch(selfStore.actions.council_members_update(result.list))
-      await this.dispatch(selfStore.actions.council_members_loading_update(false))
+      await this.dispatch(
+        selfStore.actions.council_members_loading_update(false)
+      )
     } catch (e) {
       // Do nothing
     }
@@ -57,7 +58,7 @@ export default class extends BaseService {
       path,
       method: 'get'
     })
-    
+
     return rs
   }
 
@@ -68,6 +69,15 @@ export default class extends BaseService {
       method: 'get'
     })
 
+    return rs
+  }
+
+  async getCrRelatedStage() {
+    const path = '/api/council/invoting'
+    const rs = await api_request({
+      path,
+      method: 'get'
+    })
     return rs
   }
 }

@@ -37,13 +37,13 @@ export default class extends StandardPage {
     this.refetch(true)
   }
 
-  handlePaginationChange = pageNum => {
-    this.setState({pageNum}, () => this.refetch())
+  handlePaginationChange = (pageNum) => {
+    this.setState({ pageNum }, () => this.refetch())
   }
 
   getQuery = () => {
-    const {pageNum} = this.state
-    return {pageNum, pageSize: PAGE_SIZE, state: 'active'}
+    const { pageNum } = this.state
+    return { pageNum, pageSize: PAGE_SIZE, state: 'active' }
   }
 
   refetch = async (isShowLoading = false) => {
@@ -52,7 +52,11 @@ export default class extends StandardPage {
     const param = this.getQuery()
     try {
       const result = await listData(param)
-      this.setState({ list: result.crcandidatesinfo, totalVotes: result.totalvotes, total: result.totalcounts })
+      this.setState({
+        list: result.crcandidatesinfo,
+        totalVotes: result.totalvotes,
+        total: result.totalcounts
+      })
     } catch (error) {
       logger.error(error)
     }
@@ -64,12 +68,11 @@ export default class extends StandardPage {
       <div className="flex-center">
         <Spin size="large" />
       </div>
-
     )
   }
 
   ord_renderContent() {
-    const { list, total, loading} = this.state
+    const { list, total, loading } = this.state
     const chunkedList = _.chunk(list, 4)
 
     return (
@@ -86,13 +89,9 @@ export default class extends StandardPage {
             {loading
               ? this.renderLoading()
               : _.map(chunkedList, (row, rowIndex) => {
-                const cols = _.map(row, this.renderCandidate)
-                return (
-                  <div key={rowIndex}>
-                    {cols}
-                  </div>
-                )
-              })}
+                  const cols = _.map(row, this.renderCandidate)
+                  return <div key={rowIndex}>{cols}</div>
+                })}
           </Row>
           <StyledPagination>
             <Pagination
@@ -109,7 +108,19 @@ export default class extends StandardPage {
   }
 
   renderCandidate = (col, colIndex) => {
-    const voteRate = col.votes / this.state.totalVotes * 100
+    let voteRate
+    if (parseInt(col.votes) === 0) {
+      voteRate = 0
+    } else {
+      const rate = ((col.votes / this.state.totalVotes) * 100)
+        .toString()
+        .split('.')
+      if (rate[0] === '0') {
+        voteRate = 0
+      } else {
+        voteRate = rate[0] + '.' + rate[1].slice(0, 2)
+      }
+    }
     return (
       <Col lg={6} md={8} sm={12} xs={24} key={colIndex}>
         <Card>
@@ -146,19 +157,19 @@ export default class extends StandardPage {
                   <div className="wrap-content data data-vote">{col.votes}</div>
                 </Popover>
                 &nbsp;
-                {I18N.get("council.candidate.votes")}
+                {I18N.get('council.candidate.votes')}
               </div>
               <div className="vote">
-                <Popover content={voteRate}>
-                  <div className="wrap-content data data-rate">{voteRate}</div>
-                </Popover>
-                {`% ${I18N.get("council.candidate.voteRate")}`}
+                {voteRate === 0
+                  ? `< 1`
+                  : voteRate}
+                {`% ${I18N.get('council.candidate.voteRate')}`}
               </div>
             </Meta>
           </Info>
         </Card>
       </Col>
-    );
+    )
   }
 }
 
@@ -239,9 +250,9 @@ const Info = styled.div`
   padding-left: 16px;
   padding-right: 25px;
   .wrap-content {
-    white-space: nowrap; 
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; 
+    text-overflow: ellipsis;
   }
 `
 const Meta = styled.div`
@@ -273,13 +284,12 @@ const Meta = styled.div`
       max-width: 25%;
     }
   }
-}
 `
 const Name = styled.div`
-  height: 30px;
+  height: 36px;
   font-family: komu-a;
   font-size: 30px;
-  line-height: 30px;
+  line-height: 36px;
   color: ${text.white};
 `
 

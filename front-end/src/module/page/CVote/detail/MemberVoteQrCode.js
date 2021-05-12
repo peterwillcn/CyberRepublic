@@ -7,15 +7,15 @@ class MemberVoteQrCode extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      url: ''
+      url: '',
+      oldUrl: ''
     }
-    this.timerDid = null
   }
 
   componentDidMount = async () => {
     const rs = await this.props.getMemberVoteUrl(this.props._id)
     if (rs && rs.success) {
-      this.setState({ url: rs.url })
+      this.setState({ url: rs.url, oldUrl: rs.oldUrl })
     }
   }
 
@@ -24,6 +24,9 @@ class MemberVoteQrCode extends Component {
       <Content>
         <QRCode value={this.state.url} size={145} />
         <Tip>{I18N.get('profile.member.vote.qrcodeTip')}</Tip>
+        <br />
+        <QRCode value={this.state.oldUrl} size={145} />
+        <Tip>{I18N.get('profile.member.vote.qrcodeOldTip')}</Tip>
       </Content>
     )
   }

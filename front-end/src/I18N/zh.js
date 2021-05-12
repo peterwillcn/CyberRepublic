@@ -172,9 +172,9 @@ const zh = {
   'login.title': '登录 Cyber Republic',
   'login.description_1': '输入密码',
   'login.withDid': '用新版 ELA 钱包登录',
-  'login.withOldWallet': '用旧版 ELA 钱包登录',
-  'login.qrcodeTip': '打开最新版 ELA 钱包应用扫码登录',
-  'login.qrcodeOldTip': '打开旧版 ELA 钱包应用扫码登录',
+  'login.withOldWallet': '用 ELA 钱包登录',
+  'login.qrcodeTip': '打开最新版 ELA 钱包扫码登录',
+  'login.qrcodeOldTip': '打开 ELA 钱包扫码登录',
 
   // Logout
   'logout.title': '确定登出吗?',
@@ -913,8 +913,10 @@ const zh = {
   'role.admin.mode': '管理员模式',
 
   // Profile
-  'profile.associateDid': '绑定 DID',
-  'profile.qrcodeTip': '打开 ELA 钱包扫码',
+  'profile.associateDid': '用新版 ELA 钱包绑定 DID',
+  'profile.oldAssociateDid': '用旧版 ELA 钱包绑定 DID',
+  'profile.qrcodeTip': '打开新版 ELA 钱包扫码',
+  'profile.qrcodeOldTip': '打开旧版 ELA 钱包扫码',
   'profile.reassociateDid': '重新绑定 DID',
   'profile.thanksForCompleting': '感谢更新您的个人档案！',
   'profile.skillsets': '我的技能',
@@ -1016,7 +1018,8 @@ const zh = {
   'profile.submission.table.type': '类型',
   'profile.submission.table.created': '创建日期',
 
-  'profile.member.vote.qrcodeTip':'打开 ELA 钱包扫码投票（社区投票专用）',
+  'profile.member.vote.qrcodeTip':'打开最新版 ELA 钱包扫码投票（社区投票专用）',
+  'profile.member.vote.qrcodeOldTip':'打开旧版 ELA 钱包扫码投票（社区投票专用）',
 
   'profile.forms.table.header.title': '标题',
   'profile.forms.table.header.name': '名称',

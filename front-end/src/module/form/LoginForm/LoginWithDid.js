@@ -17,15 +17,15 @@ class LoginWithDid extends Component {
     this.oldTimerDid = null
   }
 
-  elaQrCode = () => {
-    const { url } = this.state
-    return (
-      <Content>
-        {url ? <QRCode value={url} size={180} /> : <Spin />}
-        <Tip>{I18N.get('login.qrcodeTip')}</Tip>
-      </Content>
-    )
-  }
+  // elaQrCode = () => {
+  //   const { url } = this.state
+  //   return (
+  //     <Content>
+  //       {url ? <QRCode value={url} size={180} /> : <Spin />}
+  //       <Tip>{I18N.get('login.qrcodeTip')}</Tip>
+  //     </Content>
+  //   )
+  // }
 
   elaOldQrCode = () => {
     const { oldUrl } = this.state
@@ -47,7 +47,7 @@ class LoginWithDid extends Component {
       clearTimeout(this.timerDid)
       this.timerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did)
+        this.props.changeTab('register', rs.did, rs.newVersion)
         this.setState({ visible: false })
       }
       return
@@ -79,7 +79,7 @@ class LoginWithDid extends Component {
       clearTimeout(this.oldTimerDid)
       this.oldTimerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did)
+        this.props.changeTab('register', rs.did, rs.newVersion)
         this.setState({ oldUrlVisible: false })
       }
       return
@@ -101,15 +101,15 @@ class LoginWithDid extends Component {
     }
   }
 
-  handleClick = () => {
-    if (this.oldTimerDid) {
-      clearTimeout(this.oldTimerDid)
-    }
-    if (this.timerDid) {
-      return
-    }
-    this.timerDid = setTimeout(this.polling, 3000)
-  }
+  // handleClick = () => {
+  //   if (this.oldTimerDid) {
+  //     clearTimeout(this.oldTimerDid)
+  //   }
+  //   if (this.timerDid) {
+  //     return
+  //   }
+  //   this.timerDid = setTimeout(this.polling, 3000)
+  // }
 
   handleOldUrlClick = () => {
     if (this.timerDid) {
@@ -151,7 +151,7 @@ class LoginWithDid extends Component {
         <Divider>
           <Text>OR</Text>
         </Divider>
-        <Popover
+        {/* <Popover
           visible={this.state.visible}
           onVisibleChange={this.handleVisibleChange}
           content={this.elaQrCode()}
@@ -162,7 +162,7 @@ class LoginWithDid extends Component {
             {I18N.get('login.withDid')}
           </Button>
         </Popover>
-        <br />
+        <br /> */}
         <Popover
           visible={this.state.oldUrlVisible}
           onVisibleChange={this.handleOldUrlVisibleChange}

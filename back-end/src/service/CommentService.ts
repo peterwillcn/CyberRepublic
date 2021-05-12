@@ -351,7 +351,7 @@ export default class extends Base {
     }
 
     ownerBody += `
-            ${curUser.profile.firstName} ${curUser.profile.lastName} says:<br/>${comment}
+            ${curUser.profile.firstName} ${curUser.profile.lastName} says:<br/>${_.get(comment[0], "comment")}
             <br/>
             <br/>
             <a href="${process.env.SERVER_URL}${returnUrl}">Click here to view the ${type}</a>

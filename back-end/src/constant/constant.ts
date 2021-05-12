@@ -9,6 +9,13 @@ const create = (constant_list: string[]): any => {
   return map
 }
 
+export const CANDIDATE_STATE = {
+  PENDING: 'Pending', // 候选人刚注册，注册交易还没有6次确认
+  ACTIVE: 'Active', // 正常状态，可被投票
+  CANCELED: 'Canceled', // 候选人已注销
+  RETURNED: 'Returned' // 候选人已注销且已经取回了质押金
+}
+
 export const SUGGESTION_TYPE = {
   NEW_MOTION: '1',
   MOTION_AGAINST: '2',
@@ -36,7 +43,7 @@ export const CVOTE_TYPE_API = {
   TERMINATE_PROPOSAL: 'closeproposal',
   1: 'normal',
   2: 'motion_against',
-  3: 'anything_else',
+  3: 'anything_else'
 }
 
 export const USER_ROLE = {
@@ -406,3 +413,9 @@ export const API_VOTE_TYPE = {
 export const DID_PREFIX = 'did:elastos:'
 export const ELA_BURN_ADDRESS = 'ELANULLXXXXXXXXXXXXXXXXXXXXXYvs3rr'
 export const DEFAULT_BUDGET = [{ type: 'finalpayment', stage: 1, amount: '0' }]
+
+export const oldAccessJwtPrefix = 'elastos://credaccess/'
+export const accessJwtPrefix = 'https://did.elastos.net/credaccess/'
+
+export const oldProposalJwtPrefix = 'elastos://crproposal/'
+export const proposalJwtPrefix = 'https://did.elastos.net/crproposal/'

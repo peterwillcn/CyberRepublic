@@ -62,13 +62,14 @@ export default class extends BaseComponent {
             <TabPane tab={I18N.get('0205')} key="login">
               <LoginForm
                 onHideModal={this.props.onHideModal}
-                onChangeActiveKey={(key, did) => {
-                  this.setState({ activeKey: key, did })
+                onChangeActiveKey={(key, did, newVersion) => {
+                  this.setState({ activeKey: key, did, newVersion })
                 }}
               />
             </TabPane>
             <TabPane tab={I18N.get('0202')} key="register">
               <RegisterForm
+                newVersion={this.state.newVersion}
                 did={this.state.did}
                 onHideTabBar={() => { this.setState({hideTabBar: true}) }}
                 onChangeActiveKey={(key) => { this.setState({activeKey: key}) }}

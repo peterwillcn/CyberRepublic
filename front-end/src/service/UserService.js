@@ -77,16 +77,20 @@ export default class extends BaseService {
     })
   }
 
-  async register(username, password, did, email) {
+  async register(username, password, did, email, newVersion) {
+    const data = {
+      username,
+      password,
+      did,
+      email
+    }
+    if (newVersion) {
+      data.newVersion = newVersion
+    }
     await api_request({
       path: '/api/user/register',
       method: 'post',
-      data: {
-        username,
-        password,
-        did,
-        email
-      }
+      data
     })
     return this.login(username, password)
   }
