@@ -1,5 +1,6 @@
 import Base from './Base'
 import { Translate } from '@google-cloud/translate'
+import { Base64 } from 'js-base64'
 
 export default class extends Base {
   public async translate(param: any): Promise<Object> {
@@ -19,7 +20,7 @@ export default class extends Base {
     // The text to translate
     // The target language
     try {
-      const results = await translate.translate(text, target || 'en')
+      const results = await translate.translate(Base64.decode(text), target || 'en')
       translation = results[0]
     } catch (err) {
       console.error('ERROR:', err)

@@ -436,44 +436,48 @@ export default class extends Base {
   }
 
   public async update(param: any) {
-    const { id, update } = param
-    const userId = _.get(this.currentUser, '_id')
-    const currDoc = await this.model.getDBInstance().findById(id)
-
-    if (!currDoc) {
-      throw 'Current document does not exist'
+    try {
+      const { id, update } = param
+      const userId = _.get(this.currentUser, '_id')
+      const currDoc = await this.model.getDBInstance().findById(id)
+  
+      if (!currDoc) {
+        throw 'Current document does not exist'
+      }
+  
+      if (_.get(currDoc, 'signature.data')) {
+        throw 'Current document does not allow to edit'
+      }
+  
+      if (
+        !userId.equals(_.get(currDoc, 'createdBy')) &&
+        !permissions.isAdmin(_.get(this.currentUser, 'role'))
+      ) {
+        throw 'Only owner can edit suggestion'
+      }
+  
+      let doc = _.pick(param, BASE_FIELDS)
+      doc.descUpdatedAt = new Date()
+      doc = await this.getTypeDoc(param, doc, currDoc)
+      if (doc && doc.success === false) {
+        return doc
+      }
+      const unsetDoc = this.unsetTypeDoc(param)
+      const currDraft = await this.draftModel.getDBInstance().findById(id)
+      if (currDraft) {
+        await this.draftModel.remove({ _id: ObjectId(id) })
+      }
+  
+      if (update) {
+        doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
+        await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
+      } else {
+        await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
+      }
+      return this.show({ id })
+    } catch (err) {
+      console.log('suggestion service update err...', err)
     }
-
-    if (_.get(currDoc, 'signature.data')) {
-      throw 'Current document does not allow to edit'
-    }
-
-    if (
-      !userId.equals(_.get(currDoc, 'createdBy')) &&
-      !permissions.isAdmin(_.get(this.currentUser, 'role'))
-    ) {
-      throw 'Only owner can edit suggestion'
-    }
-
-    let doc = _.pick(param, BASE_FIELDS)
-    doc.descUpdatedAt = new Date()
-    doc = await this.getTypeDoc(param, doc, currDoc)
-    if (doc && doc.success === false) {
-      return doc
-    }
-    const unsetDoc = this.unsetTypeDoc(param)
-    const currDraft = await this.draftModel.getDBInstance().findById(id)
-    if (currDraft) {
-      await this.draftModel.remove({ _id: ObjectId(id) })
-    }
-
-    if (update) {
-      doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
-      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
-    } else {
-      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
-    }
-    return this.show({ id })
   }
 
   public async list(param: any): Promise<Object> {

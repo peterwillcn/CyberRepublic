@@ -155,6 +155,7 @@ export default class extends StandardPage {
     const editForm = this.renderEditForm()
     const commentNode = this.renderCommentNode()
     const socialShareButtonsNode = this.renderSocialShareButtonsNode()
+
     const uri = URI(this.props.location.search || '')
     const signature = _.get(detail, 'signature.data')
 

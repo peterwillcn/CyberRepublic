@@ -379,6 +379,7 @@ class C extends StandardPage {
             <p>${data.budgetAmount}</p>
             <p translate="no">${I18N.get('suggestion.budget.address')}</p>
             <p>${data.elaAddress}</p>
+            <p>${I18N.get('suggestion.budget.schedule')}</p>
             <p>${getBudgetHtml(data.budget)}</p>
             <h2 translate="no">${I18N.get(
               `suggestion.budget.introduction`

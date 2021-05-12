@@ -28,7 +28,7 @@ const mdi = markdownIt({
   .use(ins)
   .use(deflist)
 
-const autolinkReferenceNumber = content => {
+const autolinkReferenceNumber = (content) => {
   const url = getSiteUrl()
   const patterns = [
     {
@@ -61,27 +61,31 @@ const autolinkReferenceNumber = content => {
   }, content)
 }
 
-export const convertMarkdownToHtml = content => {
+export const convertMarkdownToHtml = (content) => {
   const rs = content && autolinkReferenceNumber(content)
   return DOMPurify.sanitize(mdi.render(rs || ''))
 }
 
-export const removeImageFromMarkdown = content => {
+export const removeImageFromMarkdown = (content) => {
   return content ? content.replace(/\!\[image\]\(data:image\/.*\)/g, '') : ''
 }
 
-export const getPlanHtml = plan => {
+export const getPlanHtml = (plan) => {
   if (!plan) {
     return
   }
   const lists = plan
-    .map(item => {
+    .map((item) => {
       return `
         <p>
           <span>${item.member}</span>
           <span>${item.role}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.responsibility))}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.info))}</span>
+          <span>${convertMarkdownToHtml(
+            removeImageFromMarkdown(item.responsibility)
+          )}</span>
+          <span>${convertMarkdownToHtml(
+            removeImageFromMarkdown(item.info)
+          )}</span>
         </p>
       `
     })
@@ -92,7 +96,9 @@ export const getPlanHtml = plan => {
       <p>
         <span translate="no">${I18N.get('suggestion.plan.teamMember')}#</span>
         <span translate="no">${I18N.get('suggestion.plan.role')}</span>
-        <span translate="no">${I18N.get('suggestion.plan.responsibility')}</span>
+        <span translate="no">${I18N.get(
+          'suggestion.plan.responsibility'
+        )}</span>
         <span translate="no">${I18N.get('suggestion.plan.moreInfo')}</span>
       </p>
       ${lists}
@@ -109,10 +115,14 @@ export const getBudgetHtml = budget => {
       return `
         <p>
           <span>${index + 1}</span>
-          <span translate="no">${I18N.get(`suggestion.budget.${item.type}`)}</span>
+          <span translate="no">${I18N.get(
+            `suggestion.budget.${item.type}`
+          )}</span>
           <span>${item.amount}</span>
           <span>${Number(item.milestoneKey) + 1}</span>
-          <span>${convertMarkdownToHtml(removeImageFromMarkdown(item.criteria))}</span>
+          <span>${convertMarkdownToHtml(
+            removeImageFromMarkdown(item.criteria)
+          )}</span>
         </p>
       `
     })

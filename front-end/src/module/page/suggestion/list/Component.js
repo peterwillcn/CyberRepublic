@@ -227,7 +227,6 @@ export default class extends StandardPage {
     const listNode = this.renderList()
     const sortActionsNode = this.renderSortActions()
     const didModal = this.renderDidModal()
-
     const uri = URI(this.props.location.search || '')
     const popupEndTime = new Date().setTime(1591718400000)
     const nowDate = new Date().getTime()
