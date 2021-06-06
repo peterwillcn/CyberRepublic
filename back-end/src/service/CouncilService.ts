@@ -34,6 +34,7 @@ export default class extends Base {
 
     const currentConfig = await this.configModel.getDBInstance().findOne()
     const crRelatedStageStatus = await ela.getCrrelatedStage()
+    // prettier-ignore
     const {
       ondutyendheight,
       invoting,
@@ -293,7 +294,8 @@ export default class extends Base {
       if (councilList.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
         const currentCouncil = await ela.currentCouncil()
         const thisDidInfo = _.find(currentCouncil.crmembersinfo, { did })
-        impeachmentObj['dpospublickey'] = thisDidInfo.dpospublickey
+        // prettier-ignore
+        impeachmentObj['dpospublickey'] = thisDidInfo && thisDidInfo.dpospublickey
         // update impeachment
         const circulatingSupply = councilList.circulatingSupply
           ? councilList.circulatingSupply
