@@ -103,7 +103,7 @@ agenda.define(JOB_NAME.COUNCILJOB, async (job: any, done: any) => {
   try {
     const DB = await db.create()
     const councilService = new CouncilService(DB, { user: undefined })
-    await councilService.eachSecretariatJob()
+    // await councilService.eachSecretariatJob()
     await councilService.eachCouncilJobPlus()
     console.log(JOB_NAME.COUNCILJOB, 'at working')
   } catch (err) {
