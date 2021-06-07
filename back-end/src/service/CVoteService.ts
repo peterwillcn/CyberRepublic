@@ -981,7 +981,7 @@ export default class extends Base {
     const budgets = _.get(result, 'data.proposal.budgets')
     let isBudgetUpdated = false
     if (budgets) {
-      const budget = proposal.budget.map((item, index) => {
+      const budget = proposal.budget && proposal.budget.map((item, index) => {
         const chainStatus = budgets[index].status.toLowerCase()
         if (
           chainStatus === 'withdrawn' &&
@@ -1014,7 +1014,7 @@ export default class extends Base {
         }
         return item
       })
-      if (isBudgetUpdated) {
+      if (isBudgetUpdated && budget) {
         proposal.budget = budget
       }
     }
