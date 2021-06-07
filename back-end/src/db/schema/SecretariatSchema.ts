@@ -65,8 +65,8 @@ export const Secretariat = {
     required: true
   },
   publicKey: String,
-  term: String,
-  proposalId: {
+  term: Number,
+  proposal: {
     type: Schema.Types.ObjectId,
     ref: 'cvote'
   }
