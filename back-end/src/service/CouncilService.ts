@@ -3,6 +3,7 @@ import { constant } from '../constant'
 import { CVOTE_STATUS_TO_WALLET_STATUS } from './CVoteService'
 import { ela, getInformationByDid, getDidName } from '../utility'
 import * as moment from 'moment'
+import { isNumber } from 'lodash'
 
 const _ = require('lodash')
 
@@ -190,11 +191,20 @@ export default class extends Base {
 
   public async councilInformation(param: any): Promise<any> {
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
-    const { id, did } = param
+    let { id, did } = param
 
-    if (!id && !did) {
-      return {
-        type: 'Other'
+    if (!did) {
+      throw 'invalid did'
+    }
+
+    if (did && (!id || !isNumber(id))) {
+      const council = await this.model
+        .getDBInstance()
+        .findOne({ status: 'CURRENT' })
+      if (council && council.index) {
+        id = council && council.index
+      } else {
+        throw 'invalid id'
       }
     }
 
