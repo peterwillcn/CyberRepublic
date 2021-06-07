@@ -197,17 +197,6 @@ export default class extends Base {
       throw 'invalid did'
     }
 
-    if (did && (!id || !isNumber(id))) {
-      const council = await this.model
-        .getDBInstance()
-        .findOne({ status: 'CURRENT' })
-      if (council && council.index) {
-        id = council && council.index
-      } else {
-        throw 'invalid id'
-      }
-    }
-
     // query council
     const fields = [
       'height',
@@ -239,7 +228,7 @@ export default class extends Base {
         }
       }
     }
-    if (id) {
+    if (id && isNumber(id)) {
       query['index'] = id
     } else {
       query['status'] = constant.TERM_COUNCIL_STATUS.CURRENT
@@ -269,9 +258,15 @@ export default class extends Base {
       'endDate',
       'status'
     ]
+    const querySec = { did }
+    if (id && isNumber(id)) {
+      querySec['term'] = id
+    } else {
+      querySec['status'] = constant.SECRETARIAT_STATUS.CURRENT
+    }
     const secretariat = await this.secretariatModel
       .getDBInstance()
-      .findOne({ did }, secretariatFields)
+      .findOne(querySec, secretariatFields)
       .populate('user', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
     if (!councilList && !secretariat) {
