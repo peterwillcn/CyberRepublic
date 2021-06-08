@@ -20,7 +20,6 @@ const JOB_NAME = {
   TRANSACTIONJOB: 'new append transaction',
   NOTIFICATIONCOUNCILVOTE: 'notification council to vote',
   UPDATECURRENTHEIGHT: 'update current height',
-  PROCESS_OLD_DATAO_NCE: 'process old data once',
   BACKUP_CANDIDATE_LIST: 'backup candidate list'
 }
 
@@ -167,18 +166,7 @@ agenda.define(JOB_NAME.NOTIFICATIONCOUNCILVOTE, async (job: any, done: any) => {
     done()
   }
 })
-agenda.define(JOB_NAME.PROCESS_OLD_DATAO_NCE, async (job: any, done: any) => {
-  try {
-    const DB = await db.create()
-    const cvoteService = new CVoteServive(DB, { user: undefined })
-    await cvoteService.processOldData()
-    console.log(JOB_NAME.PROCESS_OLD_DATAO_NCE, 'at working')
-  } catch (err) {
-    console.log('', err)
-  } finally {
-    done()
-  }
-})
+
 agenda.define(JOB_NAME.BACKUP_CANDIDATE_LIST, async (job: any, done: any) => {
   try {
     console.log('------backup candidate list is beginning------')
