@@ -192,7 +192,6 @@ export default class extends Base {
   public async councilInformation(param: any): Promise<any> {
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
     let { id, did } = param
-
     if (!did) {
       throw 'invalid did'
     }
@@ -228,7 +227,7 @@ export default class extends Base {
         }
       }
     }
-    if (id && isNumber(id)) {
+    if (id) {
       query['index'] = id
     } else {
       query['status'] = constant.TERM_COUNCIL_STATUS.CURRENT
@@ -259,7 +258,7 @@ export default class extends Base {
       'status'
     ]
     const querySec = { did }
-    if (id && isNumber(id)) {
+    if (id) {
       querySec['term'] = id
     } else {
       querySec['status'] = constant.SECRETARIAT_STATUS.CURRENT
@@ -380,7 +379,15 @@ export default class extends Base {
           })
         }
       }
-
+      if (
+        councilList.status === constant.TERM_COUNCIL_STATUS.HISTORY &&
+        [
+          constant.COUNCIL_STATUS.ELECTED,
+          constant.COUNCIL_STATUS.INACTIVE
+        ].includes(council.status)
+      ) {
+        council.status = constant.COUNCIL_STATUS.EXPIRED
+      }
       return {
         ..._.omit(council._doc, ['_id', 'user', 'impeachmentVotes']),
         ...this.getUserInformation(council._doc, council.user),
