@@ -277,10 +277,10 @@ export default class extends Base {
       }
       const result = await this.candidateModel.findOne(query)
       if (result) {
-        const unelectedCouncil = await ela.depositCoin(did)
+        const assets = await ela.depositCoin(did)
         return {
           type: 'UnelectedCouncilMember',
-          depositAmount: _.get(unelectedCouncil, 'available')
+          depositAmount: _.get(assets, 'available')
         }
       }
       return {
@@ -387,6 +387,10 @@ export default class extends Base {
         ].includes(council.status)
       ) {
         council.status = constant.COUNCIL_STATUS.EXPIRED
+      }
+      const assets = await ela.depositCoin(did)
+      if (assets) {
+        council.depositAmount = _.get(assets, 'available')
       }
       return {
         ..._.omit(council._doc, ['_id', 'user', 'impeachmentVotes']),
