@@ -3,6 +3,7 @@ import { constant } from '../constant'
 import { CVOTE_STATUS_TO_WALLET_STATUS } from './CVoteService'
 import { ela, getInformationByDid, getDidName } from '../utility'
 import * as moment from 'moment'
+import { isNumber } from 'lodash'
 
 const _ = require('lodash')
 
@@ -34,6 +35,7 @@ export default class extends Base {
 
     const currentConfig = await this.configModel.getDBInstance().findOne()
     const crRelatedStageStatus = await ela.getCrrelatedStage()
+    // prettier-ignore
     const {
       ondutyendheight,
       invoting,
@@ -189,12 +191,9 @@ export default class extends Base {
 
   public async councilInformation(param: any): Promise<any> {
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
-    const { id, did } = param
-
-    if (!id && !did) {
-      return {
-        type: 'Other'
-      }
+    let { id, did } = param
+    if (!did) {
+      throw 'invalid did'
     }
 
     // query council
@@ -258,9 +257,15 @@ export default class extends Base {
       'endDate',
       'status'
     ]
+    const querySec = { did }
+    if (id) {
+      querySec['term'] = id
+    } else {
+      querySec['status'] = constant.SECRETARIAT_STATUS.CURRENT
+    }
     const secretariat = await this.secretariatModel
       .getDBInstance()
-      .findOne({ did }, secretariatFields)
+      .findOne(querySec, secretariatFields)
       .populate('user', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
     if (!councilList && !secretariat) {
@@ -272,10 +277,10 @@ export default class extends Base {
       }
       const result = await this.candidateModel.findOne(query)
       if (result) {
-        const unelectedCouncil = await ela.depositCoin(did)
+        const assets = await ela.depositCoin(did)
         return {
           type: 'UnelectedCouncilMember',
-          depositAmount: _.get(unelectedCouncil, 'available')
+          depositAmount: _.get(assets, 'available')
         }
       }
       return {
@@ -293,7 +298,8 @@ export default class extends Base {
       if (councilList.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
         const currentCouncil = await ela.currentCouncil()
         const thisDidInfo = _.find(currentCouncil.crmembersinfo, { did })
-        impeachmentObj['dpospublickey'] = thisDidInfo.dpospublickey
+        // prettier-ignore
+        impeachmentObj['dpospublickey'] = thisDidInfo && thisDidInfo.dpospublickey
         // update impeachment
         const circulatingSupply = councilList.circulatingSupply
           ? councilList.circulatingSupply
@@ -373,7 +379,19 @@ export default class extends Base {
           })
         }
       }
-
+      if (
+        councilList.status === constant.TERM_COUNCIL_STATUS.HISTORY &&
+        [
+          constant.COUNCIL_STATUS.ELECTED,
+          constant.COUNCIL_STATUS.INACTIVE
+        ].includes(council.status)
+      ) {
+        council.status = constant.COUNCIL_STATUS.EXPIRED
+      }
+      const assets = await ela.depositCoin(did)
+      if (assets) {
+        council.depositAmount = _.get(assets, 'available')
+      }
       return {
         ..._.omit(council._doc, ['_id', 'user', 'impeachmentVotes']),
         ...this.getUserInformation(council._doc, council.user),
@@ -870,7 +888,9 @@ export default class extends Base {
   }
 
   public async invoting() {
-    const { invoting } = await ela.getCrrelatedStage()
-    return { invoting }
+    const rs = await ela.getCrrelatedStage()
+    if (rs) {
+      return { invoting: rs.invoting }
+    }
   }
 }

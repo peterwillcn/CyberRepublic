@@ -96,7 +96,7 @@ export default class extends StandardPage {
       this.props.getCrRelatedStage()
     ])
     if (rs && rs[2]) {
-      this.setState({ invoting: true })
+      this.setState({ invoting: rs[2].invoting })
     }
   }
 
