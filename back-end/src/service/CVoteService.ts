@@ -1506,13 +1506,14 @@ export default class extends Base {
         information = rs[0]
         didName = rs[1]
       }
+      const startDate = new Date()
       const doc: any = _.pickBy(
         {
           ...information,
           user: newSecretaryAccount._id,
           did: proposal.newSecretaryDID,
           didName,
-          startDate: new Date(),
+          startDate,
           status: constant.SECRETARIAT_STATUS.CURRENT,
           publicKey: newSecretaryAccount.did.publicKey,
           term: currentSecretary.term + 1,
@@ -1536,7 +1537,10 @@ export default class extends Base {
             did: currentSecretary.did,
             status: constant.SECRETARIAT_STATUS.CURRENT
           },
-          { status: constant.SECRETARIAT_STATUS.NON_CURRENT }
+          {
+            status: constant.SECRETARIAT_STATUS.NON_CURRENT,
+            endDate: startDate
+          }
         ),
         db_secretariat.getDBInstance().create(doc)
       ])
