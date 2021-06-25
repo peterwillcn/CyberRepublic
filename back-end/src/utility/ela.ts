@@ -120,7 +120,6 @@ const ela = {
         headers: DEFAULT_HEADERS,
         timeout: 5000
       })
-      console.log(`...getCrrelatedStage res...`, res)
       if (res && res.data && res.data.result) {
         return res.data.result
       }
