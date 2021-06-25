@@ -1369,7 +1369,9 @@ export default class extends Base {
     const db_cvote = this.getDBModel('CVote')
     const db_config = this.getDBModel('Config')
     let currentHeight = await ela.height()
-    const list = await db_cvote.getDBInstance().find({
+    const list = await db_cvote
+    .getDBInstance()
+    .find({
       proposalHash: { $exists: true },
       status: {
         $in: [
@@ -1379,6 +1381,7 @@ export default class extends Base {
         ]
       }
     })
+    .sort({ vid: 1 })
 
     let tempCurrentHeight = 0
     let compareHeight = 0
@@ -1476,17 +1479,23 @@ export default class extends Base {
     const proposal = await db_cvote.findById(_id)
 
     if (proposal.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      console.log(`proposal to change secretary status...`, proposal.status)
+      console.log(`proposal to change secretary vid...`, proposal.vid)
+      const db_secretariat = this.getDBModel('Secretariat')
+      const secretary = await db_secretariat.findOne({
+        proposal: _id
+      })
+      if (secretary) return
+
       const newSecretaryDID = DID_PREFIX + proposal.newSecretaryDID
       const db_user = this.getDBModel('User')
       const newSecretaryAccount = await db_user.findOne({
         'did.id': newSecretaryDID
       })
 
-      const db_secretariat = this.getDBModel('Secretariat')
       const currentSecretary = await db_secretariat.findOne({
         status: constant.SECRETARIAT_STATUS.CURRENT
       })
-
       let information: any = {}
       let didName = ''
       const rs = await Promise.all([
@@ -1524,7 +1533,8 @@ export default class extends Base {
         ),
         db_secretariat.update(
           {
-            did: currentSecretary.did
+            did: currentSecretary.did,
+            status: constant.SECRETARIAT_STATUS.CURRENT
           },
           { status: constant.SECRETARIAT_STATUS.NON_CURRENT }
         ),
