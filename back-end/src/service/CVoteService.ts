@@ -2,7 +2,13 @@ import Base from './Base'
 import { Document } from 'mongoose'
 import * as _ from 'lodash'
 import { constant } from '../constant'
-import { permissions, getProposalData, ela } from '../utility'
+import {
+  permissions,
+  getProposalData,
+  ela,
+  getInformationByDid,
+  getDidName
+} from '../utility'
 import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 import {
@@ -13,7 +19,6 @@ import {
   logger,
   getProposalJwtPrefix
 } from '../utility'
-import { CVOTE_STATUS } from 'src/constant/constant'
 
 const util = require('util')
 const request = require('request')
@@ -1469,6 +1474,64 @@ export default class extends Base {
 
     const proposalStatus = CHAIN_STATUS_TO_PROPOSAL_STATUS[chainStatus]
     const proposal = await db_cvote.findById(_id)
+
+    if (proposal.type === constant.CVOTE_TYPE.CHANGE_SECRETARY) {
+      const newSecretaryDID = DID_PREFIX + proposal.newSecretaryDID
+      const db_user = this.getDBModel('User')
+      const newSecretaryAccount = await db_user.findOne({
+        'did.id': newSecretaryDID
+      })
+
+      const db_secretariat = this.getDBModel('Secretariat')
+      const currentSecretary = await db_secretariat.findOne({
+        status: constant.SECRETARIAT_STATUS.CURRENT
+      })
+
+      let information: any = {}
+      let didName = ''
+      const rs = await Promise.all([
+        getInformationByDid(newSecretaryDID),
+        getDidName(newSecretaryDID)
+      ])
+      if (rs) {
+        information = rs[0]
+        didName = rs[1]
+      }
+      const doc: any = _.pickBy(
+        {
+          ...information,
+          user: newSecretaryAccount._id,
+          did: proposal.newSecretaryDID,
+          didName,
+          startDate: new Date(),
+          status: constant.SECRETARIAT_STATUS.CURRENT,
+          publicKey: newSecretaryAccount.did.publicKey,
+          term: currentSecretary.term + 1,
+          proposal: proposal._id
+        },
+        _.identity
+      )
+      const oldSecretaryDID = DID_PREFIX + currentSecretary.did
+
+      await Promise.all([
+        db_user.update(
+          { 'did.id': oldSecretaryDID },
+          { role: constant.USER_ROLE.MEMBER }
+        ),
+        db_user.update(
+          { 'did.id': newSecretaryDID },
+          { role: constant.USER_ROLE.SECRETARY }
+        ),
+        db_secretariat.update(
+          {
+            did: currentSecretary.did
+          },
+          { status: constant.SECRETARIAT_STATUS.NON_CURRENT }
+        ),
+        db_secretariat.getDBInstance().create(doc)
+      ])
+    }
+
     if (proposal.type === constant.CVOTE_TYPE.TERMINATE_PROPOSAL) {
       await db_cvote.update(
         {
