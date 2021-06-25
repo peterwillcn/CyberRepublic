@@ -49,7 +49,7 @@ export default class extends BaseComponent {
 
   async componentDidMount() {
     const rs = await this.props.getCrRelatedStage()
-    rs && this.setState({ invoting: true })
+    rs && this.setState({ invoting: rs.invoting })
   }
 
   renderCompleteProfileModal() {
