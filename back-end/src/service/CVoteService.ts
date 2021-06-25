@@ -2340,10 +2340,12 @@ export default class extends Base {
 
   public async getCurrentHeight() {
     const db_config = this.getDBModel('Config')
-    const {
-      currentHeight: registerHeight
-    } = await db_config.getDBInstance().findOne()
-    return registerHeight
+    // const {
+    //   currentHeight: registerHeight
+    // } = await db_config.getDBInstance().findOne()
+    // return registerHeight
+    const rs = await db_config.getDBInstance().findOne()
+    return rs && rs.height
   }
 
   private async notifyProposer(cvote: any, status: any, by: any) {
