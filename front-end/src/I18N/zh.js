@@ -51,7 +51,7 @@ const zh = {
       title: '委员会',
       submenu: {
         incumbent: '现任',
-        candidate: '候选人',
+        candidate: '候选人'
       }
     },
     whitepaper: '白皮书',
@@ -148,16 +148,16 @@ const zh = {
 
   // Pop-up Announcement
   'popup.changes.title': 'Cyber Republic的重要公告',
-  'popup.changes.2018-12-26.1': '经Cyber Republic理事会和亦来云团队成员们的深入讨论，我们近期将对CR网站进行改版，以更好地体现Cyber Republic 公开、透明和社区自治的理念。\n',
-  'popup.changes.2018-12-26.2': '改版期间CR 网站上的CR100/CRcle/大使计划等会暂停服务（即停止接受新的提案和申请）。针对已经进行中的社区活动和CR100项目，在接下来的几周我们会给出具体的处理方案。',
-  'popup.changes.2018-12-26.3': '新的CR论坛将于2018年12月31日开始启用，希望大家在新的网站平台上提出问题并表达你们的想法。由于因为中国社区无法访问Discord，我们将邀请Discord的所有用户也使用该论坛。',
+  'popup.changes.2018-12-26.1': `经Cyber Republic理事会和亦来云团队成员们的深入讨论，我们近期将对CR网站进行改版，以更好地体现Cyber Republic 公开、透明和社区自治的理念。\n`,
+  'popup.changes.2018-12-26.2': `改版期间CR 网站上的CR100/CRcle/大使计划等会暂停服务（即停止接受新的提案和申请）。针对已经进行中的社区活动和CR100项目，在接下来的几周我们会给出具体的处理方案。`,
+  'popup.changes.2018-12-26.3': `新的CR论坛将于2018年12月31日开始启用，希望大家在新的网站平台上提出问题并表达你们的想法。由于因为中国社区无法访问Discord，我们将邀请Discord的所有用户也使用该论坛。`,
   'popup.changes.2018-12-26.4': '您还可以通过右上角的链接自动登录论坛：',
-  'popup.changes.2018-12-26.5': '更新后的CR网站将于2019年1月15日重新上线，更多信息请参考：',
-  'popup.changes.2018-12-26.blog_link': 'https://blog.cyberrepublic.org/zh/2018/12/26/cyber-republic%E7%9A%84%E9%87%8D%E8%A6%81%E5%85%AC%E5%91%8A',
-  
+  'popup.changes.2018-12-26.5': `更新后的CR网站将于2019年1月15日重新上线，更多信息请参考：`,
+  'popup.changes.2018-12-26.blog_link': `https://blog.cyberrepublic.org/zh/2018/12/26/cyber-republic%E7%9A%84%E9%87%8D%E8%A6%81%E5%85%AC%E5%91%8A`,
+
   'popup.suggestion.title': '关于 CR 网站升级的说明',
   'popup.suggestion.member': '各 CR 成员：',
-  'popup.suggestion.content': 'CRC 共识将于 2020 年 6 月 10 日 10 时上线，为配合委员会职能，CR 网站近期将进行技术升级。建议提交功能将暂停并于2020年6月10日重启，新建议将交由首届CR委员会负责。',
+  'popup.suggestion.content': `CRC 共识将于 2020 年 6 月 10 日 10 时上线，为配合委员会职能，CR 网站近期将进行技术升级。建议提交功能将暂停并于2020年6月10日重启，新建议将交由首届CR委员会负责。`,
   'popup.suggestion.team': 'CR 网站技术团队',
 
   // LoginForm
@@ -171,10 +171,9 @@ const zh = {
   'login.reset': '重置密码',
   'login.title': '登录 Cyber Republic',
   'login.description_1': '输入密码',
-  'login.withDid': '用新版 ELA 钱包登录',
-  'login.withOldWallet': '用旧版 ELA 钱包登录',
-  'login.qrcodeTip': '打开最新版 ELA 钱包应用扫码登录',
-  'login.qrcodeOldTip': '打开旧版 ELA 钱包应用扫码登录',
+  'login.withDid': '用 APP 扫码登录',
+  'login.qrcodeTip': 'Essential 扫码登录',
+  'login.qrcodeOldTip': 'ELA Wallet 扫码登录',
 
   // Logout
   'logout.title': '确定登出吗?',
@@ -187,7 +186,7 @@ const zh = {
   // RegisterFrom
   'register.title': '成为贡献者',
   'register.description_1': '仅仅需要花费您几秒钟',
-  'register.description_2': '作为会员，您可以在Cyber Republic上申领任务来获取奖励',
+  'register.description_2': `作为会员，您可以在Cyber Republic上申领任务来获取奖励`,
   'register.required': '必填项',
   'register.error.code': '您输入的验证码不匹配',
   'register.error.passwords': '您两次输入的密码不一致',
@@ -311,7 +310,7 @@ const zh = {
   'suggestion.form.fields.duplicate.number': '建议编号',
   'suggestion.form.fields.duplicate.button': '快速复制',
   // social share
-  'socialShare.wechat.desc': '打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮。',
+  'socialShare.wechat.desc': `打开微信“扫一扫”，打开网页后点击屏幕右上角分享按钮。`,
 
   // Suggestion Button Text
   'suggestion.btnText.edit': '编辑',
@@ -368,7 +367,7 @@ const zh = {
   'permission.tab.custom': '自定义',
   'permission.tab.member': '用户',
   'permission.tab.leader': '领导者',
-  
+
   // Communities
   'communities.btn': '添加国家',
   'communities.btn.add': '添加国家',
@@ -378,13 +377,13 @@ const zh = {
   'communities.form.name': '名称',
   'communities.form.leader': '领导者',
   'communities.form.organizer': '组织者',
-  'communities.form.required':'这是必填项',
+  'communities.form.required': '这是必填项',
   'communities.form.country.placeholder': '请选择一个国家',
   'communities.form.leader.placeholder': '请选择一个用户',
   'communities.form.add.success': '成功添加新国家',
   'communities.form.add.error': '添加国家/地区时出错',
   'communities.form.organizer.change': '更改组织者',
-  
+
   'communities.organizer.has': '有组织者',
   'communities.organizer.needs': '需要一个组织者',
 
@@ -410,7 +409,6 @@ const zh = {
   'communities.form.country.delete': '删除社区成功',
   'communitites.form.country.success': '成功添加新的子社区',
   'communitites.form.country.error': '添加新的子社区时出错',
-
 
   // Developer
   'developer.breadcrumb.developers': '社区',
@@ -817,10 +815,10 @@ const zh = {
   'council.voting.status': '状态',
   'council.voting.createdAt': '创建日期',
   'council.voting.proposedAt': '发布日期',
-  'council.voting.chainStatus.chained':'已上链',
-  'council.voting.chainStatus.chaining':'上链中',
-  'council.voting.chainStatus.unchain':'未上链',
-  'council.voting.chainStatus.failed':'上链失败',
+  'council.voting.chainStatus.chained': '已上链',
+  'council.voting.chainStatus.chaining': '上链中',
+  'council.voting.chainStatus.unchain': '未上链',
+  'council.voting.chainStatus.failed': '上链失败',
 
   'council.voting.type.support': '赞成',
   'council.voting.type.reject': '否决',
@@ -856,11 +854,11 @@ const zh = {
   'council.voting.voteResult.show': '显示',
   'council.voting.voteResult.all': '所有',
   'council.voting.voteResult.unvoted': '待投票',
-  
-  'council.voting.voteResult.onchain':'投票上链',
+
+  'council.voting.voteResult.onchain': '投票上链',
 
   'council.voting.viewHistory.btn': '投票历史',
-  'council.voting.viewHistory.current':'当前投票',
+  'council.voting.viewHistory.current': '当前投票',
 
   // Landing
   'landing.cr': 'Cyber Republic',
@@ -1018,8 +1016,8 @@ const zh = {
   'profile.submission.table.type': '类型',
   'profile.submission.table.created': '创建日期',
 
-  'profile.member.vote.qrcodeTip':'打开最新版 ELA 钱包扫码投票（社区投票专用）',
-  'profile.member.vote.qrcodeOldTip':'打开旧版 ELA 钱包扫码投票（社区投票专用）',
+  'profile.member.vote.qrcodeTip': `打开最新版 ELA 钱包扫码投票（社区投票专用）`,
+  'profile.member.vote.qrcodeOldTip': `打开旧版 ELA 钱包扫码投票（社区投票专用）`,
 
   'profile.forms.table.header.title': '标题',
   'profile.forms.table.header.name': '名称',
@@ -1030,7 +1028,6 @@ const zh = {
 
   'profile.form.headline': '标题',
   'profile.form.headline.error': '请输入标题！',
-  
 
   // Validate Form
   'ambassadors.form.required': '必填项目',
@@ -1572,7 +1569,7 @@ const zh = {
     did: 'DID',
     no1: {
       name: 'Alex Shipp',
-      intro: '亦来云基金会编辑、量子财富观共同作者、量子财富节点拥有者，暂时没有固定驻地。',
+      intro: `亦来云基金会编辑、量子财富观共同作者、量子财富节点拥有者，暂时没有固定驻地。`,
       email: 'ashipp37@gmail.com'
     },
     no2: {
@@ -1630,6 +1627,5 @@ zh[`cvoteStatus.${CVOTE_STATUS.DEFERRED}`] = '已过期'
 zh[`cvoteStatus.${CVOTE_STATUS.NOTIFICATION}`] = '公示期'
 zh[`cvoteStatus.${CVOTE_STATUS.VETOED}`] = '社区否决'
 zh[`cvoteStatus.${CVOTE_STATUS.TERMINATED}`] = '已终止'
-
 
 export default zh

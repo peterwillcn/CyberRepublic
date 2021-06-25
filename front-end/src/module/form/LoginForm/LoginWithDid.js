@@ -18,21 +18,17 @@ class LoginWithDid extends Component {
   }
 
   elaQrCode = () => {
-    const { url } = this.state
+    const { oldUrl, url } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={180} /> : <Spin />}
-        <Tip>{I18N.get('login.qrcodeTip')}</Tip>
-      </Content>
-    )
-  }
-
-  elaOldQrCode = () => {
-    const { oldUrl } = this.state
-    return (
-      <Content>
-        {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
-        <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
+        <div>
+          {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
+          <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
+        </div>
+        <div>
+          {url ? <QRCode value={url} size={180} /> : <Spin />}
+          <Tip>{I18N.get('login.qrcodeTip')}</Tip>
+        </div>
       </Content>
     )
   }
@@ -141,16 +137,9 @@ class LoginWithDid extends Component {
     this.setState({ visible, oldUrlVisible: false })
   }
 
-  handleOldUrlVisibleChange = (visible) => {
-    this.setState({ oldUrlVisible: visible, visible: false })
-  }
-
   render() {
     return (
       <Wrapper>
-        <Divider>
-          <Text>OR</Text>
-        </Divider>
         <Popover
           visible={this.state.visible}
           onVisibleChange={this.handleVisibleChange}
@@ -160,18 +149,6 @@ class LoginWithDid extends Component {
         >
           <Button onClick={this.handleClick}>
             {I18N.get('login.withDid')}
-          </Button>
-        </Popover>
-        <br />
-        <Popover
-          visible={this.state.oldUrlVisible}
-          onVisibleChange={this.handleOldUrlVisibleChange}
-          content={this.elaOldQrCode()}
-          trigger="click"
-          placement="top"
-        >
-          <Button onClick={this.handleOldUrlClick}>
-            {I18N.get('login.withOldWallet')}
           </Button>
         </Popover>
       </Wrapper>
@@ -194,7 +171,6 @@ const Button = styled.span`
   display: inline-block;
   margin-bottom: 16px;
   font-size: 13px;
-  border: 1px solid #008d85;
   color: #008d85;
   text-align: center;
   padding: 6px 16px;
@@ -203,6 +179,7 @@ const Button = styled.span`
 const Content = styled.div`
   padding: 16px;
   text-align: center;
+  display: flex;
 `
 const Tip = styled.div`
   font-size: 14px;
