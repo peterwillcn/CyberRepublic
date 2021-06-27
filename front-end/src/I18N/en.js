@@ -173,8 +173,8 @@ const en = {
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
   'login.withDid': 'Log in with APP',
-  'login.qrcodeTip': 'Open Essential and scan to log in.',
-  'login.qrcodeOldTip': `Open ELA wallet and scan to log in.`,
+  'login.qrcodeTip': 'Scan with the Essential',
+  'login.qrcodeOldTip': `Scan with the ELA Wallet`,
 
   // Logout
   'logout.title': 'Are you sure you want to logout?',

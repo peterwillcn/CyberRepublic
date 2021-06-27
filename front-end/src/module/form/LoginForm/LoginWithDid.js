@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Popover, Spin, Divider, message } from 'antd'
+import { Popover, Spin, message } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
 
@@ -10,8 +10,7 @@ class LoginWithDid extends Component {
     this.state = {
       url: '',
       oldUrl: '',
-      visible: false,
-      oldUrlVisible: false
+      visible: false
     }
     this.timerDid = null
     this.oldTimerDid = null
@@ -41,7 +40,9 @@ class LoginWithDid extends Component {
     const rs = await this.props.checkElaAuth(url)
     if (rs && rs.success === true) {
       clearTimeout(this.timerDid)
+      clearTimeout(this.oldTimerDid)
       this.timerDid = null
+      this.oldTimerDid = null
       if (rs.did) {
         this.props.changeTab('register', rs.did, rs.newVersion)
         this.setState({ visible: false })
@@ -72,11 +73,13 @@ class LoginWithDid extends Component {
     const { oldUrl } = this.state
     const rs = await this.props.checkElaAuth(oldUrl)
     if (rs && rs.success === true) {
+      clearTimeout(this.timerDid)
       clearTimeout(this.oldTimerDid)
+      this.timerDid = null
       this.oldTimerDid = null
       if (rs.did) {
         this.props.changeTab('register', rs.did, rs.newVersion)
-        this.setState({ oldUrlVisible: false })
+        this.setState({ visible: false })
       }
       return
     }
@@ -88,7 +91,7 @@ class LoginWithDid extends Component {
       } else {
         message.error('Something went wrong')
       }
-      this.setState({ oldUrlVisible: false })
+      this.setState({ visible: false })
       return
     }
     if (this._isMounted) {
@@ -98,23 +101,12 @@ class LoginWithDid extends Component {
   }
 
   handleClick = () => {
-    if (this.oldTimerDid) {
-      clearTimeout(this.oldTimerDid)
+    if (!this.timerDid) {
+      this.timerDid = setTimeout(this.polling, 3000)
     }
-    if (this.timerDid) {
-      return
+    if (!this.oldTimerDid) {
+      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
     }
-    this.timerDid = setTimeout(this.polling, 3000)
-  }
-
-  handleOldUrlClick = () => {
-    if (this.timerDid) {
-      clearTimeout(this.timerDid)
-    }
-    if (this.oldTimerDid) {
-      return
-    }
-    this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
   }
 
   componentDidMount = async () => {
@@ -134,7 +126,7 @@ class LoginWithDid extends Component {
   }
 
   handleVisibleChange = (visible) => {
-    this.setState({ visible, oldUrlVisible: false })
+    this.setState({ visible })
   }
 
   render() {
@@ -162,11 +154,6 @@ const Wrapper = styled.div`
   margin-top: 32px;
   text-align: center;
 `
-const Text = styled.div`
-  font-size: 14px;
-  color: #031e28;
-  opacity: 0.5;
-`
 const Button = styled.span`
   display: inline-block;
   margin-bottom: 16px;
@@ -178,8 +165,10 @@ const Button = styled.span`
 `
 const Content = styled.div`
   padding: 16px;
+  min-width: 460px;
   text-align: center;
   display: flex;
+  justify-content: space-between;
 `
 const Tip = styled.div`
   font-size: 14px;
