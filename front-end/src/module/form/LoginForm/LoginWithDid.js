@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Popover, Spin, message } from 'antd'
+import { Popover, Spin, message, Modal, Button } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
 
@@ -10,7 +10,10 @@ class LoginWithDid extends Component {
     this.state = {
       url: '',
       oldUrl: '',
-      visible: false
+      visible: false,
+      modalVisible: false,
+      did: '',
+      newVersion: ''
     }
     this.timerDid = null
     this.oldTimerDid = null
@@ -44,8 +47,12 @@ class LoginWithDid extends Component {
       this.timerDid = null
       this.oldTimerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did, rs.newVersion)
-        this.setState({ visible: false })
+        this.setState({
+          visible: false,
+          modalVisible: true,
+          did: rs.did,
+          newVersion: rs.newVersion
+        })
       }
       return
     }
@@ -78,8 +85,12 @@ class LoginWithDid extends Component {
       this.timerDid = null
       this.oldTimerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did, rs.newVersion)
-        this.setState({ visible: false })
+        this.setState({
+          visible: false,
+          modalVisible: true,
+          did: rs.did,
+          newVersion: rs.newVersion
+        })
       }
       return
     }
@@ -129,20 +140,57 @@ class LoginWithDid extends Component {
     this.setState({ visible })
   }
 
+  handleModalClick = () => {
+    const { did, newVersion } = this.state
+    console.log(`did`, did)
+    if (!did || !newVersion) return
+    console.log(`newVersion`, newVersion)
+    this.props.changeTab('register', did, newVersion)
+    this.setState({ modalVisible: false })
+  }
+
+  hideModal = () => {
+    this.setState({ modalVisible: false })
+  }
+
+  modalContent = () => {
+    return (
+      <StyledContent>
+        <Notice>{I18N.get('login.modal.content')}</Notice>
+        <AntButton
+          className="cr-btn cr-btn-primary"
+          onClick={this.handleModalClick}
+        >
+          {I18N.get('login.modal.register')}
+        </AntButton>
+      </StyledContent>
+    )
+  }
+
   render() {
+    const { visible, modalVisible } = this.state
     return (
       <Wrapper>
         <Popover
-          visible={this.state.visible}
+          visible={visible}
           onVisibleChange={this.handleVisibleChange}
           content={this.elaQrCode()}
           trigger="click"
           placement="top"
         >
-          <Button onClick={this.handleClick}>
+          <StyledButton onClick={this.handleClick}>
             {I18N.get('login.withDid')}
-          </Button>
+          </StyledButton>
         </Popover>
+        <Modal
+          maskClosable={false}
+          visible={modalVisible}
+          onCancel={this.hideModal}
+          footer={null}
+          width={500}
+        >
+          {this.modalContent()}
+        </Modal>
       </Wrapper>
     )
   }
@@ -154,7 +202,7 @@ const Wrapper = styled.div`
   margin-top: 32px;
   text-align: center;
 `
-const Button = styled.span`
+const StyledButton = styled.span`
   display: inline-block;
   margin-bottom: 16px;
   font-size: 13px;
@@ -174,4 +222,19 @@ const Tip = styled.div`
   font-size: 14px;
   color: #000;
   margin-top: 16px;
+`
+const Notice = styled.div`
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 24px;
+  text-align: left;
+`
+const StyledContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 360px;
+  align-items: center;
+`
+const AntButton = styled(Button)`
+  width: 100px;
 `

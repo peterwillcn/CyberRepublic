@@ -175,7 +175,8 @@ const en = {
   'login.withDid': 'Log in with APP',
   'login.qrcodeTip': 'Scan with the Essential',
   'login.qrcodeOldTip': `Scan with the ELA Wallet`,
-
+  'login.modal.register': 'Register',
+  'login.modal.content': 'Your DID does not register the CR website',
   // Logout
   'logout.title': 'Are you sure you want to logout?',
 

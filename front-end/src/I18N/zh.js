@@ -174,6 +174,8 @@ const zh = {
   'login.withDid': '用 APP 扫码登录',
   'login.qrcodeTip': 'Essential 扫码登录',
   'login.qrcodeOldTip': 'ELA Wallet 扫码登录',
+  'login.modal.register': '立即注册',
+  'login.modal.content': '当前 DID 尚未注册 CR 网站',
 
   // Logout
   'logout.title': '确定登出吗?',
