@@ -1051,15 +1051,16 @@ export default class extends Base {
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
       .populate('reference', constant.DB_SELECTED_FIELDS.SUGGESTION.ID)
       .populate('referenceElip', 'vid')
+
+    if (!rs) {
+      return { success: true, empty: true }
+    }
+
     const voteHistory = await db_cvote_history
       .getDBInstance()
       .find({ proposalBy: rs._doc._id })
       .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
-    if (!rs) {
-      return { success: true, empty: true }
-    }
-    const res = { ...rs._doc }
     _.forEach(rs._doc.voteResult, (o: any) => {
       if (
         o.status === constant.CVOTE_CHAIN_STATUS.CHAINED &&
@@ -1071,6 +1072,8 @@ export default class extends Base {
         })
       }
     })
+
+    const res = { ...rs._doc }
     res.voteHistory = _.sortBy(voteHistory, function (item) {
       return -item.reasonCreatedAt
     })
