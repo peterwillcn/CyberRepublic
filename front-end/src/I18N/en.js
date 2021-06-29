@@ -1052,8 +1052,9 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
-  'profile.member.vote.qrcodeTip': `Open the new version ELA wallet and scan vote (for community review)`,
-  'profile.member.vote.qrcodeOldTip': `Open an older version ELA wallet and scan vote (for community review)`,
+  'profile.member.vote': 'Scan QR code to vote',
+  'profile.member.vote.qrcodeTip': `scan with the Essential`,
+  'profile.member.vote.qrcodeOldTip': `scan with the ELA wallet`,
   'profile.forms.table.header.title': 'Title',
   'profile.forms.table.header.name': 'Name',
   'profile.forms.table.header.campaign': 'Campaign',

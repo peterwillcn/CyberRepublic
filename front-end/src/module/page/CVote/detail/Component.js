@@ -251,7 +251,13 @@ class C extends StandardPage {
         {anchorNode}
         <Container className="p_CVoteDetail">
           <StickyContainer>
-            <BackLink link={{pathname:"/proposals", query: data.old ? data.old : false, sate: 'return'}} />
+            <BackLink
+              link={{
+                pathname: '/proposals',
+                query: data.old ? data.old : false,
+                sate: 'return'
+              }}
+            />
             {this.renderStickyHeader()}
             <Body>
               {contentNode}
@@ -306,7 +312,10 @@ class C extends StandardPage {
                   </FixedHeader>
                 </Col>
                 {isNotification && !this.state.smallSpace ? (
-                  <Col span={12}>
+                  <Col
+                    span={12}
+                    style={{ display: 'flex', justifyContent: 'flex-end' }}
+                  >
                     <FixedHeader>{memberVoteNode}</FixedHeader>
                   </Col>
                 ) : null}
@@ -892,11 +901,11 @@ class C extends StandardPage {
           <TabPane tab={this.renderTabTitle('status')} key="status">
             {this.renderTrackingMessage()}
           </TabPane>
-          {!_.isEmpty(dataList) ? 
-          <TabPane tab={this.renderTabTitle('summary')} key="summary">
-            {this.renderSummary()}
-          </TabPane> 
-          : null}
+          {!_.isEmpty(dataList) ? (
+            <TabPane tab={this.renderTabTitle('summary')} key="summary">
+              {this.renderSummary()}
+            </TabPane>
+          ) : null}
         </Tabs>
       </StyledTabs>
     )

@@ -1018,8 +1018,9 @@ const zh = {
   'profile.submission.table.type': '类型',
   'profile.submission.table.created': '创建日期',
 
-  'profile.member.vote.qrcodeTip': `打开最新版 ELA 钱包扫码投票（社区投票专用）`,
-  'profile.member.vote.qrcodeOldTip': `打开旧版 ELA 钱包扫码投票（社区投票专用）`,
+  'profile.member.vote': '投票上链',
+  'profile.member.vote.qrcodeTip': `用 Essential 扫码投票`,
+  'profile.member.vote.qrcodeOldTip': `用 ELA Wallet 扫码投票`,
 
   'profile.forms.table.header.title': '标题',
   'profile.forms.table.header.name': '名称',
