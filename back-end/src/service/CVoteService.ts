@@ -771,22 +771,30 @@ export default class extends Base {
       db_cvote.getDBInstance().find(query).count()
     ])
 
-    const list = _.map(rs[0], (o: any) => {
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
+    const list = _.map(rs[0], async (o: any) => {
       let proposedEnds = (o.proposedEndsHeight - currentHeight) * 2
       let notificationEnds = (o.notificationEndsHeight - currentHeight) * 2
       if (process.env.NODE_ENV === 'staging') {
         proposedEnds = (o.proposedEndsHeight - currentHeight) * 252
         notificationEnds = (o.notificationEndsHeight - currentHeight) * 252
       }
-      return {
+      const voteHistory = await db_cvote_history
+      .getDBInstance()
+      .find({ proposalBy: o._id })
+      const data = {
         ...o._doc,
         proposedEnds,
         notificationEnds
       }
+      if (voteHistory && voteHistory.length) {
+        data.voteHistory = voteHistory
+      }
+      return data
     })
+    const listResult = await Promise.all(list)
     const total = rs[1]
-
-    return { list, total }
+    return { list: listResult, total }
   }
 
   /**
