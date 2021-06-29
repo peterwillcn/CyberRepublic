@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Popover, Spin, message, Modal, Button } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
+import ScanSvgIcon from '@/module/common/ScanSvgIcon'
 
 class LoginWithDid extends Component {
   constructor(props) {
@@ -178,9 +179,12 @@ class LoginWithDid extends Component {
           trigger="click"
           placement="top"
         >
-          <StyledButton onClick={this.handleClick}>
-            {I18N.get('login.withDid')}
-          </StyledButton>
+          <ScanEntry>
+            <ScanSvgIcon />
+            <StyledButton onClick={this.handleClick}>
+              {I18N.get('login.withDid')}
+            </StyledButton>
+          </ScanEntry>
         </Popover>
         <Modal
           maskClosable={false}
@@ -203,13 +207,9 @@ const Wrapper = styled.div`
   text-align: center;
 `
 const StyledButton = styled.span`
-  display: inline-block;
-  margin-bottom: 16px;
   font-size: 13px;
   color: #008d85;
-  text-align: center;
-  padding: 6px 16px;
-  cursor: pointer;
+  padding-left: 8px;
 `
 const Content = styled.div`
   padding: 16px;
@@ -237,4 +237,10 @@ const StyledContent = styled.div`
 `
 const AntButton = styled(Button)`
   width: 100px;
+`
+const ScanEntry = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `
