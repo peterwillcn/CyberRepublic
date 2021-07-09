@@ -173,8 +173,8 @@ const en = {
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
   'login.withDid': 'Log in with APP',
-  'login.qrcodeTip': 'Scan with the Essential',
-  'login.qrcodeOldTip': `Scan with the ELA Wallet`,
+  'login.qrcodeTip': 'Scan this with the Essential',
+  'login.qrcodeOldTip': `Scan this with the ELA Wallet`,
   'login.modal.register': 'Register',
   'login.modal.content': 'Your DID does not register the CR website',
   // Logout
@@ -942,8 +942,8 @@ const en = {
 
   // Profile
   'profile.associateDid': 'Associate DID with APP',
-  'profile.qrcodeTip': 'scan this with the Essential',
-  'profile.qrcodeOldTip': 'scan this with the ELA Wallet',
+  'profile.qrcodeTip': 'Scan this with the Essential',
+  'profile.qrcodeOldTip': 'Scan this with the ELA Wallet',
   'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
   'profile.skillsets': 'My Skillsets',
@@ -1048,9 +1048,11 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
-  'profile.member.vote': 'Scan QR code to vote',
-  'profile.member.vote.qrcodeTip': `scan with the Essential`,
-  'profile.member.vote.qrcodeOldTip': `scan with the ELA wallet`,
+  'profile.member.vote': 'I wanna oppose',
+  'profile.member.vote.qrcodeTip': `Scan with the Essential`,
+  'profile.member.vote.qrcodeOldTip': `Scan with the ELA wallet`,
+  'profile.member.vote.community': `(for community review)`,
+
   'profile.forms.table.header.title': 'Title',
   'profile.forms.table.header.name': 'Name',
   'profile.forms.table.header.campaign': 'Campaign',

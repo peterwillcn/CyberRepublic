@@ -33,10 +33,12 @@ class MemberVoteQrCode extends Component {
         <div>
           <QRCode value={this.state.url} size={145} />
           <Tip>{I18N.get('profile.member.vote.qrcodeTip')}</Tip>
+          <Tip>{I18N.get('profile.member.vote.community')}</Tip>
         </div>
         <div>
           <QRCode value={this.state.oldUrl} size={145} />
           <Tip>{I18N.get('profile.member.vote.qrcodeOldTip')}</Tip>
+          <Tip>{I18N.get('profile.member.vote.community')}</Tip>
         </div>
       </Content>
     )
