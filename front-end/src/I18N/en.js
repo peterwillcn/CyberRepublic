@@ -1048,9 +1048,9 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
-  'profile.member.vote': 'I wanna oppose',
-  'profile.member.vote.qrcodeTip': `Scan with the Essential`,
-  'profile.member.vote.qrcodeOldTip': `Scan with the ELA wallet`,
+  'profile.member.vote': 'Oppose',
+  'profile.member.vote.qrcodeTip': `Scan this with the Essential`,
+  'profile.member.vote.qrcodeOldTip': `Scan this with the ELA Wallet`,
   'profile.member.vote.community': `(for community review)`,
 
   'profile.forms.table.header.title': 'Title',

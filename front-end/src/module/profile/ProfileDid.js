@@ -161,7 +161,7 @@ class ProfileDid extends Component {
             onVisibleChange={this.handleVisibleChange}
           >
             <Button onClick={this.handleAssociate}>
-              <ScanSvgIcon color="#ffffff" />
+              <ScanSvgIcon color="#ffffff" width={20} height={20} />
               <Text>{I18N.get('profile.associateDid')}</Text>
             </Button>
           </Popover>

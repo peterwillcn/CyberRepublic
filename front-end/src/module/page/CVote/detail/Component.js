@@ -29,7 +29,7 @@ import Translation from '@/module/common/Translation/Container'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
 import { StickyContainer, Sticky } from 'react-sticky'
 import VoteResultComponent from '../common/vote_result/Component'
-import MemberVoteQrCode from './MemberVoteQrCode'
+import CommunityVoteQrCode from './CommunityVoteQrCode'
 import Preamble from './Preamble'
 import ElipPreamble from './ElipPreamble'
 import Tracking from '../tracking/Container'
@@ -282,7 +282,7 @@ class C extends StandardPage {
     const titleNode = this.renderTitle()
     const labelNode = this.renderLabelNode()
     const subTitleNode = this.renderSubTitle()
-    const memberVoteNode = this.renderMemberVoteQrCode()
+    const communityVoteNode = this.renderCommunityVoteQrCode()
     const { smallSpace } = this.state
     return (
       <Sticky>
@@ -316,7 +316,7 @@ class C extends StandardPage {
                     span={12}
                     style={{ display: 'flex', justifyContent: 'flex-end' }}
                   >
-                    <FixedHeader>{memberVoteNode}</FixedHeader>
+                    <FixedHeader>{communityVoteNode}</FixedHeader>
                   </Col>
                 ) : null}
               </Row>
@@ -327,9 +327,9 @@ class C extends StandardPage {
     )
   }
 
-  renderMemberVoteQrCode() {
+  renderCommunityVoteQrCode() {
     const { data, getMemberVoteUrl } = this.props
-    return <MemberVoteQrCode {...data} getMemberVoteUrl={getMemberVoteUrl} />
+    return <CommunityVoteQrCode {...data} getMemberVoteUrl={getMemberVoteUrl} />
   }
 
   renderTranslationBtn() {

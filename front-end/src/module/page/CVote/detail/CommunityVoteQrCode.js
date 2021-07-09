@@ -3,9 +3,9 @@ import styled from 'styled-components'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
 import { Popover } from 'antd'
-import UploadSvgIcon from '@/module/common/UploadSvgIcon'
+import OpposeSvgIcon from '@/module/common/OpposeSvgIcon'
 
-class MemberVoteQrCode extends Component {
+class CommunityVoteQrCode extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -31,12 +31,12 @@ class MemberVoteQrCode extends Component {
     const content = (
       <Content>
         <div>
-          <QRCode value={this.state.url} size={145} />
+          <QRCode value={this.state.url} size={180} />
           <Tip>{I18N.get('profile.member.vote.qrcodeTip')}</Tip>
           <Tip>{I18N.get('profile.member.vote.community')}</Tip>
         </div>
         <div>
-          <QRCode value={this.state.oldUrl} size={145} />
+          <QRCode value={this.state.oldUrl} size={180} />
           <Tip>{I18N.get('profile.member.vote.qrcodeOldTip')}</Tip>
           <Tip>{I18N.get('profile.member.vote.community')}</Tip>
         </div>
@@ -48,10 +48,10 @@ class MemberVoteQrCode extends Component {
         onVisibleChange={this.handleVisibleChange}
         content={content}
         trigger="click"
-        placement="top"
+        placement="bottom"
       >
         <ScanEntry>
-          <UploadSvgIcon />
+          <OpposeSvgIcon />
           <StyledButton>{I18N.get('profile.member.vote')}</StyledButton>
         </ScanEntry>
       </Popover>
@@ -59,20 +59,23 @@ class MemberVoteQrCode extends Component {
   }
 }
 
-export default MemberVoteQrCode
+export default CommunityVoteQrCode
 
 const Content = styled.div`
-  padding: 16px;
-  min-width: 380px;
+  padding: 28px 24px;
+  min-width: 470px;
   text-align: center;
   display: flex;
   justify-content: space-between;
 `
 const Tip = styled.div`
-  font-size: 13px;
+  font-size: 12px;
   color: #333333;
   margin-top: 16px;
   opacity: 0.8;
+  &:last-child {
+    margin-top: 4px;
+  }
 `
 const ScanEntry = styled.div`
   display: flex;
@@ -81,11 +84,12 @@ const ScanEntry = styled.div`
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 8px rgb(0 0 0 / 15%);
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 100px;
 `
 const StyledButton = styled.span`
-  font-size: 13px;
-  color: #008d85;
-  padding-left: 8px;
+  font-size: 10px;
+  color: #be1313;
 `

@@ -143,9 +143,7 @@ class LoginWithDid extends Component {
 
   handleModalClick = () => {
     const { did, newVersion } = this.state
-    console.log(`did`, did)
     if (!did || !newVersion) return
-    console.log(`newVersion`, newVersion)
     this.props.changeTab('register', did, newVersion)
     this.setState({ modalVisible: false })
   }
@@ -207,9 +205,10 @@ const Wrapper = styled.div`
   text-align: center;
 `
 const StyledButton = styled.span`
-  font-size: 13px;
-  color: #008d85;
-  padding-left: 8px;
+  font-size: 18px;
+  color: #65bda3;
+  padding-left: 10px;
+  display: inline-block;
 `
 const Content = styled.div`
   padding: 16px;
