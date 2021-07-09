@@ -219,9 +219,10 @@ const Content = styled.div`
   justify-content: space-between;
 `
 const Tip = styled.div`
-  font-size: 14px;
-  color: #000;
+  font-size: 13px;
+  color: #333333;
   margin-top: 16px;
+  opacity: 0.8;
 `
 const Notice = styled.div`
   font-size: 16px;

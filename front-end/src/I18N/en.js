@@ -941,16 +941,14 @@ const en = {
   'role.admin.mode': 'Admin Mode',
 
   // Profile
-  'profile.associateDid': 'Associate DID with the new version ELA wallet',
-  'profile.oldAssociateDid': 'Associate DID with an older version ELA wallet',
-  'profile.qrcodeTip': 'Open the new ELA wallet and scan',
-  'profile.qrcodeOldTip': 'Open an older ELA wallet and scan',
+  'profile.associateDid': 'Associate DID with APP',
+  'profile.qrcodeTip': 'scan this with the Essential',
+  'profile.qrcodeOldTip': 'scan this with the ELA Wallet',
   'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
   'profile.skillsets': 'My Skillsets',
   'profile.completeProfile': 'Complete your Profile',
-  'profile.completeProfile.explanation':
-    'Get more tasks and connect with talent all over the world',
+  'profile.completeProfile.explanation': `Get more tasks and connect with talent all over the world`,
   'profile.editProfile': 'Edit Profile',
   'profile.editBasicProfile': 'Edit Basic Profile',
   'profile.editFullProfile': 'Edit Full Profile',
@@ -976,11 +974,9 @@ const en = {
   'profile.profession.MANAGEMENT': 'Management',
   'profile.profession.OTHER': 'Other',
   // 'profile.complete': 'Complete Your Profile',
-  'profile.complete':
-    'Please associate your DID using ELA wallet. [Associate now]',
+  'profile.complete': `Please associate your DID using ELA wallet. [Associate now]`,
   'profile.complete.dismiss': 'Dismiss',
-  'profile.skillsDetails.placeholder':
-    'Explain more about your skills, work experience, etc.',
+  'profile.skillsDetails.placeholder': `Explain more about your skills, work experience, etc.`,
   'profile.motto.placeholder': 'Do you have a life motto?',
   'profile.previous': 'Previous',
   'profile.next': 'Next',
