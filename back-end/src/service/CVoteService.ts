@@ -1831,7 +1831,8 @@ export default class extends Base {
       'newOwnerDID',
       'newAddress',
       'newSecretaryDID',
-      'closeProposalNum'
+      'closeProposalNum',
+      'budget'
     ]
     const isNumber = /^\d*$/.test(id)
     let query: any
