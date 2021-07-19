@@ -1505,7 +1505,7 @@ export default class extends Base {
     let fund = []
     if (budget) {
       _.forEach(budget, (o) => {
-        fund.push(_.omit(o, ['criteria', 'milestoneKey']))
+        fund.push(_.omit(o, ['reasons', 'status', 'milestoneKey']))
       })
     }
 

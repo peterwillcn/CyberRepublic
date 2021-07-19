@@ -1943,6 +1943,13 @@ export default class extends Base {
       )
     }
 
+    let fund = []
+    if (proposal.budget) {
+      _.forEach(proposal.budget, (o) => {
+        fund.push(_.omit(o, ['reasons', 'status', 'milestoneKey']))
+      })
+    }
+
     return _.omit(
       {
         id: proposal.vid,
@@ -1961,8 +1968,10 @@ export default class extends Base {
           'status',
           'voteHistory',
           'notificationEndsHeight',
-          'proposedEndsHeight'
+          'proposedEndsHeight',
+          'budget'
         ]),
+        fund,
         ...notificationResult,
         createdAt: timestamp.second(proposal.createdAt),
         voteResult,
