@@ -583,10 +583,6 @@ export default class extends StandardPage {
                   ))}
                 </Select>
               </FilterItem>
-            </FilterContent>
-          </Col>
-          <Col span={8} className="filter-panel">
-            <FilterContent>
               <FilterItem>
                 <Checkbox
                   checked={underConsideration}
