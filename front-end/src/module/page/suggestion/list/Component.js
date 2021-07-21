@@ -18,7 +18,7 @@ import {
 import rangePickerLocale from 'antd/es/date-picker/locale/zh_CN'
 import URI from 'urijs'
 import I18N from '@/I18N'
-import { loginRedirectWithQuery, logger } from '@/util'
+import { logger } from '@/util'
 import StandardPage from '@/module/page/StandardPage'
 import Footer from '@/module/layout/Footer/Container'
 import SuggestionForm from '@/module/form/SuggestionForm/Container'
@@ -119,12 +119,12 @@ export default class extends StandardPage {
   }
 
   componentDidUpdate() {
-    const {isChangeNext} = this.state
+    const { isChangeNext } = this.state
     if (isChangeNext) {
       window.scrollTo(0, 0)
     }
     if (this.props.location.state === 'return') {
-      window.scrollTo(0,localStorage.getItem('suggestion-scrollY') || 0)
+      window.scrollTo(0, localStorage.getItem('suggestion-scrollY') || 0)
     } else {
       window.scrollTo(0, 0)
     }
@@ -233,7 +233,7 @@ export default class extends StandardPage {
 
     return (
       <div>
-        { popupEndTime < nowDate ? null : <SuggestionPopupNotification />}
+        {popupEndTime < nowDate ? null : <SuggestionPopupNotification />}
         <Meta title="Cyber Republic - Elastos" />
         <div className="suggestion-header">{headerNode}</div>
         <SuggestionContainer className="p_SuggestionList">
@@ -525,8 +525,6 @@ export default class extends StandardPage {
   renderFilterPanel() {
     const {
       referenceStatus,
-      infoNeeded,
-      underConsideration,
       status,
       budgetRequested,
       creationDate,
@@ -537,9 +535,9 @@ export default class extends StandardPage {
       1: I18N.get('suggestion.form.type.newMotion'),
       2: I18N.get('suggestion.form.type.motionAgainst'),
       3: I18N.get('suggestion.form.type.anythingElse'),
-      'CHANGE_PROPOSAL': I18N.get('suggestion.form.type.CHANGE_PROPOSAL'),
-      'CHANGE_SECRETARY': I18N.get('suggestion.form.type.CHANGE_SECRETARY'),
-      'TERMINATE_PROPOSAL': I18N.get('suggestion.form.type.TERMINATE_PROPOSAL')
+      CHANGE_PROPOSAL: I18N.get('suggestion.form.type.CHANGE_PROPOSAL'),
+      CHANGE_SECRETARY: I18N.get('suggestion.form.type.CHANGE_SECRETARY'),
+      TERMINATE_PROPOSAL: I18N.get('suggestion.form.type.TERMINATE_PROPOSAL')
     }
     const lang = localStorage.getItem('lang') || 'en'
     const rangePickerOptions = {}
@@ -549,7 +547,7 @@ export default class extends StandardPage {
     return (
       <FilterPanel>
         <Row type="flex" gutter={10} className="filter">
-          <Col span={8} className="filter-panel">
+          <Col span={12} className="filter-panel">
             <FilterContent>
               <FilterItem>
                 <FilterItemLabel>
@@ -560,11 +558,15 @@ export default class extends StandardPage {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  {_.map(SUGGESTION_STATUS, (value) => (
-                    <Select.Option key={value} value={value}>
-                      {I18N.get(`suggestion.status.${value}`)}
-                    </Select.Option>
-                  ))}
+                  <Select.Option key="ACTIVE" value="ACTIVE">
+                    {I18N.get('suggestion.status.ACTIVE')}
+                  </Select.Option>
+                  <Select.Option
+                    key="UNDER_CONSIDERATION"
+                    value="UNDER_CONSIDERATION"
+                  >
+                    {I18N.get('suggestion.status.underConsideration')}
+                  </Select.Option>
                 </Select>
               </FilterItem>
               <FilterItem>
@@ -585,15 +587,6 @@ export default class extends StandardPage {
               </FilterItem>
               <FilterItem>
                 <Checkbox
-                  checked={underConsideration}
-                  onChange={this.handleUnderConsiderationChange}
-                />
-                <CheckboxText>
-                  {I18N.get('suggestion.tag.type.UNDER_CONSIDERATION')}
-                </CheckboxText>
-              </FilterItem>
-              <FilterItem className="filter-checkbox">
-                <Checkbox
                   checked={referenceStatus}
                   onChange={this.handleReferenceStatusChange}
                 />
@@ -603,7 +596,7 @@ export default class extends StandardPage {
               </FilterItem>
             </FilterContent>
           </Col>
-          <Col span={8} className="filter-panel">
+          <Col span={12} className="filter-panel">
             <FilterContent>
               <FilterItem>
                 <FilterItemLabel>
@@ -720,14 +713,16 @@ export default class extends StandardPage {
     this.setState({
       isChangeNext: false
     })
-    localStorage.setItem('suggestion-scrollY',window.scrollY)
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   renderItem = (data) => {
     const href = `/suggestion/${data._id}`
     const actionsNode = this.renderActionsNode(data, this.refetch)
     const metaNode = this.renderMetaNode(data)
-    const title = <ItemTitle onClick={() => this.openPage(href)}>{data.title}</ItemTitle>
+    const title = (
+      <ItemTitle onClick={() => this.openPage(href)}>{data.title}</ItemTitle>
+    )
     const tagsNode = this.renderTagsNode(data)
     return (
       <div key={data._id} className="item-container">
