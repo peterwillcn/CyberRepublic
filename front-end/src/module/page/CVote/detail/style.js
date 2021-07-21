@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Anchor } from 'antd'
+import { Anchor, Button } from 'antd'
 import { breakPoint } from '@/constants/breakPoint'
 import { text } from '@/constants/color'
 
@@ -198,4 +198,7 @@ export const StyledTabs = styled.div`
     background-color: #1de9b6;
     height: 4px;
   }
+`
+export const StyledButton = styled(Button)`
+  height: 48px !important;
 `

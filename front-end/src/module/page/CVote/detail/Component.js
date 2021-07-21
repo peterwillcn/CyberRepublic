@@ -69,7 +69,8 @@ import {
   Paragraph,
   StyledRow,
   StyledTab,
-  StyledTabs
+  StyledTabs,
+  StyledButton
 } from './style'
 import './style.scss'
 
@@ -762,27 +763,27 @@ class C extends StandardPage {
     if (!canVote) return null
     const { visibleYes, visibleOppose, visibleAbstain } = this.state
     const btnYes = (
-      <Button
+      <StyledButton
         type="primary"
         icon="check-circle"
         onClick={this.showVoteYesModal}
       >
         {I18N.get('council.voting.btnText.yes')}
-      </Button>
+      </StyledButton>
     )
     const btnOppose = (
-      <Button
+      <StyledButton
         type="danger"
         icon="close-circle"
         onClick={this.showVoteOpposeModal}
       >
         {I18N.get('council.voting.btnText.no')}
-      </Button>
+      </StyledButton>
     )
     const btnAbstain = (
-      <Button icon="stop" onClick={this.showVoteAbstainModal}>
+      <StyledButton icon="stop" onClick={this.showVoteAbstainModal}>
         {I18N.get('council.voting.btnText.abstention')}
-      </Button>
+      </StyledButton>
     )
 
     const popOverYes = (
