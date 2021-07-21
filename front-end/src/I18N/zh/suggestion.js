@@ -175,7 +175,7 @@ export default {
     type: {
       UNDER_CONSIDERATION: '委员会正在审议中',
       INFO_NEEDED: '需要更多信息',
-      ADDED_TO_PROPOSAL: '已添加到提案'
+      ADDED_TO_PROPOSAL: '已引用提案'
     }
   },
   msg: {
