@@ -558,12 +558,15 @@ export default class extends StandardPage {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  <Select.Option key="ACTIVE" value="ACTIVE">
+                  <Select.Option
+                    key={SUGGESTION_STATUS.ACTIVE}
+                    value={SUGGESTION_STATUS.ACTIVE}
+                  >
                     {I18N.get('suggestion.status.ACTIVE')}
                   </Select.Option>
                   <Select.Option
-                    key="UNDER_CONSIDERATION"
-                    value="UNDER_CONSIDERATION"
+                    key={SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION}
+                    value={SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION}
                   >
                     {I18N.get('suggestion.status.underConsideration')}
                   </Select.Option>
@@ -794,7 +797,6 @@ export default class extends StandardPage {
     const {
       referenceStatus,
       infoNeeded,
-      underConsideration,
       search,
       filter,
       status,
@@ -817,7 +819,7 @@ export default class extends StandardPage {
     if (infoNeeded) {
       included = SUGGESTION_TAG_TYPE.INFO_NEEDED
     }
-    if (underConsideration) {
+    if (status === SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION) {
       if (_.isEmpty(included)) {
         included = SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
       } else {
@@ -832,7 +834,10 @@ export default class extends StandardPage {
     // sending a boolean to be handled by the backend
     query.referenceStatus = referenceStatus
 
-    if (!_.isEmpty(status)) {
+    if (
+      !_.isEmpty(status) &&
+      status !== SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
+    ) {
       query.status = status
     }
 
