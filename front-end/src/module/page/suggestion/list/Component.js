@@ -928,18 +928,6 @@ const HeaderDiagramContainer = styled.div`
   }
 `
 
-// const ItemTitle = styled(Link)`
-//   font-size: 20px;
-//   color: black;
-//   transition: all 0.3s;
-//   font-weight: 400;
-//   text-decoration: none;
-//   margin: 8px 0;
-//   display: block;
-//   &:hover {
-//     color: $link_color;
-//   }
-// `
 const ItemTitle = styled.a`
   font-size: 20px;
   color: black;
