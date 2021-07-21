@@ -152,14 +152,6 @@ export default class extends StandardPage {
     this.setState({ budgetRequested })
   }
 
-  handleUnderConsiderationChange = (e) => {
-    this.setState({ underConsideration: e.target.checked })
-  }
-
-  handleInfoNeededChange = (e) => {
-    this.setState({ infoNeeded: e.target.checked })
-  }
-
   handleReferenceStatusChange = (e) => {
     this.setState({ referenceStatus: e.target.checked })
   }
