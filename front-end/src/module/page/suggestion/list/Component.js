@@ -785,7 +785,7 @@ export default class extends StandardPage {
 
   onSortByChanged = async (sortBy) => {
     await this.props.onSortByChanged(sortBy)
-    await this.refetch()
+    this.refetch()
   }
 
   /**
