@@ -277,6 +277,7 @@ const en = {
   'suggestion.back': 'Back',
   'suggestion.viewAll': 'View All',
   'suggestion.viewArchived': 'View Archived',
+  'suggestion.viewSigned': 'View Signed',
   'suggestion.mySuggestions': 'My Suggestions',
   'suggestion.all': 'All',
   'suggestion.addedByMe': 'Added by me',

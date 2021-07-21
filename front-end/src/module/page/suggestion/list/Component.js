@@ -78,6 +78,7 @@ export default class extends StandardPage {
     // we use the props from the redux store if its retained
     this.state = {
       showForm: uri.hasQuery('create'),
+      showSigned: false,
       showArchived: false,
       showDidModal: uri.hasQuery('create'),
       showOldData: false,
@@ -280,6 +281,16 @@ export default class extends StandardPage {
               <Button
                 type="link"
                 className="btn-link"
+                onClick={this.toggleSignedList}
+              >
+                {this.state.showSigned === false
+                  ? I18N.get('suggestion.viewSigned')
+                  : I18N.get('suggestion.viewAll')}
+              </Button>
+              <SplitLabel />
+              <Button
+                type="link"
+                className="btn-link"
                 onClick={this.toggleArchivedList}
               >
                 {this.state.showArchived === false
@@ -414,6 +425,19 @@ export default class extends StandardPage {
   toggleArchivedList = async () => {
     await this.setState((prevState) => ({
       showArchived: !prevState.showArchived,
+
+      // go back to page 1 on toggle
+      page: 1,
+      results: 10,
+      total: 0
+    }))
+
+    this.refetch()
+  }
+
+  toggleSignedList = async () => {
+    await this.setState((prevState) => ({
+      showSigned: !prevState.showSigned,
 
       // go back to page 1 on toggle
       page: 1,
@@ -843,6 +867,10 @@ export default class extends StandardPage {
 
     if (this.state.showArchived) {
       query.status = SUGGESTION_STATUS.ARCHIVED
+    }
+
+    if (this.state.showSigned) {
+      query.signed = true
     }
 
     if (!_.isEmpty(budgetRequested) && budgetRequested > 0) {
