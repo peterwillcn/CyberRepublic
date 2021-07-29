@@ -24,9 +24,9 @@ class PaymentSchedule extends Component {
   }
 
   componentDidUpdate() {
-    const {initialValue: value, controVar} = this.props
-    const {changeNum} = this.state
-    if (changeNum !== controVar){
+    const { initialValue: value, controVar } = this.props
+    const { changeNum } = this.state
+    if (changeNum !== controVar) {
       this.setState({
         total: _.get(value, 'budgetAmount') || 0,
         address: (value && value.elaAddress) || '',
@@ -152,6 +152,7 @@ class PaymentSchedule extends Component {
         <Note>{I18N.get(`suggestion.form.note.budget`)}</Note>
         <Section>
           <Label> * {I18N.get('suggestion.budget.address')}</Label>
+          <div>{I18N.get('suggestion.budget.addressTip')}</div>
           <StyledInput
             value={address}
             onChange={(e) => this.handleChange(e, 'address')}
@@ -174,8 +175,8 @@ class PaymentSchedule extends Component {
         ) : null}
         <Section>
           <Label>{`${I18N.get('suggestion.budget.introduction')}`}</Label>
-          {getFieldDecorator('budgetIntro',{
-            initialValue:budgetIntro
+          {getFieldDecorator('budgetIntro', {
+            initialValue: budgetIntro
           })(
             <CodeMirrorEditor
               callback={this.props.callback}

@@ -216,6 +216,7 @@ export default {
     schedule: 'Payment Schedule',
     total: 'Total Budget',
     address: 'ELA Receive Address',
+    addressTip: `To ensure the safe receipt of the proposal funds, please use the ELA wallet address to receive it. Do not use the exchange deposit address!`,
     tip: 'Please add milestone first',
     [SUGGESTION_BUDGET_TYPE.ADVANCE]: 'Project Initiation Payment',
     [SUGGESTION_BUDGET_TYPE.COMPLETION]: 'Project Completion Payment',
