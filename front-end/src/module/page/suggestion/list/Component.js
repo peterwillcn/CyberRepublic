@@ -171,10 +171,14 @@ export default class extends StandardPage {
   handleClearFilter = () => {
     const defaultFiltes = this.props.getDefaultFilters()
     this.setState({ ...defaultFiltes })
+    localStorage.setItem('suggestion-page', 1)
+    const { changePage } = this.props
+    changePage(page)
     this.props.clearFilters()
   }
 
   handleApplyFilter = () => {
+    const { updateFilters, changePage } = this.props
     const {
       referenceStatus,
       infoNeeded,
@@ -187,7 +191,7 @@ export default class extends StandardPage {
       author,
       type
     } = this.state
-    this.props.updateFilters({
+    updateFilters({
       referenceStatus,
       infoNeeded,
       underConsideration,
@@ -199,6 +203,8 @@ export default class extends StandardPage {
       author,
       type
     })
+    changePage(1)
+    localStorage.setItem('suggestion-page', 1)
     this.refetch()
   }
 
