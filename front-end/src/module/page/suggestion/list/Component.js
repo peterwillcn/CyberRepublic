@@ -699,7 +699,7 @@ export default class extends StandardPage {
     // the first onReferenceStatusChanged is the props fn from Container
     await this.setState({ referenceStatus: e.target.checked })
     await onReferenceStatusChanged(e.target.checked)
-    await this.refetch()
+    this.refetch()
   }
 
   renderList() {

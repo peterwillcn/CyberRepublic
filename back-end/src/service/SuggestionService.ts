@@ -578,7 +578,8 @@ export default class extends Base {
       let qryTagsType: any
       if (!_.isEmpty(tagsIncluded)) {
         qryTagsType = { $in: tagsIncluded.split(',') }
-        query.$or.push({ 'tags.type': qryTagsType })
+        // query.$or.push({ 'tags.type': qryTagsType })
+        query['tags.type'] = qryTagsType
       }
       if (referenceStatus === 'true') {
         // if we have another tag selected we only want that tag and referenced suggestions
@@ -586,7 +587,7 @@ export default class extends Base {
       }
 
       if (_.isEmpty(query.$or)) delete query.$or
-      delete query['tags.type']
+      // delete query['tags.type']
     }
 
     // status
