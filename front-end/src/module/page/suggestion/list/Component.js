@@ -135,43 +135,52 @@ export default class extends StandardPage {
   }
 
   handleFilterChange = (filter) => {
-    this.setState({ filter })
+    this.setState({ filter, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleSearchChange = (e) => {
-    this.setState({ search: e.target.value })
+    this.setState({ search: e.target.value, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleStatusChange = (status) => {
-    this.setState({ status })
+    this.setState({ status, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleBudgetRequestedChange = (budgetRequested) => {
-    this.setState({ budgetRequested })
+    this.setState({ budgetRequested, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleReferenceStatusChange = (e) => {
-    this.setState({ referenceStatus: e.target.checked })
+    this.setState({ referenceStatus: e.target.checked, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleCreationDateChange = (creationDate) => {
-    this.setState({ creationDate })
+    this.setState({ creationDate, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleAuthorChange = (e) => {
-    this.setState({ author: e.target.value })
+    this.setState({ author: e.target.value, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleTypeChange = (type) => {
-    this.setState({ type })
+    this.setState({ type, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleClearFilter = () => {
     const defaultFiltes = this.props.getDefaultFilters()
-    this.setState({ ...defaultFiltes })
+    this.setState({ ...defaultFiltes, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
     localStorage.setItem('suggestion-page', 1)
     const { changePage } = this.props
-    changePage(page)
+    changePage(1)
     this.props.clearFilters()
   }
 
@@ -202,6 +211,8 @@ export default class extends StandardPage {
       type
     })
     changePage(1)
+    this.setState({ isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
     localStorage.setItem('suggestion-page', 1)
     this.refetch()
   }
