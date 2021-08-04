@@ -62,8 +62,6 @@ class LoginWithDid extends Component {
       this.timerDid = null
       if (rs.message) {
         message.error(rs.message)
-      } else {
-        message.error('Something went wrong')
       }
       this.setState({ visible: false })
       return
@@ -100,15 +98,13 @@ class LoginWithDid extends Component {
       this.oldTimerDid = null
       if (rs.message) {
         message.error(rs.message)
-      } else {
-        message.error('Something went wrong')
       }
       this.setState({ visible: false })
       return
     }
     if (this._isMounted) {
       clearTimeout(this.oldTimerDid)
-      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
+      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3500)
     }
   }
 
@@ -117,7 +113,7 @@ class LoginWithDid extends Component {
       this.timerDid = setTimeout(this.polling, 3000)
     }
     if (!this.oldTimerDid) {
-      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
+      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3500)
     }
   }
 

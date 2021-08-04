@@ -1027,7 +1027,6 @@ export default class extends Base {
       if (!param.req) {
         return { success: false }
       }
-      console.log('checkElaAuth param.req...', param.req)
       let jwtToken: any
       if (
         param.req.slice(0, constant.oldAccessJwtPrefix.length) ===
@@ -1040,7 +1039,6 @@ export default class extends Base {
       ) {
         jwtToken = param.req.slice(constant.accessJwtPrefix.length)
       }
-      console.log('checkElaAuth jwtToken...', jwtToken)
       if (!jwtToken) {
         return { success: false }
       }
