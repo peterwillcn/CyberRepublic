@@ -122,9 +122,6 @@ export default class extends StandardPage {
   componentDidUpdate() {
     const { isChangeNext } = this.state
     if (isChangeNext) {
-      window.scrollTo(0, 0)
-    }
-    if (this.props.location.state === 'return') {
       window.scrollTo(0, localStorage.getItem('suggestion-scrollY') || 0)
     } else {
       window.scrollTo(0, 0)
@@ -133,7 +130,8 @@ export default class extends StandardPage {
 
   handleFilter = () => {
     const { isVisitableFilter } = this.state
-    this.setState({ isVisitableFilter: !isVisitableFilter })
+    this.setState({ isVisitableFilter: !isVisitableFilter, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleFilterChange = (filter) => {
@@ -736,7 +734,7 @@ export default class extends StandardPage {
   openPage(href) {
     window.open(href, '_blank')
     this.setState({
-      isChangeNext: false
+      isChangeNext: true
     })
     localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
