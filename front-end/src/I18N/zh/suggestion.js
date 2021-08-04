@@ -217,7 +217,7 @@ export default {
     schedule: '支付计划',
     total: '总金额',
     address: 'ELA 接收地址',
-    addressTip: `为确保提案经费安全到账，请使用 ELA 钱包地址接收。请勿使用交易所充币地址!`,
+    addressTip: `为确保提案经费安全到账，请使用 ELA 钱包地址接收。请勿使用交易所充币地址！`,
     tip: '请先添加里程碑',
     [SUGGESTION_BUDGET_TYPE.ADVANCE]: '预支付',
     [SUGGESTION_BUDGET_TYPE.COMPLETION]: '结项款',

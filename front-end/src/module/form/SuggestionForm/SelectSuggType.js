@@ -322,6 +322,9 @@ class SelectSuggType extends Component {
                 {newAddressErr && (
                   <Error>{I18N.get('suggestion.form.error.elaAddress')}</Error>
                 )}
+                <Desc style={{ paddingLeft: 0, marginTop: 8 }}>
+                  {I18N.get('suggestion.budget.addressTip')}
+                </Desc>
               </div>
             )}
           </Section>
