@@ -443,22 +443,22 @@ export default class extends Base {
       const { id, update } = param
       const userId = _.get(this.currentUser, '_id')
       const currDoc = await this.model.getDBInstance().findById(id)
-  
+
       if (!currDoc) {
         throw 'Current document does not exist'
       }
-  
+
       if (_.get(currDoc, 'signature.data')) {
         throw 'Current document does not allow to edit'
       }
-  
+
       if (
         !userId.equals(_.get(currDoc, 'createdBy')) &&
         !permissions.isAdmin(_.get(this.currentUser, 'role'))
       ) {
         throw 'Only owner can edit suggestion'
       }
-  
+
       let doc = _.pick(param, BASE_FIELDS)
       doc.descUpdatedAt = new Date()
       doc = await this.getTypeDoc(param, doc, currDoc)
@@ -470,7 +470,7 @@ export default class extends Base {
       if (currDraft) {
         await this.draftModel.remove({ _id: ObjectId(id) })
       }
-  
+
       if (update) {
         doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
         await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
@@ -503,13 +503,8 @@ export default class extends Base {
       'old'
     ])
 
-    const {
-      sortBy,
-      sortOrder,
-      tagsIncluded,
-      referenceStatus,
-      profileListFor
-    } = param
+    const { sortBy, sortOrder, tagsIncluded, referenceStatus, profileListFor } =
+      param
 
     if (!profileListFor) {
       query.$or = []
@@ -583,7 +578,8 @@ export default class extends Base {
       let qryTagsType: any
       if (!_.isEmpty(tagsIncluded)) {
         qryTagsType = { $in: tagsIncluded.split(',') }
-        query.$or.push({ 'tags.type': qryTagsType })
+        // query.$or.push({ 'tags.type': qryTagsType })
+        query['tags.type'] = qryTagsType
       }
       if (referenceStatus === 'true') {
         // if we have another tag selected we only want that tag and referenced suggestions
@@ -591,7 +587,7 @@ export default class extends Base {
       }
 
       if (_.isEmpty(query.$or)) delete query.$or
-      delete query['tags.type']
+      // delete query['tags.type']
     }
 
     // status
@@ -606,6 +602,12 @@ export default class extends Base {
 
     if (!param.old) {
       query.old = { $exists: false }
+    }
+
+    // signature is existed
+    if (param.signed) {
+      query['signature.data'] = { $exists: true }
+      delete query.signed
     }
 
     // budget
@@ -760,13 +762,8 @@ export default class extends Base {
       'tagsIncluded',
       'referenceStatus'
     ])
-    const {
-      sortBy,
-      sortOrder,
-      tagsIncluded,
-      referenceStatus,
-      profileListFor
-    } = param
+    const { sortBy, sortOrder, tagsIncluded, referenceStatus, profileListFor } =
+      param
 
     if (!profileListFor) {
       query.$or = []

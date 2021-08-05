@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import styled from 'styled-components'
-import { Popover, Spin, Divider, message } from 'antd'
+import { Popover, Spin, message, Modal, Button } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
+import ScanSvgIcon from '@/module/common/ScanSvgIcon'
 
 class LoginWithDid extends Component {
   constructor(props) {
@@ -11,28 +12,26 @@ class LoginWithDid extends Component {
       url: '',
       oldUrl: '',
       visible: false,
-      oldUrlVisible: false
+      modalVisible: false,
+      did: '',
+      newVersion: ''
     }
     this.timerDid = null
     this.oldTimerDid = null
   }
 
-  // elaQrCode = () => {
-  //   const { url } = this.state
-  //   return (
-  //     <Content>
-  //       {url ? <QRCode value={url} size={180} /> : <Spin />}
-  //       <Tip>{I18N.get('login.qrcodeTip')}</Tip>
-  //     </Content>
-  //   )
-  // }
-
-  elaOldQrCode = () => {
-    const { oldUrl } = this.state
+  elaQrCode = () => {
+    const { oldUrl, url } = this.state
     return (
       <Content>
-        {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
-        <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
+        <div>
+          {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
+          <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
+        </div>
+        <div>
+          {url ? <QRCode value={url} size={180} /> : <Spin />}
+          <Tip>{I18N.get('login.qrcodeTip')}</Tip>
+        </div>
       </Content>
     )
   }
@@ -45,10 +44,16 @@ class LoginWithDid extends Component {
     const rs = await this.props.checkElaAuth(url)
     if (rs && rs.success === true) {
       clearTimeout(this.timerDid)
+      clearTimeout(this.oldTimerDid)
       this.timerDid = null
+      this.oldTimerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did, rs.newVersion)
-        this.setState({ visible: false })
+        this.setState({
+          visible: false,
+          modalVisible: true,
+          did: rs.did,
+          newVersion: rs.newVersion
+        })
       }
       return
     }
@@ -57,8 +62,6 @@ class LoginWithDid extends Component {
       this.timerDid = null
       if (rs.message) {
         message.error(rs.message)
-      } else {
-        message.error('Something went wrong')
       }
       this.setState({ visible: false })
       return
@@ -76,11 +79,17 @@ class LoginWithDid extends Component {
     const { oldUrl } = this.state
     const rs = await this.props.checkElaAuth(oldUrl)
     if (rs && rs.success === true) {
+      clearTimeout(this.timerDid)
       clearTimeout(this.oldTimerDid)
+      this.timerDid = null
       this.oldTimerDid = null
       if (rs.did) {
-        this.props.changeTab('register', rs.did, rs.newVersion)
-        this.setState({ oldUrlVisible: false })
+        this.setState({
+          visible: false,
+          modalVisible: true,
+          did: rs.did,
+          newVersion: rs.newVersion
+        })
       }
       return
     }
@@ -89,36 +98,23 @@ class LoginWithDid extends Component {
       this.oldTimerDid = null
       if (rs.message) {
         message.error(rs.message)
-      } else {
-        message.error('Something went wrong')
       }
-      this.setState({ oldUrlVisible: false })
+      this.setState({ visible: false })
       return
     }
     if (this._isMounted) {
       clearTimeout(this.oldTimerDid)
-      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
+      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3500)
     }
   }
 
-  // handleClick = () => {
-  //   if (this.oldTimerDid) {
-  //     clearTimeout(this.oldTimerDid)
-  //   }
-  //   if (this.timerDid) {
-  //     return
-  //   }
-  //   this.timerDid = setTimeout(this.polling, 3000)
-  // }
-
-  handleOldUrlClick = () => {
-    if (this.timerDid) {
-      clearTimeout(this.timerDid)
+  handleClick = () => {
+    if (!this.timerDid) {
+      this.timerDid = setTimeout(this.polling, 3000)
     }
-    if (this.oldTimerDid) {
-      return
+    if (!this.oldTimerDid) {
+      this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3500)
     }
-    this.oldTimerDid = setTimeout(this.pollingWithOldUrl, 3000)
   }
 
   componentDidMount = async () => {
@@ -138,42 +134,61 @@ class LoginWithDid extends Component {
   }
 
   handleVisibleChange = (visible) => {
-    this.setState({ visible, oldUrlVisible: false })
+    this.setState({ visible })
   }
 
-  handleOldUrlVisibleChange = (visible) => {
-    this.setState({ oldUrlVisible: visible, visible: false })
+  handleModalClick = () => {
+    const { did, newVersion } = this.state
+    if (!did || !newVersion) return
+    this.props.changeTab('register', did, newVersion)
+    this.setState({ modalVisible: false })
+  }
+
+  hideModal = () => {
+    this.setState({ modalVisible: false })
+  }
+
+  modalContent = () => {
+    return (
+      <StyledContent>
+        <Notice>{I18N.get('login.modal.content')}</Notice>
+        <AntButton
+          className="cr-btn cr-btn-primary"
+          onClick={this.handleModalClick}
+        >
+          {I18N.get('login.modal.register')}
+        </AntButton>
+      </StyledContent>
+    )
   }
 
   render() {
+    const { visible, modalVisible } = this.state
     return (
       <Wrapper>
-        <Divider>
-          <Text>OR</Text>
-        </Divider>
-        {/* <Popover
-          visible={this.state.visible}
+        <Popover
+          visible={visible}
           onVisibleChange={this.handleVisibleChange}
           content={this.elaQrCode()}
           trigger="click"
           placement="top"
         >
-          <Button onClick={this.handleClick}>
-            {I18N.get('login.withDid')}
-          </Button>
+          <ScanEntry>
+            <ScanSvgIcon />
+            <StyledButton onClick={this.handleClick}>
+              {I18N.get('login.withDid')}
+            </StyledButton>
+          </ScanEntry>
         </Popover>
-        <br /> */}
-        <Popover
-          visible={this.state.oldUrlVisible}
-          onVisibleChange={this.handleOldUrlVisibleChange}
-          content={this.elaOldQrCode()}
-          trigger="click"
-          placement="top"
+        <Modal
+          maskClosable={false}
+          visible={modalVisible}
+          onCancel={this.hideModal}
+          footer={null}
+          width={500}
         >
-          <Button onClick={this.handleOldUrlClick}>
-            {I18N.get('login.withOldWallet')}
-          </Button>
-        </Popover>
+          {this.modalContent()}
+        </Modal>
       </Wrapper>
     )
   }
@@ -185,27 +200,43 @@ const Wrapper = styled.div`
   margin-top: 32px;
   text-align: center;
 `
-const Text = styled.div`
-  font-size: 14px;
-  color: #031e28;
-  opacity: 0.5;
-`
-const Button = styled.span`
+const StyledButton = styled.span`
+  font-size: 18px;
+  color: #65bda3;
+  padding-left: 10px;
   display: inline-block;
-  margin-bottom: 16px;
-  font-size: 13px;
-  border: 1px solid #008d85;
-  color: #008d85;
-  text-align: center;
-  padding: 6px 16px;
-  cursor: pointer;
 `
 const Content = styled.div`
   padding: 16px;
+  min-width: 460px;
   text-align: center;
+  display: flex;
+  justify-content: space-between;
 `
 const Tip = styled.div`
-  font-size: 14px;
-  color: #000;
+  font-size: 13px;
+  color: #333333;
   margin-top: 16px;
+  opacity: 0.8;
+`
+const Notice = styled.div`
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 24px;
+  text-align: left;
+`
+const StyledContent = styled.div`
+  display: flex;
+  flex-direction: column;
+  min-width: 360px;
+  align-items: center;
+`
+const AntButton = styled(Button)`
+  width: 100px;
+`
+const ScanEntry = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 `

@@ -51,7 +51,7 @@ const en = {
       title: 'Council',
       submenu: {
         incumbent: 'Incumbent',
-        candidate: 'Candidate',
+        candidate: 'Candidate'
       }
     },
     whitepaper: 'Whitepaper',
@@ -120,10 +120,11 @@ const en = {
   2306: 'Communities',
   'profile.suggestion': 'My Suggestions',
 
-  'login.access.forum': 'Please login or create a Cyber Republic account to access the forum',
+  'login.access.forum': `Please login or create a Cyber Republic account to access the forum`,
   'login.success': 'Welcome back',
   'logout.success': 'logout success',
-  'login.noBindingDID': 'Please register an account or log in with an existing account',
+  'login.noBindingDID':
+    'Please register an account or log in with an existing account',
 
   'mentions.notFound': 'User not found',
 
@@ -148,16 +149,16 @@ const en = {
 
   // Pop-up Announcement
   'popup.changes.title': 'Important CR Announcement',
-  'popup.changes.2018-12-26.1': 'After in-depth discussions by the Council and Elastos members, we will be revising the website in the near future to better embody the concept of openness, transparency and community autonomy in Cyber Republic.',
-  'popup.changes.2018-12-26.2': 'CR100/CRcles/Ambassadors on the CR website will be temporarily suspended (stop accepting new submissions and applications). For the ongoing community activities and CR100 projects, specific plans will be given in the next few weeks.',
-  'popup.changes.2018-12-26.3': 'A new Cyber Republic forum will be launched Dec 31, 2018, we encourage everyone to use that to voice their questions and concerns. We will also invite everyone from Discord to use the forum, this is mainly due to Discord being inaccessible by the Chinese community.',
-  'popup.changes.2018-12-26.4': 'You can also automatically login to the forum through the link in the top right:',
-  'popup.changes.2018-12-26.5': 'The updated CR website will be relaunched on January 15, 2019, more information can be found at',
-  'popup.changes.2018-12-26.blog_link': 'https://blog.cyberrepublic.org/2018/12/26/important-cyber-republic-announcement',
-  
+  'popup.changes.2018-12-26.1': `After in-depth discussions by the Council and Elastos members, we will be revising the website in the near future to better embody the concept of openness, transparency and community autonomy in Cyber Republic.`,
+  'popup.changes.2018-12-26.2': `CR100/CRcles/Ambassadors on the CR website will be temporarily suspended (stop accepting new submissions and applications). For the ongoing community activities and CR100 projects, specific plans will be given in the next few weeks.`,
+  'popup.changes.2018-12-26.3': `A new Cyber Republic forum will be launched Dec 31, 2018, we encourage everyone to use that to voice their questions and concerns. We will also invite everyone from Discord to use the forum, this is mainly due to Discord being inaccessible by the Chinese community.`,
+  'popup.changes.2018-12-26.4': `You can also automatically login to the forum through the link in the top right:`,
+  'popup.changes.2018-12-26.5': `The updated CR website will be relaunched on January 15, 2019, more information can be found at`,
+  'popup.changes.2018-12-26.blog_link': `https://blog.cyberrepublic.org/2018/12/26/important-cyber-republic-announcement`,
+
   'popup.suggestion.title': 'Important notice',
   'popup.suggestion.member': 'Dear CR members:',
-  'popup.suggestion.content': 'The Cyber Republic Consensus will be launched at 10:00 am, June 10th, 2020, Beijing time. Accordingly the CR website will be upgraded recent days. The Suggestion function will be suspended and restarted when the new council is elected. Newly submitted suggestions will be handled by the new council.',
+  'popup.suggestion.content': `The Cyber Republic Consensus will be launched at 10:00 am, June 10th, 2020, Beijing time. Accordingly the CR website will be upgraded recent days. The Suggestion function will be suspended and restarted when the new council is elected. Newly submitted suggestions will be handled by the new council.`,
   'popup.suggestion.team': 'CR website developer team',
 
   // LoginForm
@@ -171,11 +172,11 @@ const en = {
   'login.reset': 'Reset password',
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
-  'login.withDid': 'Log in with the new version ELA wallet',
-  'login.withOldWallet': 'Log in with ELA wallet',
-  'login.qrcodeTip': 'Open the new version ELA wallet and scan to log in.',
-  'login.qrcodeOldTip': 'Open ELA wallet and scan to log in.',
-
+  'login.withDid': 'Log in with APP',
+  'login.qrcodeTip': 'Scan this with the Essential',
+  'login.qrcodeOldTip': `Scan this with the ELA Wallet`,
+  'login.modal.register': 'Register',
+  'login.modal.content': 'Your DID does not register the CR website',
   // Logout
   'logout.title': 'Are you sure you want to logout?',
 
@@ -187,7 +188,7 @@ const en = {
   // RegisterFrom
   'register.title': 'Become a Contributor',
   'register.description_1': 'This will only take a few seconds.',
-  'register.description_2': 'As a member you can sign up for bounties on Cyber Republic.',
+  'register.description_2': `As a member you can sign up for bounties on Cyber Republic.`,
   'register.required': 'Required Fields',
   'register.error.code': 'The code you entered does not match',
   'register.error.passwords': 'Two passwords you entered do not match',
@@ -276,6 +277,7 @@ const en = {
   'suggestion.back': 'Back',
   'suggestion.viewAll': 'View All',
   'suggestion.viewArchived': 'View Archived',
+  'suggestion.viewSigned': 'View Signed',
   'suggestion.mySuggestions': 'My Suggestions',
   'suggestion.all': 'All',
   'suggestion.addedByMe': 'Added by me',
@@ -314,7 +316,7 @@ const en = {
   'suggestion.form.fields.duplicate.button': 'Duplicate existing suggestion',
 
   // social share
-  'socialShare.wechat.desc': 'Scan QR code below using WeChat, then share this web page with your WeChat friends.',
+  'socialShare.wechat.desc': `Scan QR code below using WeChat, then share this web page with your WeChat friends.`,
 
   // Suggestion Button Text
   'suggestion.btnText.edit': 'Edit Suggestion',
@@ -386,13 +388,13 @@ const en = {
   'communities.form.name': 'Name',
   'communities.form.leader': 'Leader',
   'communities.form.organizer': 'Organizer',
-  'communities.form.required':'This field is required',
+  'communities.form.required': 'This field is required',
   'communities.form.country.placeholder': 'Please select a country',
   'communities.form.leader.placeholder': 'Please select a member',
   'communities.form.add.success': 'Add new country successfully',
   'communities.form.add.error': 'Error while add country',
   'communities.form.organizer.change': 'Change Organizer',
-  
+
   'communities.organizer.has': 'Has Organizer(s)',
   'communities.organizer.needs': 'Needs an Organizer',
 
@@ -841,10 +843,10 @@ const en = {
   'council.voting.status': 'Status',
   'council.voting.createdAt': 'Created',
   'council.voting.proposedAt': 'Proposed',
-  'council.voting.chainStatus.chained':'Chained',
-  'council.voting.chainStatus.chaining':'Chaining',
-  'council.voting.chainStatus.unchain':'UnChain',
-  'council.voting.chainStatus.failed':'Failed',
+  'council.voting.chainStatus.chained': 'Chained',
+  'council.voting.chainStatus.chaining': 'Chaining',
+  'council.voting.chainStatus.unchain': 'UnChain',
+  'council.voting.chainStatus.failed': 'Failed',
 
   'council.voting.type.support': 'Yes',
   'council.voting.type.reject': 'No',
@@ -883,10 +885,10 @@ const en = {
   'council.voting.voteResult.all': 'All',
   'council.voting.voteResult.unvoted': 'Unvoted by me',
 
-  'council.voting.voteResult.onchain':'Vote onchain',
-  
+  'council.voting.voteResult.onchain': 'Vote onchain',
+
   'council.voting.viewHistory.btn': 'Voting history',
-  'council.voting.viewHistory.current':'Current Voting',
+  'council.voting.viewHistory.current': 'Current Voting',
 
   // Landing
   'landing.cr': 'Cyber Republic',
@@ -940,16 +942,14 @@ const en = {
   'role.admin.mode': 'Admin Mode',
 
   // Profile
-  'profile.associateDid': 'Associate DID with the new version ELA wallet',
-  'profile.oldAssociateDid': 'Associate DID with an older version ELA wallet',
-  'profile.qrcodeTip': 'Open the new ELA wallet and scan',
-  'profile.qrcodeOldTip': 'Open an older ELA wallet and scan',
+  'profile.associateDid': 'Associate DID with APP',
+  'profile.qrcodeTip': 'Scan this with the Essential',
+  'profile.qrcodeOldTip': 'Scan this with the ELA Wallet',
   'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
   'profile.skillsets': 'My Skillsets',
   'profile.completeProfile': 'Complete your Profile',
-  'profile.completeProfile.explanation':
-    'Get more tasks and connect with talent all over the world',
+  'profile.completeProfile.explanation': `Get more tasks and connect with talent all over the world`,
   'profile.editProfile': 'Edit Profile',
   'profile.editBasicProfile': 'Edit Basic Profile',
   'profile.editFullProfile': 'Edit Full Profile',
@@ -975,10 +975,9 @@ const en = {
   'profile.profession.MANAGEMENT': 'Management',
   'profile.profession.OTHER': 'Other',
   // 'profile.complete': 'Complete Your Profile',
-  'profile.complete': 'Please associate your DID using ELA wallet. [Associate now]',
+  'profile.complete': `Please associate your DID using ELA wallet. [Associate now]`,
   'profile.complete.dismiss': 'Dismiss',
-  'profile.skillsDetails.placeholder':
-    'Explain more about your skills, work experience, etc.',
+  'profile.skillsDetails.placeholder': `Explain more about your skills, work experience, etc.`,
   'profile.motto.placeholder': 'Do you have a life motto?',
   'profile.previous': 'Previous',
   'profile.next': 'Next',
@@ -1050,8 +1049,11 @@ const en = {
   'profile.submission.table.type': 'Type',
   'profile.submission.table.created': 'Created',
 
-  'profile.member.vote.qrcodeTip':'Open the new version ELA wallet and scan vote (for community review)',
-  'profile.member.vote.qrcodeOldTip':'Open ELA wallet and scan vote (for community review)',
+  'profile.member.vote': 'Oppose',
+  'profile.member.vote.qrcodeTip': `Scan this with the Essential`,
+  'profile.member.vote.qrcodeOldTip': `Scan this with the ELA Wallet`,
+  'profile.member.vote.community': `(for community review)`,
+
   'profile.forms.table.header.title': 'Title',
   'profile.forms.table.header.name': 'Name',
   'profile.forms.table.header.campaign': 'Campaign',
@@ -1401,7 +1403,7 @@ const en = {
   'from.SuggestionForm.title': 'Relevance Detail',
   'from.SuggestionForm.proposal': 'Proposal #',
   'from.SuggestionForm.detail': 'Relevance Detail',
-  
+
   'btn.CopyHash': 'Copy successful',
 
   // CR Video / Earn ELA page
@@ -1627,7 +1629,7 @@ const en = {
     did: 'DID',
     no1: {
       name: 'Alex Shipp',
-      intro: 'Elastos Foundation Writer, Era of Quantum Wealth co-author, Quantum Wealth Supernode Owner, without a home base.',
+      intro: `Elastos Foundation Writer, Era of Quantum Wealth co-author, Quantum Wealth Supernode Owner, without a home base.`,
       email: 'ashipp37@gmail.com'
     },
     no2: {
@@ -1637,7 +1639,7 @@ const en = {
     },
     no3: {
       name: 'Feng Zhang',
-      intro: 'Lawyer, Founder of Digital-Era Blockchain Service Alliance, Co-Founder of Bit University, based in Shanghai',
+      intro: `Lawyer, Founder of Digital-Era Blockchain Service Alliance, Co-Founder of Bit University, based in Shanghai`,
       email: '41059324@qq.com'
     },
     rebecca: {

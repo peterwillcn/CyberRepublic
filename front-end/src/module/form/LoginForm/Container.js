@@ -8,7 +8,7 @@ message.config({ top: 100 })
 
 export default createContainer(
   Component,
-  state => ({
+  (state) => ({
     ...state.user.login_form,
     language: state.language
   }),
@@ -44,9 +44,9 @@ export default createContainer(
       async checkElaAuth(qrcodeStr) {
         try {
           const rs = await userService.checkElaAuth(qrcodeStr)
-          if (rs && rs.did) {
-            message.info(I18N.get('login.noBindingDID'))
-          }
+          // if (rs && rs.did) {
+          //   message.info(I18N.get('login.noBindingDID'))
+          // }
           if (rs && rs.success && rs.username) {
             message.success(`${I18N.get('login.success')}, ${rs.username}`)
             const loginRedirect = sessionStorage.getItem('loginRedirect')

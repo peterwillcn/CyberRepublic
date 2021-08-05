@@ -4,6 +4,7 @@ import { Popover, Spin, message } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
 import ExternalLinkSvg from './ExternalLinkSvg'
+import ScanSvgIcon from '@/module/common/ScanSvgIcon'
 
 class ProfileDid extends Component {
   constructor(props) {
@@ -19,21 +20,17 @@ class ProfileDid extends Component {
   }
 
   elaQrCode = () => {
-    const { url } = this.state
+    const { oldUrl, url } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={180} /> : <Spin />}
-        <Tip>{I18N.get('profile.qrcodeTip')}</Tip>
-      </Content>
-    )
-  }
-
-  elaOldQrCode = () => {
-    const { oldUrl } = this.state
-    return (
-      <Content>
-        {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
-        <Tip>{I18N.get('profile.qrcodeOldTip')}</Tip>
+        <div>
+          {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
+          <Tip>{I18N.get('profile.qrcodeOldTip')}</Tip>
+        </div>
+        <div>
+          {url ? <QRCode value={url} size={180} /> : <Spin />}
+          <Tip>{I18N.get('profile.qrcodeTip')}</Tip>
+        </div>
       </Content>
     )
   }
@@ -46,12 +43,16 @@ class ProfileDid extends Component {
     if (rs && rs.success) {
       clearTimeout(this.timerDid)
       this.timerDid = null
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = null
       this.setState({ url: '', visible: false })
       return
     }
     if (rs && rs.success === false) {
       clearTimeout(this.timerDid)
       this.timerDid = null
+      clearTimeout(this.oldTimerDid)
+      this.oldTimerDid = null
       if (rs.message) {
         message.error(rs.message)
       } else {
@@ -74,18 +75,22 @@ class ProfileDid extends Component {
     if (rs && rs.success) {
       clearTimeout(this.oldTimerDid)
       this.oldTimerDid = null
-      this.setState({ oldUrl: '', oldUrlVisible: false })
+      clearTimeout(this.timerDid)
+      this.timerDid = null
+      this.setState({ oldUrl: '', visible: false })
       return
     }
     if (rs && rs.success === false) {
       clearTimeout(this.oldTimerDid)
       this.oldTimerDid = null
+      clearTimeout(this.timerDid)
+      this.timerDid = null
       if (rs.message) {
         message.error(rs.message)
       } else {
         message.error('Something went wrong')
       }
-      this.setState({ oldUrlVisible: false })
+      this.setState({ visible: false })
       return
     }
     if (this._isMounted) {
@@ -95,23 +100,12 @@ class ProfileDid extends Component {
   }
 
   handleAssociate = () => {
-    if (this.oldTimerDid) {
-      clearTimeout(this.oldTimerDid)
+    if (!this.timerDid) {
+      this.timerDid = setTimeout(this.pollingDid, 3000)
     }
-    if (this.timerDid) {
-      return
+    if (!this.oldTimerDid) {
+      this.oldTimerDid = setTimeout(this.pollingDidWithOldUrl, 3000)
     }
-    this.timerDid = setTimeout(this.pollingDid, 3000)
-  }
-
-  handleOldAssociate = () => {
-    if (this.timerDid) {
-      clearTimeout(this.timerDid)
-    }
-    if (this.oldTimerDid) {
-      return
-    }
-    this.oldTimerDid = setTimeout(this.pollingDidWithOldUrl, 3000)
   }
 
   componentDidMount = async () => {
@@ -131,11 +125,7 @@ class ProfileDid extends Component {
   }
 
   handleVisibleChange = (visible) => {
-    this.setState({ visible, oldUrlVisible: false })
-  }
-
-  handleOldUrlVisibleChange = (visible) => {
-    this.setState({ oldUrlVisible: visible, visible: false })
+    this.setState({ visible })
   }
 
   render() {
@@ -163,7 +153,7 @@ class ProfileDid extends Component {
     } else {
       return (
         <Fragment>
-          {/* <Popover
+          <Popover
             content={this.elaQrCode()}
             trigger="click"
             placement="top"
@@ -171,19 +161,8 @@ class ProfileDid extends Component {
             onVisibleChange={this.handleVisibleChange}
           >
             <Button onClick={this.handleAssociate}>
-              {I18N.get('profile.associateDid')}
-            </Button>
-          </Popover>
-          <br /> */}
-          <Popover
-            content={this.elaOldQrCode()}
-            trigger="click"
-            placement="top"
-            visible={this.state.oldUrlVisible}
-            onVisibleChange={this.handleOldUrlVisibleChange}
-          >
-            <Button onClick={this.handleOldAssociate}>
-              {I18N.get('profile.oldAssociateDid')}
+              <ScanSvgIcon color="#ffffff" width={20} height={20} />
+              <Text>{I18N.get('profile.associateDid')}</Text>
             </Button>
           </Popover>
         </Fragment>
@@ -195,23 +174,31 @@ class ProfileDid extends Component {
 export default ProfileDid
 
 const Button = styled.span`
-  display: inline-block;
   margin-bottom: 16px;
-  font-size: 13px;
-  border: 1px solid #008d85;
-  color: #008d85;
+  font-size: 14px;
+  color: #ffffff;
   text-align: center;
-  padding: 6px 16px;
+  padding: 14px 16px;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #65bda3;
+  border-radius: 8px;
+  width: 240px;
 `
 const Content = styled.div`
   padding: 16px;
+  min-width: 460px;
   text-align: center;
+  display: flex;
+  justify-content: space-between;
 `
 const Tip = styled.div`
-  font-size: 14px;
-  color: #000;
+  font-size: 13px;
+  color: #333333;
   margin-top: 16px;
+  opacity: 0.8;
 `
 const Did = styled.div`
   line-height: 32px;
@@ -223,4 +210,8 @@ const Did = styled.div`
       text-decoration: none;
     }
   }
+`
+const Text = styled.span`
+  padding-left: 8px;
+  opacity: 0.8;
 `

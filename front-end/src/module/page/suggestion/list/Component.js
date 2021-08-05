@@ -18,7 +18,7 @@ import {
 import rangePickerLocale from 'antd/es/date-picker/locale/zh_CN'
 import URI from 'urijs'
 import I18N from '@/I18N'
-import { loginRedirectWithQuery, logger } from '@/util'
+import { logger } from '@/util'
 import StandardPage from '@/module/page/StandardPage'
 import Footer from '@/module/layout/Footer/Container'
 import SuggestionForm from '@/module/form/SuggestionForm/Container'
@@ -78,6 +78,7 @@ export default class extends StandardPage {
     // we use the props from the redux store if its retained
     this.state = {
       showForm: uri.hasQuery('create'),
+      showSigned: false,
       showArchived: false,
       showDidModal: uri.hasQuery('create'),
       showOldData: false,
@@ -119,12 +120,9 @@ export default class extends StandardPage {
   }
 
   componentDidUpdate() {
-    const {isChangeNext} = this.state
+    const { isChangeNext } = this.state
     if (isChangeNext) {
-      window.scrollTo(0, 0)
-    }
-    if (this.props.location.state === 'return') {
-      window.scrollTo(0,localStorage.getItem('suggestion-scrollY') || 0)
+      window.scrollTo(0, localStorage.getItem('suggestion-scrollY') || 0)
     } else {
       window.scrollTo(0, 0)
     }
@@ -132,56 +130,62 @@ export default class extends StandardPage {
 
   handleFilter = () => {
     const { isVisitableFilter } = this.state
-    this.setState({ isVisitableFilter: !isVisitableFilter })
+    this.setState({ isVisitableFilter: !isVisitableFilter, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleFilterChange = (filter) => {
-    this.setState({ filter })
+    this.setState({ filter, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleSearchChange = (e) => {
-    this.setState({ search: e.target.value })
+    this.setState({ search: e.target.value, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleStatusChange = (status) => {
-    this.setState({ status })
+    this.setState({ status, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleBudgetRequestedChange = (budgetRequested) => {
-    this.setState({ budgetRequested })
-  }
-
-  handleUnderConsiderationChange = (e) => {
-    this.setState({ underConsideration: e.target.checked })
-  }
-
-  handleInfoNeededChange = (e) => {
-    this.setState({ infoNeeded: e.target.checked })
+    this.setState({ budgetRequested, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleReferenceStatusChange = (e) => {
-    this.setState({ referenceStatus: e.target.checked })
+    this.setState({ referenceStatus: e.target.checked, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleCreationDateChange = (creationDate) => {
-    this.setState({ creationDate })
+    this.setState({ creationDate, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleAuthorChange = (e) => {
-    this.setState({ author: e.target.value })
+    this.setState({ author: e.target.value, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleTypeChange = (type) => {
-    this.setState({ type })
+    this.setState({ type, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   handleClearFilter = () => {
     const defaultFiltes = this.props.getDefaultFilters()
-    this.setState({ ...defaultFiltes })
+    this.setState({ ...defaultFiltes, isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
+    localStorage.setItem('suggestion-page', 1)
+    const { changePage } = this.props
+    changePage(1)
     this.props.clearFilters()
   }
 
   handleApplyFilter = () => {
+    const { updateFilters, changePage } = this.props
     const {
       referenceStatus,
       infoNeeded,
@@ -194,7 +198,7 @@ export default class extends StandardPage {
       author,
       type
     } = this.state
-    this.props.updateFilters({
+    updateFilters({
       referenceStatus,
       infoNeeded,
       underConsideration,
@@ -206,6 +210,10 @@ export default class extends StandardPage {
       author,
       type
     })
+    changePage(1)
+    this.setState({ isChangeNext: true })
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
+    localStorage.setItem('suggestion-page', 1)
     this.refetch()
   }
 
@@ -233,7 +241,7 @@ export default class extends StandardPage {
 
     return (
       <div>
-        { popupEndTime < nowDate ? null : <SuggestionPopupNotification />}
+        {popupEndTime < nowDate ? null : <SuggestionPopupNotification />}
         <Meta title="Cyber Republic - Elastos" />
         <div className="suggestion-header">{headerNode}</div>
         <SuggestionContainer className="p_SuggestionList">
@@ -277,6 +285,16 @@ export default class extends StandardPage {
               xl={12}
               style={{ paddingBottom: 24, textAlign: 'right' }}
             >
+              <Button
+                type="link"
+                className="btn-link"
+                onClick={this.toggleSignedList}
+              >
+                {this.state.showSigned === false
+                  ? I18N.get('suggestion.viewSigned')
+                  : I18N.get('suggestion.viewAll')}
+              </Button>
+              <SplitLabel />
               <Button
                 type="link"
                 className="btn-link"
@@ -424,6 +442,19 @@ export default class extends StandardPage {
     this.refetch()
   }
 
+  toggleSignedList = async () => {
+    await this.setState((prevState) => ({
+      showSigned: !prevState.showSigned,
+
+      // go back to page 1 on toggle
+      page: 1,
+      results: 10,
+      total: 0
+    }))
+
+    this.refetch()
+  }
+
   viewOldData = async () => {
     await this.setState((state) => ({
       showOldData: !state.showOldData,
@@ -525,8 +556,6 @@ export default class extends StandardPage {
   renderFilterPanel() {
     const {
       referenceStatus,
-      infoNeeded,
-      underConsideration,
       status,
       budgetRequested,
       creationDate,
@@ -537,9 +566,9 @@ export default class extends StandardPage {
       1: I18N.get('suggestion.form.type.newMotion'),
       2: I18N.get('suggestion.form.type.motionAgainst'),
       3: I18N.get('suggestion.form.type.anythingElse'),
-      'CHANGE_PROPOSAL': I18N.get('suggestion.form.type.CHANGE_PROPOSAL'),
-      'CHANGE_SECRETARY': I18N.get('suggestion.form.type.CHANGE_SECRETARY'),
-      'TERMINATE_PROPOSAL': I18N.get('suggestion.form.type.TERMINATE_PROPOSAL')
+      CHANGE_PROPOSAL: I18N.get('suggestion.form.type.CHANGE_PROPOSAL'),
+      CHANGE_SECRETARY: I18N.get('suggestion.form.type.CHANGE_SECRETARY'),
+      TERMINATE_PROPOSAL: I18N.get('suggestion.form.type.TERMINATE_PROPOSAL')
     }
     const lang = localStorage.getItem('lang') || 'en'
     const rangePickerOptions = {}
@@ -549,7 +578,7 @@ export default class extends StandardPage {
     return (
       <FilterPanel>
         <Row type="flex" gutter={10} className="filter">
-          <Col span={8} className="filter-panel">
+          <Col span={12} className="filter-panel">
             <FilterContent>
               <FilterItem>
                 <FilterItemLabel>
@@ -560,11 +589,18 @@ export default class extends StandardPage {
                   value={status}
                   onChange={this.handleStatusChange}
                 >
-                  {_.map(SUGGESTION_STATUS, (value) => (
-                    <Select.Option key={value} value={value}>
-                      {I18N.get(`suggestion.status.${value}`)}
-                    </Select.Option>
-                  ))}
+                  <Select.Option
+                    key={SUGGESTION_STATUS.ACTIVE}
+                    value={SUGGESTION_STATUS.ACTIVE}
+                  >
+                    {I18N.get('suggestion.status.ACTIVE')}
+                  </Select.Option>
+                  <Select.Option
+                    key={SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION}
+                    value={SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION}
+                  >
+                    {I18N.get('suggestion.status.underConsideration')}
+                  </Select.Option>
                 </Select>
               </FilterItem>
               <FilterItem>
@@ -583,20 +619,7 @@ export default class extends StandardPage {
                   ))}
                 </Select>
               </FilterItem>
-            </FilterContent>
-          </Col>
-          <Col span={8} className="filter-panel">
-            <FilterContent>
               <FilterItem>
-                <Checkbox
-                  checked={underConsideration}
-                  onChange={this.handleUnderConsiderationChange}
-                />
-                <CheckboxText>
-                  {I18N.get('suggestion.tag.type.UNDER_CONSIDERATION')}
-                </CheckboxText>
-              </FilterItem>
-              <FilterItem className="filter-checkbox">
                 <Checkbox
                   checked={referenceStatus}
                   onChange={this.handleReferenceStatusChange}
@@ -607,7 +630,7 @@ export default class extends StandardPage {
               </FilterItem>
             </FilterContent>
           </Col>
-          <Col span={8} className="filter-panel">
+          <Col span={12} className="filter-panel">
             <FilterContent>
               <FilterItem>
                 <FilterItemLabel>
@@ -691,7 +714,7 @@ export default class extends StandardPage {
     // the first onReferenceStatusChanged is the props fn from Container
     await this.setState({ referenceStatus: e.target.checked })
     await onReferenceStatusChanged(e.target.checked)
-    await this.refetch()
+    this.refetch()
   }
 
   renderList() {
@@ -722,16 +745,18 @@ export default class extends StandardPage {
   openPage(href) {
     window.open(href, '_blank')
     this.setState({
-      isChangeNext: false
+      isChangeNext: true
     })
-    localStorage.setItem('suggestion-scrollY',window.scrollY)
+    localStorage.setItem('suggestion-scrollY', window.scrollY)
   }
 
   renderItem = (data) => {
     const href = `/suggestion/${data._id}`
     const actionsNode = this.renderActionsNode(data, this.refetch)
     const metaNode = this.renderMetaNode(data)
-    const title = <ItemTitle onClick={() => this.openPage(href)}>{data.title}</ItemTitle>
+    const title = (
+      <ItemTitle onClick={() => this.openPage(href)}>{data.title}</ItemTitle>
+    )
     const tagsNode = this.renderTagsNode(data)
     return (
       <div key={data._id} className="item-container">
@@ -791,7 +816,7 @@ export default class extends StandardPage {
 
   onSortByChanged = async (sortBy) => {
     await this.props.onSortByChanged(sortBy)
-    await this.refetch()
+    this.refetch()
   }
 
   /**
@@ -803,7 +828,6 @@ export default class extends StandardPage {
     const {
       referenceStatus,
       infoNeeded,
-      underConsideration,
       search,
       filter,
       status,
@@ -826,7 +850,7 @@ export default class extends StandardPage {
     if (infoNeeded) {
       included = SUGGESTION_TAG_TYPE.INFO_NEEDED
     }
-    if (underConsideration) {
+    if (status === SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION) {
       if (_.isEmpty(included)) {
         included = SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
       } else {
@@ -841,12 +865,19 @@ export default class extends StandardPage {
     // sending a boolean to be handled by the backend
     query.referenceStatus = referenceStatus
 
-    if (!_.isEmpty(status)) {
+    if (
+      !_.isEmpty(status) &&
+      status !== SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
+    ) {
       query.status = status
     }
 
     if (this.state.showArchived) {
       query.status = SUGGESTION_STATUS.ARCHIVED
+    }
+
+    if (this.state.showSigned) {
+      query.signed = true
     }
 
     if (!_.isEmpty(budgetRequested) && budgetRequested > 0) {
@@ -932,18 +963,6 @@ const HeaderDiagramContainer = styled.div`
   }
 `
 
-// const ItemTitle = styled(Link)`
-//   font-size: 20px;
-//   color: black;
-//   transition: all 0.3s;
-//   font-weight: 400;
-//   text-decoration: none;
-//   margin: 8px 0;
-//   display: block;
-//   &:hover {
-//     color: $link_color;
-//   }
-// `
 const ItemTitle = styled.a`
   font-size: 20px;
   color: black;

@@ -409,6 +409,12 @@ export const SUGGESTION_STATUS = create([
   'CANCELLED'
 ])
 
+export const SUGGESTION_FILTER_STATUS = create([
+  'ACTIVE',
+  'UNDER_CONSIDERATION'
+])
+
+
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 
 export const SUGGESTION_TAG_TYPE = create([

@@ -72,6 +72,7 @@ export default class extends BaseComponent {
           {this.renderAvatar(true)}
           {this.renderFullName(true)}
           {this.renderDidBtn()}
+          {this.renderEmail(true)}
           {this.renderRole(true)}
           {this.renderLocation(true)}
           {this.renderLocalTime(true)}
@@ -138,6 +139,9 @@ export default class extends BaseComponent {
             {this.renderFullName()}
             {this.renderDidBtn()}
             <Row>
+              <Col span={24} className="profile-right-col">
+                {this.renderEmail()}
+              </Col>
               <Col span={24} className="profile-right-col">
                 {this.renderRole()}
               </Col>
@@ -297,6 +301,20 @@ export default class extends BaseComponent {
             )}
           </Upload>
         </div>
+      </div>
+    )
+  }
+
+  renderEmail(isMobile) {
+    const { user } = this.props
+    return (
+      <div
+        className={`profile-general-info ${
+          isMobile ? 'profile-general-info-mobile' : ''
+        }`}
+      >
+        <Icon type="mail" />
+        <span>{user.email}</span>
       </div>
     )
   }

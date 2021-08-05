@@ -248,6 +248,7 @@ export default class extends BaseService {
       localStorage.setItem('suggestion-page', '1')
       localStorage.removeItem('suggestion-scrollY', '')
       this.dispatch(suggestionRedux.actions.page_update(1))
+      this.dispatch(suggestionRedux.actions.filters_reset())
       resolve(true)
     })
   }

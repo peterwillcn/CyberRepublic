@@ -92,7 +92,8 @@ class SignSuggestionModal extends Component {
           {I18N.get('suggestion.modal.signNotice')}
           <br />
           {I18N.get('suggestion.modal.signNoticeNow')}
-          <br /><br />
+          <br />
+          <br />
           {I18N.get('suggestion.modal.signNoticeNote')}
         </Notice>
         <Button
@@ -152,5 +153,4 @@ const Notice = styled.div`
   text-align: left;
   margin-left: 50px;
   margin-right: 50px;
-
 `

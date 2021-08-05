@@ -1,5 +1,5 @@
 import styled from 'styled-components'
-import { Anchor } from 'antd'
+import { Anchor, Button } from 'antd'
 import { breakPoint } from '@/constants/breakPoint'
 import { text } from '@/constants/color'
 
@@ -38,19 +38,20 @@ export const VoteBtnGroup = styled.div`
 `
 
 export const Label = styled.span`
-  background: #F2F6FB;
+  background: #f2f6fb;
   padding: 3px 10px;
   margin-bottom: 16px;
   display: inline-block;
 `
 
 export const Title = styled.h2`
-  ${props => props.smallSpace && `
+  ${(props) =>
+    props.smallSpace &&
+    `
     padding: 0;
     margin: 0;
     font-size: 24px;
-  `}
-  word-break: break-all;
+  `} word-break: break-all;
 `
 
 export const ContentTitle = styled.h4`
@@ -66,16 +67,16 @@ export const FixedHeader = styled.div`
 export const SubTitleContainer = styled.div`
   display: flex;
   align-items: flex-end;
-  `
+`
 
 export const SubTitleHeading = styled.div`
   margin-right: 30px;
-  ${props => props.smallSpace && `
+  ${(props) =>
+    props.smallSpace &&
+    `
     font-size: 14px;
-  `}
-
-  .value {
-    background: #1DE9B6;
+  `} .value {
+    background: #1de9b6;
     padding: 0 5px;
   }
   .text {
@@ -84,8 +85,7 @@ export const SubTitleHeading = styled.div`
   }
 `
 
-export const Body = styled.div`
-`
+export const Body = styled.div``
 
 export const StyledAnchor = styled(Anchor)`
   position: fixed;
@@ -106,7 +106,7 @@ export const StyledAnchor = styled(Anchor)`
   .ant-anchor-link-active > .ant-anchor-link-title {
     color: initial;
     :after {
-      content: "";
+      content: '';
       position: absolute;
       bottom: -2px;
       left: 0;
@@ -130,7 +130,7 @@ export const StyledRichContent = styled.div`
 `
 
 export const LinkGroup = styled.div`
-  ${props => props.marginTop && `margin-top: ${props.marginTop}px;`}
+  ${(props) => props.marginTop && `margin-top: ${props.marginTop}px;`};
 `
 
 export const Part = styled.div`
@@ -175,7 +175,7 @@ export const StyledRow = styled.div`
   }
   p {
     padding: 0px;
-    margin-top:5px;
+    margin-top: 5px;
   }
 `
 export const StyledTab = styled.div`
@@ -198,4 +198,7 @@ export const StyledTabs = styled.div`
     background-color: #1de9b6;
     height: 4px;
   }
+`
+export const StyledButton = styled(Button)`
+  height: 48px !important;
 `

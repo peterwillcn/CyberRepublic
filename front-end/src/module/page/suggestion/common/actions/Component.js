@@ -147,12 +147,12 @@ export default class extends BaseComponent {
           onClick={this.handleClick('isSubscribed')}
           className={`follow-icon ${isSubscribed ? 'selected' : ''}`}
         />
-        <IconText
+        {/* <IconText
           component={!!FlagIcon && <FlagIcon />}
           text={I18N.get('suggestion.reportAbuse')}
           onClick={this.handleClick('isAbused')}
           className={`abuse-icon ${isAbused ? 'selected' : ''}`}
-        />
+        /> */}
         <IconText
           component={!!ArchiveIcon && <ArchiveIcon />}
           text={

@@ -29,7 +29,7 @@ import Translation from '@/module/common/Translation/Container'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
 import { StickyContainer, Sticky } from 'react-sticky'
 import VoteResultComponent from '../common/vote_result/Component'
-import MemberVoteQrCode from './MemberVoteQrCode'
+import CommunityVoteQrCode from './CommunityVoteQrCode'
 import Preamble from './Preamble'
 import ElipPreamble from './ElipPreamble'
 import Tracking from '../tracking/Container'
@@ -69,7 +69,8 @@ import {
   Paragraph,
   StyledRow,
   StyledTab,
-  StyledTabs
+  StyledTabs,
+  StyledButton
 } from './style'
 import './style.scss'
 
@@ -251,7 +252,13 @@ class C extends StandardPage {
         {anchorNode}
         <Container className="p_CVoteDetail">
           <StickyContainer>
-            <BackLink link={{pathname:"/proposals", query: data.old ? data.old : false, sate: 'return'}} />
+            <BackLink
+              link={{
+                pathname: '/proposals',
+                query: data.old ? data.old : false,
+                sate: 'return'
+              }}
+            />
             {this.renderStickyHeader()}
             <Body>
               {contentNode}
@@ -276,7 +283,7 @@ class C extends StandardPage {
     const titleNode = this.renderTitle()
     const labelNode = this.renderLabelNode()
     const subTitleNode = this.renderSubTitle()
-    const memberVoteNode = this.renderMemberVoteQrCode()
+    const communityVoteNode = this.renderCommunityVoteQrCode()
     const { smallSpace } = this.state
     return (
       <Sticky>
@@ -306,8 +313,11 @@ class C extends StandardPage {
                   </FixedHeader>
                 </Col>
                 {isNotification && !this.state.smallSpace ? (
-                  <Col span={12}>
-                    <FixedHeader>{memberVoteNode}</FixedHeader>
+                  <Col
+                    span={12}
+                    style={{ display: 'flex', justifyContent: 'flex-end' }}
+                  >
+                    <FixedHeader>{communityVoteNode}</FixedHeader>
                   </Col>
                 ) : null}
               </Row>
@@ -318,9 +328,9 @@ class C extends StandardPage {
     )
   }
 
-  renderMemberVoteQrCode() {
+  renderCommunityVoteQrCode() {
     const { data, getMemberVoteUrl } = this.props
-    return <MemberVoteQrCode {...data} getMemberVoteUrl={getMemberVoteUrl} />
+    return <CommunityVoteQrCode {...data} getMemberVoteUrl={getMemberVoteUrl} />
   }
 
   renderTranslationBtn() {
@@ -753,27 +763,27 @@ class C extends StandardPage {
     if (!canVote) return null
     const { visibleYes, visibleOppose, visibleAbstain } = this.state
     const btnYes = (
-      <Button
+      <StyledButton
         type="primary"
         icon="check-circle"
         onClick={this.showVoteYesModal}
       >
         {I18N.get('council.voting.btnText.yes')}
-      </Button>
+      </StyledButton>
     )
     const btnOppose = (
-      <Button
+      <StyledButton
         type="danger"
         icon="close-circle"
         onClick={this.showVoteOpposeModal}
       >
         {I18N.get('council.voting.btnText.no')}
-      </Button>
+      </StyledButton>
     )
     const btnAbstain = (
-      <Button icon="stop" onClick={this.showVoteAbstainModal}>
+      <StyledButton icon="stop" onClick={this.showVoteAbstainModal}>
         {I18N.get('council.voting.btnText.abstention')}
-      </Button>
+      </StyledButton>
     )
 
     const popOverYes = (
@@ -892,11 +902,11 @@ class C extends StandardPage {
           <TabPane tab={this.renderTabTitle('status')} key="status">
             {this.renderTrackingMessage()}
           </TabPane>
-          {!_.isEmpty(dataList) ? 
-          <TabPane tab={this.renderTabTitle('summary')} key="summary">
-            {this.renderSummary()}
-          </TabPane> 
-          : null}
+          {!_.isEmpty(dataList) ? (
+            <TabPane tab={this.renderTabTitle('summary')} key="summary">
+              {this.renderSummary()}
+            </TabPane>
+          ) : null}
         </Tabs>
       </StyledTabs>
     )

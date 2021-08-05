@@ -887,6 +887,8 @@ export default class extends Base {
 
       const oldUrl = constant.oldAccessJwtPrefix + jwtToken
       const url = constant.accessJwtPrefix + jwtToken
+      console.log('loginElaUrl oldUrl...', oldUrl)
+      console.log('loginElaUrl url...', url)
       return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)

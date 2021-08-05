@@ -42,20 +42,21 @@ class SelectSuggType extends Component {
   }
 
   componentDidUpdate() {
-    const {initialValue:value, controVar: preVar} = this.props
-    const { type,
+    const { initialValue: value, controVar: preVar } = this.props
+    const {
+      type,
       newSecretaryDID,
       termination,
       proposalNum,
       newAddress,
       newOwnerDID,
-      controVar } = this.state
+      controVar
+    } = this.state
     if (preVar !== controVar) {
-
       if (value.type === CHANGE_SECRETARY) {
-        const data = { 
+        const data = {
           type,
-          newSecretaryDID:  newSecretaryDID == '' ? undefined : newSecretaryDID
+          newSecretaryDID: newSecretaryDID == '' ? undefined : newSecretaryDID
         }
         if (!_.isEqual(value, data)) {
           this.dupOperating(value, preVar)
@@ -93,24 +94,30 @@ class SelectSuggType extends Component {
   }
 
   dupOperating(value, preVar) {
-    this.setState({
-      ...value,
-      controVar: preVar
-    }, () => {
-      this.props.changeType(value.type)
-      if (value.type === CHANGE_PROPOSAL) {
-        this.changeProposal(value)
+    this.setState(
+      {
+        ...value,
+        controVar: preVar
+      },
+      () => {
+        this.props.changeType(value.type)
+        if (value.type === CHANGE_PROPOSAL) {
+          this.changeProposal(value)
+        }
       }
-    })
+    )
   }
 
   changeProposal(value) {
     if (value) {
       if (value.newAddress) {
-        this.handleCheckboxChange({target: {checked: true}}, 'changeAddress')
+        this.handleCheckboxChange(
+          { target: { checked: true } },
+          'changeAddress'
+        )
       }
       if (value.newOwnerDID) {
-        this.handleCheckboxChange({target: {checked: true}}, 'changeOwner')
+        this.handleCheckboxChange({ target: { checked: true } }, 'changeOwner')
       }
     }
   }
@@ -315,6 +322,9 @@ class SelectSuggType extends Component {
                 {newAddressErr && (
                   <Error>{I18N.get('suggestion.form.error.elaAddress')}</Error>
                 )}
+                <Desc style={{ paddingLeft: 0, marginTop: 8 }}>
+                  {I18N.get('suggestion.budget.addressTip')}
+                </Desc>
               </div>
             )}
           </Section>
