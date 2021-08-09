@@ -18,7 +18,7 @@ class OnChainButton extends Component {
     return (
       <Content>
         {url ? <QRCode value={url} size={300} /> : <Spin />}
-        <Tip>{I18N.get('profile.qrcodeTip')}</Tip>
+        <Tip>{I18N.get('council.voting.scan')}</Tip>
       </Content>
     )
   }

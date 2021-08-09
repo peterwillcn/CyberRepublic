@@ -859,6 +859,7 @@ const zh = {
   'council.voting.voteResult.unvoted': '待投票',
 
   'council.voting.voteResult.onchain': '投票上链',
+  'council.voting.scan': '扫码投票',
 
   'council.voting.viewHistory.btn': '投票历史',
   'council.voting.viewHistory.current': '当前投票',
@@ -915,7 +916,7 @@ const zh = {
 
   // Profile
   'profile.associateDid': '扫码绑定 DID',
-  'profile.qrcodeTip': '用 Essential 扫码绑定',
+  'profile.qrcodeTip': '用 Essentials 扫码绑定',
   'profile.qrcodeOldTip': '用 ELA Wallet 扫码绑定',
   'profile.reassociateDid': '重新绑定 DID',
   'profile.thanksForCompleting': '感谢更新您的个人档案！',

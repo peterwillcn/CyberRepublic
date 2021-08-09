@@ -886,6 +886,7 @@ const en = {
   'council.voting.voteResult.unvoted': 'Unvoted by me',
 
   'council.voting.voteResult.onchain': 'Vote onchain',
+  'council.voting.scan': 'Scan the QR code to vote',
 
   'council.voting.viewHistory.btn': 'Voting history',
   'council.voting.viewHistory.current': 'Current Voting',
