@@ -173,7 +173,7 @@ const en = {
   'login.title': 'Login to Cyber Republic',
   'login.description_1': 'Input your credentials below.',
   'login.withDid': 'Log in with APP',
-  'login.qrcodeTip': 'Scan this with the Essential',
+  'login.qrcodeTip': 'Scan this with the Essentials',
   'login.qrcodeOldTip': `Scan this with the ELA Wallet`,
   'login.modal.register': 'Register',
   'login.modal.content': 'Your DID does not register the CR website',
@@ -943,7 +943,7 @@ const en = {
 
   // Profile
   'profile.associateDid': 'Associate DID with APP',
-  'profile.qrcodeTip': 'Scan this with the Essential',
+  'profile.qrcodeTip': 'Scan this with the Essentials',
   'profile.qrcodeOldTip': 'Scan this with the ELA Wallet',
   'profile.reassociateDid': 'Re-associate DID',
   'profile.thanksForCompleting': 'Thanks for updating your profile!',
@@ -1050,7 +1050,7 @@ const en = {
   'profile.submission.table.created': 'Created',
 
   'profile.member.vote': 'Oppose',
-  'profile.member.vote.qrcodeTip': `Scan this with the Essential`,
+  'profile.member.vote.qrcodeTip': `Scan this with the Essentials`,
   'profile.member.vote.qrcodeOldTip': `Scan this with the ELA Wallet`,
   'profile.member.vote.community': `(for community review)`,
 
