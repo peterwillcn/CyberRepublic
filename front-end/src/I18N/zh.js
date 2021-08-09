@@ -172,7 +172,7 @@ const zh = {
   'login.title': '登录 Cyber Republic',
   'login.description_1': '输入密码',
   'login.withDid': '用 APP 扫码登录',
-  'login.qrcodeTip': 'Essential 扫码登录',
+  'login.qrcodeTip': 'Essentials 扫码登录',
   'login.qrcodeOldTip': 'ELA Wallet 扫码登录',
   'login.modal.register': '立即注册',
   'login.modal.content': '当前 DID 尚未注册 CR 网站',
@@ -1019,7 +1019,7 @@ const zh = {
   'profile.submission.table.created': '创建日期',
 
   'profile.member.vote': '我要反对',
-  'profile.member.vote.qrcodeTip': `用 Essential 扫码投票`,
+  'profile.member.vote.qrcodeTip': `用 Essentials 扫码投票`,
   'profile.member.vote.qrcodeOldTip': `用 ELA Wallet 扫码投票`,
   'profile.member.vote.community': `（社区投票专用）`,
 
