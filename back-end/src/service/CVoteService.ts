@@ -1332,9 +1332,9 @@ export default class extends Base {
           algorithm: 'ES256'
         }
       )
-      const newVersion = _.get(this.currentUser, 'newVersion')
-      const url = getProposalJwtPrefix(newVersion) + jwtToken
-      return { success: true, url }
+      const oldUrl = constant.oldProposalJwtPrefix + jwtToken
+      const url = constant.proposalJwtPrefix + jwtToken
+      return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
       return { success: false }

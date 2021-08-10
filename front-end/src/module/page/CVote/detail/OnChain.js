@@ -3,22 +3,35 @@ import styled from 'styled-components'
 import { Popover, Spin } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
+import SwitchSvgIcon from '@/module/common/SwitchSvgIcon'
 
 class OnChainButton extends Component {
   constructor(props) {
     super(props)
     this.state = {
       url: '',
-      visible: false
+      oldUrl: '',
+      visible: false,
+      toggle: false
     }
   }
 
+  handleSwitch = () => {
+    this.setState({ toggle: !this.state.toggle })
+  }
+
   qrCode = () => {
-    const { url } = this.state
+    const { url, oldUrl, toggle } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={300} /> : <Spin />}
+        {url ? <QRCode value={toggle ? oldUrl : url} size={300} /> : <Spin />}
         <Tip>{I18N.get('council.voting.scan')}</Tip>
+        <SwitchWrapper>
+          <SwitchSvgIcon />
+          <SwitchButton onClick={this.handleSwitch}>
+            {I18N.get('council.voting.scan.ela')}
+          </SwitchButton>
+        </SwitchWrapper>
       </Content>
     )
   }
@@ -27,7 +40,7 @@ class OnChainButton extends Component {
     const { id, getReviewProposalUrl } = this.props
     const rs = await getReviewProposalUrl(id)
     if (rs && rs.success) {
-      this.setState({ url: rs.url })
+      this.setState({ url: rs.url, oldUrl: rs.oldUrl })
     }
   }
 
@@ -76,4 +89,16 @@ const Tip = styled.div`
   font-size: 14px;
   color: #000;
   margin-top: 16px;
+`
+const SwitchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+`
+const SwitchButton = styled.span`
+  color: #65bda3;
+  font-size: 12px;
+  padding-left: 4px;
+  cursor: pointer;
 `

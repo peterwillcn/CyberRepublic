@@ -714,8 +714,6 @@ export default class extends Base {
       })
       const oldUrl = constant.oldAccessJwtPrefix + jwtToken
       const url = constant.accessJwtPrefix + jwtToken
-      console.log('bind DID oldUrl...', oldUrl)
-      console.log('bind DID url...', url)
       return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
