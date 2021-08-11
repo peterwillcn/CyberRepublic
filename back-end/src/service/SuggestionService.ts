@@ -2233,9 +2233,9 @@ export default class extends Base {
         { _id: suggestion._id },
         { $push: { proposers: { did: councilMemberDid, timestamp: now } } }
       )
-      const newVersion = _.get(this.currentUser, 'newVersion')
-      const url = getProposalJwtPrefix(newVersion) + jwtToken
-      return { success: true, url }
+      const oldUrl = constant.oldProposalJwtPrefix + jwtToken
+      const url = constant.proposalJwtPrefix + jwtToken
+      return { success: true, url, oldUrl }
     } catch (err) {
       logger.error(err)
       return { success: false }

@@ -158,7 +158,7 @@ const Content = styled.div`
 `
 const Tip = styled.div`
   font-size: 14px;
-  color: #000;
+  color: #333333;
   margin-top: 16px;
 `
 const Notice = styled.div`
