@@ -57,7 +57,7 @@ export const getPemPublicKey = (publicKey: any) => {
   return jwkToPem(jwk)
 }
 
-export const getDidPublicKey = async (did: string) => {
+const checkDidFromChain = async (did: string, chain: string) => {
   const headers = {
     'Content-Type': 'application/json'
   }
@@ -70,9 +70,9 @@ export const getDidPublicKey = async (did: string) => {
     }
   }
   try {
-    const res = await axios.post(process.env.DID_SIDECHAIN_URL, data, {
+    const res = await axios.post(chain, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res && res.data && res.data.result) {
       const base64 = _.get(res.data.result, 'transaction[0].operation.payload')
@@ -107,6 +107,18 @@ export const getDidPublicKey = async (did: string) => {
   }
 }
 
+export const getDidPublicKey = async (did: string) => {
+  const rs = await checkDidFromChain(did, process.env.EID_SIDECHAIN_URL)
+  if (rs && rs.publicKey) {
+    return rs
+  } else {
+    const rs = await checkDidFromChain(did, process.env.DID_SIDECHAIN_URL)
+    if (rs && rs.publicKey) {
+      return rs
+    }
+  }
+}
+
 export const getUtxosByAmount = async (amount: string) => {
   const headers = {
     'Content-Type': 'application/json'
@@ -123,7 +135,7 @@ export const getUtxosByAmount = async (amount: string) => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res && res.data) {
       const utxos = _.get(res.data, 'result')
@@ -163,7 +175,7 @@ export const getProposalState = async (query: {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res) {
       const status = _.get(res.data, 'result.proposalstate.status')
@@ -192,7 +204,7 @@ export const getProposalData = async (proposalHash: string) => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res) {
       const status = _.get(res.data, 'result.proposalstate.status')
@@ -234,7 +246,7 @@ export const getInformationByDid = async (did: string) => {
   }
 }
 
-export const getDidName = async (did: string) => {
+const checkDidNameFromChain = async (did: string, chain: string) => {
   const headers = {
     'Content-Type': 'application/json'
   }
@@ -247,9 +259,9 @@ export const getDidName = async (did: string) => {
     }
   }
   try {
-    const res = await axios.post(process.env.DID_SIDECHAIN_URL, data, {
+    const res = await axios.post(chain, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res && res.data && res.data.result) {
       const base64 = _.get(res.data.result, 'transaction[0].operation.payload')
@@ -271,6 +283,24 @@ export const getDidName = async (did: string) => {
   }
 }
 
+export const getDidName = async (did: string) => {
+  const didName = await checkDidNameFromChain(
+    did,
+    process.env.EID_SIDECHAIN_URL
+  )
+  if (didName) {
+    return didName
+  } else {
+    const didName = await checkDidNameFromChain(
+      did,
+      process.env.DID_SIDECHAIN_URL
+    )
+    if (didName) {
+      return didName
+    }
+  }
+}
+
 export const getVoteResultByTxid = async (txid: string) => {
   const headers = {
     'Content-Type': 'application/json'
@@ -286,7 +316,7 @@ export const getVoteResultByTxid = async (txid: string) => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res && res.data && res.data.result) {
       const confirmations = _.get(res.data.result, 'confirmations')
@@ -311,7 +341,7 @@ export const getCurrentHeight = async () => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
-      timeout: 5000,
+      timeout: 5000
     })
     if (res) {
       const height = _.get(res.data, 'result')
@@ -327,13 +357,9 @@ export const getCurrentHeight = async () => {
 export const getProposalReqToken = (req: any) => {
   let reqToken: any
   const { oldProposalJwtPrefix, proposalJwtPrefix } = constant
-  if (
-    req.slice(0, oldProposalJwtPrefix.length) === oldProposalJwtPrefix
-  ) {
+  if (req.slice(0, oldProposalJwtPrefix.length) === oldProposalJwtPrefix) {
     reqToken = req.slice(oldProposalJwtPrefix.length)
-  } else if (
-    req.slice(0, proposalJwtPrefix.length) === proposalJwtPrefix
-  ) {
+  } else if (req.slice(0, proposalJwtPrefix.length) === proposalJwtPrefix) {
     reqToken = req.slice(proposalJwtPrefix.length)
   }
   return reqToken
