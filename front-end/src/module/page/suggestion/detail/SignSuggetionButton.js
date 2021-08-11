@@ -32,12 +32,14 @@ class SignSuggestionButton extends Component {
       <Content>
         {url ? <QRCode value={toggle ? oldUrl : url} size={240} /> : <Spin />}
         <Tip>{I18N.get('suggestion.msg.signQRCode')}</Tip>
-        <SwitchWrapper>
-          <SwitchSvgIcon />
-          <SwitchButton onClick={this.handleSwitch}>
-            {I18N.get('suggestion.msg.scanEla')}
-          </SwitchButton>
-        </SwitchWrapper>
+        {url && (
+          <SwitchWrapper>
+            <SwitchSvgIcon />
+            <SwitchButton onClick={this.handleSwitch}>
+              {I18N.get('suggestion.msg.scanEla')}
+            </SwitchButton>
+          </SwitchWrapper>
+        )}
       </Content>
     )
   }

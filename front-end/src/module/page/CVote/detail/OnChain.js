@@ -26,12 +26,14 @@ class OnChainButton extends Component {
       <Content>
         {url ? <QRCode value={toggle ? oldUrl : url} size={180} /> : <Spin />}
         <Tip>{I18N.get('council.voting.scan')}</Tip>
-        <SwitchWrapper>
-          <SwitchSvgIcon />
-          <SwitchButton onClick={this.handleSwitch}>
-            {I18N.get('council.voting.scan.ela')}
-          </SwitchButton>
-        </SwitchWrapper>
+        {url && (
+          <SwitchWrapper>
+            <SwitchSvgIcon />
+            <SwitchButton onClick={this.handleSwitch}>
+              {I18N.get('council.voting.scan.ela')}
+            </SwitchButton>
+          </SwitchWrapper>
+        )}
       </Content>
     )
   }

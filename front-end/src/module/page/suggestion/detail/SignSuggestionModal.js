@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import styled from 'styled-components'
 import { Modal, Button, Spin } from 'antd'
 import I18N from '@/I18N'
+import SwitchSvgIcon from '@/module/common/SwitchSvgIcon'
 import QRCode from 'qrcode.react'
 
 class SignSuggestionModal extends Component {
@@ -9,9 +10,11 @@ class SignSuggestionModal extends Component {
     super(props)
     this.state = {
       url: '',
+      oldUrl: '',
       visible: true,
       message: '',
-      signNow: false
+      signNow: false,
+      toggle: false
     }
     this.timer = null
   }
@@ -50,7 +53,7 @@ class SignSuggestionModal extends Component {
     const { id, getSignatureUrl } = this.props
     const rs = await getSignatureUrl(id)
     if (rs && rs.success) {
-      this.setState({ url: rs.url })
+      this.setState({ url: rs.url, oldUrl: rs.oldUrl })
       this.timer = setTimeout(this.pollingSignature, 3000)
     }
     if (rs && rs.success === false && rs.message) {
@@ -68,12 +71,24 @@ class SignSuggestionModal extends Component {
     this.timer = null
   }
 
+  handleSwitch = () => {
+    this.setState({ toggle: !this.state.toggle })
+  }
+
   elaQrCode = () => {
-    const { url } = this.state
+    const { url, oldUrl, toggle } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={400} /> : <Spin />}
+        {url ? <QRCode value={toggle ? oldUrl : url} size={300} /> : <Spin />}
         <Tip>{I18N.get('suggestion.msg.signQRCode')}</Tip>
+        {url && (
+          <SwitchWrapper>
+            <SwitchSvgIcon />
+            <SwitchButton onClick={this.handleSwitch}>
+              {I18N.get('suggestion.msg.scanEla')}
+            </SwitchButton>
+          </SwitchWrapper>
+        )}
       </Content>
     )
   }
@@ -153,4 +168,18 @@ const Notice = styled.div`
   text-align: left;
   margin-left: 50px;
   margin-right: 50px;
+`
+const SwitchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+`
+const SwitchButton = styled.span`
+  color: #65bda3;
+  font-size: 12px;
+  padding-left: 4px;
+  cursor: pointer;
+  font-weight: 400;
+  line-height: 17px;
 `
