@@ -25,6 +25,7 @@ export default {
   exception: '出错了',
   header: '申请款项',
   scanToWithdraw: '扫码上面二维码取款',
+  scanEla: '改用 ELA Wallet 扫码',
   required: '必填项',
   next: '下一步',
   showMore: '展开',

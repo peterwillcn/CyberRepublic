@@ -173,7 +173,10 @@ class Signature extends Component {
         <Wrapper>
           {isSecretary && opinion ? (
             <Title>
-              {flag ? I18N.get('milestone.reject') : I18N.get('milestone.approve')} {I18N.get('suggestion.budget.payment')} #{parseInt(stage) + 1}
+              {flag
+                ? I18N.get('milestone.reject')
+                : I18N.get('milestone.approve')}{' '}
+              {I18N.get('suggestion.budget.payment')} #{parseInt(stage) + 1}
             </Title>
           ) : (
             <Title>
