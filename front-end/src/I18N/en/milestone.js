@@ -23,7 +23,7 @@ export default {
   summary: 'Summary',
   reason: 'Reason',
   exception: 'Something went wrong',
-  header: 'Request payment',
+  payment: 'Payment',
   scanToWithdraw: 'Scan the QR code above to withdraw ELA',
   scanEla: 'Switch to the ELA Wallet',
   required: 'This field is required.',

@@ -23,7 +23,7 @@ export default {
   summary: '总结',
   reason: '理由',
   exception: '出错了',
-  header: '申请款项',
+  payment: '款项',
   scanToWithdraw: '扫码上面二维码取款',
   scanEla: '改用 ELA Wallet 扫码',
   required: '必填项',
