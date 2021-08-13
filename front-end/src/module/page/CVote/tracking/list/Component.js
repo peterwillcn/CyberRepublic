@@ -273,7 +273,6 @@ export default class extends BaseComponent {
   }
 
   renderWithdrawalActions(item) {
-    const { secretariat } = this.state
     let body
     if (item.review !== undefined) {
       body = (
@@ -290,9 +289,7 @@ export default class extends BaseComponent {
               })}
             </div>
             <CommentFooter>
-              {secretariat && secretariat.didName
-                ? secretariat.didName + ' , '
-                : null}
+              {/* show the secretary name who reviewed this applyment */}
               {moment(item.review.createdAt).format(DATE_FORMAT)}
             </CommentFooter>
           </CommentContent>
