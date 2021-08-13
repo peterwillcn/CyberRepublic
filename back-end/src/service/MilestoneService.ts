@@ -10,8 +10,7 @@ import {
   utilCrypto,
   getPemPublicKey,
   permissions,
-  getProposalReqToken,
-  getProposalJwtPrefix
+  getProposalReqToken
 } from '../utility'
 const Big = require('big.js')
 const {
@@ -106,9 +105,10 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const newVersion = _.get(this.currentUser, 'newVersion')
-      const url = getProposalJwtPrefix(newVersion) + jwtToken
-      return { success: true, url, messageHash }
+
+      const oldUrl = constant.oldProposalJwtPrefix + jwtToken
+      const url = constant.proposalJwtPrefix + jwtToken
+      return { success: true, url, messageHash, oldUrl }
     } catch (error) {
       logger.error(error)
       return
@@ -374,9 +374,10 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const newVersion = _.get(this.currentUser, 'newVersion')
-      const url = getProposalJwtPrefix(newVersion) + jwtToken
-      return { success: true, url, messageHash: reasonHash }
+
+      const oldUrl = constant.oldProposalJwtPrefix + jwtToken
+      const url = constant.proposalJwtPrefix + jwtToken
+      return { success: true, url, messageHash: reasonHash, oldUrl }
     } catch (error) {
       logger.error(error)
       return
@@ -528,9 +529,10 @@ export default class extends Base {
         process.env.APP_PRIVATE_KEY,
         { algorithm: 'ES256' }
       )
-      const newVersion = _.get(this.currentUser, 'newVersion')
-      const url = getProposalJwtPrefix(newVersion) + jwtToken
-      return { success: true, url }
+
+      const oldUrl = constant.oldProposalJwtPrefix + jwtToken
+      const url = constant.proposalJwtPrefix + jwtToken
+      return { success: true, url, oldUrl }
     } catch (error) {
       logger.error(error)
       return

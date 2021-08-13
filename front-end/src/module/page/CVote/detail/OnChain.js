@@ -3,22 +3,43 @@ import styled from 'styled-components'
 import { Popover, Spin } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
+import SwitchSvgIcon from '@/module/common/SwitchSvgIcon'
 
 class OnChainButton extends Component {
   constructor(props) {
     super(props)
     this.state = {
       url: '',
-      visible: false
+      oldUrl: '',
+      visible: false,
+      toggle: false
     }
   }
 
+  handleSwitch = () => {
+    this.setState({ toggle: !this.state.toggle })
+  }
+
   qrCode = () => {
-    const { url } = this.state
+    const { url, oldUrl, toggle } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={300} /> : <Spin />}
-        <Tip>{I18N.get('council.voting.scan')}</Tip>
+        {url ? <QRCode value={toggle ? oldUrl : url} size={180} /> : <Spin />}
+        <Tip>
+          {toggle
+            ? I18N.get('council.voting.ela')
+            : I18N.get('council.voting.essentials')}
+        </Tip>
+        {url && (
+          <SwitchWrapper>
+            <SwitchSvgIcon />
+            <SwitchButton onClick={this.handleSwitch}>
+              {!toggle
+                ? I18N.get('council.voting.scan.ela')
+                : I18N.get('council.voting.scan.essentials')}
+            </SwitchButton>
+          </SwitchWrapper>
+        )}
       </Content>
     )
   }
@@ -27,7 +48,7 @@ class OnChainButton extends Component {
     const { id, getReviewProposalUrl } = this.props
     const rs = await getReviewProposalUrl(id)
     if (rs && rs.success) {
-      this.setState({ url: rs.url })
+      this.setState({ url: rs.url, oldUrl: rs.oldUrl })
     }
   }
 
@@ -69,11 +90,27 @@ const Button = styled.span`
   cursor: pointer;
 `
 const Content = styled.div`
-  padding: 16px;
+  padding: 24px 24px 14px;
   text-align: center;
 `
 const Tip = styled.div`
-  font-size: 14px;
-  color: #000;
+  font-size: 12px;
+  color: #333333;
   margin-top: 16px;
+  font-weight: 400;
+  line-height: 17px;
+`
+const SwitchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+`
+const SwitchButton = styled.span`
+  color: #65bda3;
+  font-size: 12px;
+  padding-left: 4px;
+  cursor: pointer;
+  font-weight: 400;
+  line-height: 17px;
 `

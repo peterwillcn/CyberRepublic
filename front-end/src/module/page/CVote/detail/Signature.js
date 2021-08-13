@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Form, Button, Input, message, Modal, Spin } from 'antd'
 import QRCode from 'qrcode.react'
 import I18N from '@/I18N'
+import SwitchSvgIcon from '@/module/common/SwitchSvgIcon'
 
 const { TextArea } = Input
 const FormItem = Form.Item
@@ -10,7 +11,13 @@ const FormItem = Form.Item
 class Signature extends Component {
   constructor(props) {
     super(props)
-    this.state = { url: '', messageHash: '', message: '' }
+    this.state = {
+      url: '',
+      messageHash: '',
+      message: '',
+      oldUrl: '',
+      showOld: false
+    }
     this.mtimer = null
   }
 
@@ -29,7 +36,11 @@ class Signature extends Component {
           message: values.message.trim()
         })
         if (rs.success && rs.url) {
-          this.setState({ url: rs.url, messageHash: rs.messageHash })
+          this.setState({
+            url: rs.url,
+            messageHash: rs.messageHash,
+            oldUrl: rs.oldUrl
+          })
           this.mtimer = setTimeout(this.pollingSignature, 3000)
         }
       }
@@ -54,7 +65,7 @@ class Signature extends Component {
         }
         const rs = await reviewApplication(proposalId, stage, data)
         if (rs.success && rs.url) {
-          this.setState({ url: rs.url })
+          this.setState({ url: rs.url, oldUrl: rs.oldUrl, showOld: false })
         }
         if (!rs.success && rs.message) {
           this.setState({ message: rs.message })
@@ -103,12 +114,26 @@ class Signature extends Component {
     this.mtimer = null
   }
 
+  handleSwitch = () => {
+    this.setState({ showOld: !this.state.showOld })
+  }
+
   signatureQrCode = () => {
-    const { url } = this.state
+    const { url, oldUrl, showOld } = this.state
     return (
       <Content>
-        {url ? <QRCode value={url} size={400} /> : <Spin />}
+        {url ? <QRCode value={showOld ? oldUrl : url} size={300} /> : <Spin />}
         <Tip>{I18N.get('milestone.sign')}</Tip>
+        {url && (
+          <SwitchWrapper>
+            <SwitchSvgIcon />
+            <SwitchButton onClick={this.handleSwitch}>
+              {!showOld
+                ? I18N.get('milestone.scanEla')
+                : I18N.get('milestone.scanEssentials')}
+            </SwitchButton>
+          </SwitchWrapper>
+        )}
       </Content>
     )
   }
@@ -145,7 +170,7 @@ class Signature extends Component {
   }
 
   hideModal = () => {
-    this.setState({ url: '', message: '' })
+    this.setState({ url: '', message: '', oldUrl: '' })
     this.props.hideModal()
   }
 
@@ -173,11 +198,15 @@ class Signature extends Component {
         <Wrapper>
           {isSecretary && opinion ? (
             <Title>
-              {flag ? I18N.get('milestone.reject') : I18N.get('milestone.approve')} {I18N.get('suggestion.budget.payment')} #{parseInt(stage) + 1}
+              {flag
+                ? I18N.get('milestone.reject')
+                : I18N.get('milestone.approve')}{' '}
+              {I18N.get('milestone.payment')} #{parseInt(stage) + 1}
             </Title>
           ) : (
             <Title>
-              {I18N.get('milestone.header')} #{parseInt(stage) + 1}
+              {I18N.get('milestone.request')} {I18N.get('milestone.payment')} #
+              {parseInt(stage) + 1}
             </Title>
           )}
 
@@ -203,11 +232,11 @@ const Label = styled.div`
   }
 `
 const Title = styled.div`
-  font-size: 30px;
-  line-height: 42px;
-  color: #000000;
+  font-size: 24px;
+  line-height: 32px;
+  color: #333333;
   text-align: center;
-  margin-bottom: 42px;
+  margin-bottom: 40px;
 `
 const Actions = styled.div`
   display: flex;
@@ -221,13 +250,29 @@ const Content = styled.div`
   text-align: center;
 `
 const Tip = styled.div`
-  font-size: 14px;
-  color: #000;
+  font-size: 12px;
+  font-weight: 400;
+  color: #333333;
   margin-top: 16px;
+  line-height: 17px;
 `
 const Msg = styled.div`
   background-color: #ececec;
   border: 1px sold #cccccc;
   padding: 8px;
   margin-bottom: 24px;
+`
+const SwitchWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+`
+const SwitchButton = styled.span`
+  color: #65bda3;
+  font-size: 12px;
+  padding-left: 4px;
+  cursor: pointer;
+  font-weight: 400;
+  line-height: 17px;
 `

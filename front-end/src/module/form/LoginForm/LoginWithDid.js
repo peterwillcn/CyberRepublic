@@ -25,12 +25,12 @@ class LoginWithDid extends Component {
     return (
       <Content>
         <div>
-          {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
-          <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
-        </div>
-        <div>
           {url ? <QRCode value={url} size={180} /> : <Spin />}
           <Tip>{I18N.get('login.qrcodeTip')}</Tip>
+        </div>
+        <div>
+          {oldUrl ? <QRCode value={oldUrl} size={180} /> : <Spin />}
+          <Tip>{I18N.get('login.qrcodeOldTip')}</Tip>
         </div>
       </Content>
     )
