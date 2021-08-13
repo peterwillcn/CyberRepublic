@@ -26,6 +26,7 @@ export default {
   payment: 'Payment',
   scanToWithdraw: 'Scan the QR code above to withdraw ELA',
   scanEla: 'Switch to the ELA Wallet',
+  scanEssentials: 'Switch to the Essentials',
   required: 'This field is required.',
   next: 'Next',
   showMore: 'Show More',

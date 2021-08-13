@@ -128,7 +128,9 @@ class Signature extends Component {
           <SwitchWrapper>
             <SwitchSvgIcon />
             <SwitchButton onClick={this.handleSwitch}>
-              {I18N.get('milestone.scanEla')}
+              {!showOld
+                ? I18N.get('milestone.scanEla')
+                : I18N.get('milestone.scanEssentials')}
             </SwitchButton>
           </SwitchWrapper>
         )}
