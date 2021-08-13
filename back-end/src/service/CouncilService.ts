@@ -884,7 +884,7 @@ export default class extends Base {
       .findOne({ status: 'CURRENT' })
       .populate(
         'user',
-        'profile.firstname profile.lastname profile.avatar email'
+        'profile.firstName profile.lastName profile.avatar email'
       )
 
     return { councils, secretariat }

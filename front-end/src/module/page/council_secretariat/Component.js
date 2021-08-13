@@ -174,13 +174,12 @@ export default class extends StandardPage {
         : ''
 
     const profile = secretariat.user && secretariat.user.profile
-
-    const firstname = profile && profile.firstname ? profile.firstname : ''
-    const lastname = profile && profile.lastname ? profile.lastname : ''
+    const firstname = profile && profile.firstName ? profile.firstName : ''
+    const lastname = profile && profile.lastName ? profile.lastName : ''
 
     const name = secretariat.didName
       ? secretariat.didName
-      : firstname + lastname
+      : firstname + ' ' + lastname
 
     return (
       <div className="secretariat">
