@@ -8,7 +8,6 @@ import PersonCard from './PersonCard'
 import BGImg from './BGImg'
 import { text, border } from '@/constants/color'
 import { breakPoint } from '@/constants/breakPoint'
-import Toast from '@/module/common/Toast'
 import './style.scss'
 
 const { TabPane } = Tabs
@@ -18,7 +17,9 @@ export default class extends StandardPage {
     super(props)
     this.state = {
       // save the page you are on
-      tab: this.props.council.tab || '1'
+      tab: this.props.council.tab || '1',
+      councils: {},
+      secretariat: {}
     }
   }
 
@@ -26,7 +27,7 @@ export default class extends StandardPage {
     this.props.history.push('/whitepaper')
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     const data = await this.props.getCouncilsAndSecretariat()
     this.setState({ councils: data.councils, secretariat: data.secretariat })
   }
@@ -87,7 +88,8 @@ export default class extends StandardPage {
         <div className="title">{I18N.get('cs.incumbent')}</div>
         <Row className="members">
           {councils !== undefined
-            ? councils.councilMembers.map((item) => (
+            ? councils.councilMembers &&
+              councils.councilMembers.map((item) => (
                 <Col lg={8} md={8} sm={24} className="member" key={item.index}>
                   <div className="small-rect">
                     <Avatar
@@ -158,25 +160,87 @@ export default class extends StandardPage {
   }
 
   buildSecretariat() {
-    const secretariat = this.state.secretariat
+    const { secretariat } = this.state
+    const lang = localStorage.getItem('lang') || 'en'
+
+    const avatar = secretariat.avatar
+      ? secretariat.avatar
+      : secretariat.user && secretariat.user.avatar
+
+    const email = secretariat.email
+      ? secretariat.email
+      : secretariat.user
+        ? secretariat.user.email
+        : ''
+
+    const profile = secretariat.user && secretariat.user.profile
+
+    const firstname = profile && profile.firstname ? profile.firstname : ''
+    const lastname = profile && profile.lastname ? profile.lastname : ''
+
+    const name = secretariat.didName
+      ? secretariat.didName
+      : firstname + lastname
+
     return (
       <div className="secretariat">
         <div className="title">{I18N.get('cs.secretariat.general')}</div>
         <Row className="members">
           <Col lg={8} md={8} sm={24} className="member">
             <div className="small-rect">
-              <Avatar
-                src="/assets/images/council/secretary-rebecca.jpeg"
-                shape="square"
-                size={220}
-                icon="user"
-              />
+              <Avatar src={avatar} shape="square" size={220} icon="user" />
             </div>
 
             <div className="big-rect">
               <div className="content">
-                <h3 className="name">{I18N.get('cs.rebecca.name')}</h3>
-                <div className="self-intro">{I18N.get('cs.rebecca.intro')}</div>
+                <h3 className="name">{name}</h3>
+                {secretariat.introduction && (
+                  <div className="self-intro">
+                    <Popover
+                      content={
+                        lang === 'en'
+                          ? secretariat.introduction
+                            ? secretariat.introduction.split('\n').length > 1
+                              ? secretariat.introduction.split('\n')[0]
+                              : secretariat.introduction.split('\n')[0]
+                            : null
+                          : secretariat.introduction
+                            ? secretariat.introduction.split('\n').length > 1
+                              ? secretariat.introduction.split('\n')[1]
+                              : secretariat.introduction.split('\n')[0]
+                            : null
+                      }
+                      title={I18N.get('cs.intro')}
+                      overlayStyle={{
+                        width: 400 + 'px',
+                        padding: 10 + 'px',
+                        wordBreak: 'keep-all'
+                      }}
+                    >
+                      {lang === 'en'
+                        ? secretariat.introduction
+                          ? secretariat.introduction.split('\n').length > 1
+                            ? secretariat.introduction.split('\n')[0]
+                            : secretariat.introduction.split('\n')[0]
+                          : null
+                        : secretariat.introduction
+                          ? secretariat.introduction.split('\n').length > 1
+                            ? secretariat.introduction.split('\n')[1]
+                            : secretariat.introduction.split('\n')[0]
+                          : null}
+                    </Popover>
+                  </div>
+                )}
+                <Did>
+                  <Popover content={secretariat.did} placement="topLeft">
+                    <Label>{I18N.get('cs.did')}:</Label> {secretariat.did}
+                  </Popover>
+                </Did>
+                <Email>
+                  <Popover content={email} placement="topLeft">
+                    <Label>{I18N.get('cs.contact')}:</Label> {email}
+                  </Popover>
+                </Email>
               </div>
             </div>
           </Col>
