@@ -85,7 +85,7 @@ class SignSuggestionModal extends Component {
           <SwitchWrapper>
             <SwitchSvgIcon />
             <SwitchButton onClick={this.handleSwitch}>
-              {toggle
+              {!toggle
                 ? I18N.get('suggestion.msg.scanEla')
                 : I18N.get('suggestion.msg.scanEssentials')}
             </SwitchButton>

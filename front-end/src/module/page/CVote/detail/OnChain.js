@@ -34,7 +34,7 @@ class OnChainButton extends Component {
           <SwitchWrapper>
             <SwitchSvgIcon />
             <SwitchButton onClick={this.handleSwitch}>
-              {toggle
+              {!toggle
                 ? I18N.get('council.voting.scan.ela')
                 : I18N.get('council.voting.scan.essentials')}
             </SwitchButton>
