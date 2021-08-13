@@ -189,6 +189,7 @@ export default {
     toChain: '正在上链中',
     signQRCode: '扫描上面二维码签名建议',
     scanEla: '改用 ELA Wallet 扫码',
+    scanEssentials: '改用 Essentials 扫码',
     associateDidFirst: '请先绑定您的 DID',
     cancelled: '撤销建议成功',
     notCancelled: '撤销建议失败'

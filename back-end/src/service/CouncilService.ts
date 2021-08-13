@@ -878,11 +878,16 @@ export default class extends Base {
     const councils = await this.model
       .getDBInstance()
       .findOne({ status: constant.TERM_COUNCIL_STATUS.CURRENT })
-    const secretariat = await this.secretariatModel.getDBInstance().findOne()
-    return {
-      councils: councils && councils._doc,
-      secretariat: secretariat && secretariat._doc
-    }
+
+    const secretariat = await this.secretariatModel
+      .getDBInstance()
+      .findOne({ status: 'CURRENT' })
+      .populate(
+        'user',
+        'profile.firstname profile.lastname profile.avatar email'
+      )
+
+    return { councils, secretariat }
   }
 
   public async invoting() {
