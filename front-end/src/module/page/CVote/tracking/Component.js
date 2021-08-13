@@ -8,13 +8,7 @@ import CreateForm from './create/Container'
 
 export default class extends BaseComponent {
   ord_render() {
-    const oldData = _.get(this.props.proposal, 'old')
-    return (
-      <Container>
-        {this.renderTracking()}
-        {/* {!oldData && this.renderForm()} */}
-      </Container>
-    )
+    return <Container>{this.renderTracking()}</Container>
   }
 
   renderTracking() {
@@ -28,9 +22,12 @@ export default class extends BaseComponent {
     const notInReviewing = latestStatus !== CVOTE_TRACKING_STATUS.REVIEWING
     const isActive = proposal.status === CVOTE_STATUS.ACTIVE
 
-    return isOwner && isActive && notInReviewing && <CreateForm proposal={proposal} />
+    return (
+      isOwner &&
+      isActive &&
+      notInReviewing && <CreateForm proposal={proposal} />
+    )
   }
 }
 
-export const Container = styled.div`
-`
+export const Container = styled.div``
