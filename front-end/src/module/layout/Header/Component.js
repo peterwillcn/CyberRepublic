@@ -474,20 +474,6 @@ export default class extends BaseComponent {
       // hack for now
       localStorage.setItem('popup-update', 'force')
       window.location.reload()
-    } else if (key === 'forum') {
-      analytics.track('FORUM_CLICKED', {
-        url: location.href
-      })
-      if (!isLogin) {
-        this.props.history.push('/login?MSG_CODE=1')
-      } else {
-        if (isLogin && !_.get(user, 'did.id')) {
-          this.setState({ showDidModal: true })
-          return
-        }
-        const forumLink = `${process.env.FORUM_URL}/login`
-        window.open(forumLink, '_blank')
-      }
     } else if (key === 'logout') {
       analytics.track('HEADER_CLICKED', {
         action: 'logout',
@@ -522,18 +508,6 @@ export default class extends BaseComponent {
       }
 
       window.open(linkToBlog, '_blank')
-    } else if (key === 'docs') {
-      analytics.track('DOCS_CLICKED', {
-        url: location.href
-      })
-
-      let linkTo = 'https://cyberrepublic.org/docs/#/'
-
-      if (I18N.getLang() === USER_LANGUAGE.zh) {
-        linkTo += `${USER_LANGUAGE.zh}/`
-      }
-
-      window.location.href = linkTo
     } else if (_.includes(['en', 'zh'], key)) {
       analytics.track('LANGUAGE_CHANGED', {
         language: e.key,
