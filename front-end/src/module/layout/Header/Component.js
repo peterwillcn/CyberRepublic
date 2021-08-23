@@ -205,20 +205,6 @@ export default class extends BaseComponent {
     )
   }
 
-  buildResourcesDropdown() {
-    return (
-      <Menu onClick={this.clickItem.bind(this)} className="help-menu">
-        <Menu.Item key="forum">
-          {I18N.get('navigation.resources.submenu.forum')}
-        </Menu.Item>
-
-        <Menu.Item key="blog">
-          {I18N.get('navigation.resources.submenu.blog')}
-        </Menu.Item>
-      </Menu>
-    )
-  }
-
   getSelectedKeys() {
     let keys = _.map(
       [
@@ -236,8 +222,7 @@ export default class extends BaseComponent {
         'suggestion',
         'elips',
         'proposals',
-        'what-is-new',
-        'resources'
+        'blog'
       ],
       (key) => ((this.props.pathname || '').indexOf(`/${key}`) === 0 ? key : '')
     )
@@ -256,7 +241,6 @@ export default class extends BaseComponent {
 
   ord_render() {
     const helpDropdown = this.buildHelpDropdown()
-
     return (
       <Headroom>
         <Header className="c_Header">
@@ -362,20 +346,8 @@ export default class extends BaseComponent {
               {I18N.get('navigation.proposal')}
             </Menu.Item>
 
-            {/* <Menu.Item className="c_MenuItem link" key="what-is-new">
-              {I18N.get('navigation.whatsNew')}
-            </Menu.Item> */}
-
-            <Menu.Item className="c_MenuItem link" key="resources">
-              <Dropdown
-                overlay={this.buildResourcesDropdown()}
-                placement="bottomCenter"
-              >
-                <a className="ant-dropdown-link">
-                  {I18N.get('navigation.resources.title')}
-                  {/* <Hamburger /> */}
-                </a>
-              </Dropdown>
+            <Menu.Item className="c_MenuItem link" key="blog">
+              {I18N.get('navigation.resources.submenu.blog')}
             </Menu.Item>
           </Menu>
           <div className="clearfix" />
@@ -484,7 +456,6 @@ export default class extends BaseComponent {
           'candidates',
           'constitution/1',
           'whitepaper',
-          'what-is-new',
           'elips'
         ],
         key
@@ -550,7 +521,7 @@ export default class extends BaseComponent {
         linkToBlog += `/${USER_LANGUAGE.zh}`
       }
 
-      window.location.href = linkToBlog
+      window.open(linkToBlog, '_blank')
     } else if (key === 'docs') {
       analytics.track('DOCS_CLICKED', {
         url: location.href
