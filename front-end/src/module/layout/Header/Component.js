@@ -362,9 +362,9 @@ export default class extends BaseComponent {
               {I18N.get('navigation.proposal')}
             </Menu.Item>
 
-            <Menu.Item className="c_MenuItem link" key="what-is-new">
+            {/* <Menu.Item className="c_MenuItem link" key="what-is-new">
               {I18N.get('navigation.whatsNew')}
-            </Menu.Item>
+            </Menu.Item> */}
 
             <Menu.Item className="c_MenuItem link" key="resources">
               <Dropdown

@@ -146,9 +146,9 @@ export default class extends BaseComponent {
               <Menu.Item key="proposals">
                 {I18N.get('navigation.proposal')}
               </Menu.Item>
-              <Menu.Item key="what-is-new">
+              {/* <Menu.Item key="what-is-new">
                 {I18N.get('navigation.whatsNew')}
-              </Menu.Item>
+              </Menu.Item> */}
               <Menu.Item key="forum">
                 {I18N.get('navigation.resources.submenu.forum')}
               </Menu.Item>
