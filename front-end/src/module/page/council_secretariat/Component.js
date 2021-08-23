@@ -238,28 +238,6 @@ export default class extends StandardPage {
             </div>
           </Col>
         </Row>
-        {this.buildPositions()}
-      </div>
-    )
-  }
-
-  buildPositions() {
-    return (
-      <div id="open-positions" className="positions">
-        <div className="title">
-          {I18N.get('cs.secretariat.positions.title')}
-        </div>
-        <Row className="members">
-          {[1, 2, 3, 4].map((item) => (
-            <PersonCard
-              key={item}
-              title={I18N.get(
-                `cs.secretariat.positions.position_${item}.title`
-              )}
-              link={`/position/secretariat/${item}`}
-            />
-          ))}
-        </Row>
       </div>
     )
   }
