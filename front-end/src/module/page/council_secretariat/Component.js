@@ -52,12 +52,6 @@ export default class extends StandardPage {
     )
     return (
       <div className="p_cs">
-        {/* <Toast
-          storageKey="openPositions"
-          message={toastMsg}
-          defaultDisplay={false}
-        /> */}
-
         <div className="ebp-header-divider" />
         <div className="p_admin_index ebp-wrap">
           <div className="d_box">
@@ -174,13 +168,12 @@ export default class extends StandardPage {
         : ''
 
     const profile = secretariat.user && secretariat.user.profile
-
-    const firstname = profile && profile.firstname ? profile.firstname : ''
-    const lastname = profile && profile.lastname ? profile.lastname : ''
+    const firstname = profile && profile.firstName ? profile.firstName : ''
+    const lastname = profile && profile.lastName ? profile.lastName : ''
 
     const name = secretariat.didName
       ? secretariat.didName
-      : firstname + lastname
+      : firstname + ' ' + lastname
 
     return (
       <div className="secretariat">
@@ -244,28 +237,6 @@ export default class extends StandardPage {
               </div>
             </div>
           </Col>
-        </Row>
-        {this.buildPositions()}
-      </div>
-    )
-  }
-
-  buildPositions() {
-    return (
-      <div id="open-positions" className="positions">
-        <div className="title">
-          {I18N.get('cs.secretariat.positions.title')}
-        </div>
-        <Row className="members">
-          {[1, 2, 3, 4].map((item) => (
-            <PersonCard
-              key={item}
-              title={I18N.get(
-                `cs.secretariat.positions.position_${item}.title`
-              )}
-              link={`/position/secretariat/${item}`}
-            />
-          ))}
         </Row>
       </div>
     )
