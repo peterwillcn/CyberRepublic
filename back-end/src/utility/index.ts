@@ -57,18 +57,22 @@ export const getPemPublicKey = (publicKey: any) => {
   return jwkToPem(jwk)
 }
 
-const checkDidFromChain = async (did: string, chain: string) => {
+const checkDidFromChain = async (
+  did: string,
+  chain: string,
+  method: string
+) => {
   const headers = {
     'Content-Type': 'application/json'
   }
+
   const data = {
     jsonrpc: '2.0',
-    method: 'resolvedid',
-    params: {
-      did,
-      all: false
-    }
+    method,
+    id: '',
+    params: [{ did, all: false }]
   }
+
   try {
     const res = await axios.post(chain, data, {
       headers,
@@ -87,7 +91,8 @@ const checkDidFromChain = async (did: string, chain: string) => {
       if (!pubKeys) {
         throw 'Can not get DID public keys'
       }
-      const matched = pubKeys.find((el) => el.id === '#primary')
+      // const matched = pubKeys.find((el) => el.id === '#primary')
+      const matched = pubKeys[0]
       if (!matched) {
         throw 'Can not get DID primary key'
       }
@@ -108,11 +113,19 @@ const checkDidFromChain = async (did: string, chain: string) => {
 }
 
 export const getDidPublicKey = async (did: string) => {
-  const rs = await checkDidFromChain(did, process.env.EID_SIDECHAIN_URL)
+  const rs = await checkDidFromChain(
+    did,
+    process.env.EID_SIDECHAIN_URL,
+    'did_resolveDID'
+  )
   if (rs && rs.publicKey) {
     return rs
   } else {
-    const rs = await checkDidFromChain(did, process.env.DID_SIDECHAIN_URL)
+    const rs = await checkDidFromChain(
+      did,
+      process.env.DID_SIDECHAIN_URL,
+      'resolvedid'
+    )
     if (rs && rs.publicKey) {
       return rs
     }

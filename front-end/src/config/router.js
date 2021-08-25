@@ -85,7 +85,7 @@ const CVoteDetailPage = React.lazy(() => import('@/module/page/CVote/detail/Cont
 const CVoteEditPage = React.lazy(() => import('@/module/page/CVote/edit/Container'))
 
 // what's new
-const ReleaseList = React.lazy(() => import('@/module/page/release/list/Container'))
+// const ReleaseList = React.lazy(() => import('@/module/page/release/list/Container'))
 
 // suggestion
 const SuggestionListPage = React.lazy(() => import('@/module/page/suggestion/list/Container'))
@@ -252,10 +252,10 @@ export default [
      * What's new page
      ********************************************************************************
      */
-  {
-    path: '/what-is-new',
-    page: ReleaseList,
-  },
+  // {
+  //   path: '/what-is-new',
+  //   page: ReleaseList,
+  // },
   /*
      ********************************************************************************
      * Suggestion page

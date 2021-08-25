@@ -76,30 +76,6 @@ export default class extends BaseComponent {
       }
 
       window.location.href = linkToBlog
-    } else if (key === 'forum') {
-      // eslint-disable-next-line no-undef
-      analytics.track('FORUM_CLICKED', {
-        url: location.href
-      })
-      if (!isLogin) {
-        this.props.history.push('/login?MSG_CODE=1')
-      } else {
-        const forumLink = `${process.env.FORUM_URL}/login`
-        window.open(forumLink, '_blank')
-      }
-    } else if (key === 'docs') {
-      // eslint-disable-next-line no-undef
-      analytics.track('DOCS_CLICKED', {
-        url: location.href
-      })
-
-      let linkTo = 'https://cyberrepublic.org/docs/#/'
-
-      if (I18N.getLang() === USER_LANGUAGE.zh) {
-        linkTo += `${USER_LANGUAGE.zh}/`
-      }
-
-      window.location.href = linkTo
     } else if (key === 'landing') {
       this.props.history.push('/')
     }
@@ -146,18 +122,10 @@ export default class extends BaseComponent {
               <Menu.Item key="proposals">
                 {I18N.get('navigation.proposal')}
               </Menu.Item>
-              <Menu.Item key="what-is-new">
-                {I18N.get('navigation.whatsNew')}
-              </Menu.Item>
-              <Menu.Item key="forum">
-                {I18N.get('navigation.resources.submenu.forum')}
-              </Menu.Item>
+
               <Menu.Item key="blog">
                 {I18N.get('navigation.resources.submenu.blog')}
               </Menu.Item>
-              {/* <Menu.Item key="docs">
-                {I18N.get('navigation.resources.submenu.docs')}
-              </Menu.Item> */}
             </Menu>
           </Col>
         </Row>
