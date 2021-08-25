@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Popover, Spin } from 'antd'
 import QRCode from 'qrcode.react'
 import I18N from '@/I18N'
+import SwitchSvgIcon from '@/module/common/SwitchSvgIcon'
 import { StyledButton } from './style'
 
 class NewRoleSignSuggBtn extends Component {
