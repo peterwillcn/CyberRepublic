@@ -271,16 +271,10 @@ export default class extends BaseComponent {
         render: (id, item) => this.voteDataByUser(item)
       },
       {
-        title: I18N.get('council.voting.votingEndsIn'),
+        title: I18N.get('council.voting.proposedAt'),
         dataIndex: 'proposedAt',
-        key: 'endsIn',
-        render: (proposedAt, item) => this.renderEndsIn(item)
-      },
-      {
-        title: I18N.get('council.voting.communityEndsIn'),
-        dataIndex: 'proposedAt',
-        key: 'CommunityendsIn',
-        render: (proposedAt, item) => this.renderCommunityEndsIn(item)
+        render: (proposedAt, doc) =>
+          this.renderProposed(doc.published, proposedAt || doc.createdAt)
       },
       {
         title: I18N.get('council.voting.status'),
@@ -292,10 +286,16 @@ export default class extends BaseComponent {
           )
       },
       {
-        title: I18N.get('council.voting.proposedAt'),
+        title: I18N.get('council.voting.votingEndsIn'),
         dataIndex: 'proposedAt',
-        render: (proposedAt, doc) =>
-          this.renderProposed(doc.published, proposedAt || doc.createdAt)
+        key: 'endsIn',
+        render: (proposedAt, item) => this.renderEndsIn(item)
+      },
+      {
+        title: I18N.get('council.voting.communityEndsIn'),
+        dataIndex: 'proposedAt',
+        key: 'CommunityendsIn',
+        render: (proposedAt, item) => this.renderCommunityEndsIn(item)
       }
     ]
 
