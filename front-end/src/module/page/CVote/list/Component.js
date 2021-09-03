@@ -572,7 +572,7 @@ export default class extends BaseComponent {
             ' '
           ),
           this.renderStatus(v.status, v.rejectAmount, v.rejectThroughAmount),
-          this.renderEndsInForCSV(v)
+          this.renderEndsIn(v)
         ])
       })
       param.page = page
@@ -638,10 +638,6 @@ export default class extends BaseComponent {
     return this.renderBaseEndsIn(item)
   }
 
-  renderEndsInForCSV = (item) => {
-    return this.renderBaseEndsIn(item, true)
-  }
-
   renderBaseEndsIn = (item, isCSV = false) => {
     if (item.status === CVOTE_STATUS.PROPOSED) {
       return this.renderVoteEndsIn(item.proposedEndsHeight, item.proposedEnds)
@@ -653,33 +649,6 @@ export default class extends BaseComponent {
       )
     }
     return '--'
-  }
-
-  renderCommunityEndsIn = (item) => {
-    return this.renderCommunityBaseEndsIn(item)
-  }
-
-  renderCommunityEndsInForCSV = (item) => {
-    return this.renderCommunityBaseEndsIn(item, true)
-  }
-
-  renderCommunityBaseEndsIn = (item, isCSV = false) => {
-    if (item.status === CVOTE_STATUS.DRAFT) return null
-    if (
-      item.status === CVOTE_STATUS.PROPOSED ||
-      item.status === CVOTE_STATUS.REJECT
-    ) {
-      return '--'
-    }
-
-    if (item.status !== CVOTE_STATUS.NOTIFICATION) {
-      return I18N.get('council.voting.votingEndsIn.finished')
-    }
-
-    return this.renderVoteEndsIn(
-      item.notificationEndsHeight,
-      item.notificationEnds
-    )
   }
 
   renderVoteEndsIn = (endsHeight, endsIn) => {
