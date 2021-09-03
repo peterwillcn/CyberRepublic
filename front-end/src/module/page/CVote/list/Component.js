@@ -278,12 +278,16 @@ export default class extends BaseComponent {
       },
       {
         title: I18N.get('council.voting.status'),
-        render: (id, item) =>
-          this.renderStatus(
+        render: (id, item) => {
+          const status = this.renderStatus(
             item.status,
             item.rejectAmount,
             item.rejectThroughAmount
           )
+          return (
+            <span style={{ color: '#0f2631', fontWeight: 444 }}>{status}</span>
+          )
+        }
       },
       {
         title: I18N.get('council.voting.votingEndsIn'),
