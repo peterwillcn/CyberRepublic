@@ -571,12 +571,16 @@ export default class extends BaseComponent {
           v.proposedBy,
           this.voteDataByUserForCSV(v),
           _.replace(
-            this.renderProposed(v.published, v.proposedAt || v.createdAt) || '',
+            this.renderProposed(
+              v.published,
+              v.proposedAt || v.createdAt,
+              true
+            ) || '',
             ',',
             ' '
           ),
           this.renderStatus(v.status, v.rejectAmount, v.rejectThroughAmount),
-          this.renderEndsIn(v)
+          this.renderEndsIn(v, true)
         ])
       })
       param.page = page
@@ -638,24 +642,29 @@ export default class extends BaseComponent {
     this.props.history.push(`/proposals/${id}/edit`)
   }
 
-  renderEndsIn = (item) => {
-    return this.renderBaseEndsIn(item)
+  renderEndsIn = (item, isCSV = false) => {
+    return this.renderBaseEndsIn(item, isCSV)
   }
 
   renderBaseEndsIn = (item, isCSV = false) => {
     if (item.status === CVOTE_STATUS.PROPOSED) {
-      return this.renderVoteEndsIn(item.proposedEndsHeight, item.proposedEnds)
+      return this.renderVoteEndsIn(
+        item.proposedEndsHeight,
+        item.proposedEnds,
+        isCSV
+      )
     }
     if (item.status === CVOTE_STATUS.NOTIFICATION) {
       return this.renderVoteEndsIn(
         item.notificationEndsHeight,
-        item.notificationEnds
+        item.notificationEnds,
+        isCSV
       )
     }
     return '--'
   }
 
-  renderVoteEndsIn = (endsHeight, endsIn) => {
+  renderVoteEndsIn = (endsHeight, endsIn, isCSV = false) => {
     let endsInFloat = moment
       .duration(
         moment()
@@ -724,6 +733,9 @@ export default class extends BaseComponent {
         ' ' +
         I18N.get('council.voting.votingEndsIn.hours')
     }
+    if (isCSV) {
+      return `${endsHeight}( ≈ ${surplusTime})`
+    }
     return (
       <span style={{ whiteSpace: 'pre-wrap' }}>
         {`${endsHeight}\n( ≈ ${surplusTime})`}
@@ -743,12 +755,15 @@ export default class extends BaseComponent {
     return I18N.get(`cvoteStatus.${status}`) + percentageStr || ''
   }
 
-  renderProposed = (published, createdAt) => {
+  renderProposed = (published, createdAt, csv = false) => {
     const lang = localStorage.getItem('lang') || 'en'
     const format = lang === 'en' ? 'MMM D, YYYY' : 'YYYY-MM-DD'
     const formatTime = 'hh:mm:ss'
     const proposed = published && moment(createdAt).format(format)
     const detailTime = published && moment(createdAt).format(formatTime)
+    if (csv) {
+      return proposed + detailTime
+    }
     return (
       <span style={{ whiteSpace: 'pre-wrap' }}>
         {proposed + '\n' + detailTime}
