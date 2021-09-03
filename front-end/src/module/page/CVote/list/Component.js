@@ -554,11 +554,10 @@ export default class extends BaseComponent {
         I18N.get('council.voting.title'),
         I18N.get('council.voting.type'),
         I18N.get('council.voting.author'),
-        I18N.get('council.voting.votingEndsIn'),
-        I18N.get('council.voting.communityEndsIn'),
         I18N.get('council.voting.voteByCouncil'),
+        I18N.get('council.voting.proposedAt'),
         I18N.get('council.voting.status'),
-        I18N.get('council.voting.proposedAt')
+        I18N.get('council.voting.votingEndsIn')
       ])
       _.map(allListData, (v) => {
         dataCSV.push([
@@ -566,18 +565,16 @@ export default class extends BaseComponent {
           v.title,
           I18N.get(`proposal.type.${v.type}`),
           v.proposedBy,
-          this.renderEndsInForCSV(v),
-          this.renderCommunityEndsInForCSV(v),
           this.voteDataByUserForCSV(v),
-          this.renderStatus(v.status, v.rejectAmount, v.rejectThroughAmount),
           _.replace(
             this.renderProposed(v.published, v.proposedAt || v.createdAt) || '',
             ',',
             ' '
-          )
+          ),
+          this.renderStatus(v.status, v.rejectAmount, v.rejectThroughAmount),
+          this.renderEndsInForCSV(v)
         ])
       })
-      // const page = sessionStorage.getItem('proposalPage')
       param.page = page
       param.results = 10
       const { list, total } = await listData(param, canManage)
