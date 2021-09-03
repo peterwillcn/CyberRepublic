@@ -290,12 +290,6 @@ export default class extends BaseComponent {
         dataIndex: 'proposedAt',
         key: 'endsIn',
         render: (proposedAt, item) => this.renderEndsIn(item)
-      },
-      {
-        title: I18N.get('council.voting.communityEndsIn'),
-        dataIndex: 'proposedAt',
-        key: 'CommunityendsIn',
-        render: (proposedAt, item) => this.renderCommunityEndsIn(item)
       }
     ]
 
@@ -652,11 +646,16 @@ export default class extends BaseComponent {
   }
 
   renderBaseEndsIn = (item, isCSV = false) => {
-    if (item.status === CVOTE_STATUS.DRAFT) return null
-    if (item.status !== CVOTE_STATUS.PROPOSED)
-      return I18N.get('council.voting.votingEndsIn.finished')
-    // only show when status is PROPOSED
-    return this.renderVoteEndsIn(item.proposedEndsHeight, item.proposedEnds)
+    if (item.status === CVOTE_STATUS.PROPOSED) {
+      return this.renderVoteEndsIn(item.proposedEndsHeight, item.proposedEnds)
+    }
+    if (item.status === CVOTE_STATUS.NOTIFICATION) {
+      return this.renderVoteEndsIn(
+        item.notificationEndsHeight,
+        item.notificationEnds
+      )
+    }
+    return '--'
   }
 
   renderCommunityEndsIn = (item) => {
@@ -672,11 +671,14 @@ export default class extends BaseComponent {
     if (
       item.status === CVOTE_STATUS.PROPOSED ||
       item.status === CVOTE_STATUS.REJECT
-    )
+    ) {
       return '--'
-    if (item.status !== CVOTE_STATUS.NOTIFICATION)
+    }
+
+    if (item.status !== CVOTE_STATUS.NOTIFICATION) {
       return I18N.get('council.voting.votingEndsIn.finished')
-    // only show when status is PROPOSED
+    }
+
     return this.renderVoteEndsIn(
       item.notificationEndsHeight,
       item.notificationEnds
