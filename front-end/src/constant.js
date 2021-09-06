@@ -23,7 +23,7 @@ export const ELASTOS_LINKS = {
   EXPLORER: 'https://blockchain.elastos.org/status',
   GITHUB: 'https://github.com/elastos',
   NEWS: 'https://news.elastos.org',
-  WALLET: 'https://wallet.elastos.org',
+  WALLET: ' https://www.trinity-tech.io ',
   WWW: 'https://www.elastos.org'
 }
 
@@ -413,7 +413,6 @@ export const SUGGESTION_FILTER_STATUS = create([
   'ACTIVE',
   'UNDER_CONSIDERATION'
 ])
-
 
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 
