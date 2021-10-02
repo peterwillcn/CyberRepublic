@@ -16,6 +16,7 @@ const jwkToPem = require('jwk-to-pem')
 import * as jwt from 'jsonwebtoken'
 const Big = require('big.js')
 import { constant } from '../constant'
+import * as https from 'https'
 export {
   utilCrypto,
   sso,
@@ -73,9 +74,23 @@ const checkDidFromChain = async (
     params: [{ did, all: false }]
   }
 
+  // At instance level
+  const instance = axios.create({
+    httpsAgent: new https.Agent({
+      rejectUnauthorized: false
+    })
+  })
+  instance.get(chain)
+
+  // At request level
+  const agent = new https.Agent({
+    rejectUnauthorized: false
+  })
+
   try {
     const res = await axios.post(chain, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res && res.data && res.data.result) {
