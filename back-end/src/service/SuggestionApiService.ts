@@ -66,7 +66,7 @@ export default class extends Base {
       .getDBInstance()
       .find(query, fields.join(' '))
       .populate('createdBy', 'did')
-      .sort({ vid: -1 })
+      .sort({ displayId: -1 })
 
     if (
       param.page &&
