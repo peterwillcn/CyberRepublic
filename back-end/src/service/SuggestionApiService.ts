@@ -28,8 +28,12 @@ export default class extends Base {
     const query: any = {}
     query.old = { $exists: false }
 
-    if (!status || status.toUpperCase() === constant.SUGGESTION_STATUS.ACTIVE) {
+    if (!status) {
       query.status = constant.SUGGESTION_STATUS.ACTIVE
+    }
+    if (status && status.toUpperCase() === constant.SUGGESTION_STATUS.ACTIVE) {
+      query.status = constant.SUGGESTION_STATUS.ACTIVE
+      query.tags = { $eq: [] }
     }
     if (
       status &&
@@ -42,8 +46,8 @@ export default class extends Base {
     if (param.search) {
       const search = _.trim(param.search)
       query.$or = [{ title: { $regex: search, $options: 'i' } }]
-      if (_.isNumber(search)) {
-        query.$or.push({ vid: _.toNumber(search) })
+      if (parseInt(search, 10)) {
+        query.$or.push({ displayId: parseInt(search, 10) })
       }
     }
 
