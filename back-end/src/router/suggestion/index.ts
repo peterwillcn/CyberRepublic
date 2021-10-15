@@ -33,6 +33,7 @@ import secSignatureUrl from './sec_signature_url'
 import secSignatureCallback from './sec_signature_callback'
 import cancel from './cancel'
 import getSuggestionByNumber from './get_suggestion_by_number'
+import all_search from './all_search'
 
 export default Base.setRouter([
   {
@@ -203,6 +204,11 @@ export default Base.setRouter([
   {
     path: '/get-suggestion-by-number',
     router: getSuggestionByNumber,
+    method: 'get'
+  },
+  {
+    path: '/all_search',
+    router: all_search,
     method: 'get'
   }
 ])
