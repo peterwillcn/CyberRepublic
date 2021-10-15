@@ -14,7 +14,6 @@ import {
   utilCrypto,
   getPemPublicKey,
   getProposalReqToken,
-  getProposalJwtPrefix,
   ela
 } from '../utility'
 const Big = require('big.js')
