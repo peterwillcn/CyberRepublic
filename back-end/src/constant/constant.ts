@@ -329,6 +329,8 @@ export const SUGGESTION_STATUS = create([
   'CANCELLED'
 ])
 
+export const SUGGESTION_NEW_STATUS = create(['UNSIGNED', 'SIGNED', 'PROPOSED'])
+
 export const SUGGESTION_ABUSED_STATUS = create(['REPORTED', 'HANDLED'])
 
 export const SUGGESTION_TAG_TYPE = create([

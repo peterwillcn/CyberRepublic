@@ -14,8 +14,9 @@ export default class extends Base {
     if (
       status &&
       ![
-        constant.SUGGESTION_STATUS.ACTIVE,
-        constant.SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
+        constant.SUGGESTION_NEW_STATUS.UNSIGNED,
+        constant.SUGGESTION_NEW_STATUS.SIGNED,
+        constant.SUGGESTION_NEW_STATUS.PROPOSED
       ].includes(status.toUpperCase())
     ) {
       return {
@@ -27,19 +28,25 @@ export default class extends Base {
     }
     const query: any = {}
     query.old = { $exists: false }
+    query.status = constant.SUGGESTION_STATUS.ACTIVE
 
-    if (!status) {
-      query.status = constant.SUGGESTION_STATUS.ACTIVE
-    }
-    if (status && status.toUpperCase() === constant.SUGGESTION_STATUS.ACTIVE) {
-      query.status = constant.SUGGESTION_STATUS.ACTIVE
-      query.tags = { $eq: [] }
+    if (
+      status &&
+      status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.UNSIGNED
+    ) {
+      query['signature.data'] = { $exists: false }
     }
     if (
       status &&
-      status.toUpperCase() === constant.SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
+      status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.SIGNED
     ) {
-      query['tags.type'] = constant.SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
+      query['signature.data'] = { $exists: true }
+    }
+    if (
+      status &&
+      status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.PROPOSED
+    ) {
+      query.proposalHash = { $exists: true }
     }
 
     // search
@@ -54,12 +61,11 @@ export default class extends Base {
     const fields = [
       'displayId',
       'title',
-      'status',
       'type',
-      'tags',
       'createdAt',
       'createdBy',
-      'proposalHash'
+      'proposalHash',
+      'signature'
     ]
 
     const cursor = this.model
@@ -86,19 +92,40 @@ export default class extends Base {
     ])
 
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['_id', 'createdBy', 'type', 'tags'])
+      let temp = _.omit(o._doc, ['_id', 'createdBy', 'type', 'signature'])
       temp.proposedBy = _.get(o, 'createdBy.did.id')
       temp.createdAt = timestamp.second(temp.createdAt)
       temp.type = constant.CVOTE_TYPE_API[o.type]
-      const index = _.findIndex(
-        o.tags,
-        (tag: any) => {
-          return tag.type === constant.SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
-        },
-        0
-      )
-      if (index !== -1) {
-        temp.status = constant.SUGGESTION_TAG_TYPE.UNDER_CONSIDERATION
+      if (!status) {
+        const isSigned = _.get(o, 'signature.data')
+        const isProposed = _.get(o, 'proposalHash')
+        if (!isSigned) {
+          temp.status = constant.SUGGESTION_NEW_STATUS.UNSIGNED.toLowerCase()
+        }
+        if (isSigned) {
+          temp.status = constant.SUGGESTION_NEW_STATUS.SIGNED.toLowerCase()
+        }
+        if (isProposed) {
+          temp.status = constant.SUGGESTION_NEW_STATUS.PROPOSED.toLowerCase()
+        }
+      }
+      if (
+        status &&
+        status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.UNSIGNED
+      ) {
+        temp.status = constant.SUGGESTION_NEW_STATUS.UNSIGNED.toLowerCase()
+      }
+      if (
+        status &&
+        status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.SIGNED
+      ) {
+        temp.status = constant.SUGGESTION_NEW_STATUS.SIGNED.toLowerCase()
+      }
+      if (
+        status &&
+        status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.PROPOSED
+      ) {
+        temp.status = constant.SUGGESTION_NEW_STATUS.PROPOSED.toLowerCase()
       }
       return _.mapKeys(temp, function (value, key) {
         if (key == 'displayId') {
