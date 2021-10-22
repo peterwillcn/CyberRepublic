@@ -5,8 +5,10 @@ import { timestamp } from '../utility'
 
 export default class extends Base {
   private model: any
+  private zipFileModel: any
   protected init() {
     this.model = this.getDBModel('Suggestion')
+    this.zipFileModel = this.getDBModel('SuggestionZipFile')
   }
 
   public async list(param: any): Promise<Object> {
@@ -140,6 +142,22 @@ export default class extends Base {
     return {
       list: list,
       total
+    }
+  }
+
+  public async getDraftData(params: any): Promise<Object> {
+    const { draftHash } = params
+    if (!draftHash) {
+      return {
+        code: 400,
+        message: 'Invalid request parameter',
+        // tslint:disable-next-line:no-null-keyword
+        data: null
+      }
+    }
+    const rs = this.zipFileModel.getDBInstance().findOne({ draftHash })
+    return {
+      zip: rs.zip
     }
   }
 }

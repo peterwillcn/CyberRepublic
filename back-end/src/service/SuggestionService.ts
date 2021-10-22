@@ -48,7 +48,7 @@ const BASE_FIELDS = [
 
 interface BudgetItem {
   type: string
-  stage: string
+  stage?: string
   milestoneKey: string
   amount: string
   reasons: string
@@ -1892,7 +1892,7 @@ export default class extends Base {
           }
           break
         default:
-          const budget = _.get(suggestion, 'budget')
+          const budget: [BudgetItem] = _.get(suggestion, 'budget')
           const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
           jwtClaims.data = {
             ...jwtClaims.data,

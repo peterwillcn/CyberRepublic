@@ -8,7 +8,7 @@ export default class extends Base {
     const param = this.getParam()
     const service = this.buildService(SuggestionApiService)
 
-    const rs = await service.list(param)
+    const rs = await service.getDraftData(param)
     return this.result(1, rs)
   }
 }
