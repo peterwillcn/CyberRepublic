@@ -7,5 +7,5 @@ export const SuggestionZipFile = {
     required: true
   },
   draftHash: String,
-  zip: String
+  content: Buffer
 }

@@ -21,6 +21,7 @@
     "@types/http-status": "0.2.30",
     "@types/jsonwebtoken": "^8.3.7",
     "@types/optimist": "0.0.29",
+    "adm-zip": "^0.5.9",
     "agenda": "^3.1.0",
     "aws-sdk": "^2.245.1",
     "axios": "^0.21.1",
@@ -66,6 +67,7 @@
     "validator": "^10.2.0"
   },
   "devDependencies": {
+    "@types/adm-zip": "^0.4.34",
     "@types/chai": "4.0.6",
     "@types/connect-timeout": "^0.0.33",
     "@types/cucumber": "2.1.0",

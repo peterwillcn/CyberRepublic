@@ -156,8 +156,16 @@ export default class extends Base {
       }
     }
     const rs = this.zipFileModel.getDBInstance().findOne({ draftHash })
+    if (!rs) {
+      return {
+        code: 400,
+        message: 'Invalid this draft hash',
+        // tslint:disable-next-line:no-null-keyword
+        data: null
+      }
+    }
     return {
-      zip: rs.zip
+      hexString: rs.content.toString('hex')
     }
   }
 }
