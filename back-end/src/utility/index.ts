@@ -58,6 +58,11 @@ export const getPemPublicKey = (publicKey: any) => {
   return jwkToPem(jwk)
 }
 
+// At request level
+const agent = new https.Agent({
+  rejectUnauthorized: false
+})
+
 const checkDidFromChain = async (
   did: string,
   chain: string,
@@ -73,19 +78,6 @@ const checkDidFromChain = async (
     id: '',
     params: [{ did, all: false }]
   }
-
-  // At instance level
-  const instance = axios.create({
-    httpsAgent: new https.Agent({
-      rejectUnauthorized: false
-    })
-  })
-  instance.get(chain)
-
-  // At request level
-  const agent = new https.Agent({
-    rejectUnauthorized: false
-  })
 
   try {
     const res = await axios.post(chain, data, {
@@ -160,9 +152,11 @@ export const getUtxosByAmount = async (amount: string) => {
       utxotype: 'unused'
     }
   }
+
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res && res.data) {
@@ -203,6 +197,7 @@ export const getProposalState = async (query: {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res) {
@@ -232,6 +227,7 @@ export const getProposalData = async (proposalHash: string) => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res) {
@@ -286,9 +282,11 @@ const checkDidNameFromChain = async (did: string, chain: string) => {
       all: false
     }
   }
+
   try {
     const res = await axios.post(chain, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res && res.data && res.data.result) {
@@ -344,6 +342,7 @@ export const getVoteResultByTxid = async (txid: string) => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res && res.data && res.data.result) {
@@ -369,6 +368,7 @@ export const getCurrentHeight = async () => {
   try {
     const res = await axios.post(process.env.ELA_NODE_URL, data, {
       headers,
+      httpsAgent: agent,
       timeout: 5000
     })
     if (res) {
