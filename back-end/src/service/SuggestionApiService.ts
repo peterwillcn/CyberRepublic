@@ -8,7 +8,7 @@ export default class extends Base {
   private zipFileModel: any
   protected init() {
     this.model = this.getDBModel('Suggestion')
-    this.zipFileModel = this.getDBModel('SuggestionZipFile')
+    this.zipFileModel = this.getDBModel('Suggestion_Zip_File')
   }
 
   public async list(param: any): Promise<Object> {
@@ -94,7 +94,7 @@ export default class extends Base {
     ])
 
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['_id', 'createdBy', 'type', 'signature'])
+      let temp = _.omit(o._doc, ['createdBy', 'type', 'signature'])
       temp.proposedBy = _.get(o, 'createdBy.did.id')
       temp.createdAt = timestamp.second(temp.createdAt)
       temp.type = constant.CVOTE_TYPE_API[o.type]
@@ -132,6 +132,8 @@ export default class extends Base {
       return _.mapKeys(temp, function (value, key) {
         if (key == 'displayId') {
           return 'id'
+        } else if (key === '_id') {
+          return 'sid'
         } else {
           return key
         }
