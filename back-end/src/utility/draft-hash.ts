@@ -17,6 +17,40 @@ async function downloadImage(url: string) {
   return response.data
 }
 
+async function downloadImages(urls: any, zip: admZip) {
+  const promiseArr = []
+  for (let i = 0; i < urls.length; i++) {
+    const url = urls[i].url
+    promiseArr.push(downloadImage(url))
+  }
+  const images = await Promise.all(promiseArr)
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i]
+    zip.addFile(`image/${urls[i].name}`, image)
+  }
+}
+
+function getImageUrls(content: string) {
+  let temp = content
+  const regex = /\!\[.*?\]\(https?\:\/\/.*?\)/g
+  const images = content.match(regex)
+
+  const urls = images.map((el) => {
+    const regex = /\!\[.*?\]\((.*?)\)/
+    const url = el.replace(regex, '$1')
+    const rs = url.split('/')
+    let name = rs[rs.length - 1]
+    const regex1 = /(.+)\?.+\=.+\&*/
+
+    if (regex1.test(name)) {
+      name = name.replace(regex1, '$1')
+    }
+    temp = temp.replace(el, `[image](./image/${name})`)
+    return { url, name }
+  })
+  return { urls, content: temp }
+}
+
 function generateProposalData(data: any) {
   const {
     title,
@@ -27,12 +61,25 @@ function generateProposalData(data: any) {
     planIntro,
     budgetIntro
   } = data
+
+  const newAbstract = getImageUrls(abstract)
+  const newMotivation = getImageUrls(motivation)
+  const newGoal = getImageUrls(goal)
+  const newPlanIntro = getImageUrls(planIntro)
+  const newBudgetIntro = getImageUrls(budgetIntro)
+  const urls = [
+    ...newAbstract.urls,
+    ...newMotivation.urls,
+    ...newGoal.urls,
+    ...newPlanIntro.urls,
+    ...newBudgetIntro.urls
+  ]
   const proposal = {
     title,
     timestamp: timestamp.second(createdAt),
-    abstract,
-    motivation,
-    goal,
+    abstract: newAbstract.content,
+    motivation: newMotivation.content,
+    goal: newGoal.content,
     milestone: {
       '0': {
         time: 604800,
@@ -51,28 +98,27 @@ function generateProposalData(data: any) {
         info: 'xxx'
       }
     },
-    planIntro,
+    planIntro: newPlanIntro.content,
     relevance: {
       proposal: 'xxx',
       relevanceDetail: 'xxx'
     },
-    budgetIntro
+    budgetIntro: newBudgetIntro.content
   }
-  return proposal
+  return { proposal, urls }
 }
 
 async function compressFiles(data: any) {
-  const proposal = generateProposalData(data)
   const zip = new admZip()
-  const image = await downloadImage('')
-  zip.addFile('image/xxx.jpg', image)
+  const { proposal, urls } = generateProposalData(data)
+
+  await downloadImages(urls, zip)
   zip.addFile(
     'proposal.json',
     Buffer.from(JSON.stringify(proposal, null, 2), 'utf8')
   )
 
   const content = zip.toBuffer()
-  // zip.writeZip('./zip/files.zip')
   return content
 }
 
