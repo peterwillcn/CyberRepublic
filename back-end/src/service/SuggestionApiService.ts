@@ -167,7 +167,7 @@ export default class extends Base {
       }
     }
     return {
-      hexString: rs.content.toString('hex')
+      content: rs.content.toString('hex')
     }
   }
 }

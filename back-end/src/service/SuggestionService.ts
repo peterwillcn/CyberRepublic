@@ -16,6 +16,7 @@ import {
   getProposalReqToken,
   ela
 } from '../utility'
+import { getSuggestionDraftHash } from '../utility/draft-hash'
 const Big = require('big.js')
 const {
   SUGGESTION_TYPE,
@@ -58,9 +59,11 @@ interface BudgetItem {
 export default class extends Base {
   private model: any
   private draftModel: any
+  private zipFileModel: any
   protected init() {
     this.model = this.getDBModel('Suggestion')
     this.draftModel = this.getDBModel('SuggestionDraft')
+    this.zipFileModel = this.getDBModel('Suggestion_Zip_File')
   }
 
   public async cancel(id: string) {
@@ -1595,6 +1598,18 @@ export default class extends Base {
     return utilCrypto.sha256D(JSON.stringify(content))
   }
 
+  private async getDraftHashV2(suggestion: any) {
+    const rs = await getSuggestionDraftHash(suggestion)
+    if (rs && rs.content && rs.draftHash) {
+      await this.zipFileModel.save({
+        suggestionId: suggestion._id,
+        draftHash: rs.draftHash,
+        content: rs.content
+      })
+      return rs.draftHash
+    }
+  }
+
   public async getNewOwnerSignatureUrl(param: { id: string }) {
     try {
       const { id } = param
@@ -1803,6 +1818,9 @@ export default class extends Base {
       }
       let fields: any = {}
       const draftHash = this.getDraftHash(suggestion)
+      // const draftHash = await this.getDraftHashV2(suggestion)
+      console.log(`suggestion draftHash...`, draftHash)
+
       fields.draftHash = draftHash
       let ownerPublicKey: string
       if (suggestion.ownerPublicKey) {

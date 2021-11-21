@@ -1,5 +1,5 @@
 import * as crypto from 'crypto'
-import admZip from 'adm-zip'
+import * as admZip from 'adm-zip'
 import axios from 'axios'
 import { timestamp } from '../utility'
 
@@ -34,7 +34,9 @@ function getImageUrls(content: string) {
   let temp = content
   const regex = /\!\[.*?\]\(https?\:\/\/.*?\)/g
   const images = content.match(regex)
-
+  if (!images) {
+    return { urls: [], content }
+  }
   const urls = images.map((el) => {
     const regex = /\!\[.*?\]\((.*?)\)/
     const url = el.replace(regex, '$1')
@@ -117,7 +119,8 @@ async function compressFiles(data: any) {
     'proposal.json',
     Buffer.from(JSON.stringify(proposal, null, 2), 'utf8')
   )
-
+  // for testing
+  // zip.writeZip('./zip/files.zip')
   const content = zip.toBuffer()
   return content
 }
@@ -125,7 +128,8 @@ async function compressFiles(data: any) {
 export const getSuggestionDraftHash = async (suggetion: any) => {
   try {
     const content = await compressFiles(suggetion)
-    if (content && content.length < 1048576) {
+    // the size of a zip file should be less than 1M
+    if (content && content.length >= 1048576) {
       return {
         error: `The size of this suggestion's zip data is bigger than 1M`
       }
