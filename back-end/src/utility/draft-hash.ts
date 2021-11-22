@@ -78,11 +78,25 @@ function generateProposalData(data: any) {
     motivation: newMotivation.content,
     goal: newGoal.content
   }
-  if (milestone) {
-    proposal.milestone = milestone
+  if (milestone && milestone.length > 0) {
+    const info = {}
+    for (let i = 0; i < milestone.length; i++) {
+      info[i] = {
+        time: timestamp.second(milestone[i].date),
+        criteria: milestone[i].version
+      }
+    }
+    proposal.milestone = info
   }
-  if (teamInfo) {
-    proposal.teamInfo = teamInfo
+  if (teamInfo && teamInfo.length > 0) {
+    const info = {}
+    for (let i = 0; i < teamInfo.length; i++) {
+      info[i + 1] = {
+        ...teamInfo[i],
+        name: teamInfo[i].member
+      }
+    }
+    proposal.teamInfo = info
   }
   if (relevance) {
     proposal.relevance = relevance
