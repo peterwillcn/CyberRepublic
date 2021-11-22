@@ -31,6 +31,7 @@ async function downloadImages(urls: any, zip: admZip) {
 }
 
 function getImageUrls(content: string) {
+  if (!content) return
   let temp = content
   const regex = /\!\[.*?\]\(https?\:\/\/.*?\)/g
   const images = content.match(regex)
@@ -60,53 +61,44 @@ function generateProposalData(data: any) {
     motivation,
     goal,
     createdAt,
+    milestone,
+    teamInfo,
     planIntro,
+    relevance,
     budgetIntro
   } = data
 
   const newAbstract = getImageUrls(abstract)
   const newMotivation = getImageUrls(motivation)
   const newGoal = getImageUrls(goal)
-  const newPlanIntro = getImageUrls(planIntro)
-  const newBudgetIntro = getImageUrls(budgetIntro)
-  const urls = [
-    ...newAbstract.urls,
-    ...newMotivation.urls,
-    ...newGoal.urls,
-    ...newPlanIntro.urls,
-    ...newBudgetIntro.urls
-  ]
-  const proposal = {
+  const proposal: { [key: string]: any } = {
     title,
     timestamp: timestamp.second(createdAt),
     abstract: newAbstract.content,
     motivation: newMotivation.content,
-    goal: newGoal.content,
-    milestone: {
-      '0': {
-        time: 604800,
-        criteria: 'xxx'
-      },
-      '1': {
-        time: 1209600,
-        criteria: 'xxx'
-      }
-    },
-    teamInfo: {
-      '1': {
-        name: 'xxx',
-        role: 'xxx',
-        responsibility: 'xxx',
-        info: 'xxx'
-      }
-    },
-    planIntro: newPlanIntro.content,
-    relevance: {
-      proposal: 'xxx',
-      relevanceDetail: 'xxx'
-    },
-    budgetIntro: newBudgetIntro.content
+    goal: newGoal.content
   }
+  if (milestone) {
+    proposal.milestone = milestone
+  }
+  if (teamInfo) {
+    proposal.teamInfo = teamInfo
+  }
+  if (relevance) {
+    proposal.relevance = relevance
+  }
+  let urls = [...newAbstract.urls, ...newMotivation.urls, ...newGoal.urls]
+  if (planIntro) {
+    const newPlanIntro = getImageUrls(planIntro)
+    urls = [...urls, ...newPlanIntro.urls]
+    proposal.planIntro = newPlanIntro.content
+  }
+  if (budgetIntro) {
+    const newBudgetIntro = getImageUrls(budgetIntro)
+    urls = [...urls, ...newBudgetIntro.urls]
+    proposal.budgetIntro = newBudgetIntro.content
+  }
+
   return { proposal, urls }
 }
 
