@@ -213,7 +213,7 @@ export default Base.setRouter([
     method: 'get'
   },
   {
-    path: '/draft-data/:draftHash',
+    path: '/draft_data/:draftHash',
     router: getDraftData,
     method: 'get'
   }

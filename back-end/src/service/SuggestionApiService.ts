@@ -157,7 +157,7 @@ export default class extends Base {
         data: null
       }
     }
-    const rs = this.zipFileModel.getDBInstance().findOne({ draftHash })
+    const rs = await this.zipFileModel.getDBInstance().findOne({ draftHash })
     if (!rs) {
       return {
         code: 400,
