@@ -1599,6 +1599,12 @@ export default class extends Base {
   }
 
   private async getDraftHashV2(suggestion: any) {
+    const doc = await this.zipFileModel
+      .getDBInstance()
+      .findOne({ suggestionId: suggestion._id })
+    if (doc) {
+      return doc.draftHash
+    }
     const rs = await getSuggestionDraftHash(suggestion)
     if (rs && rs.content && rs.draftHash) {
       await this.zipFileModel.save({
