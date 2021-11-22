@@ -98,8 +98,15 @@ function generateProposalData(data: any) {
     }
     proposal.teamInfo = info
   }
-  if (relevance) {
-    proposal.relevance = relevance
+  if (relevance && relevance.length > 0) {
+    const info = {}
+    for (let i = 0; i < relevance.length; i++) {
+      info[i + 1] = {
+        proposal: relevance[i].title,
+        relevanceDetail: relevance[i].relevanceDetail
+      }
+    }
+    proposal.relevance = info
   }
   let urls = [...newAbstract.urls, ...newMotivation.urls, ...newGoal.urls]
   if (planIntro) {
