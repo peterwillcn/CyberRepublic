@@ -90,8 +90,10 @@ function generateProposalData(data: any) {
     const info = {}
     for (let i = 0; i < plan.teamInfo.length; i++) {
       info[i + 1] = {
-        ...plan.teamInfo[i],
-        name: plan.teamInfo[i].member
+        role: plan.teamInfo[i].role,
+        name: plan.teamInfo[i].member,
+        responsibility: plan.teamInfo[i].responsibility,
+        info: plan.teamInfo[i].info
       }
     }
     proposal.teamInfo = info
