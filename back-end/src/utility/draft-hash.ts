@@ -3,6 +3,10 @@ import * as admZip from 'adm-zip'
 import axios from 'axios'
 import { timestamp } from '../utility'
 
+function uniqImageUrls(data, key) {
+  return [...new Map(data.map((x) => [key(x), x])).values()]
+}
+
 function sha256(str: Buffer) {
   const hash = crypto.createHash('sha256')
   return hash.update(str).digest('hex')
@@ -51,7 +55,8 @@ function getImageUrls(content: string) {
     temp = temp.replace(el, `[image](./image/${name})`)
     return { url, name }
   })
-  return { urls, content: temp }
+  const uniqUrls = uniqImageUrls(urls, (el) => el.url)
+  return { urls: uniqUrls, content: temp }
 }
 
 function generateProposalData(data: any) {
