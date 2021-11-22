@@ -167,6 +167,7 @@ export default class extends Base {
       }
     }
     return {
+      sid: rs.suggestionId,
       content: rs.content.toString('hex')
     }
   }
