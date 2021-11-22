@@ -1606,6 +1606,9 @@ export default class extends Base {
       return doc.draftHash
     }
     const rs = await getSuggestionDraftHash(suggestion)
+    if (rs && rs.error) {
+      return { error: rs.error }
+    }
     if (rs && rs.content && rs.draftHash) {
       await this.zipFileModel.save({
         suggestionId: suggestion._id,
@@ -1823,10 +1826,12 @@ export default class extends Base {
         return { success: false, message: 'Your DID not bound.' }
       }
       let fields: any = {}
-      const draftHash = this.getDraftHash(suggestion)
-      // const draftHash = await this.getDraftHashV2(suggestion)
-      console.log(`suggestion draftHash...`, draftHash)
-
+      // const draftHash = this.getDraftHash(suggestion)
+      const draftHashV2 = await this.getDraftHashV2(suggestion)
+      if (draftHashV2 && draftHashV2.error) {
+        return { success: false, message: draftHashV2.error }
+      }
+      const draftHash = draftHashV2.draftHash
       fields.draftHash = draftHash
       let ownerPublicKey: string
       if (suggestion.ownerPublicKey) {

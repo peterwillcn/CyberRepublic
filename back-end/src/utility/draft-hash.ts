@@ -61,13 +61,11 @@ function generateProposalData(data: any) {
     motivation,
     goal,
     createdAt,
-    milestone,
-    teamInfo,
+    plan,
     planIntro,
     relevance,
     budgetIntro
   } = data
-
   const newAbstract = getImageUrls(abstract)
   const newMotivation = getImageUrls(motivation)
   const newGoal = getImageUrls(goal)
@@ -78,22 +76,22 @@ function generateProposalData(data: any) {
     motivation: newMotivation.content,
     goal: newGoal.content
   }
-  if (milestone && milestone.length > 0) {
+  if (plan && plan.milestone && plan.milestone.length > 0) {
     const info = {}
-    for (let i = 0; i < milestone.length; i++) {
+    for (let i = 0; i < plan.milestone.length; i++) {
       info[i] = {
-        time: timestamp.second(milestone[i].date),
-        criteria: milestone[i].version
+        time: timestamp.second(plan.milestone[i].date),
+        criteria: plan.milestone[i].version
       }
     }
     proposal.milestone = info
   }
-  if (teamInfo && teamInfo.length > 0) {
+  if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
     const info = {}
-    for (let i = 0; i < teamInfo.length; i++) {
+    for (let i = 0; i < plan.teamInfo.length; i++) {
       info[i + 1] = {
-        ...teamInfo[i],
-        name: teamInfo[i].member
+        ...plan.teamInfo[i],
+        name: plan.teamInfo[i].member
       }
     }
     proposal.teamInfo = info
