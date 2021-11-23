@@ -7,7 +7,8 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/base16-light.css'
 import MarkdownPreview from '@/module/common/MarkdownPreview'
 import styled from 'styled-components'
-import UploadBase64Image from '@/module/common/UploadBase64Image'
+// import UploadBase64Image from '@/module/common/UploadBase64Image'
+import UploadImageToS3 from '@/module/common/UploadImageToS3'
 import ToggleMarkdownPreview from '@/module/common/ToggleMarkdownPreview'
 
 class Component extends BaseComponent {
@@ -58,7 +59,7 @@ class Component extends BaseComponent {
       <Wrapper>
         <Toolbar>
           {upload === false ? null : (
-            <UploadBase64Image insertImage={this.insertImage} name={name} />
+            <UploadImageToS3 insertImage={this.insertImage} name={name} />
           )}
           <ToggleMarkdownPreview togglePreview={this.togglePreview} />
         </Toolbar>
@@ -122,7 +123,7 @@ const Wrapper = styled.div`
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    max-width: 20%;
+    max-width: 100%;
     display: inline-block;
     vertical-align: bottom;
   }
