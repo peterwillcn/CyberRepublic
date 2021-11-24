@@ -16,19 +16,25 @@ class RelevanceForm extends BaseComponent {
     this.state = {
       item: this.props.item,
       data: [],
-      value: undefined,
+      value: undefined
     }
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     e.stopPropagation() // prevent event bubbling
     e.preventDefault()
     const { form, onSubmit } = this.props
     form.validateFields((err, values) => {
       if (!err) {
-        const data = _.find(this.state.data, { "proposal": values.proposal }) ||
+        const data =
+          _.find(this.state.data, { proposal: values.proposal }) ||
           this.state.item
-        onSubmit({...values,title: data.title, proposal: data.proposal})
+        onSubmit({
+          ...values,
+          title: data.title,
+          proposal: data.proposal,
+          proposalHash: data.proposalHash
+        })
       }
     })
   }
@@ -40,7 +46,8 @@ class RelevanceForm extends BaseComponent {
     if (rs) {
       const data = rs.map((obj) => ({
         title: obj.title,
-        proposal: obj._id
+        proposal: obj._id,
+        proposalHash: obj.proposalHash
       }))
       this.setState({ data }, () => {
         callback(data)
@@ -48,14 +55,16 @@ class RelevanceForm extends BaseComponent {
     }
   }
 
-  handleChange = value => {
+  handleChange = (value) => {
     this.setState({ value })
   }
 
   ord_render() {
     const { getFieldDecorator } = this.props.form
     const { item } = this.props
-    const option = _.map(this.state.data, (o) => (<Select.Option key={o.proposal}>{o.title}</Select.Option>))
+    const option = _.map(this.state.data, (o) => (
+      <Select.Option key={o.proposal}>{o.title}</Select.Option>
+    ))
     const proposalTitle = item && item.title
     let title = I18N.get('suggestion.plan.createRelevance')
     if (!_.isEmpty(item)) {
@@ -66,9 +75,7 @@ class RelevanceForm extends BaseComponent {
       <Wrapper>
         <Title>{title}</Title>
         <Form onSubmit={this.handleSubmit}>
-          <Label>
-            {I18N.get('from.SuggestionForm.proposal')}
-          </Label>
+          <Label>{I18N.get('from.SuggestionForm.proposal')}</Label>
           <FormItem>
             {getFieldDecorator('proposal', {
               rules: [
@@ -76,7 +83,7 @@ class RelevanceForm extends BaseComponent {
                   required: true,
                   message: I18N.get('suggestion.form.error.required')
                 }
-              ],
+              ]
             })(
               <Select
                 showSearch
@@ -85,7 +92,13 @@ class RelevanceForm extends BaseComponent {
                 filterOption={false}
                 onSearch={this.fetchProposal}
                 onChange={this.handleChange}
-                suffixIcon={<Icon type="search" spin={false} style={{ height: '100px !improtant' }} />}
+                suffixIcon={
+                  <Icon
+                    type="search"
+                    spin={false}
+                    style={{ height: '100px !improtant' }}
+                  />
+                }
                 defaultActiveFirstOption={false}
                 placeholder={proposalTitle}
                 notFoundContent={null}
@@ -97,9 +110,7 @@ class RelevanceForm extends BaseComponent {
             )}
           </FormItem>
 
-          <Label gutter={-8}>
-            {I18N.get('from.SuggestionForm.detail')}
-          </Label>
+          <Label gutter={-8}>{I18N.get('from.SuggestionForm.detail')}</Label>
           <FormItem>
             {getFieldDecorator('relevanceDetail', {
               rules: [
@@ -112,7 +123,9 @@ class RelevanceForm extends BaseComponent {
                 item && item.relevanceDetail ? item.relevanceDetail : ''
             })(
               <CodeMirrorEditor
-                content={item && item.relevanceDetail ? item.relevanceDetail : ''}
+                content={
+                  item && item.relevanceDetail ? item.relevanceDetail : ''
+                }
                 name="responsibility"
                 autofocus={false}
               />
@@ -163,7 +176,7 @@ const Label = styled.div`
   font-size: 17px;
   color: #000;
   display: block;
-  margin-bottom: ${props => (props.gutter ? props.gutter : 10)}px;
+  margin-bottom: ${(props) => (props.gutter ? props.gutter : 10)}px;
   > span {
     color: #ff0000;
   }

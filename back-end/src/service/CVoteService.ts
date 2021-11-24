@@ -780,8 +780,8 @@ export default class extends Base {
         notificationEnds = (o.notificationEndsHeight - currentHeight) * 252
       }
       const voteHistory = await db_cvote_history
-      .getDBInstance()
-      .find({ proposalBy: o._id })
+        .getDBInstance()
+        .find({ proposalBy: o._id })
       const data = {
         ...o._doc,
         proposedEnds,
@@ -994,39 +994,41 @@ export default class extends Base {
     const budgets = _.get(result, 'data.proposal.budgets')
     let isBudgetUpdated = false
     if (budgets) {
-      const budget = proposal.budget && proposal.budget.map((item, index) => {
-        const chainStatus = budgets[index].status.toLowerCase()
-        if (
-          chainStatus === 'withdrawn' &&
-          item.status === WAITING_FOR_WITHDRAWAL
-        ) {
-          isBudgetUpdated = true
-          return { ...item, status: WITHDRAWN }
-        }
-        if (
-          chainStatus === 'rejected' &&
-          item.status === WAITING_FOR_APPROVAL
-        ) {
-          isBudgetUpdated = true
-          this.notifyProposalOwner(
-            proposal.proposer,
-            this.rejectedMailTemplate(proposal.vid)
-          )
-          return { ...item, status: REJECTED }
-        }
-        if (
-          chainStatus === 'withdrawable' &&
-          item.status === WAITING_FOR_APPROVAL
-        ) {
-          isBudgetUpdated = true
-          this.notifyProposalOwner(
-            proposal.proposer,
-            this.approvalMailTemplate(proposal.vid)
-          )
-          return { ...item, status: WAITING_FOR_WITHDRAWAL }
-        }
-        return item
-      })
+      const budget =
+        proposal.budget &&
+        proposal.budget.map((item, index) => {
+          const chainStatus = budgets[index].status.toLowerCase()
+          if (
+            chainStatus === 'withdrawn' &&
+            item.status === WAITING_FOR_WITHDRAWAL
+          ) {
+            isBudgetUpdated = true
+            return { ...item, status: WITHDRAWN }
+          }
+          if (
+            chainStatus === 'rejected' &&
+            item.status === WAITING_FOR_APPROVAL
+          ) {
+            isBudgetUpdated = true
+            this.notifyProposalOwner(
+              proposal.proposer,
+              this.rejectedMailTemplate(proposal.vid)
+            )
+            return { ...item, status: REJECTED }
+          }
+          if (
+            chainStatus === 'withdrawable' &&
+            item.status === WAITING_FOR_APPROVAL
+          ) {
+            isBudgetUpdated = true
+            this.notifyProposalOwner(
+              proposal.proposer,
+              this.approvalMailTemplate(proposal.vid)
+            )
+            return { ...item, status: WAITING_FOR_WITHDRAWAL }
+          }
+          return item
+        })
       if (isBudgetUpdated && budget) {
         proposal.budget = budget
       }
@@ -1381,18 +1383,18 @@ export default class extends Base {
     const db_config = this.getDBModel('Config')
     let currentHeight = await ela.height()
     const list = await db_cvote
-    .getDBInstance()
-    .find({
-      proposalHash: { $exists: true },
-      status: {
-        $in: [
-          constant.CVOTE_STATUS.PROPOSED,
-          constant.CVOTE_STATUS.NOTIFICATION,
-          constant.CVOTE_STATUS.ACTIVE
-        ]
-      }
-    })
-    .sort({ vid: 1 })
+      .getDBInstance()
+      .find({
+        proposalHash: { $exists: true },
+        status: {
+          $in: [
+            constant.CVOTE_STATUS.PROPOSED,
+            constant.CVOTE_STATUS.NOTIFICATION,
+            constant.CVOTE_STATUS.ACTIVE
+          ]
+        }
+      })
+      .sort({ vid: 1 })
 
     let tempCurrentHeight = 0
     let compareHeight = 0
@@ -1474,10 +1476,8 @@ export default class extends Base {
   }
 
   public async updateProposalOnNotification(data: any) {
-    const {
-      WAITING_FOR_WITHDRAWAL,
-      WAITING_FOR_REQUEST
-    } = constant.MILESTONE_STATUS
+    const { WAITING_FOR_WITHDRAWAL, WAITING_FOR_REQUEST } =
+      constant.MILESTONE_STATUS
     const db_cvote = this.getDBModel('CVote')
     const { rs, _id } = data
     let { rejectThroughAmount } = data
@@ -2503,7 +2503,7 @@ export default class extends Base {
       {
         title: { $regex: param.title, $options: 'i' }
       },
-      ['_id', 'title']
+      ['_id', 'title', 'proposalHash']
     )
     return proposalList
   }
