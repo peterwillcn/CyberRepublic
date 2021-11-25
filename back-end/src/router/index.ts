@@ -6,6 +6,7 @@ import * as moment from 'moment'
 
 import community from './community'
 import cvote from './cvote'
+import cvoteV2 from './api_v2/cvote'
 import cvoteTracking from './cvote_tracking'
 import cvoteSummary from './cvote_summary'
 import google from './google'
@@ -89,6 +90,7 @@ router.use('/ping', ping)
 
 router.use('/community', community)
 router.use('/cvote', cvote)
+router.use('/v2/cvote', cvoteV2)
 router.use('/cvoteTracking', cvoteTracking)
 router.use('/cvoteSummary', cvoteSummary)
 router.use('/google', google)

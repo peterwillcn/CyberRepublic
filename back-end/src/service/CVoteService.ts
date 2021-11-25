@@ -16,8 +16,7 @@ import {
   utilCrypto,
   user as userUtil,
   timestamp,
-  logger,
-  getProposalJwtPrefix
+  logger
 } from '../utility'
 
 const util = require('util')
