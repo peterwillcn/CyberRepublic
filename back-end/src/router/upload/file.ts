@@ -8,13 +8,7 @@ export default class UploadFile extends Base {
     if (!this.req['files'] || !this.req['files'].file) {
       throw 'invalid upload file'
     }
-
-    // TODO support multi files upload?
-
     const url = await uploadService.saveFile(this.req['files'].file)
-
-    return this.result(1, {
-      url
-    })
+    return this.result(1, { url })
   }
 }
