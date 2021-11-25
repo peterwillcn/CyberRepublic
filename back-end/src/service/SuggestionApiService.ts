@@ -11,7 +11,7 @@ export default class extends Base {
     this.zipFileModel = this.getDBModel('Suggestion_Zip_File')
   }
 
-  public async list(param: any): Promise<Object> {
+  public async list(param: any, version = 'v1'): Promise<Object> {
     const { status } = param
     if (
       status &&
@@ -94,9 +94,15 @@ export default class extends Base {
     ])
 
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['createdBy', 'type', 'signature'])
-      temp.proposedBy = _.get(o, 'createdBy.did.id')
-      temp.createdAt = timestamp.second(temp.createdAt)
+      let temp = _.omit(o._doc, ['createdBy', 'type', 'signature', 'createdAt'])
+      const createdAt = _.get(o, 'createdAt')
+      if (version === 'v2') {
+        temp.proposer = _.get(o, 'createdBy.did.didName')
+        temp.createdat = timestamp.second(createdAt)
+      } else {
+        temp.proposedBy = _.get(o, 'createdBy.did.id')
+        temp.createdAt = timestamp.second(createdAt)
+      }
       temp.type = constant.CVOTE_TYPE_API[o.type]
       if (!status) {
         const isSigned = _.get(o, 'signature.data')
@@ -135,6 +141,9 @@ export default class extends Base {
         } else if (key === '_id') {
           return 'sid'
         } else {
+          if (version === 'v2' && key === 'proposalHash') {
+            return 'proposalhash'
+          }
           return key
         }
       })

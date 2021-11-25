@@ -16,6 +16,7 @@ import release from './release'
 import sso from './sso'
 import submission from './submission'
 import suggestion from './suggestion'
+import suggestionV2 from './api_v2/suggestion'
 import test from './test'
 import team from './team'
 import task from './task'
@@ -100,6 +101,7 @@ router.use('/taskCandidate', taskCandidate)
 router.use('/teamCandidate', teamCandidate)
 router.use('/submission', submission)
 router.use('/suggestion', suggestion)
+router.use('/v2/suggestion', suggestionV2)
 router.use('/sso', sso)
 router.use('/user', user)
 router.use('/upload', upload)
