@@ -28,6 +28,7 @@ import user from './user'
 import elip from './elip'
 import elipReview from './elip_review'
 import council from './council'
+import councilV2 from './api_v2/council'
 import milestone from './milestone'
 import cvoteTrackingMessage from './cvote_tracking_message'
 
@@ -110,6 +111,7 @@ router.use('/upload', upload)
 router.use('/elip', elip)
 router.use('/elipReview', elipReview)
 router.use('/council', council)
+router.use('/v2/council', councilV2)
 router.use('/proposals', milestone)
 router.use('/tracking_message/', cvoteTrackingMessage)
 
