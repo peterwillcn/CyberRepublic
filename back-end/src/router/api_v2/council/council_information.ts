@@ -1,12 +1,12 @@
-import Base from '../Base'
-import CouncilService from '../../service/CouncilService'
+import Base from '../../Base'
+import CouncilApiService from '../../../service/CouncilApiService'
 
 export default class extends Base {
-    async action() {
-        const param = this.getParam()
-        const service = this.buildService(CouncilService)
+  async action() {
+    const param = this.getParam()
+    const service = this.buildService(CouncilApiService)
 
-        const rs = await service.councilInformation(param)
-        return this.result(1, rs)
-    }
+    const rs = await service.councilInformation(param)
+    return this.result(1, rs)
+  }
 }

@@ -302,7 +302,7 @@ export default class extends Base {
       let impeachmentObj = {}
       if (councilList.status !== constant.TERM_COUNCIL_STATUS.VOTING) {
         const currentCouncil = await ela.currentCouncil()
-        const thisDidInfo = _.find(currentCouncil.crmembersinfo, { did })
+        const thisDidInfo: any = _.find(currentCouncil.crmembersinfo, { did })
         // prettier-ignore
         impeachmentObj['dpospublickey'] = thisDidInfo && thisDidInfo.dpospublickey
         // update impeachment
