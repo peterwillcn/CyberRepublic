@@ -21,7 +21,8 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
     constant.CVOTE_STATUS.FINAL,
     constant.CVOTE_STATUS.REJECT,
     constant.CVOTE_STATUS.TERMINATED,
-    constant.CVOTE_STATUS.VETOED
+    constant.CVOTE_STATUS.VETOED,
+    constant.CVOTE_STATUS.ABORTED
   ],
   registered: constant.CVOTE_STATUS.PROPOSED,
   cragreed: constant.CVOTE_STATUS.NOTIFICATION,
@@ -30,7 +31,7 @@ const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
   votercanceled: constant.CVOTE_STATUS.VETOED,
   finished: constant.CVOTE_STATUS.FINAL,
   terminated: constant.CVOTE_STATUS.TERMINATED,
-  aborted: [constant.CVOTE_STATUS.REJECT, constant.CVOTE_STATUS.VETOED]
+  aborted: constant.CVOTE_STATUS.ABORTED
 }
 
 const PROPOSAL_STATUS_TO_CHAIN_STATUS = {
@@ -40,7 +41,8 @@ const PROPOSAL_STATUS_TO_CHAIN_STATUS = {
   [constant.CVOTE_STATUS.FINAL]: 'finished',
   [constant.CVOTE_STATUS.REJECT]: 'crcanceled',
   [constant.CVOTE_STATUS.VETOED]: 'votercanceled',
-  [constant.CVOTE_STATUS.TERMINATED]: 'terminated'
+  [constant.CVOTE_STATUS.TERMINATED]: 'terminated',
+  [constant.CVOTE_STATUS.ABORTED]: 'aborted'
 }
 
 export default class extends Base {
