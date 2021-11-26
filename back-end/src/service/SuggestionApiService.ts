@@ -98,14 +98,13 @@ export default class extends Base {
     ])
 
     const list = _.map(rs[0], function (o) {
-      let temp = _.omit(o._doc, ['createdBy', 'type', 'signature', 'createdAt'])
+      let temp = _.omit(o._doc, ['createdBy', 'type', 'signature'])
       const createdAt = _.get(o, 'createdAt')
+      temp.createdAt = timestamp.second(createdAt)
       if (version === 'v2') {
         temp.proposer = _.get(o, 'createdBy.did.didName')
-        temp.createdat = timestamp.second(createdAt)
       } else {
         temp.proposedBy = _.get(o, 'createdBy.did.id')
-        temp.createdAt = timestamp.second(createdAt)
       }
       temp.type = constant.CVOTE_TYPE_API[o.type]
       if (!status) {
@@ -145,9 +144,6 @@ export default class extends Base {
         } else if (key === '_id') {
           return 'sid'
         } else {
-          if (version === 'v2' && key === 'proposalHash') {
-            return 'proposalhash'
-          }
           return key
         }
       })
