@@ -11,38 +11,37 @@ const Big = require('big.js')
  * API v1 and v2 for ELA Wallet and Essentials
  */
 
-export const WALLET_STATUS_TO_CVOTE_STATUS = {
-  ALL: [
+const { DID_PREFIX, API_VOTE_TYPE } = constant
+
+const CHAIN_STATUS_TO_PROPOSAL_STATUS = {
+  all: [
     constant.CVOTE_STATUS.PROPOSED,
     constant.CVOTE_STATUS.NOTIFICATION,
     constant.CVOTE_STATUS.ACTIVE,
     constant.CVOTE_STATUS.FINAL,
     constant.CVOTE_STATUS.REJECT,
-    constant.CVOTE_STATUS.DEFERRED,
+    constant.CVOTE_STATUS.TERMINATED,
     constant.CVOTE_STATUS.VETOED
   ],
-  VOTING: [constant.CVOTE_STATUS.PROPOSED],
-  NOTIFICATION: [constant.CVOTE_STATUS.NOTIFICATION],
-  ACTIVE: [constant.CVOTE_STATUS.ACTIVE],
-  FINAL: [constant.CVOTE_STATUS.FINAL],
-  REJECTED: [
-    constant.CVOTE_STATUS.REJECT,
-    constant.CVOTE_STATUS.DEFERRED,
-    constant.CVOTE_STATUS.VETOED
-  ]
+  registered: constant.CVOTE_STATUS.PROPOSED,
+  cragreed: constant.CVOTE_STATUS.NOTIFICATION,
+  crcanceled: constant.CVOTE_STATUS.REJECT,
+  voteragreed: constant.CVOTE_STATUS.ACTIVE,
+  votercanceled: constant.CVOTE_STATUS.VETOED,
+  finished: constant.CVOTE_STATUS.FINAL,
+  terminated: constant.CVOTE_STATUS.TERMINATED,
+  aborted: [constant.CVOTE_STATUS.REJECT, constant.CVOTE_STATUS.VETOED]
 }
 
-export const CVOTE_STATUS_TO_WALLET_STATUS = {
-  [constant.CVOTE_STATUS.PROPOSED]: 'VOTING',
-  [constant.CVOTE_STATUS.NOTIFICATION]: 'NOTIFICATION',
-  [constant.CVOTE_STATUS.ACTIVE]: 'ACTIVE',
-  [constant.CVOTE_STATUS.FINAL]: 'FINAL',
-  [constant.CVOTE_STATUS.REJECT]: 'REJECTED',
-  [constant.CVOTE_STATUS.DEFERRED]: 'REJECTED',
-  [constant.CVOTE_STATUS.VETOED]: 'VETOED'
+const PROPOSAL_STATUS_TO_CHAIN_STATUS = {
+  [constant.CVOTE_STATUS.PROPOSED]: 'registered',
+  [constant.CVOTE_STATUS.NOTIFICATION]: 'cragreed',
+  [constant.CVOTE_STATUS.ACTIVE]: 'voteragreed',
+  [constant.CVOTE_STATUS.FINAL]: 'finished',
+  [constant.CVOTE_STATUS.REJECT]: 'crcanceled',
+  [constant.CVOTE_STATUS.VETOED]: 'votercanceled',
+  [constant.CVOTE_STATUS.TERMINATED]: 'terminated'
 }
-
-const { DID_PREFIX, API_VOTE_TYPE } = constant
 
 export default class extends Base {
   private model: any
@@ -57,7 +56,7 @@ export default class extends Base {
 
     if (
       !param.status ||
-      !_.keys(WALLET_STATUS_TO_CVOTE_STATUS).includes(param.status)
+      !_.keys(CHAIN_STATUS_TO_PROPOSAL_STATUS).includes(param.status)
     ) {
       return {
         code: 400,
@@ -68,7 +67,7 @@ export default class extends Base {
     }
 
     // status
-    query.status = WALLET_STATUS_TO_CVOTE_STATUS[param.status]
+    query.status = CHAIN_STATUS_TO_PROPOSAL_STATUS[param.status]
 
     // search
     if (param.search) {
@@ -141,7 +140,7 @@ export default class extends Base {
         'rejectThroughAmount'
       ])
       temp.proposedBy = _.get(o, 'proposer.did.didName')
-      temp.status = CVOTE_STATUS_TO_WALLET_STATUS[temp.status]
+      temp.status = PROPOSAL_STATUS_TO_CHAIN_STATUS[temp.status]
       if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
         temp.voteEndsIn = _.toNumber(
           (o.proposedEndsHeight - rs[2]) * 2 * 60
@@ -391,7 +390,7 @@ export default class extends Base {
       {
         id: proposal.vid,
         title: proposal.title,
-        status: CVOTE_STATUS_TO_WALLET_STATUS[proposal.status],
+        status: PROPOSAL_STATUS_TO_CHAIN_STATUS[proposal.status],
         type: constant.CVOTE_TYPE_API[proposal.type],
         abs: proposal.abstract,
         address,
