@@ -178,7 +178,7 @@ export default class extends Base {
     })
 
     const total = rs[1]
-    return { list, total }
+    return { proposals: list, total }
   }
 
   public async getTracking(id) {
