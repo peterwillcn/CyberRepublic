@@ -2,7 +2,9 @@ import Base from './Base'
 import * as _ from 'lodash'
 import { constant } from '../constant'
 import { timestamp } from '../utility'
+const Big = require('big.js')
 
+const { ELA_BURN_ADDRESS, DEFAULT_BUDGET, SUGGESTION_TYPE } = constant
 /**
  * API v1 and v2 for ELA Wallet and Essentials
  */
@@ -184,30 +186,32 @@ export default class extends Base {
     }
   }
 
+  private convertBudget(budget) {
+    const chainBudgetType = {
+      ADVANCE: 'Imprest',
+      CONDITIONED: 'NormalPayment',
+      COMPLETION: 'FinalPayment'
+    }
+    const initiation = _.find(budget, ['type', 'ADVANCE'])
+    const budgets = budget.map((item) => {
+      const stage = parseInt(item.milestoneKey, 10)
+      return {
+        type: chainBudgetType[item.type],
+        stage: initiation ? stage : stage + 1,
+        amount: Big(`${item.amount}e+8`).toFixed(0),
+        paymentCriteria: item.criteria
+      }
+    })
+    return budgets
+  }
+
   // API-3
-  public async getSuggestion(id): Promise<any> {
+  public async getSuggestion(sid: string): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
-    const fileds = [
-      '_id',
-      'displayId',
-      'title',
-      'abstract',
-      'createdAt',
-      'draftHash',
-      'type',
-      'budgetAmount',
-      'elaAddress',
-      'budget',
-      'closeProposalNum',
-      'newSecretaryDID',
-      'newAddress',
-      'newOwnerDID',
-      'targetProposalNum'
-    ]
 
     const suggestion = await this.model
       .getDBInstance()
-      .findOne({ _id: id }, fileds.join(' '))
+      .findOne({ _id: sid })
       .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
     if (!suggestion) {
@@ -219,51 +223,94 @@ export default class extends Base {
       }
     }
 
-    // prettier-ignore
-    const targetNum = suggestion.closeProposalNum || suggestion.targetProposalNum
-    let targetProposal: any
-    if (targetNum) {
-      targetProposal = await db_cvote
+    const {
+      abstract,
+      budget,
+      budgetIntro,
+      createdBy,
+      createdAt,
+      displayId,
+      draftHash,
+      elaAddress,
+      goal,
+      motivation,
+      plan,
+      title,
+      type
+    } = suggestion
+
+    const data: { [key: string]: any } = { title, abstract, motivation, goal }
+
+    data.id = displayId
+    data.did = _.get(createdBy, 'did.id')
+    data.proposer = _.get(createdBy, 'did.didName')
+
+    data.originalURL = `${process.env.SERVER_URL}/suggestion/${sid}`
+    data.createdAt = timestamp.second(createdAt)
+    data.type = constant.CVOTE_TYPE_API[type]
+
+    if (type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+      data.newSecretaryDID = suggestion.newSecretaryDID
+    }
+
+    if (type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+      if (suggestion.newOwnerDID) {
+        data.newOwnerDID = suggestion.newOwnerDID
+      }
+      data.newrecipient = suggestion.newRecipient
+      const proposal = await db_cvote
         .getDBInstance()
-        .findOne({ vid: targetNum })
-    }
-    const budget = suggestion.budget
-    let fund = []
-    if (budget) {
-      _.forEach(budget, (o) => {
-        fund.push(_.omit(o, ['reasons', 'status', 'milestoneKey']))
-      })
+        .findOne({ vid: suggestion.targetProposalNum })
+      data.targetProposalTitle = proposal.title
+      data.targetproposalhash = suggestion.targetProposalHash
+      data.targetProposalNum = suggestion.targetProposalNum.toString()
     }
 
-    const createdBy = suggestion.createdBy
-    const address = `${process.env.SERVER_URL}/suggestion/${suggestion._id}`
-    const did = _.get(createdBy, 'did.id')
-    const didName = _.get(createdBy, 'did.didName')
-    const result = _.omit(suggestion._doc, [
-      '_id',
-      'id',
-      'budget',
-      'budgetAmount',
-      'elaAddress',
-      'displayId',
-      'createdBy',
-      'abstract'
-    ])
-
-    return {
-      ...result,
-      type: constant.CVOTE_TYPE_API[suggestion.type],
-      targetProposalTitle: targetProposal && targetProposal.title,
-      targetProposalHash: targetProposal && targetProposal.proposalHash,
-      createdAt: timestamp.second(result.createdAt),
-      receipts: suggestion.elaAddress,
-      fund,
-      fundAmount: suggestion.budgetAmount,
-      id: suggestion.displayId,
-      abs: suggestion.abstract,
-      address,
-      did,
-      didName
+    if (type === SUGGESTION_TYPE.TERMINATE_PROPOSAL) {
+      const proposal = await db_cvote
+        .getDBInstance()
+        .findOne({ vid: suggestion.closeProposalNum })
+      data.closeProposalNum = suggestion.closeProposalNum.toString()
+      data.targetProposalTitle = proposal.title
+      data.targetproposalhash = suggestion.targetProposalHash
     }
+
+    if (draftHash) {
+      data.draftHash = draftHash
+    }
+
+    if (elaAddress) {
+      data.recipient = elaAddress
+    }
+
+    if (budgetIntro) {
+      data.budgetStatement = budgetIntro
+    }
+
+    if (plan && plan.milestone && plan.milestone.length > 0) {
+      const info = {}
+      for (let i = 0; i < plan.milestone.length; i++) {
+        info[i] = {
+          timestamp: timestamp.second(plan.milestone[i].date),
+          goal: plan.milestone[i].version
+        }
+      }
+      data.milestone = info
+    }
+
+    if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
+      data.implementationTeam = plan.teamInfo
+    }
+    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+    if (hasBudget) {
+      data.budgets = this.convertBudget(budget)
+    } else {
+      if (type === SUGGESTION_TYPE.NEW_MOTION) {
+        data.budgets = DEFAULT_BUDGET
+        data.recipient = ELA_BURN_ADDRESS
+      }
+    }
+
+    return { data }
   }
 }
