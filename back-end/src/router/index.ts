@@ -91,7 +91,7 @@ router.use('/ping', ping)
 
 router.use('/community', community)
 router.use('/cvote', cvote)
-router.use('/v2/cvote', cvoteV2)
+router.use('/v2/proposal', cvoteV2)
 router.use('/cvoteTracking', cvoteTracking)
 router.use('/cvoteSummary', cvoteSummary)
 router.use('/google', google)

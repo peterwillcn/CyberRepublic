@@ -7,6 +7,7 @@ import { timestamp } from '../utility'
  * API v1 and v2 for ELA Wallet and Essentials
  */
 
+// API-0
 export default class extends Base {
   private model: any
   private zipFileModel: any
@@ -47,6 +48,7 @@ export default class extends Base {
       status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.SIGNED
     ) {
       query['signature.data'] = { $exists: true }
+      query.proposalHash = { $exists: false }
     }
     if (
       status &&
@@ -151,11 +153,12 @@ export default class extends Base {
 
     const total = rs[1]
     return {
-      list: list,
+      suggestions: list,
       total
     }
   }
 
+  // API-8
   public async getDraftData(params: any): Promise<Object> {
     const { draftHash } = params
     if (!draftHash) {
@@ -181,6 +184,7 @@ export default class extends Base {
     }
   }
 
+  // API-3
   public async getSuggestion(id): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
     const fileds = [
