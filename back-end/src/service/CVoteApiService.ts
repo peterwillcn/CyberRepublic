@@ -364,17 +364,13 @@ export default class extends Base {
 
     if (plan && plan.milestone && plan.milestone.length > 0) {
       const trackingRecords = await this.getTracking(proposal._id)
-
+      let isAdvanceBudget = true
+      if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
+        isAdvanceBudget = false
+      }
       const info = {}
       for (let i = 0; i < plan.milestone.length; i++) {
-        let index = i
-        if (
-          hasBudget &&
-          data.budgets &&
-          parseInt(data.budgets[0].stage) === 1
-        ) {
-          index = i + 1
-        }
+        const index = isAdvanceBudget ? i : i + 1
         info[index] = {
           timestamp: timestamp.second(plan.milestone[i].date),
           goal: plan.milestone[i].version

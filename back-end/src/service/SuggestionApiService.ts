@@ -239,9 +239,14 @@ export default class extends Base {
       type
     } = suggestion
 
-    const data: { [key: string]: any } = { title, abstract, motivation, goal }
+    const data: { [key: string]: any } = {
+      id: displayId,
+      title,
+      abstract,
+      motivation,
+      goal
+    }
 
-    data.id = displayId
     data.did = _.get(createdBy, 'did.id')
     data.proposer = _.get(createdBy, 'did.didName')
 
@@ -287,10 +292,25 @@ export default class extends Base {
       data.budgetStatement = budgetIntro
     }
 
+    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+    if (hasBudget) {
+      data.budgets = this.convertBudget(budget)
+    } else {
+      if (type === SUGGESTION_TYPE.NEW_MOTION) {
+        data.budgets = DEFAULT_BUDGET
+        data.recipient = ELA_BURN_ADDRESS
+      }
+    }
+
     if (plan && plan.milestone && plan.milestone.length > 0) {
+      let isAdvanceBudget = true
+      if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
+        isAdvanceBudget = false
+      }
       const info = {}
       for (let i = 0; i < plan.milestone.length; i++) {
-        info[i] = {
+        const index = isAdvanceBudget ? i : i + 1
+        info[index] = {
           timestamp: timestamp.second(plan.milestone[i].date),
           goal: plan.milestone[i].version
         }
@@ -300,15 +320,6 @@ export default class extends Base {
 
     if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
       data.implementationTeam = plan.teamInfo
-    }
-    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
-    if (hasBudget) {
-      data.budgets = this.convertBudget(budget)
-    } else {
-      if (type === SUGGESTION_TYPE.NEW_MOTION) {
-        data.budgets = DEFAULT_BUDGET
-        data.recipient = ELA_BURN_ADDRESS
-      }
     }
 
     return data
