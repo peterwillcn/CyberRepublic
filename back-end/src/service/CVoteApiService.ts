@@ -334,18 +334,22 @@ export default class extends Base {
       data.newrecipient = proposal.newRecipient
       const rs = await db_cvote
         .getDBInstance()
-        .findOne({ vid: proposal.targetProposalNum })
-      data.targetProposalTitle = rs.title
+        .findOne({ vid: parseInt(proposal.targetProposalNum) })
+      if (rs) {
+        data.targetProposalTitle = rs.title
+      }
       data.targetproposalhash = proposal.targetProposalHash
-      data.targetProposalID = proposal.targetProposalNum.toString()
+      data.targetProposalID = proposal.targetProposalNum
     }
 
     if (type === CVOTE_TYPE.TERMINATE_PROPOSAL) {
       const rs = await db_cvote
         .getDBInstance()
-        .findOne({ vid: proposal.closeProposalNum })
-      data.closeProposalID = proposal.closeProposalNum.toString()
-      data.targetProposalTitle = rs.title
+        .findOne({ vid: parseInt(proposal.closeProposalNum) })
+      if (rs) {
+        data.targetProposalTitle = rs.title
+      }
+      data.closeProposalID = proposal.closeProposalNum
       data.targetproposalhash = proposal.targetProposalHash
     }
 
@@ -409,7 +413,7 @@ export default class extends Base {
         }
       }
       if (!_.isEmpty(result)) {
-        let value = result.value
+        let value = result.value // default vaule is 'reject'
         if (result.value === CVOTE_RESULT.SUPPORT) {
           value = 'approve'
         }
