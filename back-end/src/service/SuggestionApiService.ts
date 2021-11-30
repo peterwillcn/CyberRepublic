@@ -235,6 +235,7 @@ export default class extends Base {
       goal,
       motivation,
       plan,
+      planIntro,
       title,
       type
     } = suggestion
@@ -290,6 +291,10 @@ export default class extends Base {
 
     if (budgetIntro) {
       data.budgetStatement = budgetIntro
+    }
+
+    if (planIntro) {
+      data.planStatement = planIntro
     }
 
     const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
