@@ -6,7 +6,7 @@ import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 
 const Big = require('big.js')
-const { CVOTE_TYPE, MILESTONE_STATUS, CVOTE_RESULT } = constant
+const { CVOTE_TYPE, MILESTONE_STATUS, CVOTE_RESULT, REVIEW_OPINION } = constant
 /**
  * API v2 for ELA Wallet and Essentials
  */
@@ -206,8 +206,14 @@ export default class extends Base {
 
         const comment = {}
         if (_.get(withdrawal, 'review.createdAt')) {
+          let opinion = _.get(withdrawal, 'review.opinion')
+          if (opinion === REVIEW_OPINION.APPROVED) {
+            opinion = 'approve'
+          } else {
+            opinion = 'reject'
+          }
           comment['content'] = _.get(withdrawal, 'review.reason')
-          comment['opinion'] = _.get(withdrawal, 'review.opinion')
+          comment['opinion'] = opinion
           comment['timestamp'] = moment(
             _.get(withdrawal, 'review.createdAt')
           ).unix()
@@ -368,19 +374,20 @@ export default class extends Base {
       if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
         isAdvanceBudget = false
       }
-      const info = {}
+      const milestones = []
       for (let i = 0; i < plan.milestone.length; i++) {
         const index = isAdvanceBudget ? i : i + 1
-        info[index] = {
+        const info = {
           timestamp: timestamp.second(plan.milestone[i].date),
-          goal: plan.milestone[i].version
+          goal: plan.milestone[i].version,
+          stage: index.toString()
         }
         const tracking = trackingRecords.find((el) => el.stage === i)
         if (tracking) {
-          info[index].tracking = tracking
+          info['tracking'] = [tracking]
         }
       }
-      data.milestone = info
+      data.milestone = milestones
     }
 
     if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
