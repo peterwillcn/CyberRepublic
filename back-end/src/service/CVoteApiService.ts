@@ -6,9 +6,9 @@ import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 
 const Big = require('big.js')
-
+const { CVOTE_TYPE, MILESTONE_STATUS } = constant
 /**
- * API v1 and v2 for ELA Wallet and Essentials
+ * API v2 for ELA Wallet and Essentials
  */
 
 const { DID_PREFIX, API_VOTE_TYPE } = constant
@@ -51,6 +51,7 @@ export default class extends Base {
     this.model = this.getDBModel('CVote')
   }
 
+  // API-1
   public async allOrSearch(param): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
     const query: any = {}
@@ -245,10 +246,43 @@ export default class extends Base {
     }
   }
 
-  public async getProposalById(data: any): Promise<any> {
+  private convertBudget(budget) {
+    const chainBudgetType = {
+      ADVANCE: 'Imprest',
+      CONDITIONED: 'NormalPayment',
+      COMPLETION: 'FinalPayment'
+    }
+    const chainBudgetStatus = {
+      WITHDRAWABLE: 'Withdrawable',
+      UNFINISHED: 'Unfinished',
+      WITHDRAWN: 'Withdrawn'
+    }
+    const initiation = _.find(budget, ['type', 'ADVANCE'])
+    const budgets = budget.map((item) => {
+      const stage = parseInt(item.milestoneKey, 10)
+      let status = chainBudgetStatus.UNFINISHED
+      if (item.status === MILESTONE_STATUS.WITHDRAWN) {
+        status = chainBudgetStatus.WITHDRAWN
+      }
+      if (item.status === MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL) {
+        status = chainBudgetStatus.WITHDRAWABLE
+      }
+      return {
+        type: chainBudgetType[item.type],
+        stage: initiation ? stage.toString() : (stage + 1).toString(),
+        amount: Big(`${item.amount}e+8`).toFixed(0),
+        paymentCriteria: item.criteria,
+        status
+      }
+    })
+    return budgets
+  }
+
+  // API-2
+  public async getProposalById(params: any): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
-    const { id } = data
+    const { id } = params
 
     const fields = [
       'vid',
@@ -295,22 +329,99 @@ export default class extends Base {
       }
     }
 
-    const address = `${process.env.SERVER_URL}/proposals/${proposal.id}`
+    const {
+      abstract,
+      budget,
+      budgetIntro,
+      proposer,
+      createdAt,
+      elaAddress,
+      goal,
+      motivation,
+      plan,
+      proposalHash,
+      title,
+      type
+    } = proposal
+
+    const data: { [key: string]: any } = {
+      title,
+      abstract,
+      motivation,
+      goal,
+      proposalHash,
+      status: PROPOSAL_STATUS_TO_CHAIN_STATUS[proposal.status]
+    }
+
+    data.id = proposal.vid
+    data.proposer = _.get(proposer, 'did.didName')
+
+    data.originalURL = `${process.env.SERVER_URL}/proposals/${proposal._id}`
+    data.createdAt = timestamp.second(createdAt)
+    data.type = constant.CVOTE_TYPE_API[type]
+
+    if (elaAddress) {
+      data.recipient = elaAddress
+    }
+
+    if (type === CVOTE_TYPE.CHANGE_SECRETARY) {
+      data.newSecretaryDID = proposal.newSecretaryDID
+    }
+
+    if (type === CVOTE_TYPE.CHANGE_PROPOSAL) {
+      if (proposal.newOwnerDID) {
+        data.newOwnerDID = proposal.newOwnerDID
+      }
+      data.newrecipient = proposal.newRecipient
+      const rs = await db_cvote
+        .getDBInstance()
+        .findOne({ vid: proposal.targetProposalNum })
+      data.targetProposalTitle = rs.title
+      data.targetproposalhash = proposal.targetProposalHash
+      data.targetProposalID = proposal.targetProposalNum.toString()
+    }
+
+    if (type === CVOTE_TYPE.TERMINATE_PROPOSAL) {
+      const rs = await db_cvote
+        .getDBInstance()
+        .findOne({ vid: proposal.closeProposalNum })
+      data.closeProposalID = proposal.closeProposalNum.toString()
+      data.targetProposalTitle = rs.title
+      data.targetproposalhash = proposal.targetProposalHash
+    }
+
+    if (budgetIntro) {
+      data.budgetStatement = budgetIntro
+    }
+
+    if (plan && plan.milestone && plan.milestone.length > 0) {
+      const info = {}
+      for (let i = 0; i < plan.milestone.length; i++) {
+        info[i] = {
+          timestamp: timestamp.second(plan.milestone[i].date),
+          goal: plan.milestone[i].version
+        }
+      }
+      data.milestone = info
+    }
+
+    if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
+      data.implementationTeam = plan.teamInfo
+    }
+
+    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+    if (hasBudget) {
+      data.budgets = this.convertBudget(budget)
+    }
 
     const proposalId = proposal._id
-    const targetNum = proposal.targetProposalNum || proposal.closeProposalNum
-    let targetProposal: any
-    if (targetNum) {
-      targetProposal = await db_cvote
-        .getDBInstance()
-        .findOne({ vid: parseInt(targetNum), old: { $exists: false } })
-    }
 
     const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
     const cvoteHistory = await db_cvote_history
       .getDBInstance()
-      .find({ proposalBy: proposalId })
+      .find({ proposalBy: proposal._id })
       .populate('votedBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+
     const voteResultWithNull = _.map(proposal._doc.voteResult, (o: any) => {
       let result
       if (o.status === constant.CVOTE_CHAIN_STATUS.CHAINED) {
@@ -380,37 +491,9 @@ export default class extends Base {
       )
     }
 
-    let fund = []
-    if (proposal.budget) {
-      _.forEach(proposal.budget, (o) => {
-        fund.push(_.omit(o, ['reasons', 'status', 'milestoneKey']))
-      })
-    }
-
     return _.omit(
       {
-        id: proposal.vid,
-        title: proposal.title,
-        status: PROPOSAL_STATUS_TO_CHAIN_STATUS[proposal.status],
-        type: constant.CVOTE_TYPE_API[proposal.type],
-        abs: proposal.abstract,
-        address,
-        targetProposalTitle: targetProposal && targetProposal.title,
-        ..._.omit(proposal._doc, [
-          'vid',
-          'abstract',
-          'type',
-          'rejectAmount',
-          'rejectThroughAmount',
-          'status',
-          'voteHistory',
-          'notificationEndsHeight',
-          'proposedEndsHeight',
-          'budget'
-        ]),
-        fund,
         ...notificationResult,
-        createdAt: timestamp.second(proposal.createdAt),
         voteResult,
         tracking,
         summary
