@@ -216,7 +216,7 @@ export default class extends Base {
       suggestion: result._id
     })
 
-    return result
+    return { _id: result._id, success: true }
   }
 
   public async notifyPeopleToSign(suggestion, receiverPublicKey) {
