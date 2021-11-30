@@ -377,7 +377,7 @@ export default class extends Base {
         }
         const tracking = trackingRecords.find((el) => el.stage === i)
         if (tracking) {
-          info[i].tracking = tracking
+          info[index].tracking = tracking
         }
       }
       data.milestone = info
