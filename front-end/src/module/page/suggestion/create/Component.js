@@ -37,13 +37,9 @@ export default class extends StandardPage {
     }
   }
 
-  historyBack = (id) => {
-    if (id) {
-      this.props.history.push(`/suggestion/${id}?new=true`)
-    } else {
-      localStorage.removeItem(LOCALSTORAGE_DRAFT)
-      this.props.history.push('/suggestion')
-    }
+  historyBack = () => {
+    this.props.history.push('/suggestion')
+    localStorage.removeItem(LOCALSTORAGE_DRAFT)
   }
 
   onSubmit = async (model) => {
@@ -59,8 +55,10 @@ export default class extends StandardPage {
         return message.error(I18N.get('suggestion.form.error.noProposal'))
       }
     }
-    this.historyBack(rs && rs._id)
-    localStorage.removeItem(LOCALSTORAGE_DRAFT)
+    if (rs && rs.success === true && rs._id) {
+      this.props.history.push(`/suggestion/${rs._id}?new=true`)
+      localStorage.removeItem(LOCALSTORAGE_DRAFT)
+    }
   }
 
   onSaveDraft = (model) => {
