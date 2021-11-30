@@ -6,7 +6,7 @@ import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 
 const Big = require('big.js')
-const { CVOTE_TYPE, MILESTONE_STATUS } = constant
+const { CVOTE_TYPE, MILESTONE_STATUS, CVOTE_RESULT } = constant
 /**
  * API v2 for ELA Wallet and Essentials
  */
@@ -183,14 +183,6 @@ export default class extends Base {
 
   public async getTracking(id) {
     const db_cvote = this.getDBModel('CVote')
-    const db_user = this.getDBModel('User')
-    const secretary = await db_user.getDBInstance().findOne(
-      {
-        role: constant.USER_ROLE.SECRETARY,
-        'did.id': 'did:elastos:igCSy8ht7yDwV5qqcRzf5SGioMX8H9RXcj'
-      },
-      constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
-    )
     const propoal = await db_cvote
       .getDBInstance()
       .findOne({ _id: id })
@@ -201,12 +193,6 @@ export default class extends Base {
     }
 
     try {
-      const didName = _.get(secretary, 'did.didName')
-      const avatar = _.get(secretary, 'did.avatar')
-      const ownerDidName = _.get(propoal, 'proposer.did.didName')
-      const ownerAvatar =
-        _.get(propoal, 'proposer.did.avatar') ||
-        _.get(propoal, 'proposer.profile.avatar')
       const { withdrawalHistory } = propoal
       const withdrawalList = _.filter(
         withdrawalHistory,
@@ -214,33 +200,28 @@ export default class extends Base {
       )
       const withdrawalListByStage = _.groupBy(withdrawalList, 'milestoneKey')
       const keys = _.keys(withdrawalListByStage).sort().reverse()
-      const result = _.map(keys, (k: any) => {
+      return _.map(keys, (k: any) => {
         const withdrawals = _.sortBy(withdrawalListByStage[`${k}`], 'createdAt')
         const withdrawal = withdrawals[withdrawals.length - 1]
 
         const comment = {}
-
         if (_.get(withdrawal, 'review.createdAt')) {
           comment['content'] = _.get(withdrawal, 'review.reason')
           comment['opinion'] = _.get(withdrawal, 'review.opinion')
-          comment['avatar'] = avatar
-          comment['createdBy'] = didName
-          comment['createdAt'] = moment(
+          comment['timestamp'] = moment(
             _.get(withdrawal, 'review.createdAt')
           ).unix()
         }
 
         return {
           stage: parseInt(k),
-          didName: ownerDidName,
-          avatar: ownerAvatar,
-          content: withdrawal.message,
-          createdAt: moment(withdrawal.createdAt).unix(),
-          comment
+          apply: {
+            content: withdrawal.message,
+            timestamp: moment(withdrawal.createdAt).unix()
+          },
+          review: comment
         }
       })
-
-      return result
     } catch (err) {
       logger.error(err)
     }
@@ -284,26 +265,6 @@ export default class extends Base {
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
     const { id } = params
 
-    const fields = [
-      'vid',
-      'title',
-      'status',
-      'type',
-      'abstract',
-      'voteResult',
-      'createdAt',
-      'proposalHash',
-      'rejectAmount',
-      'rejectThroughAmount',
-      'proposedEndsHeight',
-      'notificationEndsHeight',
-      'targetProposalNum',
-      'newOwnerDID',
-      'newAddress',
-      'newSecretaryDID',
-      'closeProposalNum',
-      'budget'
-    ]
     const isNumber = /^\d*$/.test(id)
     let query: any
     if (isNumber) {
@@ -314,7 +275,7 @@ export default class extends Base {
 
     const proposal = await db_cvote
       .getDBInstance()
-      .findOne(query, fields.join(' '))
+      .findOne(query)
       .populate(
         'voteResult.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
@@ -345,20 +306,18 @@ export default class extends Base {
     } = proposal
 
     const data: { [key: string]: any } = {
+      id: proposal.vid,
+      createdAt: timestamp.second(createdAt),
       title,
       abstract,
       motivation,
       goal,
+      originalURL: `${process.env.SERVER_URL}/proposals/${proposal._id}`,
+      proposer: _.get(proposer, 'did.didName'),
       proposalHash,
-      status: PROPOSAL_STATUS_TO_CHAIN_STATUS[proposal.status]
+      status: PROPOSAL_STATUS_TO_CHAIN_STATUS[proposal.status],
+      type: constant.CVOTE_TYPE_API[type]
     }
-
-    data.id = proposal.vid
-    data.proposer = _.get(proposer, 'did.didName')
-
-    data.originalURL = `${process.env.SERVER_URL}/proposals/${proposal._id}`
-    data.createdAt = timestamp.second(createdAt)
-    data.type = constant.CVOTE_TYPE_API[type]
 
     if (elaAddress) {
       data.recipient = elaAddress
@@ -394,12 +353,31 @@ export default class extends Base {
       data.budgetStatement = budgetIntro
     }
 
+    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+    if (hasBudget) {
+      data.budgets = this.convertBudget(budget)
+    }
+
     if (plan && plan.milestone && plan.milestone.length > 0) {
+      const trackingRecords = await this.getTracking(proposal._id)
+
       const info = {}
       for (let i = 0; i < plan.milestone.length; i++) {
-        info[i] = {
+        let index = i
+        if (
+          hasBudget &&
+          data.budgets &&
+          parseInt(data.budgets[0].stage) === 1
+        ) {
+          index = i + 1
+        }
+        info[index] = {
           timestamp: timestamp.second(plan.milestone[i].date),
           goal: plan.milestone[i].version
+        }
+        const tracking = trackingRecords.find((el) => el.stage === i)
+        if (tracking) {
+          info[i].tracking = tracking
         }
       }
       data.milestone = info
@@ -409,14 +387,6 @@ export default class extends Base {
       data.implementationTeam = plan.teamInfo
     }
 
-    const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
-    if (hasBudget) {
-      data.budgets = this.convertBudget(budget)
-    }
-
-    const proposalId = proposal._id
-
-    const voteResultFields = ['value', 'reason', 'votedBy', 'avatar']
     const cvoteHistory = await db_cvote_history
       .getDBInstance()
       .find({ proposalBy: proposal._id })
@@ -439,25 +409,24 @@ export default class extends Base {
         }
       }
       if (!_.isEmpty(result)) {
-        return _.pick(
-          {
-            ...result,
-            votedBy: _.get(result, 'votedBy.did.didName'),
-            avatar: _.get(result, 'votedBy.did.avatar')
-          },
-          voteResultFields
-        )
+        let value = result.value
+        if (result.value === CVOTE_RESULT.SUPPORT) {
+          value = 'approve'
+        }
+        if (result.value === CVOTE_RESULT.ABSTENTION) {
+          value = 'abstain'
+        }
+        return {
+          result: value,
+          opinion: result.reason,
+          avatar: _.get(result, 'votedBy.did.avatar'),
+          name: _.get(result, 'votedBy.did.didName')
+        }
       }
     })
     const voteResult = _.filter(voteResultWithNull, (o: any) => !_.isEmpty(o))
 
-    const tracking = await this.getTracking(proposalId)
-
-    // const summary = await this.getSummary(proposalId)
-    const summary = []
-
     const notificationResult = {}
-
     // duration
     const currentHeight = await ela.height()
     if (proposal.status === constant.CVOTE_STATUS.PROPOSED) {
@@ -491,15 +460,7 @@ export default class extends Base {
       )
     }
 
-    return _.omit(
-      {
-        ...notificationResult,
-        voteResult,
-        tracking,
-        summary
-      },
-      ['_id']
-    )
+    return { ...data, ...notificationResult, crVotes: voteResult }
   }
 
   public async walletVote(param: any) {
