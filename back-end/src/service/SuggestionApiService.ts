@@ -197,7 +197,7 @@ export default class extends Base {
       const stage = parseInt(item.milestoneKey, 10)
       return {
         type: chainBudgetType[item.type],
-        stage: initiation ? stage : stage + 1,
+        stage: initiation ? stage.toString() : (stage + 1).toString(),
         amount: Big(`${item.amount}e+8`).toFixed(0),
         paymentCriteria: item.criteria
       }
@@ -311,6 +311,6 @@ export default class extends Base {
       }
     }
 
-    return { data }
+    return data
   }
 }
