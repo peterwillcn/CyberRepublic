@@ -53,7 +53,6 @@ export default class extends Base {
 
   public async allOrSearch(param): Promise<any> {
     const db_cvote = this.getDBModel('CVote')
-    const db_config = this.getDBModel('Config')
     const query: any = {}
 
     if (
@@ -141,10 +140,10 @@ export default class extends Base {
         'notificationEndsHeight',
         'rejectThroughAmount'
       ])
-      temp.proposedBy = _.get(o, 'proposer.did.didName')
+      temp.proposer = _.get(o, 'proposer.did.didName')
       temp.status = PROPOSAL_STATUS_TO_CHAIN_STATUS[temp.status]
       if ([constant.CVOTE_STATUS.PROPOSED].includes(o.status)) {
-        temp.voteEndsIn = _.toNumber(
+        temp.voteEndIn = _.toNumber(
           (o.proposedEndsHeight - rs[2]) * 2 * 60
         ).toFixed()
       }
@@ -153,7 +152,7 @@ export default class extends Base {
         o.rejectAmount >= 0 &&
         o.rejectThroughAmount > 0
       ) {
-        temp.voteEndsIn = _.toNumber(
+        temp.voteEndIn = _.toNumber(
           (o.notificationEndsHeight - rs[2]) * 2 * 60
         ).toFixed()
         temp.rejectAmount = `${o.rejectAmount}`
