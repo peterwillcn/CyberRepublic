@@ -289,7 +289,7 @@ export default class extends Base {
         'voteResult.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
-      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+      .populate('proposer', 'did')
 
     if (!proposal) {
       return {

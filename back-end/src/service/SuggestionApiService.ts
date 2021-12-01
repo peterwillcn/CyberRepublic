@@ -5,11 +5,12 @@ import { timestamp } from '../utility'
 const Big = require('big.js')
 
 const { ELA_BURN_ADDRESS, DEFAULT_BUDGET, SUGGESTION_TYPE } = constant
+import { user as userUtil } from '../utility'
+
 /**
  * API v1 and v2 for ELA Wallet and Essentials
  */
 
-// API-0
 export default class extends Base {
   private model: any
   private zipFileModel: any
@@ -18,6 +19,7 @@ export default class extends Base {
     this.zipFileModel = this.getDBModel('Suggestion_Zip_File')
   }
 
+  // API-0
   public async list(param: any, version = 'v1'): Promise<Object> {
     const { status } = param
     if (
@@ -212,7 +214,7 @@ export default class extends Base {
     const suggestion = await this.model
       .getDBInstance()
       .findOne({ _id: sid })
-      .populate('createdBy', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
+      .populate('createdBy', 'did username')
 
     if (!suggestion) {
       return {
@@ -249,7 +251,13 @@ export default class extends Base {
     }
 
     data.did = _.get(createdBy, 'did.id')
-    data.proposer = _.get(createdBy, 'did.didName')
+
+    const proposerDidName = _.get(createdBy, 'did.didName')
+    if (proposerDidName) {
+      data.proposer = proposerDidName
+    } else {
+      data.proposer = _.get(createdBy, 'username')
+    }
 
     data.originalURL = `${process.env.SERVER_URL}/suggestion/${sid}`
     data.createdAt = timestamp.second(createdAt)
@@ -312,7 +320,6 @@ export default class extends Base {
       if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
         isAdvanceBudget = false
       }
-      const info = {}
       const milestones = []
       for (let i = 0; i < plan.milestone.length; i++) {
         const index = isAdvanceBudget ? i : i + 1
