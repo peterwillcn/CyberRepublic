@@ -212,24 +212,24 @@ export default class extends Base {
 
     try {
       const { withdrawalHistory } = propoal
-      const withdrawalList = _.filter(
-        withdrawalHistory,
-        (o: any) => o.milestoneKey !== '0'
-      )
-      const withdrawalListByStage = _.groupBy(withdrawalList, 'milestoneKey')
+      if (withdrawalHistory.length === 0) return
+      const withdrawalListByStage = _.groupBy(withdrawalHistory, 'milestoneKey')
       const keys = _.keys(withdrawalListByStage).sort().reverse()
       return _.map(keys, (k: any) => {
         const withdrawals = _.sortBy(withdrawalListByStage[`${k}`], 'createdAt')
-        const withdrawal = withdrawals[withdrawals.length - 1]
-        const review = this.getSecretaryReview(withdrawal)
-        return {
-          stage: parseInt(k),
-          apply: {
-            content: withdrawal.message,
-            timestamp: moment(withdrawal.createdAt).unix()
-          },
-          review
+        const history = []
+        for (let i = withdrawals.length - 1; i >= 0; i--) {
+          const withdrawal = withdrawals[i]
+          const review = this.getSecretaryReview(withdrawal)
+          history.push({
+            apply: {
+              content: withdrawal.message,
+              timestamp: moment(withdrawal.createdAt).unix()
+            },
+            review
+          })
         }
+        return { stage: parseInt(k), history }
       })
     } catch (err) {
       logger.error(err)
@@ -397,9 +397,7 @@ export default class extends Base {
         }
         const tracking = trackingRecords.find((el) => el.stage === i)
         if (tracking) {
-          info['tracking'] = [
-            { apply: tracking.apply, review: tracking.review }
-          ]
+          info['tracking'] = tracking.history
         }
         milestones.push(info)
       }
