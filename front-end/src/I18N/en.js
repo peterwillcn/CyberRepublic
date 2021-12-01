@@ -1139,7 +1139,7 @@ const en = {
   'from.CVoteForm.reason.oppose.required': 'Please input the opposed reason',
   'from.CVoteForm.reason.abstain.required': 'Please input the abstained reason',
   'from.CVoteForm.message.delete.success': 'Delete success',
-  'from.CVoteForm.message.updated.success': 'Update success',
+  'from.CVoteForm.message.updated.success': `Update successfully, please post your vote to the chain`,
   'from.CVoteForm.message.create.success': 'Create success',
   'from.CVoteForm.yes': 'YES',
   'from.CVoteForm.no': 'NO',
