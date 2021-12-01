@@ -286,6 +286,7 @@ export default class extends Base {
         'voteResult.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
+      .populate('proposer', constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID)
 
     if (!proposal) {
       return {
@@ -306,6 +307,7 @@ export default class extends Base {
       goal,
       motivation,
       plan,
+      planIntro,
       proposalHash,
       title,
       type
@@ -319,10 +321,14 @@ export default class extends Base {
       motivation,
       goal,
       originalURL: `${process.env.SERVER_URL}/proposals/${proposal._id}`,
-      proposer: _.get(proposer, 'did.didName'),
       proposalHash,
       status: PROPOSAL_STATUS_TO_CHAIN_STATUS[proposal.status],
       type: constant.CVOTE_TYPE_API[type]
+    }
+
+    const proposerDidName = _.get(proposer, 'did.didName')
+    if (proposerDidName) {
+      data.proposer = proposerDidName
     }
 
     if (elaAddress) {
@@ -363,6 +369,10 @@ export default class extends Base {
       data.budgetStatement = budgetIntro
     }
 
+    if (planIntro) {
+      data.planStatement = planIntro
+    }
+
     const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
     if (hasBudget) {
       data.budgets = this.convertBudget(budget)
@@ -384,7 +394,9 @@ export default class extends Base {
         }
         const tracking = trackingRecords.find((el) => el.stage === i)
         if (tracking) {
-          info['tracking'] = [tracking]
+          info['tracking'] = [
+            { apply: tracking.apply, review: tracking.review }
+          ]
         }
         milestones.push(info)
       }
