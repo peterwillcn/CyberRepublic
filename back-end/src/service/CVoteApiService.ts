@@ -181,6 +181,24 @@ export default class extends Base {
     return { proposals: list, total }
   }
 
+  private getSecretaryReview(withdrawal) {
+    const comment = {}
+    if (_.get(withdrawal, 'review.createdAt')) {
+      let opinion = _.get(withdrawal, 'review.opinion')
+      if (opinion === REVIEW_OPINION.APPROVED) {
+        opinion = 'approve'
+      } else {
+        opinion = 'reject'
+      }
+      comment['content'] = _.get(withdrawal, 'review.reason')
+      comment['opinion'] = opinion
+      comment['timestamp'] = moment(
+        _.get(withdrawal, 'review.createdAt')
+      ).unix()
+    }
+    return comment
+  }
+
   public async getTracking(id) {
     const db_cvote = this.getDBModel('CVote')
     const propoal = await db_cvote
@@ -203,29 +221,14 @@ export default class extends Base {
       return _.map(keys, (k: any) => {
         const withdrawals = _.sortBy(withdrawalListByStage[`${k}`], 'createdAt')
         const withdrawal = withdrawals[withdrawals.length - 1]
-
-        const comment = {}
-        if (_.get(withdrawal, 'review.createdAt')) {
-          let opinion = _.get(withdrawal, 'review.opinion')
-          if (opinion === REVIEW_OPINION.APPROVED) {
-            opinion = 'approve'
-          } else {
-            opinion = 'reject'
-          }
-          comment['content'] = _.get(withdrawal, 'review.reason')
-          comment['opinion'] = opinion
-          comment['timestamp'] = moment(
-            _.get(withdrawal, 'review.createdAt')
-          ).unix()
-        }
-
+        const review = this.getSecretaryReview(withdrawal)
         return {
           stage: parseInt(k),
           apply: {
             content: withdrawal.message,
             timestamp: moment(withdrawal.createdAt).unix()
           },
-          review: comment
+          review
         }
       })
     } catch (err) {
