@@ -31,6 +31,7 @@ export const List = styled.div`
   align-items: center;
   box-sizing: border-box;
   height: 100%;
+  width: 100%;
   border-left: 10px solid;
   border-color: ${(props) => CVOTE_RESULT_COLOR[props.type]};
   &:after {

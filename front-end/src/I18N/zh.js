@@ -1107,7 +1107,7 @@ const zh = {
   'from.CVoteForm.reason.oppose.required': '请填写反对理由',
   'from.CVoteForm.reason.abstain.required': '请填写弃权理由',
   'from.CVoteForm.message.delete.success': '删除成功',
-  'from.CVoteForm.message.updated.success': '更新成功',
+  'from.CVoteForm.message.updated.success': `更新成功, 请将您的投票意见发布上链`,
   'from.CVoteForm.message.create.success': '创建成功',
   'from.CVoteForm.yes': '是',
   'from.CVoteForm.no': '否',
