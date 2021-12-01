@@ -4,6 +4,7 @@ import { Popover, Spin } from 'antd'
 import I18N from '@/I18N'
 import QRCode from 'qrcode.react'
 import SwitchSvgIcon from '@/module/common/SwitchSvgIcon'
+import UpArrowCircleSvgIcon from '@/module/common/UpArrowCircleSvgIcon'
 
 class OnChainButton extends Component {
   constructor(props) {
@@ -67,11 +68,14 @@ class OnChainButton extends Component {
       <Popover
         content={this.qrCode()}
         trigger="click"
-        placement="top"
+        placement="left"
         visible={this.state.visible}
         onVisibleChange={this.handleVisibleChange}
       >
-        <Button>{I18N.get('council.voting.voteResult.onchain')}</Button>
+        <VoteButton>
+          <UpArrowCircleSvgIcon style={{ fill: '#008D85', marginBottom: 10 }} />
+          {I18N.get('council.voting.voteResult.onchain')}
+        </VoteButton>
       </Popover>
     )
   }
@@ -79,15 +83,19 @@ class OnChainButton extends Component {
 
 export default OnChainButton
 
-const Button = styled.span`
-  display: inline-block;
-  margin-bottom: 16px;
-  font-size: 13px;
-  border: 1px solid #008d85;
+const VoteButton = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
   color: #008d85;
-  text-align: center;
-  padding: 6px 16px;
   cursor: pointer;
+  width: 160px;
+  height: 100%;
+  min-height: 160px;
+  box-shadow: -4px 0px 6px #e5e5e5;
+  flex-shrink: 0;
 `
 const Content = styled.div`
   padding: 24px 24px 14px;

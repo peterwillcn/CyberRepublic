@@ -100,6 +100,10 @@ export const StyledAvatarIcon = styled(AvatarIcon)`
 export const ResultRow = styled.div`
   display: flex;
   margin-bottom: 30px;
+  justify-content: space-between;
+  &:last-child {
+    margin-bottom: 0;
+  }
 `
 
 export const Reason = styled.div`
