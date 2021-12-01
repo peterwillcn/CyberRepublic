@@ -386,6 +386,7 @@ export default class extends Base {
         if (tracking) {
           info['tracking'] = [tracking]
         }
+        milestones.push(info)
       }
       data.milestone = milestones
     }

@@ -313,14 +313,17 @@ export default class extends Base {
         isAdvanceBudget = false
       }
       const info = {}
+      const milestones = []
       for (let i = 0; i < plan.milestone.length; i++) {
         const index = isAdvanceBudget ? i : i + 1
-        info[index] = {
+        const info = {
           timestamp: timestamp.second(plan.milestone[i].date),
-          goal: plan.milestone[i].version
+          goal: plan.milestone[i].version,
+          stage: index.toString()
         }
+        milestones.push(info)
       }
-      data.milestone = info
+      data.milestone = milestones
     }
 
     if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
