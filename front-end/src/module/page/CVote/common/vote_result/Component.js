@@ -44,7 +44,7 @@ const Component = ({
     }
     let isOwner = data.votedBy && data.votedBy === currentUserId
 
-    let votehistoryBy = _.filter(voteHistory,['votedBy._id', data.votedBy])
+    let votehistoryBy = _.filter(voteHistory, ['votedBy._id', data.votedBy])
     const avatarName = data.name.split(' ')
     const userNode = (
       <Item key={key}>
@@ -71,29 +71,12 @@ const Component = ({
         )}
         <div>{data.didName}</div>
         {data.reason !== '' ? voteStatus : null}
-        <div style={{ marginTop: '0.5rem' }}>
-          {isProposed &&
-          isCouncil &&
-          isOwner &&
-          (data.status === 'unchain' || data.status === undefined) &&
-          data.reason !== '' ? (
-            <OnChain
-              getReviewProposal={getReviewProposal}
-              getReviewProposalUrl={getReviewProposalUrl}
-              updateProposal={updateProposal}
-              id={id}
-            />
-          ) : null}
-        </div>
         <div>
           {votehistoryBy.length > 1 &&
-            (
-              !_.isEmpty(_.find(votehistoryBy, ['status', 'chained']))
-              &&
-              !_.isEmpty(_.find(votehistoryBy,['isCurrentVote', true]))
-            )
-            ? <ViewVoteHistoryButton data={votehistoryBy} />
-            : null}
+          (!_.isEmpty(_.find(votehistoryBy, ['status', 'chained'])) &&
+            !_.isEmpty(_.find(votehistoryBy, ['isCurrentVote', true]))) ? (
+            <ViewVoteHistoryButton data={votehistoryBy} />
+          ) : null}
         </div>
       </Item>
     )
@@ -122,8 +105,23 @@ const Component = ({
 
     return (
       <ResultRow key={key}>
-        {userNode}
-        {reasonNode}
+        <div style={{ display: 'flex', marginRight: 24 }}>
+          {userNode}
+          {reasonNode}
+        </div>
+
+        {isProposed &&
+        isCouncil &&
+        isOwner &&
+        (data.status === 'unchain' || data.status === undefined) &&
+        data.reason !== '' ? (
+          <OnChain
+            getReviewProposal={getReviewProposal}
+            getReviewProposalUrl={getReviewProposalUrl}
+            updateProposal={updateProposal}
+            id={id}
+          />
+        ) : null}
       </ResultRow>
     )
   })
