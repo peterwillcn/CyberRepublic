@@ -332,6 +332,8 @@ export default class extends Base {
     const proposerDidName = _.get(proposer, 'did.didName')
     if (proposerDidName) {
       data.proposer = proposerDidName
+    } else {
+      data.proposer = proposal.proposedBy
     }
 
     if (elaAddress) {
