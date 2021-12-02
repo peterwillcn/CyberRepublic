@@ -384,7 +384,6 @@ export default class extends Base {
     }
 
     if (plan && plan.milestone && plan.milestone.length > 0) {
-      const trackingRecords = await this.getTracking(proposal._id)
       let isAdvanceBudget = true
       if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
         isAdvanceBudget = false
@@ -397,9 +396,12 @@ export default class extends Base {
           goal: plan.milestone[i].version,
           stage: index.toString()
         }
-        const tracking = trackingRecords.find((el) => el.stage === i)
-        if (tracking) {
-          info['tracking'] = tracking.history
+        const trackingRecords = await this.getTracking(proposal._id)
+        if (trackingRecords) {
+          const tracking = trackingRecords.find((el) => el.stage === i)
+          if (tracking) {
+            info['tracking'] = tracking.history
+          }
         }
         milestones.push(info)
       }
