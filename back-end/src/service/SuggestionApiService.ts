@@ -279,7 +279,7 @@ export default class extends Base {
       const proposal = await db_cvote
         .getDBInstance()
         .findOne({ vid: suggestion.closeProposalNum })
-      data.closeProposalNum = suggestion.closeProposalNum.toString()
+      data.targetProposalNum = suggestion.closeProposalNum.toString()
       data.targetProposalTitle = proposal.title
       data.targetproposalhash = suggestion.targetProposalHash
     }
