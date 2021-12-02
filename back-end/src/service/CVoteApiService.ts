@@ -289,7 +289,7 @@ export default class extends Base {
         'voteResult.votedBy',
         constant.DB_SELECTED_FIELDS.USER.NAME_EMAIL_DID
       )
-      .populate('proposer', 'did')
+      .populate('proposer', 'did username')
 
     if (!proposal) {
       return {
@@ -333,7 +333,7 @@ export default class extends Base {
     if (proposerDidName) {
       data.proposer = proposerDidName
     } else {
-      data.proposer = proposal.proposedBy
+      data.proposer = _.get(proposer, 'username')
     }
 
     if (elaAddress) {
