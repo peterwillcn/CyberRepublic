@@ -5,7 +5,6 @@ import { timestamp } from '../utility'
 const Big = require('big.js')
 
 const { ELA_BURN_ADDRESS, DEFAULT_BUDGET, SUGGESTION_TYPE } = constant
-import { user as userUtil } from '../utility'
 
 /**
  * API v1 and v2 for ELA Wallet and Essentials
