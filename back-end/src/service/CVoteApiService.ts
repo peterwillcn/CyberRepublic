@@ -6,7 +6,15 @@ import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 
 const Big = require('big.js')
-const { CVOTE_TYPE, MILESTONE_STATUS, CVOTE_RESULT, REVIEW_OPINION } = constant
+const {
+  CVOTE_TYPE,
+  MILESTONE_STATUS,
+  CVOTE_RESULT,
+  REVIEW_OPINION,
+  SUGGESTION_BUDGET_TYPE,
+  CHAIN_BUDGET_TYPE,
+  CHAIN_BUDGET_STATUS
+} = constant
 /**
  * API v2 for ELA Wallet and Essentials
  */
@@ -237,28 +245,22 @@ export default class extends Base {
   }
 
   private convertBudget(budget) {
-    const chainBudgetType = {
-      ADVANCE: 'Imprest',
-      CONDITIONED: 'NormalPayment',
-      COMPLETION: 'FinalPayment'
-    }
-    const chainBudgetStatus = {
-      WITHDRAWABLE: 'Withdrawable',
-      UNFINISHED: 'Unfinished',
-      WITHDRAWN: 'Withdrawn'
-    }
     const initiation = _.find(budget, ['type', 'ADVANCE'])
     const budgets = budget.map((item) => {
       const stage = parseInt(item.milestoneKey, 10)
-      let status = chainBudgetStatus.UNFINISHED
+      let status = CHAIN_BUDGET_STATUS.UNFINISHED
+      // Advance budget status is withdrawable even though the proposal is not passed
+      if (item.type === SUGGESTION_BUDGET_TYPE.ADVANCE) {
+        status = CHAIN_BUDGET_STATUS.WITHDRAWABLE
+      }
       if (item.status === MILESTONE_STATUS.WITHDRAWN) {
-        status = chainBudgetStatus.WITHDRAWN
+        status = CHAIN_BUDGET_STATUS.WITHDRAWN
       }
       if (item.status === MILESTONE_STATUS.WAITING_FOR_WITHDRAWAL) {
-        status = chainBudgetStatus.WITHDRAWABLE
+        status = CHAIN_BUDGET_STATUS.WITHDRAWABLE
       }
       return {
-        type: chainBudgetType[item.type],
+        type: CHAIN_BUDGET_TYPE[item.type],
         stage: initiation ? stage.toString() : (stage + 1).toString(),
         amount: Big(`${item.amount}e+8`).toFixed(0),
         paymentCriteria: item.criteria,

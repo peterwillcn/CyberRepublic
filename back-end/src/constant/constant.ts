@@ -400,6 +400,12 @@ export const MILESTONE_STATUS = create([
   'WAITING_FOR_WITHDRAWAL',
   'WITHDRAWN'
 ])
+export const CHAIN_BUDGET_STATUS = {
+  WITHDRAWABLE: 'Withdrawable',
+  UNFINISHED: 'Unfinished',
+  WITHDRAWN: 'Withdrawn'
+}
+
 export const REVIEW_OPINION = create(['REJECTED', 'APPROVED'])
 
 export const PROPOSAL_TRACKING_TYPE = {
@@ -415,6 +421,12 @@ export const SUGGESTION_BUDGET_TYPE = create([
   'COMPLETION',
   'CONDITIONED'
 ])
+
+export const CHAIN_BUDGET_TYPE = {
+  [SUGGESTION_BUDGET_TYPE.ADVANCE]: 'Imprest',
+  [SUGGESTION_BUDGET_TYPE.CONDITIONED]: 'NormalPayment',
+  [SUGGESTION_BUDGET_TYPE.COMPLETION]: 'FinalPayment'
+}
 
 export const TRANSACTION_TYPE = {
   SUGGESTION_TO_PROPOSAL: 37,

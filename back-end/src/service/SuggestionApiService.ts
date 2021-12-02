@@ -4,7 +4,8 @@ import { constant } from '../constant'
 import { timestamp } from '../utility'
 const Big = require('big.js')
 
-const { ELA_BURN_ADDRESS, DEFAULT_BUDGET, SUGGESTION_TYPE } = constant
+const { ELA_BURN_ADDRESS, DEFAULT_BUDGET, SUGGESTION_TYPE, CHAIN_BUDGET_TYPE } =
+  constant
 
 /**
  * API v1 and v2 for ELA Wallet and Essentials
@@ -188,16 +189,11 @@ export default class extends Base {
   }
 
   private convertBudget(budget) {
-    const chainBudgetType = {
-      ADVANCE: 'Imprest',
-      CONDITIONED: 'NormalPayment',
-      COMPLETION: 'FinalPayment'
-    }
     const initiation = _.find(budget, ['type', 'ADVANCE'])
     const budgets = budget.map((item) => {
       const stage = parseInt(item.milestoneKey, 10)
       return {
-        type: chainBudgetType[item.type],
+        type: CHAIN_BUDGET_TYPE[item.type],
         stage: initiation ? stage.toString() : (stage + 1).toString(),
         amount: Big(`${item.amount}e+8`).toFixed(0),
         paymentCriteria: item.criteria
