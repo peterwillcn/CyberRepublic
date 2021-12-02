@@ -254,17 +254,23 @@ export default class extends Base {
       data.proposer = _.get(createdBy, 'username')
     }
 
+    if (suggestion.ownerPublicKey) {
+      data.ownerPublicKey = suggestion.ownerPublicKey
+    }
+
     data.originalURL = `${process.env.SERVER_URL}/suggestion/${sid}`
     data.createdAt = timestamp.second(createdAt)
     data.type = constant.CVOTE_TYPE_API[type]
 
     if (type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
       data.newSecretaryDID = suggestion.newSecretaryDID
+      data.newSecretaryPublicKey = suggestion.newSecretaryPublicKey
     }
 
     if (type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
       if (suggestion.newOwnerDID) {
         data.newOwnerDID = suggestion.newOwnerDID
+        data.newOwnerPublicKey = suggestion.newOwnerPublicKey
       }
       data.newrecipient = suggestion.newRecipient
       const proposal = await db_cvote
@@ -330,6 +336,21 @@ export default class extends Base {
 
     if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
       data.implementationTeam = plan.teamInfo
+    }
+
+    if (_.get(suggestion, 'signature.data')) {
+      data.signature = _.get(suggestion, 'signature.data')
+    }
+
+    if (_.get(suggestion, 'newOwnerSignature.data')) {
+      data.newOwnerSignature = _.get(suggestion, 'newOwnerSignature.data')
+    }
+
+    if (_.get(suggestion, 'newSecretarySignature.data')) {
+      data.newSecretarySignature = _.get(
+        suggestion,
+        'newSecretarySignature.data'
+      )
     }
 
     return data
