@@ -100,7 +100,7 @@ function generateProposalData(data: any) {
 
   const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
   if (hasBudget) {
-    data.budgets = this.convertBudget(budget)
+    data.budgets = convertBudget(budget)
   } else {
     if (type === SUGGESTION_TYPE.NEW_MOTION) {
       data.budgets = DEFAULT_BUDGET
