@@ -16,24 +16,35 @@ function sha256(str: Buffer) {
 }
 
 async function downloadImage(url: string) {
-  const response = await axios({
-    method: 'GET',
-    url: url,
-    responseType: 'arraybuffer'
-  })
-  return response.data
+  try {
+    const response = await axios({
+      method: 'GET',
+      url: url,
+      responseType: 'arraybuffer'
+    })
+    return response.data
+  } catch (err) {
+    console.log(`downloadImage ${url} err...`, err)
+  }
 }
 
 async function downloadImages(urls: any, zip: admZip) {
-  const promiseArr = []
-  for (let i = 0; i < urls.length; i++) {
-    const url = urls[i].url
-    promiseArr.push(downloadImage(url))
-  }
-  const images = await Promise.all(promiseArr)
-  for (let i = 0; i < images.length; i++) {
-    const image = images[i]
-    zip.addFile(`image/${urls[i].name}`, image)
+  try {
+    const promiseArr = []
+    for (let i = 0; i < urls.length; i++) {
+      const url = urls[i].url
+      promiseArr.push(downloadImage(url))
+    }
+    const images = await Promise.all(promiseArr)
+    if (!images) {
+      return { success: false, error: `Cann't download images` }
+    }
+    for (let i = 0; i < images.length; i++) {
+      const image = images[i]
+      zip.addFile(`image/${urls[i].name}`, image)
+    }
+  } catch (err) {
+    console.log(`downloadImages err...`, err)
   }
 }
 
@@ -158,8 +169,10 @@ function generateProposalData(data: any) {
 async function compressFiles(data: any) {
   const zip = new admZip()
   const { proposal, urls } = generateProposalData(data)
-
-  await downloadImages(urls, zip)
+  const rs = await downloadImages(urls, zip)
+  if (rs && rs.success === false) {
+    return rs
+  }
   zip.addFile(
     'proposal.json',
     Buffer.from(JSON.stringify(proposal, null, 2), 'utf8')
@@ -167,22 +180,28 @@ async function compressFiles(data: any) {
   // for testing
   // zip.writeZip('./zip/files.zip')
   const content = zip.toBuffer()
-  return content
+  if (!content) {
+    return { success: false, error: `Cann't get this suggestion's zip data` }
+  }
+  return { success: true, content }
 }
 
 export const getSuggestionDraftHash = async (suggetion: any) => {
   try {
-    const content = await compressFiles(suggetion)
+    const rs: any = await compressFiles(suggetion)
+    if (rs.success === false) {
+      return { error: rs.error }
+    }
     // the size of a zip file should be less than 1M
-    if (content && content.length >= 1048576) {
+    if (rs.content && rs.content.length >= 1048576) {
       return {
         error: `The size of this suggestion's zip data is bigger than 1M`
       }
     }
-    const hash0 = sha256(content)
+    const hash0 = sha256(rs.content)
     const draftHash = sha256(Buffer.from(hash0, 'hex'))
     return {
-      content,
+      content: rs.content,
       draftHash
     }
   } catch (err) {

@@ -1741,7 +1741,6 @@ export default class extends Base {
         return { success: false, message: 'Your DID not bound.' }
       }
       let fields: any = {}
-      // const draftHash = this.getDraftHash(suggestion)
       const draftHashV2 = await this.getDraftHashV2(suggestion)
       if (draftHashV2 && draftHashV2.error) {
         return { success: false, message: draftHashV2.error }
