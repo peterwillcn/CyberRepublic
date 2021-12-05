@@ -1,7 +1,10 @@
 import * as crypto from 'crypto'
+import * as _ from 'lodash'
 import * as admZip from 'adm-zip'
 import axios from 'axios'
 import { timestamp } from '../utility'
+import { constant } from '../constant'
+const { DEFAULT_BUDGET, SUGGESTION_TYPE } = constant
 
 function uniqImageUrls(data, key) {
   return [...new Map(data.map((x) => [key(x), x])).values()]
@@ -59,57 +62,81 @@ function getImageUrls(content: string) {
   return { urls: uniqUrls, content: temp }
 }
 
+function convertBudget(budget) {
+  const initiation = _.find(budget, ['type', 'ADVANCE'])
+  const budgets = budget.map((item) => {
+    const stage = parseInt(item.milestoneKey, 10)
+    return {
+      stage: initiation ? stage.toString() : (stage + 1).toString(),
+      paymentCriteria: item.criteria
+    }
+  })
+  return budgets
+}
+
 function generateProposalData(data: any) {
   const {
     title,
+    type,
     abstract,
     motivation,
     goal,
-    createdAt,
     plan,
     planIntro,
     relevance,
+    budget,
     budgetIntro
   } = data
   const newAbstract = getImageUrls(abstract)
   const newMotivation = getImageUrls(motivation)
   const newGoal = getImageUrls(goal)
+
   const proposal: { [key: string]: any } = {
     title,
-    timestamp: timestamp.second(createdAt),
     abstract: newAbstract.content,
     motivation: newMotivation.content,
     goal: newGoal.content
   }
+
+  const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
+  if (hasBudget) {
+    data.budgets = this.convertBudget(budget)
+  } else {
+    if (type === SUGGESTION_TYPE.NEW_MOTION) {
+      data.budgets = DEFAULT_BUDGET
+    }
+  }
+
   if (plan && plan.milestone && plan.milestone.length > 0) {
-    const info = {}
+    let isAdvanceBudget = true
+    if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
+      isAdvanceBudget = false
+    }
+    const milestones = []
     for (let i = 0; i < plan.milestone.length; i++) {
-      info[i] = {
-        time: timestamp.second(plan.milestone[i].date),
-        criteria: plan.milestone[i].version
+      const index = isAdvanceBudget ? i : i + 1
+      const info = {
+        timestamp: timestamp.second(plan.milestone[i].date),
+        goal: plan.milestone[i].version,
+        stage: index.toString()
       }
+      milestones.push(info)
     }
-    proposal.milestone = info
+    data.milestone = milestones
   }
+
   if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
-    const info = {}
-    for (let i = 0; i < plan.teamInfo.length; i++) {
-      info[i + 1] = {
-        role: plan.teamInfo[i].role,
-        name: plan.teamInfo[i].member,
-        responsibility: plan.teamInfo[i].responsibility,
-        info: plan.teamInfo[i].info
-      }
-    }
-    proposal.teamInfo = info
+    data.implementationTeam = plan.teamInfo
   }
+
   if (relevance && relevance.length > 0) {
-    const info = {}
+    const info = []
     for (let i = 0; i < relevance.length; i++) {
-      info[i + 1] = {
-        proposal: relevance[i].title,
+      info.push({
+        title: relevance[i].title,
+        proposalHash: relevance[i].proposalHash,
         relevanceDetail: relevance[i].relevanceDetail
-      }
+      })
     }
     proposal.relevance = info
   }
@@ -117,12 +144,12 @@ function generateProposalData(data: any) {
   if (planIntro) {
     const newPlanIntro = getImageUrls(planIntro)
     urls = [...urls, ...newPlanIntro.urls]
-    proposal.planIntro = newPlanIntro.content
+    proposal.planStatement = newPlanIntro.content
   }
   if (budgetIntro) {
     const newBudgetIntro = getImageUrls(budgetIntro)
     urls = [...urls, ...newBudgetIntro.urls]
-    proposal.budgetIntro = newBudgetIntro.content
+    proposal.budgetStatement = newBudgetIntro.content
   }
 
   return { proposal, urls }
