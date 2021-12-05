@@ -169,9 +169,11 @@ function generateProposalData(data: any) {
 async function compressFiles(data: any) {
   const zip = new admZip()
   const { proposal, urls } = generateProposalData(data)
-  const rs = await downloadImages(urls, zip)
-  if (rs && rs.success === false) {
-    return rs
+  if (urls && urls.length !== 0) {
+    const rs = await downloadImages(urls, zip)
+    if (rs && rs.success === false) {
+      return rs
+    }
   }
   zip.addFile(
     'proposal.json',
