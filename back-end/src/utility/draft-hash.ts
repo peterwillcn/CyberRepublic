@@ -120,7 +120,11 @@ function generateProposalData(data: any) {
 
   if (plan && plan.milestone && plan.milestone.length > 0) {
     let isAdvanceBudget = true
-    if (hasBudget && data.budgets && parseInt(data.budgets[0].stage) === 1) {
+    if (
+      hasBudget &&
+      proposal.budgets &&
+      parseInt(proposal.budgets[0].stage) === 1
+    ) {
       isAdvanceBudget = false
     }
     const milestones = []
