@@ -428,6 +428,13 @@ export default class extends Base {
         }
       }
       if (role === 'newOwner') {
+        if (suggestion.type !== SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+          return {
+            code: 400,
+            success: false,
+            message: `This suggestion's type is not CHANGE PROPOSAL`
+          }
+        }
         const signatureInfo = _.get(suggestion, 'newOwnerSignature.data')
         if (signatureInfo) {
           return {
@@ -461,6 +468,13 @@ export default class extends Base {
         }
       }
       if (role === 'newSecretary') {
+        if (suggestion.type !== SUGGESTION_TYPE.CHANGE_SECRETARY) {
+          return {
+            code: 400,
+            success: false,
+            message: `This suggestion's type is not CHANGE SECRETARY`
+          }
+        }
         const signatureInfo = _.get(suggestion, 'newSecretarySignature.data')
         if (signatureInfo) {
           return {
