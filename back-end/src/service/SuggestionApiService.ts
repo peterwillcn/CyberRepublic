@@ -1,11 +1,16 @@
 import Base from './Base'
 import * as _ from 'lodash'
 import { constant } from '../constant'
-import { timestamp } from '../utility'
+import { timestamp, mail, user as userUtil } from '../utility'
 const Big = require('big.js')
 
-const { ELA_BURN_ADDRESS, DEFAULT_BUDGET, SUGGESTION_TYPE, CHAIN_BUDGET_TYPE } =
-  constant
+const {
+  ELA_BURN_ADDRESS,
+  DEFAULT_BUDGET,
+  SUGGESTION_TYPE,
+  CHAIN_BUDGET_TYPE,
+  DID_PREFIX
+} = constant
 
 /**
  * API v1 and v2 for ELA Wallet and Essentials
@@ -354,5 +359,167 @@ export default class extends Base {
     }
 
     return data
+  }
+
+  public async signature(param: any) {
+    try {
+      const { sid, role, did, signature } = param
+      if (!sid || !role || !did || !signature) {
+        return {
+          code: 400,
+          success: false,
+          message: 'Invalid request params'
+        }
+      }
+      const suggestion = await this.model
+        .getDBInstance()
+        .findById({ _id: sid })
+        .populate('createdBy', 'did')
+
+      if (!suggestion) {
+        return {
+          code: 400,
+          success: false,
+          message: 'There is no this suggestion.'
+        }
+      }
+      if (role === 'owner') {
+        const signatureInfo = _.get(suggestion, 'signature.data')
+        if (signatureInfo) {
+          return {
+            code: 400,
+            success: false,
+            message: 'This suggestion had been signed.'
+          }
+        }
+        const ownerDID = _.get(suggestion, 'createdBy.did.id')
+        const isOwner = ownerDID === DID_PREFIX + did
+        if (!isOwner) {
+          return {
+            code: 400,
+            success: false,
+            message: 'The Essentials not bound with your CR account.'
+          }
+        }
+        try {
+          await this.model.update(
+            { _id: sid },
+            { $set: { signature: { data: signature } } }
+          )
+          // notify new owner to sign
+          if (suggestion.type === SUGGESTION_TYPE.CHANGE_PROPOSAL) {
+            this.notifyPeopleToSign(suggestion, suggestion.newOwnerPublicKey)
+          }
+          // notify new secretary general to sign
+          if (suggestion.type === SUGGESTION_TYPE.CHANGE_SECRETARY) {
+            this.notifyPeopleToSign(
+              suggestion,
+              suggestion.newSecretaryPublicKey
+            )
+          }
+          return { code: 200, success: true, message: 'Ok' }
+        } catch (err) {
+          console.log(`receive owner signature err...`, err)
+          return {
+            code: 500,
+            success: false,
+            message: 'Something went wrong'
+          }
+        }
+      }
+      if (role === 'newOwner') {
+        const signatureInfo = _.get(suggestion, 'newOwnerSignature.data')
+        if (signatureInfo) {
+          return {
+            code: 400,
+            success: false,
+            message: 'This suggestion had been signed.'
+          }
+        }
+        const newOwnerDID = _.get(suggestion, 'newOwnerDID')
+        const isNewOwner = newOwnerDID === did
+        if (!isNewOwner) {
+          return {
+            code: 400,
+            success: false,
+            message: 'The Essentials not bound with your CR account.'
+          }
+        }
+        try {
+          await this.model.update(
+            { _id: sid },
+            { $set: { newOwnerSignature: { data: signature } } }
+          )
+          return { code: 200, success: true, message: 'Ok' }
+        } catch (err) {
+          console.log(`receive new owner signature err...`, err)
+          return {
+            code: 500,
+            success: false,
+            message: 'Something went wrong'
+          }
+        }
+      }
+      if (role === 'newSecretary') {
+        const signatureInfo = _.get(suggestion, 'newSecretarySignature.data')
+        if (signatureInfo) {
+          return {
+            code: 400,
+            success: false,
+            message: 'This suggestion had been signed.'
+          }
+        }
+        const secretaryDID = _.get(suggestion, 'newSecretaryDID')
+        const isSecretary = secretaryDID === did
+        if (!isSecretary) {
+          return {
+            code: 400,
+            success: false,
+            message: 'The ELA wallet not bound with your CR account.'
+          }
+        }
+        try {
+          await this.model.update(
+            { _id: sid },
+            { newSecretarySignature: { data: signature } }
+          )
+          return { code: 200, success: true, message: 'Ok' }
+        } catch (err) {
+          console.log(`receive owner signature err...`, err)
+          return {
+            code: 500,
+            success: false,
+            message: 'DB can not save the signature.'
+          }
+        }
+      }
+    } catch (err) {
+      return {
+        code: 500,
+        success: false,
+        message: 'Something went wrong'
+      }
+    }
+  }
+
+  private async notifyPeopleToSign(suggestion, receiverPublicKey) {
+    const subject = `【Signature required】Suggestion <${suggestion.displayId}> is ready for you to sign`
+    const body = `
+      <p>Suggestion <${suggestion.displayId}> <${suggestion.title}> is ready for you to sign</p>
+      <p>Click here to sign now:</p>
+      <p><a href="${process.env.SERVER_URL}/suggestion/${suggestion._id}">${process.env.SERVER_URL}/suggestion/${suggestion._id}</a></p>
+      <br />
+      <p>Thanks</p>
+      <p>Cyber Republic</p>
+    `
+    const receiver = await this.getDBModel('User').findOne({
+      'did.compressedPublicKey': receiverPublicKey
+    })
+    mail.send({
+      to: receiver.email,
+      toName: userUtil.formatUsername(receiver),
+      subject,
+      body
+    })
   }
 }

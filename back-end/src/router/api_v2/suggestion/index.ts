@@ -2,6 +2,7 @@ import Base from '../../Base'
 import getSuggestion from './getSuggestion'
 import all_search from './all_search'
 import getDraftData from './get_draft_data'
+import signature from './signature'
 
 export default Base.setRouter([
   {
@@ -18,5 +19,10 @@ export default Base.setRouter([
     path: '/draft_data/:draftHash',
     router: getDraftData,
     method: 'get'
+  },
+  {
+    path: '/signature',
+    router: signature,
+    method: 'post'
   }
 ])
