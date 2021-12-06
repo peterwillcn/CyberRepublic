@@ -7,7 +7,6 @@ import {
   validate,
   mail,
   user as userUtil,
-  timestamp,
   permissions,
   logger,
   getDidPublicKey,
@@ -1518,7 +1517,7 @@ export default class extends Base {
       .getDBInstance()
       .findOne({ suggestionId: suggestion._id })
     if (doc) {
-      return doc.draftHash
+      return { draftHash: doc.draftHash }
     }
     const rs = await getSuggestionDraftHash(suggestion)
     if (rs && rs.error) {
@@ -1530,7 +1529,7 @@ export default class extends Base {
         draftHash: rs.draftHash,
         content: rs.content
       })
-      return rs.draftHash
+      return { draftHash: rs.draftHash }
     }
   }
 
@@ -1745,6 +1744,7 @@ export default class extends Base {
       if (draftHashV2 && draftHashV2.error) {
         return { success: false, message: draftHashV2.error }
       }
+
       const draftHash = draftHashV2.draftHash
       fields.draftHash = draftHash
       let ownerPublicKey: string

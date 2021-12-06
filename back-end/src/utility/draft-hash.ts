@@ -111,10 +111,10 @@ function generateProposalData(data: any) {
 
   const hasBudget = !!budget && _.isArray(budget) && !_.isEmpty(budget)
   if (hasBudget) {
-    data.budgets = convertBudget(budget)
+    proposal.budgets = convertBudget(budget)
   } else {
     if (type === SUGGESTION_TYPE.NEW_MOTION) {
-      data.budgets = DEFAULT_BUDGET
+      proposal.budgets = DEFAULT_BUDGET
     }
   }
 
@@ -133,11 +133,11 @@ function generateProposalData(data: any) {
       }
       milestones.push(info)
     }
-    data.milestone = milestones
+    proposal.milestone = milestones
   }
 
   if (plan && plan.teamInfo && plan.teamInfo.length > 0) {
-    data.implementationTeam = plan.teamInfo
+    proposal.implementationTeam = plan.teamInfo
   }
 
   if (relevance && relevance.length > 0) {
@@ -151,12 +151,14 @@ function generateProposalData(data: any) {
     }
     proposal.relevance = info
   }
+
   let urls = [...newAbstract.urls, ...newMotivation.urls, ...newGoal.urls]
   if (planIntro) {
     const newPlanIntro = getImageUrls(planIntro)
     urls = [...urls, ...newPlanIntro.urls]
     proposal.planStatement = newPlanIntro.content
   }
+
   if (budgetIntro) {
     const newBudgetIntro = getImageUrls(budgetIntro)
     urls = [...urls, ...newBudgetIntro.urls]
