@@ -208,9 +208,13 @@ export const getSuggestionDraftHash = async (suggetion: any) => {
     }
     const hash0 = sha256(rs.content)
     const draftHash = sha256(Buffer.from(hash0, 'hex'))
+    const reverseHash = draftHash
+      .match(/[a-fA-F0-9]{2}/g)
+      .reverse()
+      .join('')
     return {
       content: rs.content,
-      draftHash
+      draftHash: reverseHash
     }
   } catch (err) {
     console.log(`getSuggestionDraftHash err...`, err)
