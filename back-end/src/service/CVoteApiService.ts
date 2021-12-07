@@ -261,7 +261,7 @@ export default class extends Base {
       }
       return {
         type: CHAIN_BUDGET_TYPE[item.type],
-        stage: initiation ? stage.toString() : (stage + 1).toString(),
+        stage: initiation ? stage : stage + 1,
         amount: Big(`${item.amount}e+8`).toFixed(0),
         paymentCriteria: item.criteria,
         status
@@ -396,7 +396,7 @@ export default class extends Base {
         const info = {
           timestamp: timestamp.second(plan.milestone[i].date),
           goal: plan.milestone[i].version,
-          stage: index.toString()
+          stage: index
         }
         const trackingRecords = await this.getTracking(proposal._id)
         if (trackingRecords) {
