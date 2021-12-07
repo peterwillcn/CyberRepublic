@@ -78,7 +78,7 @@ function convertBudget(budget) {
   const budgets = budget.map((item) => {
     const stage = parseInt(item.milestoneKey, 10)
     return {
-      stage: initiation ? stage.toString() : (stage + 1).toString(),
+      stage: initiation ? stage : stage + 1,
       paymentCriteria: item.criteria
     }
   })
@@ -133,7 +133,7 @@ function generateProposalData(data: any) {
       const info = {
         timestamp: timestamp.second(plan.milestone[i].date),
         goal: plan.milestone[i].version,
-        stage: index.toString()
+        stage: index
       }
       milestones.push(info)
     }
