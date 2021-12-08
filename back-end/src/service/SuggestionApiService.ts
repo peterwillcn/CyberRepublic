@@ -366,8 +366,7 @@ export default class extends Base {
     try {
       const jwtToken = param.jwt
       const claims: any = jwt.decode(jwtToken)
-      const { iss, sid, command, signature } = claims
-
+      const { iss, sid, command, signature, exp } = claims
       if (command !== 'createsuggestion' || !sid || !iss || !signature) {
         return {
           code: 400,
@@ -375,6 +374,15 @@ export default class extends Base {
           message: 'Invalid request params'
         }
       }
+      const now = Math.trunc(Date.now() / 1000)
+      if (now > exp) {
+        return {
+          code: 400,
+          success: false,
+          message: 'The signature is expired'
+        }
+      }
+
       const suggestion = await this.model
         .getDBInstance()
         .findById({ _id: sid })
