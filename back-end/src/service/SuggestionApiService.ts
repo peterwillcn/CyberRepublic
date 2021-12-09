@@ -241,6 +241,18 @@ export default class extends Base {
       goal
     }
 
+    const isSigned = _.get(suggestion, 'signature.data')
+    const isProposed = _.get(suggestion, 'proposalHash')
+    if (!isSigned) {
+      data.status = constant.SUGGESTION_NEW_STATUS.UNSIGNED.toLowerCase()
+    }
+    if (isSigned) {
+      data.status = constant.SUGGESTION_NEW_STATUS.SIGNED.toLowerCase()
+    }
+    if (isProposed) {
+      data.status = constant.SUGGESTION_NEW_STATUS.PROPOSED.toLowerCase()
+    }
+
     data.did = _.get(createdBy, 'did.id')
 
     const proposerDidName = _.get(createdBy, 'did.didName')
