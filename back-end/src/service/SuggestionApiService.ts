@@ -134,21 +134,11 @@ export default class extends Base {
       }
       if (
         status &&
-        status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.UNSIGNED
+        Object.values(constant.SUGGESTION_NEW_STATUS).includes(
+          status.toUpperCase()
+        )
       ) {
-        temp.status = constant.SUGGESTION_NEW_STATUS.UNSIGNED.toLowerCase()
-      }
-      if (
-        status &&
-        status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.SIGNED
-      ) {
-        temp.status = constant.SUGGESTION_NEW_STATUS.SIGNED.toLowerCase()
-      }
-      if (
-        status &&
-        status.toUpperCase() === constant.SUGGESTION_NEW_STATUS.PROPOSED
-      ) {
-        temp.status = constant.SUGGESTION_NEW_STATUS.PROPOSED.toLowerCase()
+        temp.status = status.toLowerCase()
       }
       return _.mapKeys(temp, function (value, key) {
         if (key == 'displayId') {
