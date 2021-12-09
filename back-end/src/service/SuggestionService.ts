@@ -471,14 +471,12 @@ export default class extends Base {
       if (currDraft) {
         await this.draftModel.remove({ _id: ObjectId(id) })
       }
-
       if (update) {
         doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
-        await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
-      } else {
-        await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
       }
-      return this.show({ id })
+      await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
+
+      return { _id: id, success: true }
     } catch (err) {
       console.log('suggestion service update err...', err)
     }

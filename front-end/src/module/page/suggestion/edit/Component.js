@@ -64,7 +64,9 @@ export default class extends StandardPage {
       this.handleTypeErrors(rs)
       return
     }
-    this.historyBack()
+    if (rs && rs.success === true && rs._id === id) {
+      this.historyBack()
+    }
   }
 
   onSaveDraft = async (model) => {
