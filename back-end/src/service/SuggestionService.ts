@@ -474,6 +474,7 @@ export default class extends Base {
       if (update) {
         doc.version = await this.saveHistoryGetCurrentVersion(id, doc)
       }
+      doc.isUpdated = true
       await this.model.update({ _id: id }, { $set: doc, $unset: unsetDoc })
 
       return { _id: id, success: true }

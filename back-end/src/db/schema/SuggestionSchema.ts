@@ -114,5 +114,6 @@ export const Suggestion = {
   // if no newAddress, the newRecipient is the target proposal's ELA address
   newRecipient: String,
   old: Boolean, // mark an old suggestion
-  validPeriod: Number
+  validPeriod: Number,
+  isUpdated: Boolean
 }
