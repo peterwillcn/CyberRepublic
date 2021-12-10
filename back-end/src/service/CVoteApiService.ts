@@ -338,6 +338,8 @@ export default class extends Base {
       data.proposer = _.get(proposer, 'username')
     }
 
+    data.did = _.get(proposer, 'did.id')
+
     if (elaAddress) {
       data.recipient = elaAddress
     }
