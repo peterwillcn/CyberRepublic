@@ -204,7 +204,7 @@ export default class extends Base {
 
     const suggestion = await this.model
       .getDBInstance()
-      .findOne({ _id: sid }, '-comments commentsNum')
+      .findOne({ _id: sid }, '-comments -commentsNum')
       .populate('createdBy', 'did username')
 
     if (!suggestion) {

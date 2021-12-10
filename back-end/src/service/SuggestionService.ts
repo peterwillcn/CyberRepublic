@@ -1485,6 +1485,7 @@ export default class extends Base {
     return budgets
   }
 
+  // v1
   private getDraftHash(suggestion: any) {
     const fields = ['_id', 'title', 'type', 'abstract', 'motivation']
     const temp = [
@@ -1510,6 +1511,7 @@ export default class extends Base {
     return utilCrypto.sha256D(JSON.stringify(content))
   }
 
+  // for full-text to chain
   private async getDraftHashV2(suggestion: any) {
     const doc = await this.zipFileModel
       .getDBInstance()
