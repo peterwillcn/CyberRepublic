@@ -2,6 +2,7 @@ import Base from './Base'
 import * as _ from 'lodash'
 import { Document, Types } from 'mongoose'
 import * as jwt from 'jsonwebtoken'
+import { Base64 } from 'js-base64'
 import { constant } from '../constant'
 import {
   validate,
@@ -193,7 +194,16 @@ export default class extends Base {
     return doc
   }
 
-  public async create(param: any) {
+  public async create(params: any) {
+    const { text } = params
+    if (!text) {
+      return { success: false, error: 'Invalid param' }
+    }
+    let str = Base64.decode(text)
+    if (!str) {
+      return { success: false, error: 'Can not decode the text' }
+    }
+    const param = JSON.parse(str)
     let doc = {
       ...param,
       version: 10,
@@ -210,7 +220,7 @@ export default class extends Base {
     // save the document
     const result = await this.model.save(doc)
     await this.getDBModel('Suggestion_Edit_History').save({
-      ...param,
+      ...doc,
       version: 10,
       suggestion: result._id
     })
@@ -439,9 +449,17 @@ export default class extends Base {
     return unsetDoc
   }
 
-  public async update(param: any) {
+  public async update(params: any) {
     try {
-      const { id, update } = param
+      const { text, id, update } = params
+      if (!text) {
+        return { success: false, error: 'Invalid param' }
+      }
+      let str = Base64.decode(text)
+      if (!str) {
+        return { success: false, error: 'Can not decode the text' }
+      }
+      const param = JSON.parse(str)
       const userId = _.get(this.currentUser, '_id')
       const currDoc = await this.model.getDBInstance().findById(id)
 

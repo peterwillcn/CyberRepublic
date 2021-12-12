@@ -3,6 +3,7 @@ import { api_request } from '@/util'
 import { logger } from '@/util'
 import I18N from '@/I18N'
 import { message } from 'antd'
+import { Base64 } from 'js-base64'
 import BaseService from '../model/BaseService'
 
 export default class extends BaseService {
@@ -124,7 +125,7 @@ export default class extends BaseService {
       res = await api_request({
         path,
         method: 'post',
-        data: doc
+        data: { text: Base64.encode(JSON.stringify(doc)) }
       })
     } catch (error) {
       this.dispatch(this.selfRedux.actions.loading_update(false))
@@ -136,14 +137,13 @@ export default class extends BaseService {
 
   async update(doc) {
     this.dispatch(this.selfRedux.actions.loading_update(true))
-
     const path = `${this.prefixPath}/${doc.id}/update`
     let res
     try {
       res = await api_request({
         path,
         method: 'put',
-        data: doc
+        data: { text: Base64.encode(JSON.stringify(doc)) }
       })
       return res
     } catch (error) {
