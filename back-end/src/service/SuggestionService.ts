@@ -1537,23 +1537,28 @@ export default class extends Base {
 
   // for full-text to chain
   private async getDraftHashV2(suggestion: any) {
+    const { isUpdated } = suggestion
     const doc = await this.zipFileModel
       .getDBInstance()
       .findOne({ suggestionId: suggestion._id })
+
+    if (!doc || isUpdated === true) {
+      const rs = await getSuggestionDraftHash(suggestion)
+      if (rs && rs.error) {
+        return { error: rs.error }
+      }
+      if (rs && rs.content && rs.draftHash) {
+        await this.zipFileModel.save({
+          suggestionId: suggestion._id,
+          draftHash: rs.draftHash,
+          content: rs.content
+        })
+        return { draftHash: rs.draftHash }
+      }
+    }
+
     if (doc) {
       return { draftHash: doc.draftHash }
-    }
-    const rs = await getSuggestionDraftHash(suggestion)
-    if (rs && rs.error) {
-      return { error: rs.error }
-    }
-    if (rs && rs.content && rs.draftHash) {
-      await this.zipFileModel.save({
-        suggestionId: suggestion._id,
-        draftHash: rs.draftHash,
-        content: rs.content
-      })
-      return { draftHash: rs.draftHash }
     }
   }
 
@@ -1869,7 +1874,14 @@ export default class extends Base {
           }
           break
       }
-      await this.model.update({ _id: suggestion._id }, { $set: fields })
+      if (suggestion.isUpdated) {
+        await this.model.update(
+          { _id: suggestion._id },
+          { $set: fields, $unset: { isUpdated: false } }
+        )
+      } else {
+        await this.model.update({ _id: suggestion._id }, { $set: fields })
+      }
       const jwtToken = jwt.sign(
         JSON.stringify(jwtClaims),
         process.env.APP_PRIVATE_KEY,
