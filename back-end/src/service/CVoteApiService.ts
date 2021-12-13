@@ -55,8 +55,10 @@ const PROPOSAL_STATUS_TO_CHAIN_STATUS = {
 
 export default class extends Base {
   private model: any
+  private zipFileModel: any
   protected init() {
     this.model = this.getDBModel('CVote')
+    this.zipFileModel = this.getDBModel('Council_Member_Opinion_Zip_File')
   }
 
   // API-1
@@ -490,6 +492,28 @@ export default class extends Base {
     }
 
     return { ...data, ...notificationResult, crVotes: voteResult }
+  }
+
+  // API-11
+  public async getOpinionData(params: any): Promise<Object> {
+    const { opinionHash } = params
+    if (!opinionHash) {
+      return {
+        code: 400,
+        message: 'Invalid request parameter'
+      }
+    }
+    const rs = await this.zipFileModel.getDBInstance().findOne({ opinionHash })
+    if (!rs) {
+      return {
+        code: 400,
+        message: 'Invalid opinion hash'
+      }
+    }
+    return {
+      proposalHash: rs.proposalHash,
+      content: rs.content.toString('hex')
+    }
   }
 
   public async walletVote(param: any) {
