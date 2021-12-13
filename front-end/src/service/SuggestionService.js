@@ -361,7 +361,7 @@ export default class extends BaseService {
       res = await api_request({
         path,
         method: 'put',
-        data: doc
+        data: { text: Base64.encode(JSON.stringify(doc)) }
       })
     } catch (error) {
       this.dispatch(this.selfRedux.actions.loading_update(false))
