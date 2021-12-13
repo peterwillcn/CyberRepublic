@@ -7,17 +7,16 @@ import {
   getProposalData,
   ela,
   getInformationByDid,
-  getDidName
-} from '../utility'
-import * as moment from 'moment'
-import * as jwt from 'jsonwebtoken'
-import {
+  getDidName,
   mail,
   utilCrypto,
   user as userUtil,
   timestamp,
   logger
 } from '../utility'
+import * as moment from 'moment'
+import * as jwt from 'jsonwebtoken'
+import { getCouncilMemberOpinionHash } from '../utility/opinion-hash'
 
 const util = require('util')
 const request = require('request')
@@ -1154,6 +1153,28 @@ export default class extends Base {
     return rejectNum > data.voteResult.length * 0.5
   }
 
+  // for full-text to chain
+  private async getOpinionHash(
+    reason: string,
+    proposalId: string,
+    proposalHash: string
+  ) {
+    const rs = await getCouncilMemberOpinionHash(reason)
+    if (rs && rs.error) {
+      return { error: rs.error }
+    }
+    if (rs && rs.content && rs.opinionHash) {
+      const zipFileModel = this.getDBModel('Council_Member_Opinion_Zip_File')
+      await zipFileModel.save({
+        proposalId,
+        opinionHash: rs.opinionHash,
+        content: rs.content,
+        proposalHash
+      })
+      return { opinionHash: rs.opinionHash }
+    }
+  }
+
   public async vote(param): Promise<Document> {
     const db_cvote = this.getDBModel('CVote')
     const db_cvote_history = this.getDBModel('CVote_Vote_History')
@@ -1166,6 +1187,12 @@ export default class extends Base {
     if (!cur) {
       throw 'invalid proposal id'
     }
+
+    const opinionHashObj = await this.getOpinionHash(
+      reason,
+      db_cvote._id,
+      db_cvote.proposalHash
+    )
     const currentVoteResult = _.find(cur._doc.voteResult, ['votedBy', votedBy])
     const reasonCreateDate = new Date()
     await db_cvote.update(
@@ -1178,9 +1205,7 @@ export default class extends Base {
           'voteResult.$.value': value,
           'voteResult.$.reason': reason || '',
           'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.UNCHAIN,
-          'voteResult.$.reasonHash':
-            reasonHash ||
-            utilCrypto.sha256D(reason + timestamp.second(reasonCreateDate)),
+          'voteResult.$.reasonHash': reasonHash || opinionHashObj.opinionHash,
           'voteResult.$.reasonCreatedAt': reasonCreateDate
         },
         $inc: {
