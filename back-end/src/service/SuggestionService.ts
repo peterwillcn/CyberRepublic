@@ -337,8 +337,16 @@ export default class extends Base {
     return curhis.version
   }
 
-  public async saveDraft(param: any) {
-    const { id, update } = param
+  public async saveDraft(params: any) {
+    const { text, id, update } = params
+    if (!text) {
+      return { success: false, error: 'Invalid param' }
+    }
+    let str = Base64.decode(text)
+    if (!str) {
+      return { success: false, error: 'Can not decode the text' }
+    }
+    const param = JSON.parse(str)
 
     const userId = _.get(this.currentUser, '_id')
     const currDoc = await this.model.getDBInstance().findById(id)
@@ -373,11 +381,8 @@ export default class extends Base {
     let result = null
     if (update) {
       doc.version = await this.saveHistoryGetCurrentVersion(id, currDoc._doc)
-      result = await this.draftModel.save(doc)
-    } else {
-      result = await this.draftModel.save(doc)
     }
-
+    result = await this.draftModel.save(doc)
     return result
   }
 
