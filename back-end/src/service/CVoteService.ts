@@ -1190,8 +1190,8 @@ export default class extends Base {
 
     const opinionHashObj = await this.getOpinionHash(
       reason,
-      db_cvote._id,
-      db_cvote.proposalHash
+      cur._id,
+      cur.proposalHash
     )
     const currentVoteResult = _.find(cur._doc.voteResult, ['votedBy', votedBy])
     const reasonCreateDate = new Date()
