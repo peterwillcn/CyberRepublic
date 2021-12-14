@@ -13,7 +13,9 @@ const {
   REVIEW_OPINION,
   SUGGESTION_BUDGET_TYPE,
   CHAIN_BUDGET_TYPE,
-  CHAIN_BUDGET_STATUS
+  CHAIN_BUDGET_STATUS,
+  CVOTE_CHAIN_STATUS,
+  CVOTE_CHAIN_RESULT
 } = constant
 /**
  * API v2 for ELA Wallet and Essentials
@@ -114,7 +116,8 @@ export default class extends Base {
       'notificationEndsHeight',
       'proposalHash',
       'rejectAmount',
-      'rejectThroughAmount'
+      'rejectThroughAmount',
+      'voteResult'
     ]
 
     const cursor = db_cvote
@@ -140,8 +143,9 @@ export default class extends Base {
       db_cvote.getDBInstance().find(query).count(),
       ela.height()
     ])
-    // filter return data，add proposalHash to CVoteSchema
-    const list = _.map(rs[0], function (o) {
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
+
+    const list = _.map(rs[0], async function (o) {
       let temp = _.omit(o._doc, [
         '_id',
         'proposer',
@@ -149,7 +153,8 @@ export default class extends Base {
         'rejectAmount',
         'proposedEndsHeight',
         'notificationEndsHeight',
-        'rejectThroughAmount'
+        'rejectThroughAmount',
+        'voteResult'
       ])
       temp.proposer = _.get(o, 'proposer.did.didName')
       temp.status = PROPOSAL_STATUS_TO_CHAIN_STATUS[temp.status]
@@ -178,6 +183,40 @@ export default class extends Base {
       }
       temp.type = constant.CVOTE_TYPE_API[o.type]
       temp.createdAt = timestamp.second(temp.createdAt)
+
+      const group = {}
+      for (const value of _.sortBy(_.values(CVOTE_RESULT))) {
+        group[value] = []
+      }
+
+      const voteHistory = await db_cvote_history
+        .getDBInstance()
+        .find({ proposalBy: o._id })
+
+      _.reduce(
+        o.voteResult,
+        (prev, cur) => {
+          const votedBy = _.get(cur, 'votedBy')
+          if (cur.status !== CVOTE_CHAIN_STATUS.CHAINED) {
+            const index = _.findLastIndex(voteHistory, ['votedBy', votedBy])
+            const rs = voteHistory[index]
+            if (rs && rs.status === CVOTE_CHAIN_STATUS.CHAINED) {
+              prev[rs.value].push(rs.value)
+            }
+          } else {
+            prev[cur.value].push(cur.value)
+          }
+          return prev
+        },
+        group
+      )
+
+      temp.crVotes = {
+        [CVOTE_CHAIN_RESULT.APPROVE]: group[CVOTE_RESULT.SUPPORT].length,
+        [CVOTE_CHAIN_RESULT.REJECT]: group[CVOTE_RESULT.REJECT].length,
+        [CVOTE_CHAIN_RESULT.ABSTAIN]: group[CVOTE_RESULT.ABSTENTION].length
+      }
+
       return _.mapKeys(temp, function (value, key) {
         if (key == 'vid') {
           return 'id'
@@ -187,8 +226,9 @@ export default class extends Base {
       })
     })
 
+    const listResult = await Promise.all(list)
     const total = rs[1]
-    return { proposals: list, total }
+    return { proposals: listResult, total }
   }
 
   private getSecretaryReview(withdrawal) {

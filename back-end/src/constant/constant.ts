@@ -223,6 +223,11 @@ export const CVOTE_SUMMARY_STATUS = create([
   'PUBLISHED',
   'REJECT'
 ])
+export const CVOTE_CHAIN_RESULT = {
+  APPROVE: 'approve',
+  REJECT: 'reject',
+  ABSTAIN: 'abstain'
+}
 export const CVOTE_RESULT = {
   SUPPORT: 'support',
   REJECT: 'reject',
