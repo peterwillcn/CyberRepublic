@@ -1542,7 +1542,7 @@ export default class extends Base {
       .getDBInstance()
       .findOne({ suggestionId: suggestion._id })
 
-    if (!doc || isUpdated === true) {
+    if (!doc) {
       const rs = await getSuggestionDraftHash(suggestion)
       if (rs && rs.error) {
         return { error: rs.error }
@@ -1557,9 +1557,24 @@ export default class extends Base {
       }
     }
 
-    if (doc) {
+    if (doc && isUpdated === true) {
+      const rs = await getSuggestionDraftHash(suggestion)
+      if (rs && rs.error) {
+        return { error: rs.error }
+      }
+      if (rs && rs.content && rs.draftHash) {
+        await this.zipFileModel.update(
+          {
+            suggestionId: suggestion._id
+          },
+          { draftHash: rs.draftHash, content: rs.content }
+        )
+        return { draftHash: rs.draftHash }
+      }
       return { draftHash: doc.draftHash }
     }
+
+    return { draftHash: doc.draftHash }
   }
 
   public async getNewOwnerSignatureUrl(param: { id: string }) {
