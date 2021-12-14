@@ -44,7 +44,7 @@ agenda.define(JOB_NAME.INTOPROPOSAL, async (job: any, done: any) => {
     const cvoteService = new CVoteServive(DB, { user: undefined })
 
     const suggestions = await DB.getModel('Suggestion').find({
-      'proposers.did': { $exists: true },
+      'signature.data': { $exists: true },
       proposalHash: { $exists: false }
     })
     console.log('suggestions', suggestions.length)
