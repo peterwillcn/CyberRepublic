@@ -8,5 +8,11 @@ export const CouncilMemberOpinionZipFile = {
   },
   proposalHash: String,
   opinionHash: String,
-  content: Buffer
+  content: Buffer,
+  votedBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'user',
+    required: true
+  },
+  status: String
 }

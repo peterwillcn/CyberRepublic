@@ -1157,7 +1157,8 @@ export default class extends Base {
   private async getOpinionHash(
     reason: string,
     proposalId: string,
-    proposalHash: string
+    proposalHash: string,
+    votedBy: string
   ) {
     const rs = await getCouncilMemberOpinionHash(reason)
     if (rs && rs.error) {
@@ -1169,7 +1170,9 @@ export default class extends Base {
         proposalId,
         opinionHash: rs.opinionHash,
         content: rs.content,
-        proposalHash
+        proposalHash,
+        votedBy,
+        status: constant.CVOTE_CHAIN_STATUS.UNCHAIN
       })
       return { opinionHash: rs.opinionHash }
     }
@@ -1191,7 +1194,8 @@ export default class extends Base {
     const opinionHashObj = await this.getOpinionHash(
       reason,
       cur._id,
-      cur.proposalHash
+      cur.proposalHash,
+      votedBy
     )
     const currentVoteResult = _.find(cur._doc.voteResult, ['votedBy', votedBy])
     const reasonCreateDate = new Date()
