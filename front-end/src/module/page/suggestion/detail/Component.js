@@ -738,7 +738,8 @@ export default class extends StandardPage {
     const isCancelled = _.get(detail, 'status') === SUGGESTION_STATUS.CANCELLED
     const considerBtn = !isCancelled &&
       (isCouncil || isAdmin) &&
-      signature && (
+      signature &&
+      !isReference && (
         <Col xs={24} sm={8}>
           <Popconfirm
             title={I18N.get('suggestion.modal.consideration')}
