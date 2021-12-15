@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import * as extract from 'extract-zip'
+const extract = require('extract-zip')
 
 const deleteFolderRecursive = function (directoryPath) {
   if (fs.existsSync(directoryPath)) {
