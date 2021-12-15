@@ -9,11 +9,11 @@ import {
   getInformationByDid,
   getDidName,
   mail,
-  utilCrypto,
   user as userUtil,
   timestamp,
   logger
 } from '../utility'
+import { unzipFile } from '../utility/unzip-file'
 import * as moment from 'moment'
 import * as jwt from 'jsonwebtoken'
 import { getCouncilMemberOpinionHash } from '../utility/opinion-hash'
@@ -1171,8 +1171,7 @@ export default class extends Base {
         opinionHash: rs.opinionHash,
         content: rs.content,
         proposalHash,
-        votedBy,
-        status: constant.CVOTE_CHAIN_STATUS.UNCHAIN
+        votedBy
       })
       return { opinionHash: rs.opinionHash }
     }
@@ -2279,6 +2278,8 @@ export default class extends Base {
   public async updateVoteStatusByChain() {
     const db_ela = this.getDBModel('Ela_Transaction')
     const db_cvote = this.getDBModel('CVote')
+    const db_zip_file = this.getDBModel('Council_Member_Opinion_Zip_File')
+    const db_cvote_history = this.getDBModel('CVote_Vote_History')
 
     let elaVoteList = await db_ela
       .getDBInstance()
@@ -2287,7 +2288,6 @@ export default class extends Base {
       return
     }
     const elaVote = []
-    const useIndex = []
     _.map(elaVoteList, (o: any) => {
       const data = {
         ...o._doc,
@@ -2297,9 +2297,11 @@ export default class extends Base {
     })
     const query = []
     const byKeyElaList = _.keyBy(elaVote, 'proposalhash')
+    console.log(`byKeyElaList...`, byKeyElaList)
     _.forEach(byKeyElaList, (v: any, k: any) => {
       query.push(k)
     })
+    console.log(`updateVoteStatusByChain query...`, query)
     const proposalList = await db_cvote
       .getDBInstance()
       .find({
@@ -2318,15 +2320,11 @@ export default class extends Base {
     _.forEach(proposalList, (o: any) => {
       _.forEach(o.voteResult, (v: any) => {
         if (v.status === constant.CVOTE_CHAIN_STATUS.UNCHAIN) {
-          const oldReasonHash = v.reasonCreatedAt
-            ? utilCrypto.sha256D(v.reason + timestamp.second(v.reasonCreatedAt))
-            : utilCrypto.sha256D(v.reason)
-          const reasonHash = v.reasonHash ? v.reasonHash : oldReasonHash
           const data = {
-            proposalHash: o.proposalHash,
             ...v._doc,
-            did: !_.isEmpty(v._doc.votedBy) ? v._doc.votedBy.did.id : null,
-            reasonHash
+            proposalId: o._id,
+            proposalHash: o.proposalHash,
+            did: !_.isEmpty(v._doc.votedBy) ? v._doc.votedBy.did.id : null
           }
           vote.push(data)
         }
@@ -2336,27 +2334,99 @@ export default class extends Base {
       const did: any = DID_PREFIX + o.did
       const voteList = _.find(vote, {
         proposalHash: o.proposalhash,
-        reasonHash: o.opinionhash,
         did: did
       })
       if (voteList) {
-        const rs = await db_cvote.update(
+        if (voteList.reasonHash === o.opinionhash) {
+          await db_cvote.update(
+            {
+              proposalHash: o.proposalhash,
+              'voteResult._id': voteList._id
+            },
+            {
+              $set: {
+                'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.CHAINED
+              }
+            }
+          )
+          await db_ela.remove({ txid: o.txid })
+          return
+        }
+
+        const opinionData = await unzipFile(o.opiniondata)
+        let opinion = o.voteresult
+        if (constant.CVOTE_CHAIN_RESULT.APPROVE === o.voteresult) {
+          opinion = constant.CVOTE_RESULT.SUPPORT
+        }
+        if (constant.CVOTE_CHAIN_RESULT.ABSTAIN === o.voteresult) {
+          opinion = constant.CVOTE_RESULT.ABSTENTION
+        }
+
+        if (
+          voteList.reasonHash &&
+          voteList.reasonHash !== o.opinionhash &&
+          voteList.reasonCreatedAt
+        ) {
+          const isAfter = moment(voteList.reasonCreatedAt).isAfter(
+            moment(o.blockTime)
+          )
+          if (isAfter === true) {
+            await db_cvote_history.save({
+              proposalBy: voteList.proposalId,
+              votedBy: voteList._id,
+              value: opinion,
+              reason: opinionData,
+              reasonCreatedAt: moment(o.lockTime),
+              status: constant.CVOTE_CHAIN_STATUS.CHAINED
+            })
+            await db_zip_file.save({
+              proposalId: voteList.proposalId,
+              opinionHash: o.opinionhash,
+              content: Buffer.from(o.opiniondata, 'hex'),
+              proposalHash: o.proposalhash,
+              votedBy: voteList.votedBy._id
+            })
+            await db_ela.remove({ txid: o.txid })
+            return
+          }
+          if (
+            isAfter === false &&
+            voteList.status === constant.CVOTE_CHAIN_STATUS.CHAINED
+          ) {
+            await db_cvote_history.save({
+              proposalBy: voteList.proposalId,
+              votedBy: voteList._id,
+              value: voteList.value,
+              reason: voteList.reason,
+              reasonCreatedAt: voteList.reasonCreatedAt,
+              status: constant.CVOTE_CHAIN_STATUS.CHAINED
+            })
+          }
+        }
+
+        await db_cvote.update(
           {
             proposalHash: o.proposalhash,
             'voteResult._id': voteList._id
           },
           {
             $set: {
-              'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.CHAINED
-            },
-            $inc: {
-              __v: 1
+              'voteResult.$.value': opinion,
+              'voteResult.$.reason': opinionData,
+              'voteResult.$.status': constant.CVOTE_CHAIN_STATUS.CHAINED,
+              'voteResult.$.reasonHash': o.opinionhash,
+              'voteResult.$.reasonCreatedAt': moment(o.blockTime)
             }
           }
         )
-        if (rs && rs.nModified == 1) {
-          await db_ela.remove({ txid: o.txid })
-        }
+        await db_zip_file.save({
+          proposalId: voteList.proposalId,
+          opinionHash: o.opinionhash,
+          content: Buffer.from(o.opiniondata, 'hex'),
+          proposalHash: o.proposalhash,
+          votedBy: voteList.votedBy._id
+        })
+        await db_ela.remove({ txid: o.txid })
       }
     })
   }

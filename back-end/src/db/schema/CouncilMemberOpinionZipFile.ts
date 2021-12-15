@@ -13,6 +13,5 @@ export const CouncilMemberOpinionZipFile = {
     type: Schema.Types.ObjectId,
     ref: 'user',
     required: true
-  },
-  status: String
+  }
 }

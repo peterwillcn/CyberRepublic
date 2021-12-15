@@ -7,5 +7,6 @@ export const ElaTransaction = {
   },
   type: {
     type: Number
-  }
+  },
+  blockTime: Number
 }
