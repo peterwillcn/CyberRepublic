@@ -2297,11 +2297,9 @@ export default class extends Base {
     })
     const query = []
     const byKeyElaList = _.keyBy(elaVote, 'proposalhash')
-    console.log(`byKeyElaList...`, byKeyElaList)
     _.forEach(byKeyElaList, (v: any, k: any) => {
       query.push(k)
     })
-    console.log(`updateVoteStatusByChain query...`, query)
     const proposalList = await db_cvote
       .getDBInstance()
       .find({
@@ -2330,12 +2328,14 @@ export default class extends Base {
         }
       })
     })
+    console.log(`vote...`, vote)
     _.forEach(elaVote, async (o: any) => {
       const did: any = DID_PREFIX + o.did
       const voteList = _.find(vote, {
         proposalHash: o.proposalhash,
         did: did
       })
+      console.log(`voteList...`, voteList)
       if (voteList) {
         if (voteList.reasonHash === o.opinionhash) {
           await db_cvote.update(
@@ -2353,7 +2353,9 @@ export default class extends Base {
           return
         }
 
+        if (!o.opiniondata) return
         const opinionData = await unzipFile(o.opiniondata)
+
         let opinion = o.voteresult
         if (constant.CVOTE_CHAIN_RESULT.APPROVE === o.voteresult) {
           opinion = constant.CVOTE_RESULT.SUPPORT
@@ -2376,7 +2378,7 @@ export default class extends Base {
               votedBy: voteList._id,
               value: opinion,
               reason: opinionData,
-              reasonCreatedAt: moment(o.lockTime),
+              reasonCreatedAt: moment(o.blockTime),
               status: constant.CVOTE_CHAIN_STATUS.CHAINED
             })
             await db_zip_file.save({

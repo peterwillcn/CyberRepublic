@@ -6,23 +6,18 @@ require('../dist/src/config')
   const db = await require('../dist/src/db').default
   const DB = await db.create()
   const db_cvote = DB.getModel('CVote')
+  const mongoose = require('mongoose')
+  const ObjectId = mongoose.Types.ObjectId
   try {
-    // const query = {
-    //   vid: 6,
-    //   proposalHash: { $exists: true }
-    // }
-    // const proposal = await db_cvote.findOne(query)
-    // console.log(`proposal`, proposal)
-    await db_cvote.getDBInstance().updateOne(
+    await db_cvote.getDBInstance().update(
       {
         vid: 6,
         proposalHash: { $exists: true },
-        'voteResult.reasonHash': 'xxx'
+        'voteResult._id': ObjectId('xxx')
       },
       {
-        $unset: {
-          'voteResult.$.reasonHash': true,
-          'voteResult.$.reasonCreatedAt': true
+        $set: {
+          'voteResult.$.reason': ''
         }
       }
     )
