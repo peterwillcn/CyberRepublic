@@ -39,6 +39,7 @@
     "cookie-session": "^2.0.0-beta.3",
     "cors": "^2.8.4",
     "crypto-js": "^3.1.9-1",
+    "decompress": "^4.2.1",
     "dotenv": "^4.0.0",
     "express": "4.16.0",
     "express-fileupload": "^1.1.9",
